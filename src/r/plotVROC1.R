@@ -14,9 +14,6 @@ data <- read.csv('%3%/%4%', sep='\t')
 # Remove false-positves that are not called within the sequin regions
 data <- data[data$ID != '-',]
 
-# Give a reference ratio to the FP
-data[data$Label=='FP',]$EFold <- 0
-
 # Define your signifance
 sign <- 0.10
 
@@ -38,7 +35,9 @@ score <- %5%
 data$name <- paste(data$ID, data$Pos, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
+r <- unique(sort(data$EFold))
+
 # Create Anaquin data set
 data <- Anaquin(seqs=data$name, expected=data$EFold, score=score, label=data$Label)
 
-plotROC(data, title=title, legTitle=legTitle, refRats=0)
+plotROC(data, title=title, legTitle=legTitle, refRats=r)

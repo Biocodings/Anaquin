@@ -40,13 +40,20 @@ struct VDiscoverImpl : public VCFDataUser
                 if (m.match)
                 {
                     m.ref = m.match->ref == query.ref;
-                    m.alt_ = m.match->alt == query.alt;
+                    m.alt = m.match->alt == query.alt;
                 }
                 
-                if (isSyn && m.match && !mixture().empty())
+                const auto perfect = m.match && m.ref && m.alt;
+                
+                if (isSyn && perfect)
                 {
                     m.eFold    = r.findAFold(baseID(m.match->id));
                     m.eAllFreq = r.findAFreq(baseID(m.match->id));
+                }
+                else
+                {
+                    m.eFold    = NAN;
+                    m.eAllFreq = NAN;
                 }
             }
             
@@ -71,7 +78,7 @@ struct VDiscoverImpl : public VCFDataUser
             //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
             
             // Only matching if the position and alleles agree
-            const auto matched = m.match && m.ref && m.alt_;
+            const auto matched = m.match && m.ref && m.alt;
             
             /*
              * Matched by position? reference allele? alternative allele?
@@ -335,8 +342,14 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                 {
                     auto sID = (i.match ? i.match->id : "-");
                     
+                    auto eFold = i.eFold;
+                    auto eAllF = i.eAllFreq;
+                    
                     if (label == "FP")
                     {
+                        assert(isnan(eFold));
+                        assert(isnan(eAllF));
+                        
                         const auto m = inters.contains(i.query.l);
                         
                         // Can we find the corresponding region for the FP?
@@ -346,11 +359,12 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
 
                             // It has to be sequin name (eg: D_3_12)
                             assert(!sID.empty());
+                            
+                           eFold = r.findAFold(sID);
+                           eAllF = r.findAFreq(sID);
                         }
                     }
                     
-                    const auto eFold = (label == "FP" ? NAN : i.eFold);
-                    const auto eAlFq = (label == "FP" ? NAN : i.eAllFreq);
                     const auto pval  = (isnan(i.query.p) ? "-" : p2str(i.query.p));
                     
                     o.writer->write((boost::format(format) % sID
@@ -360,7 +374,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % i.query.readV
                                                            % i.query.depth
                                                            % eFold
-                                                           % eAlFq
+                                                           % eAllF
                                                            % pval
                                                            % type2str(i.query.type())).str());
                 }
@@ -432,13 +446,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       True Positive:  %35% variants\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
-    o.writer->write((boost::format(summary) % VCFRef()
-                                            % src
-                                            % r.countSNPSyn()
-                                            % r.countIndSyn()
+    o.writer->write((boost::format(summary) % VCFRef()                   // 1
+                                            % src                        // 2
+                                            % r.countSNPSyn()            // 3
+                                            % r.countIndSyn()            // 4
                                             % (r.countSNPSyn() + r.countIndSyn())
-                                            % r.countSNPGen()
-                                            % r.countIndGen()
+                                            % r.countSNPGen()            // 6
+                                            % r.countIndGen()            // 7
                                             % (r.countSNPGen() + r.countIndGen())
                                             % stats.vData.countSNPSyn()  // 9
                                             % stats.vData.countIndSyn()  // 10

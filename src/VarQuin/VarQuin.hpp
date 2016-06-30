@@ -29,7 +29,7 @@ namespace Anaquin
         const Variant *match = nullptr;
         
         // Matched by variant allele? Only if position is matched.
-        bool alt_;
+        bool alt;
         
         // Matched by reference allele? Only if position is matched.
         bool ref;
@@ -38,8 +38,8 @@ namespace Anaquin
          * Defined only if there is a match
          */
         
-        Proportion eFold;
-        Proportion eAllFreq;
+        Proportion eFold = NAN;
+        Proportion eAllFreq = NAN;
     };
 
     inline std::string type2str(Mutation type)
