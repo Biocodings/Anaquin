@@ -41,6 +41,7 @@
 		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF3AFD9A1CF5CFB40019B6D1 /* m_kmer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3AFD981CF5CFB40019B6D1 /* m_kmer.cpp */; };
 		EF3F04A81B6F309E00179B55 /* t_parser_star_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3F04A71B6F309E00179B55 /* t_parser_star_fusion.cpp */; };
+		EF4085AD1D268B600077CAAF /* v_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4085AC1D268B600077CAAF /* v_sample.cpp */; };
 		EF4270A21B213BF200C9ED4E /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A11B213BF200C9ED4E /* test.cpp */; };
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */; };
@@ -226,6 +227,7 @@
 		EF3AFD991CF5CFB40019B6D1 /* m_kmer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_kmer.hpp; sourceTree = "<group>"; };
 		EF3F04A51B6F2F5000179B55 /* parser_star_fusion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_star_fusion.hpp; path = ../src/parsers/parser_star_fusion.hpp; sourceTree = "<group>"; };
 		EF3F04A71B6F309E00179B55 /* t_parser_star_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_star_fusion.cpp; path = ../tests/parsers/t_parser_star_fusion.cpp; sourceTree = "<group>"; };
+		EF4085AC1D268B600077CAAF /* v_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_sample.cpp; path = ../tests/VarQuin/v_sample.cpp; sourceTree = "<group>"; };
 		EF40C2AD1C21C0E30057415D /* itree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = itree.hpp; path = ../src/data/itree.hpp; sourceTree = "<group>"; };
 		EF4270A11B213BF200C9ED4E /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = ../tests/test.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
@@ -741,6 +743,7 @@
 			children = (
 				EFA672F61D0691D2005C3DA6 /* v_align.cpp */,
 				EF9ED3961D07BEC900CE7F2B /* v_discover.cpp */,
+				EF4085AC1D268B600077CAAF /* v_sample.cpp */,
 			);
 			name = VarQuin;
 			sourceTree = "<group>";
@@ -973,6 +976,7 @@
 				EF26157C1B5FF9DC00BE8037 /* gff.cpp in Sources */,
 				EF0C67961C5F25070033168D /* v_discover.cpp in Sources */,
 				EFDD6AD91B0DD76C00450029 /* zfio.c in Sources */,
+				EF4085AD1D268B600077CAAF /* v_sample.cpp in Sources */,
 				EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */,
 				EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */,
 				EFDD6A9B1B0DD76200450029 /* sam.c in Sources */,
