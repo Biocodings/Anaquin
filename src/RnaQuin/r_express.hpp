@@ -216,7 +216,7 @@ namespace Anaquin
             
             const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
 
-            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files /*, hists*/, mStats, lStats);
+            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, mStats, lStats);
 
             // Breakpoint estimated by piecewise regression
             const auto b = ms.b.mean();
@@ -266,7 +266,7 @@ namespace Anaquin
                                 "       Genome: %8%\n\n"
                                 "-------Limit of Quantification (LOQ)\n\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
-                                "       Break: %9% attomol/ul (%10%)\n\n"
+                                "       Break LOQ: %9% attomol/ul (%10%)\n\n"
                                 "       *Below LOQ\n"
                                 "       Intercept:   %11%\n"
                                 "       Slope:       %12%\n"
@@ -280,8 +280,8 @@ namespace Anaquin
                                 "       R2:          %19%\n"
                                 "       Genome:      %20%\n\n"
                                 "-------Linear regression (log2 scale)\n\n"
-                                "       Correlation: %21%\n"
-                                "       Slope:       %22%\n"
+                                "       Slope:       %21%\n"
+                                "       Correlation: %22%\n"
                                 "       R2:          %23%\n"
                                 "       F-statistic: %24%\n"
                                 "       P-value:     %25%\n"
@@ -309,8 +309,8 @@ namespace Anaquin
                                                    % STRING(ms.rr)         // 18
                                                    % STRING(ms.rR2)        // 19
                                                    % STRING(n_above)       // 20
-                                                   % STRING(ms.wLog.r)     // 21
-                                                   % STRING(ms.wLog.sl)    // 22
+                                                   % STRING(ms.wLog.sl)    // 21
+                                                   % STRING(ms.wLog.r)     // 22
                                                    % STRING(ms.wLog.R2)    // 23
                                                    % STRING(ms.wLog.F)     // 24
                                                    % STRING(ms.wLog.p)     // 25

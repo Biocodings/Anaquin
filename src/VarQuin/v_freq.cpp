@@ -210,7 +210,7 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "      Genome: %17% variants\n\n"
                          "-------Limit of Quantification (LOQ)\n"
                          "      *Estimated by piecewise segmented regression\n\n"
-                         "       Break: %18% attomol/ul (%19%)\n\n"
+                         "       Break LOQ: %18% attomol/ul (%19%)\n\n"
                          "      *Below LOQ\n"
                          "       Intercept:   %20%\n"
                          "       Slope:       %21%\n"

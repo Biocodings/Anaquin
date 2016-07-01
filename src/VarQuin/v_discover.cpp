@@ -564,7 +564,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       FDR Rate:    %33$.4f\n\n"
                              "-------Limit of Quantification (LOQ)\n"
                              "      *Estimated by piecewise segmented regression\n\n"
-                             "       Break: %34% attomol/ul (%35%)\n\n"
+                             "       Break LOQ: %34% attomol/ul (%35%)\n\n"
                              "      *Below LOQ\n"
                              "       Intercept:   %36%\n"
                              "       Slope:       %37%\n"
@@ -578,8 +578,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       R2:          %44%\n"
                              "       Genome:      %45%\n\n"
                              "-------Overall linear regression (log2 scale)\n\n"
-                             "      Correlation: %46%\n"
-                             "      Slope:       %47%\n"
+                             "      Slope:       %46%\n"
+                             "      Correlation: %47%\n"
                              "      R2:          %48%\n"
                              "      F-statistic: %49%\n"
                              "      P-value:     %50%\n"
@@ -633,8 +633,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % ms.rr                      // 43
                                                 % ms.rR2                     // 43
                                                 % n_below                    // 45
-                                                % lm.r                       // 46
                                                 % lm.m                       // 47
+                                                % lm.r                       // 46
                                                 % lm.R2                      // 48
                                                 % lm.F                       // 49
                                                 % lm.p                       // 50

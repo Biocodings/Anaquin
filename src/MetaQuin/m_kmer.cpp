@@ -65,13 +65,13 @@ void MKMer::report(const FileName &file, const Options &o)
     
     o.info("Generating MetaKmer_summary.stats");
     o.writer->open("MetaKmer_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
-                                                o.rAnnot,
-                                                file,
-                                                stats.hist,
-                                                stats,
-                                                stats,
-                                                "sequins"));
+//    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+//                                                o.rAnnot,
+//                                                file,
+//                                                stats.hist,
+//                                                stats,
+//                                                stats,
+//                                                "sequins"));
     o.writer->close();
     
     /*

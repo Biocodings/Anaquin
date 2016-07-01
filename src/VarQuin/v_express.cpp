@@ -44,22 +44,22 @@ void VExpress::report(const FileName &file, const Options &o)
     const auto &stats = analyze(file, o);
     
     /*
-     * 1. Generating summary statistics
+     * Generating VarExpress_summary.stats
      */
     
     o.info("Generating VarExpress_summary.stats");
     o.writer->open("VarExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
-                                                o.rAnnot,
-                                                file,
-                                                stats.hist,
-                                                stats,
-                                                stats,
-                                                "sequins"));
+//    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+//                                                o.rAnnot,
+//                                                file,
+//                                                stats.hist,
+//                                                stats,
+//                                                stats,
+//                                                "sequins"));
     o.writer->close();
     
     /*
-     * 2. Generating CSV for all sequins
+     * Generating VarExpress_sequins.csv
      */
     
     o.info("Generating VarExpress_sequins.csv");

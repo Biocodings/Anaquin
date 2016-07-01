@@ -92,13 +92,13 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
 
     o.generate("MetaAbund_summary.stats");
     o.writer->open("MetaAbund_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
-                                                o.rAnnot,
-                                                file,
-                                                stats.hist,
-                                                stats,
-                                                stats,
-                                                "sequins"));
+//    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+//                                                o.rAnnot,
+//                                                file,
+//                                                stats.hist,
+//                                                stats,
+//                                                stats,
+//                                                "sequins"));
     o.writer->close();
 
     /*
