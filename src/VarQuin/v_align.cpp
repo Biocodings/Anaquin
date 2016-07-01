@@ -148,7 +148,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
     auto stats = init();
     
-    o.info("[INFO]: " + std::to_string(stats.inters.size()) + " chromosomes in the reference");
+    o.info(std::to_string(stats.inters.size()) + " chromosomes in the reference");
     o.analyze(file);
 
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
@@ -180,7 +180,6 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         
         if (Standard::isSynthetic(align.cID))
         {
-            //std::cout << k++ << std::endl;
             classifyAlign(stats, align);
         }
         else if (Standard::isGenomic(align.cID))
