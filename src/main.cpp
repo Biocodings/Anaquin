@@ -801,6 +801,10 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.output = std::shared_ptr<TerminalWriter>(new TerminalWriter());
     o.logger->open("anaquin.log");
 #endif
+    
+    /*
+     * TODO: Check if a file exists at path
+     */
 
     system(("mkdir -p " + path).c_str());
     
