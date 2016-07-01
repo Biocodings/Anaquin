@@ -88,6 +88,7 @@
 #include "resources/plotVROC2.R"
 #include "resources/plotVDensity.R"
 
+#include "resources/AVA019_v001.bed"
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
 #include "resources/MVA012.v013.csv"
@@ -370,3 +371,9 @@ Scripts VarDataBed()
 {
     return ToString(data_VarQuin_AVA017_v001_bed);
 }
+
+Scripts AVA019_Bed()
+{
+    return ToString(data_VarQuin_AVA019_v001_bed);
+}
+

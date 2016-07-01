@@ -12,7 +12,8 @@ namespace Anaquin
         {
             Mean,
             Median,
-            ReadCount,
+            Reads,
+            Prop,
         };
         
         struct Stats
@@ -34,13 +35,6 @@ namespace Anaquin
             
             Counts n_syn = 0;
             Counts n_gen = 0;
-            
-            /*
-             * Fraction required to subsample in chrT. This works because chrT is a short
-             * chromosome and almost certianly will have the highest coverage.
-             */
-            
-            inline Proportion sample() const { return genC / synC; }
         };
 
         struct Options : public AnalyzerOptions
@@ -48,6 +42,9 @@ namespace Anaquin
             Options() {}
 
             Method meth = Method::Mean;
+            
+            // Defined only if meth==Prop
+            Proportion p;            
         };
 
         static Stats stats(const FileName &file, const Options &o = Options());

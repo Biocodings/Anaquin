@@ -138,7 +138,14 @@ struct Subsampler
                 break;
             }
                 
-            case VSample::Method::ReadCount:
+            case VSample::Method::Prop:
+            {
+                stats.synC = stats.n_syn;
+                stats.genC = stats.n_gen;
+                break;
+            }
+
+            case VSample::Method::Reads:
             {
                 stats.synC = stats.n_syn;
                 stats.genC = stats.n_gen;
@@ -148,8 +155,8 @@ struct Subsampler
         
         assert(stats.synC && stats.genC);
         
-        o.info("Synthetic coverage: " + toString(stats.synC));
-        o.info("Genomic coverage: " + toString(stats.genC));
+        o.info("Synthetic coverage: " + std::to_string(stats.synC));
+        o.info("Genomic coverage: " + std::to_string(stats.genC));
         
         return stats;
     }
@@ -158,9 +165,10 @@ struct Subsampler
     {
         switch (o.meth)
         {
-            case VSample::Method::Mean:      { return stats.mean; }
-            case VSample::Method::Median:    { return stats.p50;  }
-            case VSample::Method::ReadCount: { throw "????"; }
+            case VSample::Method::Mean:   { return stats.mean; }
+            case VSample::Method::Median: { return stats.p50;  }
+            case VSample::Method::Reads:  { throw "????"; }
+            case VSample::Method::Prop:   { throw "????"; }
         }
     }
     
@@ -254,16 +262,17 @@ struct Subsampler
         
         return r;
     }
-    
+
     template <typename Options> static void report(const FileName &file, const Options &o)
     {
         auto meth2Str = [&]()
         {
             switch (o.meth)
             {
-                case VSample::Method::Mean:      { return "Mean";   }
-                case VSample::Method::Median:    { return "Median"; }
-                case VSample::Method::ReadCount: { return "Reads";  }
+                case VSample::Method::Mean:   { return "Mean";   }
+                case VSample::Method::Median: { return "Median"; }
+                case VSample::Method::Reads:  { return "Reads";  }
+                case VSample::Method::Prop:   { return "Prop";   }
             }
         };
         
@@ -287,7 +296,24 @@ struct Subsampler
         // Reference regions for synthetic chromosomes
         auto inters = r.dIntersSyn();
         
-        const auto p = before.sample();
+        // Proportion of reads be sampled
+        Proportion p;
+        
+        switch (o.meth)
+        {
+            case VSample::Method::Prop:
+            {
+                p = o.p;
+                break;
+            }
+
+            default:
+            {
+                p = before.genC / before.synC;
+                break;
+            }
+        }
+
         assert(p > 0 && p < 1.0);
         
         o.info("Sampling proportion: " + std::to_string(p));
@@ -332,26 +358,25 @@ struct Subsampler
          * Generating VarSubsample_summary.stats
          */
         
-        const auto summary = "VarSubsample Output Results\n\n"
-        "-------VarSubsample Output\n\n"
-        "       Reference regions: %1%\n"
-        "       User generated alignment: %2%\n\n"
-        "-------Reference regions\n\n"
-        "       Synthetic regions: %3%\n"
-        "       Genomic regions:   %4%\n\n"
-        "       Method: %5%\n\n"
-        "-------User alignments (before subsampling)\n\n"
-        "       Synthetic: %6%\n"
-        "       Genome:    %7%\n\n"
-        "-------User alignments (after subsampling)\n\n"
-        "       Synthetic: %8%\n"
-        "       Genome:    %9%\n\n"
-        "-------Before subsampling\n\n"
-        "       Synthetic coverage: %10%\n"
-        "       Genome coverage:    %11%\n\n"
-        "-------After subsampling\n\n"
-        "       Synthetic coverage: %12%\n"
-        "       Genome coverage:    %13%\n";
+        const auto summary = "-------VarSubsample Summary Statistics\n\n"
+                             "       Reference regions: %1%\n"
+                             "       User generated alignment: %2%\n\n"
+                             "-------Reference regions\n\n"
+                             "       Synthetic regions:   %3%\n"
+                             "       Human genom regions: %4%\n\n"
+                             "       Normalization: %5%\n\n"
+                             "-------User alignments (before subsampling)\n\n"
+                             "       Synthetic: %6%\n"
+                             "       Genome:    %7%\n\n"
+                             "-------User alignments (after subsampling)\n\n"
+                             "       Synthetic: %8%\n"
+                             "       Genome:    %9%\n\n"
+                             "-------Before subsampling\n\n"
+                             "       Synthetic coverage: %10%\n"
+                             "       Genome coverage:    %11%\n\n"
+                             "-------After subsampling\n\n"
+                             "       Synthetic coverage: %12%\n"
+                             "       Genome coverage:    %13%\n";
         
         o.generate("VarSubsample_summary.stats");
         o.writer->open("VarSubsample_summary.stats");
