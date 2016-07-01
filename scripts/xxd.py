@@ -92,6 +92,7 @@ data  = [ 'data/manual.txt',
           'data/VarQuin/AVA009.v032.vcf',
           'data/VarQuin/MVA011.v013.csv',
           'data/VarQuin/MVA012.v013.csv',
+          'data/VarQuin/AVA019_v001.bed',
         ]
 tests = [ ]
 
