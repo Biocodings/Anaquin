@@ -28,6 +28,7 @@ xlab='Expected allele frequency (log10)'
 # Change this for the y-axis label
 ylab='P-value (log10)'
 
-data <- Anaquin(seqs=paste(data$Seq, data$Pos, sep='_'), expected=as.factor(data$EFold), pval=data$Pval, measured=data$EAllele)
+data$EFold <- round(data$ERef / data$EVar)
+data <- Anaquin(seqs=paste(data$Seq, data$Pos, sep='_'), expected=as.factor(data$EFold), pval=data$Pval, measured=data$EFreq)
 
 plotLOD(data, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)  

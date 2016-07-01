@@ -823,6 +823,18 @@ bool VarRef::isGermline() const
     return freqs.size() == 1;
 }
 
+Concent VarRef::findRCon(const SequinID &id) const
+{
+    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
+    return p.r->abund;
+}
+
+Concent VarRef::findVCon(const SequinID &id) const
+{
+    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
+    return p.v->abund;
+}
+
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));

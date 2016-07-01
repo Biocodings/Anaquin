@@ -41,6 +41,7 @@ score <- %5%
 data$name <- paste(data$ID, data$Pos, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
+data$EFold <- round(data$ERef / data$EVar)
 r <- unique(sort(data$EFold))
 
 # Create Anaquin data set

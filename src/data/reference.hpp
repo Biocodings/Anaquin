@@ -486,6 +486,9 @@ namespace Anaquin
             const Variant *findVar(const ChrID &, long key) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
 
+            Concent findRCon(const SequinID &) const;
+            Concent findVCon(const SequinID &) const;
+        
             // Returns the expected allele fold-change
             Fold findAFold(const SequinID &) const;
 
