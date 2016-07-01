@@ -430,8 +430,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     Counts n_below = 0;
     Counts n_above = 0;
     
+    // For each reference chromosome...
     for (const auto &i : stats.data)
     {
+        // For each genomic chromosome...
         if (!Standard::isSynthetic(i.first))
         {
             if (i.second.af >= ms.b)
