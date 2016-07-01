@@ -48,19 +48,6 @@ struct VDiscoverImpl : public VCFDataUser
                     m.ref = m.match->ref == query.ref;
                     m.alt = m.match->alt == query.alt;
                 }
-                
-                const auto perfect = m.match && m.ref && m.alt;
-                
-                if (isSyn && perfect)
-                {
-                    m.eFold    = r.findAFold(baseID(m.match->id));
-                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
-                }
-                else
-                {
-                    m.eFold    = NAN;
-                    m.eAllFreq = NAN;
-                }
             }
             
             return m.match;
@@ -234,7 +221,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
 
     o.generate(file);
     o.writer->open(file);
@@ -245,7 +232,8 @@ static void writeQuins(const FileName &file,
                                            % "ReadR"
                                            % "ReadV"
                                            % "Depth"
-                                           % "EFold"
+                                           % "ERef"
+                                           % "EVar"
                                            % "EFreq"
                                            % "MFreq"
                                            % "Type").str());
@@ -292,8 +280,9 @@ static void writeQuins(const FileName &file,
                                                                % t.query.readR
                                                                % t.query.readV
                                                                % t.query.depth
-                                                               % t.eFold
-                                                               % t.eAllFreq
+                                                               % r.findRCon(m->id)
+                                                               % r.findVCon(m->id)
+                                                               % r.findAFreq(m->id)
                                                                % t.query.alleleFreq()
                                                                % type).str());
                         return true;
@@ -327,7 +316,8 @@ static void writeQuins(const FileName &file,
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
-                                                       % r.findAFold(m->id)
+                                                       % r.findRCon(m->id)
+                                                       % r.findVCon(m->id)
                                                        % r.findAFreq(m->id)
                                                        % "NA"
                                                        % type).str());
@@ -341,7 +331,7 @@ static void writeQuins(const FileName &file,
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
     
     o.generate(file);
     o.writer->open(file);
@@ -351,8 +341,10 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "Ref"
                                            % "Var"
                                            % "Depth"
-                                           % "EFold"
-                                           % "EAllele"
+                                           % "ERef"
+                                           % "EVar"
+                                           % "EFreq"
+                                           % "MFreq"
                                            % "Pval"
                                            % "Qual"
                                            % "Type").str());
@@ -374,14 +366,8 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                 {
                     auto sID = (i.match ? i.match->id : "-");
                     
-                    auto eFold = i.eFold;
-                    auto eAllF = i.eAllFreq;
-                    
                     if (label == "FP")
                     {
-                        assert(isnan(eFold));
-                        assert(isnan(eAllF));
-                        
                         const auto m = inters.contains(i.query.l);
                         
                         // Can we find the corresponding region for the FP?
@@ -391,13 +377,15 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
 
                             // It has to be sequin name (eg: D_3_12)
                             assert(!sID.empty());
-                            
-                           eFold = r.findAFold(sID);
-                           eAllF = r.findAFreq(sID);
                         }
                     }
                     
+                    const auto eRef  = sID != "-" ? r.findRCon(sID)  : NAN;
+                    const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
+                    const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
+
                     const auto pval  = (isnan(i.query.p) ? "-" : p2str(i.query.p));
+                    const auto mFreq = i.query.alleleFreq();
                     
                     o.writer->write((boost::format(format) % sID
                                                            % i.query.l.start
@@ -405,8 +393,10 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % i.query.readR
                                                            % i.query.readV
                                                            % i.query.depth
-                                                           % eFold
-                                                           % eAllF
+                                                           % eRef
+                                                           % eVar
+                                                           % eFreq
+                                                           % mFreq
                                                            % pval
                                                            % i.query.qual
                                                            % type2str(i.query.type())).str());
@@ -466,7 +456,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Reference coordinate annotations: %2%\n"
                              "       Sequin mixture file:              %3%\n"
                              "       User identified variants:         %4%\n\n"
-                             "-------Reference variant annotations\n\n"
+                             "-------Reference annotated variants\n\n"
                              "       Synthetic: %5% SNPs\n"
                              "       Synthetic: %6% indels\n"
                              "       Synthetic: %7% variants\n\n"

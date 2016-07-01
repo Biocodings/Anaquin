@@ -33,22 +33,15 @@ namespace Anaquin
         
         // Matched by reference allele? Only if position is matched.
         bool ref;
-        
-        /*
-         * Defined only if there is a match
-         */
-        
-        Proportion eFold = NAN;
-        Proportion eAllFreq = NAN;
     };
 
     inline std::string type2str(Mutation type)
     {
         switch (type)
         {
-            case Mutation::SNP:       { return "SNP"; }
-            case Mutation::Deletion:
-            case Mutation::Insertion: { return "Indel"; }
+            case Mutation::SNP:       { return "SNP";       }
+            case Mutation::Deletion:  { return "Deletion";  }
+            case Mutation::Insertion: { return "Insertion"; }
         }
     }
 
@@ -113,12 +106,6 @@ namespace Anaquin
                 {
                     m.ref = m.match->ref == query.ref;
                     m.alt = m.match->alt == query.alt;
-                }
-                
-                if (isSyn && m.match && !mixture().empty())
-                {
-                    m.eFold    = r.findAFold(baseID(m.match->id));
-                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
                 }
             }
 
