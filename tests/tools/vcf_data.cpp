@@ -10,7 +10,6 @@ TEST_CASE("VCF_Synthetic")
     REQUIRE(r.countInd()    == 108);
     REQUIRE(r.countIndSyn() == 108);
     REQUIRE(r.countIndGen() == 0);
-
     REQUIRE(r.countSNP()    == 137);
     REQUIRE(r.countSNPSyn() == 137);
     REQUIRE(r.countSNPGen() == 0);    
