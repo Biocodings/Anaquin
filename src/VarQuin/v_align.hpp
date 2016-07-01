@@ -20,8 +20,14 @@ namespace Anaquin
                     std::shared_ptr<MergedInterval> fp;
                 };
                 
-                typedef Confusion AlignLevel;
-
+                struct AlignLevel
+                {
+                    Confusion m;
+                    
+                    // Regions to reads (sequins for synthetic)
+                    std::map<RegionID, Coverage> r2r;
+                };
+                
                 // Base level for a chromosome
                 BaseLevel bLvl;
                 
@@ -41,9 +47,6 @@ namespace Anaquin
 
             std::map<ChrID, Data> data;
 
-            // Histogram for all chromosomes
-            std::map<ChrID, Hist> hist;
-            
             std::map<ChrID, MergedIntervals<>> inters;
             
             /*
@@ -82,9 +85,6 @@ namespace Anaquin
             
             // Sequins to sensitivity
             std::map<GeneID, Proportion> g2s;
-
-            // Genes to reads
-            std::map<SequinID, Coverage> g2r;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

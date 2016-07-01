@@ -16,15 +16,10 @@ static VAlign::Stats init()
 
     VAlign::Stats stats;
     
-    stats.hist   = r.hist();
     stats.inters = r.mInters();
-
-    std::cout << "[INFO]: " << stats.inters.size() << " chromosomes in the reference" << std::endl;
-    
-    assert(!stats.hist.empty());
     assert(!stats.inters.empty());
 
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats.inters)
     {
         const auto &cID = i.first;
         
@@ -86,7 +81,7 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             assert(lGaps == 0 && rGaps == 0);
             
             stats.data[align.cID].tp++;
-            //stats.hist.at(align.cID).at(m->name())++;
+            x.aLvl.r2r[m->id()]++;
         }
         else
         {
@@ -141,17 +136,19 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
     
     if (isTP)
     {
-        x.aLvl.tp()++;
+        x.aLvl.m.tp()++;
     }
     else
     {
-        x.aLvl.fp()++;
+        x.aLvl.m.fp()++;
     }
 }
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
     auto stats = init();
+    
+    o.info("[INFO]: " + std::to_string(stats.inters.size()) + " chromosomes in the reference");
     o.analyze(file);
 
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
@@ -209,25 +206,21 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     Base gtp = 0;
     Base gfp = 0;
     
-    o.info("Analyzing " + toString(stats.hist.size()) + " chromsomes");
+    o.info("Analyzing " + toString(stats.inters.size()) + " chromsomes");
 
     // For each chromosome...
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats.inters)
     {
         const auto &cID = i.first;
         
         auto &x = stats.data.at(cID);
 
         // For each region... (whole chromosome for the whole genome sequencing)
-        for (const auto &j : i.second)
+        for (const auto &j : i.second.data())
         {
-            const auto &gID = j.first;
-
-            // Reads aligned to the region
-            stats.g2r[gID] = j.second;
-
+            const auto &gID  = j.first;
             const auto isSyn = Standard::isSynthetic(cID);
-            
+
             const auto m = stats.inters.at(cID).find(gID);
             assert(m);
 
@@ -300,8 +293,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
          * Aggregating alignment statistics for the whole chromosome
          */
         
-        const auto atp = x.aLvl.tp();
-        const auto afp = x.aLvl.fp();
+        const auto atp = x.aLvl.m.tp();
+        const auto afp = x.aLvl.m.fp();
         
         if (Standard::isSynthetic(cID))
         {
@@ -338,13 +331,13 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     }
 
-    assert(!stats.g2r.empty());
+    //assert(!stats.g2r.empty());
     assert(!stats.g2s.empty());
     assert(!stats.s2l.empty());
     assert(!stats.s2c.empty());
 
     assert(stats.s2l.size() == stats.s2c.size());
-    assert(stats.g2r.size() == stats.g2s.size());
+    //assert(stats.g2r.size() == stats.g2s.size());
 
     assert(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
     assert(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
@@ -479,7 +472,7 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.generate(file);
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
     o.writer->write((boost::format(format) % "ID"
                                            % "Length"
                                            % "Reads"
@@ -487,18 +480,26 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
                                            % "Pc").str());
 
     // For each chromosome...
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats.inters)
     {
+        const auto &cID = i.first;
+        
         // Only the synthetic chromosome...
-        if (Standard::isSynthetic(i.first))
+        if (Standard::isSynthetic(cID))
         {
-            for (const auto &j : i.second)
+            // For each sequin region...
+            for (const auto &j : i.second.data())
             {
-                o.writer->write((boost::format(format) % j.first
-                                                       % stats.s2l.at(j.first)
-                                                       % stats.g2r.at(j.first)
-                                                       % stats.g2s.at(j.first)
-                                                       % stats.g2p.at(j.first)).str());
+                const auto &sID = j.first;
+
+                // Data for the chromosome
+                const auto &x = stats.data.at(cID);
+                
+                o.writer->write((boost::format(format) % sID
+                                                       % stats.s2l.at(sID)
+                                                       % x.aLvl.r2r.at(sID)
+                                                       % stats.g2s.at(sID)
+                                                       % stats.g2p.at(sID)).str());
             }
         }
     }
