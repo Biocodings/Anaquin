@@ -221,7 +221,7 @@ namespace Anaquin
             assert(prop > 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
          
-            o.info("Subsampling: " + toString(prop));
+            o.info("Subsampling: " + std::to_string(prop));
             
             /*
              * Subsampling alignments. It's expected that coverage would roughly match between

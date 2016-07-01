@@ -2,10 +2,15 @@
 #define WRITER_SAM_HPP
 
 #include <htslib/sam.h>
+#include "data/path.hpp"
 #include "tools/samtools.hpp"
 #include "writers/writer.hpp"
 
+// Defined in the HTSLIB library
 extern "C" int sam_hdr_print(htsFile *fp, const bam_hdr_t *h);
+
+// Defined in the HTSLIB library
+extern "C" int __NO_SAM_FILE_WRITING__;
 
 namespace Anaquin
 {
@@ -23,6 +28,11 @@ namespace Anaquin
 
             inline void openTerm()
             {
+                // Disable file writing in the htslib library
+                __NO_SAM_FILE_WRITING__ = 1;
+                
+                _fp = sam_open(tmpFile().c_str(), "w");
+                
                 _term = true;
             }
         
@@ -54,7 +64,14 @@ namespace Anaquin
                         sam_hdr_print(_fp, h);
                     }
                     
-                    bam2print(x);
+                    // This won't write anything (__NO_SAM_FILE_WRITING__)
+                    if (sam_write1(_fp, h, b) == -1)
+                    {
+                        throw std::runtime_error("Failed to write in write()");
+                    }
+                    
+                    //bam2print(x);
+                    std::cout << _fp->line.s << std::endl;
                 }
                 else
                 {

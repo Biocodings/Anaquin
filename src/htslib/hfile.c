@@ -22,6 +22,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.  */
 
+// Defined for writer_sam.hpp
+int __NO_SAM_FILE_WRITING__ = 0;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -334,9 +337,21 @@ static ssize_t fd_write(hFILE *fpv, const void *buffer, size_t nbytes)
 {
     hFILE_fd *fp = (hFILE_fd *) fpv;
     ssize_t n;
+    
+    /*
+     * Ted Wong: Hack this function to disable file writing...
+     */
+    
     do {
-        n = fp->is_socket?  send(fp->fd, buffer, nbytes, 0)
-                         : write(fp->fd, buffer, nbytes);
+        if (__NO_SAM_FILE_WRITING__)
+        {
+            n = nbytes;
+        }
+        else
+        {
+            n = fp->is_socket?  send(fp->fd, buffer, nbytes, 0)
+                              : write(fp->fd, buffer, nbytes);
+        }
     } while (n < 0 && errno == EINTR);
     return n;
 }
