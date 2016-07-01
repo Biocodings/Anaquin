@@ -547,56 +547,53 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Synthetic: %12% indels\n"
                              "       Synthetic: %13% variants\n\n"
                              "       Detection Sensitivity: %14% (attomol/ul) (%15%)\n\n"
-                             "       Genome: %16% SNPs\n"
-                             "       Genome: %17% indels\n"
-                             "       Genome: %18% variants\n\n"
                              "-------Identification of synthetic variants\n\n"
-                             "       True Positive:  %19% SNPS\n"
-                             "       True Positive:  %20% indels\n"
-                             "       True Positive:  %21% variants\n\n"
-                             "       False Positive: %22% SNPs\n"
-                             "       False Positive: %23% indels\n"
-                             "       False Positive: %24% variants\n\n"
-                             "       False Negative: %25% SNPs\n"
-                             "       False Negative: %26% indels\n"
-                             "       False Negative: %27% variants\n\n"
+                             "       True Positive:  %16% SNPS\n"
+                             "       True Positive:  %17% indels\n"
+                             "       True Positive:  %18% variants\n\n"
+                             "       False Positive: %19% SNPs\n"
+                             "       False Positive: %20% indels\n"
+                             "       False Positive: %21% variants\n\n"
+                             "       False Negative: %22% SNPs\n"
+                             "       False Negative: %23% indels\n"
+                             "       False Negative: %24% variants\n\n"
                              "-------Diagnostic Performance (Synthetic)\n\n"
                              "       *Variants\n"
+                             "       Sensitivity: %25$.4f\n"
+                             "       Precision:   %26$.4f\n"
+                             "       FDR Rate:    %27$.4f\n\n"
+                             "       *SNVs\n"
                              "       Sensitivity: %28$.4f\n"
                              "       Precision:   %29$.4f\n"
                              "       FDR Rate:    %30$.4f\n\n"
-                             "       *SNVs\n"
+                             "       *Indels\n"
                              "       Sensitivity: %31$.4f\n"
                              "       Precision:   %32$.4f\n"
                              "       FDR Rate:    %33$.4f\n\n"
-                             "       *Indels\n"
-                             "       Sensitivity: %34$.4f\n"
-                             "       Precision:   %35$.4f\n"
-                             "       FDR Rate:    %36$.4f\n\n"
                              "-------Limit of Quantification (LOQ)\n"
                              "      *Estimated by piecewise segmented regression\n\n"
-                             "       Break: %37% attomol/ul (%38%)\n\n"
+                             "       Break: %34% attomol/ul (%35%)\n\n"
                              "      *Below LOQ\n"
-                             "       Intercept:   %39%\n"
-                             "       Slope:       %40%\n"
-                             "       Correlation: %41%\n"
-                             "       R2:          %42%\n"
-                             "       Genome:      %43%\n\n"
+                             "       Intercept:   %36%\n"
+                             "       Slope:       %37%\n"
+                             "       Correlation: %38%\n"
+                             "       R2:          %39%\n"
+                             "       Genome:      %40%\n\n"
                              "      *Above LOQ\n"
-                             "       Intercept:   %44%\n"
-                             "       Slope:       %45%\n"
-                             "       Correlation: %46%\n"
-                             "       R2:          %47%\n"
-                             "       Genome:      %48%\n\n"
+                             "       Intercept:   %41%\n"
+                             "       Slope:       %42%\n"
+                             "       Correlation: %43%\n"
+                             "       R2:          %44%\n"
+                             "       Genome:      %45%\n\n"
                              "-------Overall linear regression (log2 scale)\n\n"
-                             "      Correlation: %49%\n"
-                             "      Slope:       %50%\n"
-                             "      R2:          %51%\n"
-                             "      F-statistic: %52%\n"
-                             "      P-value:     %53%\n"
-                             "      SSM:         %54%, DF: %55%\n"
-                             "      SSE:         %56%, DF: %57%\n"
-                             "      SST:         %58%, DF: %59%\n";
+                             "      Correlation: %46%\n"
+                             "      Slope:       %47%\n"
+                             "      R2:          %48%\n"
+                             "      F-statistic: %49%\n"
+                             "      P-value:     %50%\n"
+                             "      SSM:         %51%, DF: %52%\n"
+                             "      SSE:         %53%, DF: %54%\n"
+                             "      SST:         %55%, DF: %56%\n";
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                   // 1
@@ -614,50 +611,47 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.vData.countVarSyn()  // 13
                                                 % stats.vars.limit.abund     // 14
                                                 % stats.vars.limit.id        // 15
-                                                % stats.vData.countSNPGen()  // 16
-                                                % stats.vData.countIndGen()  // 17
-                                                % stats.vData.countVarGen()  // 18
-                                                % stats.countSNP_TP_Syn()    // 19
-                                                % stats.countInd_TP_Syn()    // 20
-                                                % stats.countVar_TP_Syn()    // 21
-                                                % stats.countSNP_FP_Syn()    // 22
-                                                % stats.countInd_FP_Syn()    // 23
-                                                % stats.countVar_FP_Syn()    // 24
-                                                % stats.countSNP_FN_Syn()    // 25
-                                                % stats.countInd_FN_Syn()    // 26
-                                                % stats.countVar_FN_Syn()    // 27
-                                                % stats.countVarSN_Syn()     // 28
-                                                % stats.countVarPC_Syn()     // 29
-                                                % (1-stats.countVarPC_Syn()) // 30
-                                                % stats.countSNPSN_Syn()     // 31
-                                                % stats.countSNPPC_Syn()     // 32
-                                                % (1-stats.countSNPPC_Syn()) // 33
-                                                % stats.countIndSN_Syn()     // 34
-                                                % stats.countIndPC_Syn()     // 35
-                                                % (1-stats.countIndPC_Syn()) // 36
-                                                % ms.b                       // 37
-                                                % mm->id                     // 38
-                                                % ms.lInt                    // 39
-                                                % ms.lSl                     // 40
-                                                % ms.lr                      // 41
-                                                % ms.lR2                     // 42
-                                                % n_above                    // 43
-                                                % ms.rInt                    // 44
-                                                % ms.rSl                     // 45
-                                                % ms.rr                      // 46
-                                                % ms.rR2                     // 47
-                                                % n_below                    // 48
-                                                % lm.r                       // 49
-                                                % lm.m                       // 50
-                                                % lm.R2                      // 51
-                                                % lm.F                       // 52
-                                                % lm.p                       // 53
-                                                % lm.SSM                     // 54
-                                                % lm.SSM_D                   // 55
-                                                % lm.SSE                     // 56
-                                                % lm.SSE_D                   // 57
-                                                % lm.SST                     // 58
-                                                % lm.SST_D                   // 59
+                                                % stats.countSNP_TP_Syn()    // 16
+                                                % stats.countInd_TP_Syn()    // 17
+                                                % stats.countVar_TP_Syn()    // 18
+                                                % stats.countSNP_FP_Syn()    // 19
+                                                % stats.countInd_FP_Syn()    // 20
+                                                % stats.countVar_FP_Syn()    // 21
+                                                % stats.countSNP_FN_Syn()    // 22
+                                                % stats.countInd_FN_Syn()    // 23
+                                                % stats.countVar_FN_Syn()    // 24
+                                                % stats.countVarSN_Syn()     // 25
+                                                % stats.countVarPC_Syn()     // 26
+                                                % (1-stats.countVarPC_Syn()) // 27
+                                                % stats.countSNPSN_Syn()     // 28
+                                                % stats.countSNPPC_Syn()     // 29
+                                                % (1-stats.countSNPPC_Syn()) // 30
+                                                % stats.countIndSN_Syn()     // 31
+                                                % stats.countIndPC_Syn()     // 32
+                                                % (1-stats.countIndPC_Syn()) // 33
+                                                % ms.b                       // 34
+                                                % mm->id                     // 35
+                                                % ms.lInt                    // 36
+                                                % ms.lSl                     // 37
+                                                % ms.lr                      // 38
+                                                % ms.lR2                     // 39
+                                                % n_above                    // 40
+                                                % ms.rInt                    // 41
+                                                % ms.rSl                     // 42
+                                                % ms.rr                      // 43
+                                                % ms.rR2                     // 43
+                                                % n_below                    // 45
+                                                % lm.r                       // 46
+                                                % lm.m                       // 47
+                                                % lm.R2                      // 48
+                                                % lm.F                       // 49
+                                                % lm.p                       // 50
+                                                % lm.SSM                     // 51
+                                                % lm.SSM_D                   // 52
+                                                % lm.SSE                     // 53
+                                                % lm.SSE_D                   // 54
+                                                % lm.SST                     // 55
+                                                % lm.SST_D                   // 56
                          ).str());
     };
     
