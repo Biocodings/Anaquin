@@ -234,11 +234,10 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
     o.generate(file);
-    o.writer->open("VarDiscover_sequins.csv");
+    o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
                                            % "Pos"
                                            % "Label"
@@ -270,6 +269,12 @@ static void writeQuins(const FileName &file,
                 const auto m = r.findVar(cID, key);
                 assert(m);
                 
+                // Eg: "SNP"
+                const auto type = type2str(m->type());
+
+                // Unique ID for the variant
+                const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
+
                 /*
                  * Now we need to know the label for this reference variant
                  */
@@ -280,7 +285,7 @@ static void writeQuins(const FileName &file,
                     {
                         const auto &t = x.at(key);
                         
-                        o.writer->write((boost::format(format) % m->id
+                        o.writer->write((boost::format(format) % id
                                                                % m->l.start
                                                                % label
                                                                % (isnan(t.query.p) ? "-" : p2str(t.query.p))
@@ -290,7 +295,7 @@ static void writeQuins(const FileName &file,
                                                                % t.eFold
                                                                % t.eAllFreq
                                                                % t.query.alleleFreq()
-                                                               % type2str(m->type())).str());
+                                                               % type).str());
                         return true;
                     }
                     
@@ -309,7 +314,13 @@ static void writeQuins(const FileName &file,
                 const auto m = r.findVar(i.first, j.first);
                 assert(m);
                 
-                o.writer->write((boost::format(format) % m->id
+                // Eg: "SNP"
+                const auto type = type2str(m->type());
+                
+                // Unique ID for the variant
+                const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
+                
+                o.writer->write((boost::format(format) % id
                                                        % m->l.start
                                                        % "FN"
                                                        % "NA"
@@ -319,7 +330,7 @@ static void writeQuins(const FileName &file,
                                                        % r.findAFold(m->id)
                                                        % r.findAFreq(m->id)
                                                        % "NA"
-                                                       % type2str(m->type())).str());
+                                                       % type).str());
             }
         }
     }
@@ -719,7 +730,7 @@ void VDiscover::report(const FileName &file, const Options &o)
          * Generating VarDiscover_allele.R
          */
         
-        o.info("Generating VarDiscover_allele.R");
+        o.generate("VarDiscover_allele.R");
         o.writer->open("VarDiscover_allele.R");
         o.writer->write(RWriter::createScatterNeedLog("VarDiscover_sequins.csv",
                                                       "Allele Frequency",
