@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("BED_Synthetic")
 {
-    const auto r = bedData(Reader("data/VarQuin/AVA017.v032.bed"));
+    const auto r = bedData(Reader("data/VarQuin/AVA017.v001.bed"));
     
     REQUIRE(r.countGene()    == 36);
     REQUIRE(r.countGeneSyn() == 36);
