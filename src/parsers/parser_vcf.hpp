@@ -135,7 +135,7 @@ namespace Anaquin
                     continue;
                 }
                 
-                d.qual = stod(fields[Field::Qual]);
+                d.qual = fields[Field::Qual] != "." ? stod(fields[Field::Qual]) : NAN;
                 //d.p = 1.0 - (exp(stold(fields[Field::QUAL]) / -10.0));
                 
                 f(d, p);
