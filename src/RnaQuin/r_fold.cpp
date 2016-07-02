@@ -55,7 +55,8 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         
         if (!isnan(exp) && !isnan(t.logF))
         {
-            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+            // Remember, the higher the LFC the easier it's being detected
+            if (isnan(stats.limit.abund) || exp > stats.limit.abund)
             {
                 stats.limit.id = id;
                 stats.limit.abund = exp;

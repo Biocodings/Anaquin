@@ -98,9 +98,9 @@ namespace Anaquin
                                  "       Synthetic: %2% %3%\n"
                                  "       Mixture file: %4%\n\n"
                                  "-------%5%\n\n"
-                                 "       Synthetic: %6%\n"
-                                 "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                 "       Genome:    %9%\n\n"
+                                 "       Synthetic: %6% %3%\n"
+                                 "       Genome:    %7% %3%\n\n"
+                                 "       Detection Sensitivity: %8% (attomol/ul) (%9%)\n\n"
                                  "-------Linear regression (log2 scale)\n\n"
                                  "       Slope:       %10%\n"
                                  "       Correlation: %11%\n"
@@ -118,9 +118,9 @@ namespace Anaquin
                                                     % MixRef()          // 4
                                                     % title             // 5
                                                     % stats.n_syn       // 6
-                                                    % stats.limit.abund // 7
-                                                    % stats.limit.id    // 8
-                                                    % stats.n_gen       // 9
+                                                    % stats.n_gen       // 7
+                                                    % stats.limit.abund // 8
+                                                    % stats.limit.id    // 9
                                                     % lm.m              // 10
                                                     % lm.r              // 11
                                                     % lm.R2             // 12

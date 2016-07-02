@@ -272,9 +272,6 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].synProp());
         r.p_endo.add(mStats[i].genProp());
         
-        //r.n_ref = hist[i].size();
-        //r.n_det.add((unsigned)detect(hist[i]));
-        
         r.b.add(b);
         r.lr.add(inf.lr);
         r.rr.add(inf.rr);
