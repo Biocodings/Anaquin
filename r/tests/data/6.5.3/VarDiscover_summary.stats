@@ -1,0 +1,84 @@
+-------VarDiscover Output Results
+
+-------VarDiscover Output
+
+       Reference variant annotations:    AVA009.v032.vcf
+       Reference coordinate annotations: AVA017.v001.bed
+       Sequin mixture file:              MVA011.v013.csv
+       User identified variants:         variants.txt
+
+-------Reference variant annotations
+
+       Synthetic: 137 SNPs
+       Synthetic: 108 indels
+       Synthetic: 245 variants
+
+-------User identified variants
+
+       Synthetic: 21289 SNPs
+       Synthetic: 364 indels
+       Synthetic: 21653 variants
+
+       Detection Sensitivity: 0.00049 (attomol/ul) (D_3_12)
+
+-------Identification of synthetic variants
+
+       True Positive:  128 SNPS
+       True Positive:  55 indels
+       True Positive:  183 variants
+
+       False Positive: 21161 SNPs
+       False Positive: 309 indels
+       False Positive: 21470 variants
+
+       False Negative: 9 SNPs
+       False Negative: 53 indels
+       False Negative: 62 variants
+
+-------Diagnostic Performance (Synthetic)
+
+       *Variants
+       Sensitivity: 0.7469
+       Precision:   0.0085
+       FDR Rate:    0.9915
+
+       *SNVs
+       Sensitivity: 0.9343
+       Precision:   0.0060
+       FDR Rate:    0.9940
+
+       *Indels
+       Sensitivity: 0.5093
+       Precision:   0.1511
+       FDR Rate:    0.8489
+
+-------Limit of Quantification (LOQ)
+      *Estimated by piecewise segmented regression
+
+       Break: 0.00389 attomol/ul (D_1_9)
+
+      *Below LOQ
+       Intercept:   -7.45796
+       Slope:       0.233005
+       Correlation: 0.269504
+       R2:          0.0726324
+       Genome:      0
+
+      *Above LOQ
+       Intercept:   -0.182159
+       Slope:       1.0591
+       Correlation: 0.960971
+       R2:          0.923466
+       Genome:      0
+
+-------Overall linear regression (log2 scale)
+
+      Correlation: 0.964927
+      Slope:       0.983395
+      R2:          0.931084
+      F-statistic: 2445.38
+      P-value:     0
+      SSM:         1510.5, DF: 1
+      SSE:         111.803, DF: 181
+      SST:         1622.3, DF: 182
+
