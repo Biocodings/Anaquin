@@ -62,8 +62,8 @@ void RCuffdiff::report(const FileName &file, const Options &o)
                                                % (i.iID.empty() ? "-" : i.iID)
                                                % i.logF
                                                % "-"
-                                               % i.p
-                                               % i.q
+                                               % p2str(i.p)
+                                               % p2str(i.q)
                                                % "-").str());
     }
     

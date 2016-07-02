@@ -81,8 +81,8 @@ namespace Anaquin
                 // Eg: chrT
                 t.cID = temp[0];
                 
-                t.p = stof(toks[FPValue]);
-                t.q = stof(toks[FQValue]);
+                t.p = stold(toks[FPValue]);
+                t.q = stold(toks[FQValue]);
                 
                 if (t.status != DiffTest::Status::NotTested)
                 {
