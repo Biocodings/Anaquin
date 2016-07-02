@@ -17,21 +17,15 @@ plotROC <- function(data,
 
     data <- data$seqs
 
+    stopifnot(!is.null(refRats))
     stopifnot(!is.null(data$score))
     stopifnot(!is.null(data$label))
-    
-    if (is.null(data$expected))
-    {
-        data$expected <- 1
-    }
-    
+
+    # This is the sequin groups
+    data$ratio <- abs(round(data$expected))
+
     showAUC <- FALSE
     
-    if (is.null(data$ratio))
-    {
-        data$ratio <- abs(round(data$expected))
-    }
-
     data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label, score=data$score, ratio=data$ratio)
@@ -42,7 +36,15 @@ plotROC <- function(data,
 
     print('ROC Diagnostics: AUC')
 
+    # Query ratios (not including the references)
     uniqs <- unique(ratios)
+    
+    if (length(refRats) == 1)
+    {
+        uniqs <- uniqs[uniqs != refRats & !(uniqs %in% refRats)]
+    }
+
+    stopifnot(length(uniqs) > 0)
 
     #
     # The reference ratios need to have the same length as the query ratios. We can do some sanity
