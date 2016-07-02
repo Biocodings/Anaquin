@@ -9,7 +9,7 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
     FileWriter out(o.work);
     out.open(output);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f\t%6$.4f\t%7$.4f\t%8$.4f";
     out.write((boost::format(format) % "ChrID"
                                      % "GeneID"
                                      % "IsoformID"

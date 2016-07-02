@@ -83,11 +83,8 @@ namespace Anaquin
                         // Standard error for the log-fold change
                         t.logFSE = stod(toks[Field::Log2FoldSE]);
                         
-                        // Probability under the null hypothesis
                         t.p = stold(toks[Field::PValue]);
-                        
-                        // Probability adjusted for multi-testing
-                        t.q = stold(toks[Field::QValue]);                        
+                        t.q = stold(toks[Field::QValue]);
                     }
 
                     f(t, p);
