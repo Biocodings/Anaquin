@@ -102,8 +102,8 @@ namespace Anaquin
                                  "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
                                  "       Genome:    %9%\n\n"
                                  "-------Linear regression (log2 scale)\n\n"
-                                 "       Correlation: %10%\n"
-                                 "       Slope:       %11%\n"
+                                 "       Slope:       %10%\n"
+                                 "       Correlation: %11%\n"
                                  "       R2:          %12%\n"
                                  "       F-statistic: %13%\n"
                                  "       P-value:     %14%\n"
@@ -121,8 +121,8 @@ namespace Anaquin
                                                     % stats.limit.abund
                                                     % stats.limit.id
                                                     % stats.n_gen
-                                                    % lm.r
                                                     % lm.m
+                                                    % lm.r
                                                     % lm.R2
                                                     % lm.F
                                                     % lm.p
