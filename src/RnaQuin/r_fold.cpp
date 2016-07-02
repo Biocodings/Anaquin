@@ -4,16 +4,16 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include "RnaQuin/r_diff.hpp"
+#include "RnaQuin/r_fold.hpp"
 #include "parsers/parser_diff.hpp"
 
 using namespace Anaquin;
 
 extern Scripts PlotTROC();
 
-typedef RDiff::Metrics Metrics;
+typedef RFold::Metrics Metrics;
 
-std::vector<std::string> RDiff::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
+std::vector<std::string> RFold::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
     
@@ -37,7 +37,7 @@ std::vector<std::string> RDiff::classify(const std::vector<double> &qs, const st
     return r;
 }
 
-template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RDiff::Options &o)
+template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RFold::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -108,7 +108,7 @@ template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RD
     }
 }
 
-template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::Options &o)
+template <typename T> void update(RFold::Stats &stats, const T &x, const RFold::Options &o)
 {
     typedef DiffTest::Status Status;
     
@@ -123,11 +123,11 @@ template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::
     }
 }
 
-template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Functor f)
+template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Functor f)
 {
     const auto &r = Standard::instance().r_trans;
 
-    RDiff::Stats stats;
+    RFold::Stats stats;
 
     switch (o.metrs)
     {
@@ -143,9 +143,9 @@ template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Func
     return stats;
 }
 
-RDiff::Stats RDiff::analyze(const FileName &file, const Options &o)
+RFold::Stats RFold::analyze(const FileName &file, const Options &o)
 {
-    return calculate(o, [&](RDiff::Stats &stats)
+    return calculate(o, [&](RFold::Stats &stats)
     {
         ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
         {
@@ -154,7 +154,7 @@ RDiff::Stats RDiff::analyze(const FileName &file, const Options &o)
     });
 }
 
-void RDiff::report(const FileName &file, const Options &o)
+void RFold::report(const FileName &file, const Options &o)
 {
     const auto m = std::map<Metrics, std::string>
     {
@@ -168,7 +168,7 @@ void RDiff::report(const FileName &file, const Options &o)
         case Metrics::Isoform: { o.info("Isoform Differential"); break; }
     }
     
-    const auto stats = RDiff::analyze(file, o);
+    const auto stats = RFold::analyze(file, o);
     const auto units = m.at(o.metrs);
     
     o.info("Generating statistics");
@@ -180,13 +180,13 @@ void RDiff::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_summary.stats
      */
 
-    RDiff::generateSummary("RnaFoldChange_summary.stats", file, stats, o, units);
+    RFold::generateSummary("RnaFoldChange_summary.stats", file, stats, o, units);
 
     /*
      * Generating RnaFoldChange_sequins.csv
      */
 
-    RDiff::generateCSV("RnaFoldChange_sequins.csv", stats, o);
+    RFold::generateCSV("RnaFoldChange_sequins.csv", stats, o);
     
     /*
      * Generating RnaFoldChange_fold.R
@@ -217,15 +217,6 @@ void RDiff::report(const FileName &file, const Options &o)
     
     if (shouldLOD)
     {
-        RDiff::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
+        RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
     }
-
-    /*
-     * Generating MA plot
-     */
-    
-    //if (!o.counts.empty())
-    //{
-    //    RDiff::generateMA("RnaFoldChange_MA.R", "RnaFoldChange_counts.stats", o);
-    //}
 }

@@ -4,8 +4,8 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef R_DIFF_HPP
-#define R_DIFF_HPP
+#ifndef R_FOLD_HPP
+#define R_FOLD_HPP
 
 #include "data/dtest.hpp"
 #include <boost/format.hpp>
@@ -28,9 +28,7 @@ extern Anaquin::FileName GTFRef();
 
 namespace Anaquin
 {
-    class CountTable;
-    
-    struct RDiff : public Analyzer
+    struct RFold : public Analyzer
     {
         template <typename Stats, typename Options> static Scripts generateQuins(const Stats &stats, const Options &o)
         {
@@ -76,7 +74,7 @@ namespace Anaquin
         {
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(RDiff::generateQuins(stats, o));
+            o.writer->write(RFold::generateQuins(stats, o));
             o.writer->close();
         }
         

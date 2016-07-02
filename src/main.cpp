@@ -8,7 +8,7 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
-#include "RnaQuin/r_diff.hpp"
+#include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_viewer.hpp"
 #include "RnaQuin/r_report.hpp"
@@ -86,7 +86,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_ASSEMBLY  267
 #define TOOL_R_EXPRESS   268
 #define TOOL_R_CUFFLINK  269
-#define TOOL_R_DIFF      270
+#define TOOL_R_FOLD      270
 #define TOOL_T_NORM      271
 #define TOOL_R_IGV       272
 #define TOOL_R_COVERAGE  273
@@ -208,7 +208,7 @@ static std::map<Value, Tool> _tools =
     { "RnaAssembly",    TOOL_R_ASSEMBLY  },
     { "RnaExpression",  TOOL_R_EXPRESS   },
     { "RnaKExpress",    TOOL_R_KEXPRESS  },
-    { "RnaFoldChange",  TOOL_R_DIFF      },
+    { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaNorm",        TOOL_T_NORM      },
     { "RnaIGV",         TOOL_R_IGV       },
     { "RnaCoverage",    TOOL_R_COVERAGE  },
@@ -266,7 +266,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_DIFF,      { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
@@ -539,7 +539,7 @@ static Scripts manual(Tool tool)
         case TOOL_R_ALIGN:     { return RnaAlign();      }
         case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
         case TOOL_R_EXPRESS:   { return RnaExpression(); }
-        case TOOL_R_DIFF:      { return RnaFoldChange(); }
+        case TOOL_R_FOLD:      { return RnaFoldChange(); }
         case TOOL_V_ALIGN:     { return VarAlign();      }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
         case TOOL_V_DISCOVER:  { return VarDiscover();   }
@@ -1252,7 +1252,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_R_IGV:
         case TOOL_T_NORM:
-        case TOOL_R_DIFF:
+        case TOOL_R_FOLD:
         case TOOL_R_ALIGN:
         case TOOL_R_SLEUTH:
         case TOOL_R_DESEQ2:
@@ -1288,7 +1288,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_R_DIFF:
+                    case TOOL_R_FOLD:
                     {
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
@@ -1363,14 +1363,14 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_R_DIFF:
+                case TOOL_R_FOLD:
                 {
-                    RDiff::Options o;
+                    RFold::Options o;
 
                     o.metrs = ParserDiff::isIsoform(Reader(_p.inputs[0]))
-                                                            ? RDiff::Metrics::Isoform
-                                                            : RDiff::Metrics::Gene;
-                    analyze_1<RDiff>(OPT_U_FILES, o);
+                                                            ? RFold::Metrics::Isoform
+                                                            : RFold::Metrics::Gene;
+                    analyze_1<RFold>(OPT_U_FILES, o);
                     break;
                 }
 

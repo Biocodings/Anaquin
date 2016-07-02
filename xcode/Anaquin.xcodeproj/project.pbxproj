@@ -46,6 +46,7 @@
 		EF4270A21B213BF200C9ED4E /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A11B213BF200C9ED4E /* test.cpp */; };
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */; };
+		EF4F563F1D27C8EA00A570E7 /* r_fold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4F563E1D27C8EA00A570E7 /* r_fold.cpp */; };
 		EF5A3B6F1D162719008F2C9F /* bed_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5A3B6D1D162719008F2C9F /* bed_data.cpp */; };
 		EF5A3B701D162719008F2C9F /* vcf_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5A3B6E1D162719008F2C9F /* vcf_data.cpp */; };
 		EF65DDC21C6C3EC6003EE08A /* f_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF65DDB81C6C3EC6003EE08A /* f_coverage.cpp */; };
@@ -123,13 +124,12 @@
 		EFFC30C11D08F7AA00814E0F /* r_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30AF1D08F7AA00814E0F /* r_align.cpp */; };
 		EFFC30C21D08F7AA00814E0F /* r_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30B11D08F7AA00814E0F /* r_assembly.cpp */; };
 		EFFC30C31D08F7AA00814E0F /* r_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30B31D08F7AA00814E0F /* r_coverage.cpp */; };
-		EFFC30C41D08F7AA00814E0F /* r_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30B51D08F7AA00814E0F /* r_diff.cpp */; };
+		EFFC30C41D08F7AA00814E0F /* r_fold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30B51D08F7AA00814E0F /* r_fold.cpp */; };
 		EFFC30C51D08F7AA00814E0F /* r_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30B71D08F7AA00814E0F /* r_express.cpp */; };
 		EFFC30C71D08F7AA00814E0F /* r_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30BB1D08F7AA00814E0F /* r_kexpress.cpp */; };
 		EFFC30C81D08F7AA00814E0F /* r_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30BE1D08F7AA00814E0F /* r_sample.cpp */; };
 		EFFC30CF1D090A2000814E0F /* r_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CA1D090A2000814E0F /* r_align.cpp */; };
 		EFFC30D01D090A2000814E0F /* r_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CB1D090A2000814E0F /* r_assembly.cpp */; };
-		EFFC30D11D090A2000814E0F /* r_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CC1D090A2000814E0F /* r_diff.cpp */; };
 		EFFC30D21D090A2000814E0F /* r_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CD1D090A2000814E0F /* r_express.cpp */; };
 		EFFC30D31D090A2000814E0F /* r_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CE1D090A2000814E0F /* r_viewer.cpp */; };
 		EFFC30D61D090A3E00814E0F /* r_cuffdiff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30D41D090A3E00814E0F /* r_cuffdiff.cpp */; };
@@ -239,6 +239,7 @@
 		EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sam.cpp; path = ../tests/parsers/t_parser_sam.cpp; sourceTree = "<group>"; };
 		EF4E334E1CB924DC0067B16B /* pachter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = pachter.hpp; path = ../src/data/pachter.hpp; sourceTree = "<group>"; };
 		EF4E9E1C1C7B235800EE0A24 /* parser_cnvnator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_cnvnator.hpp; path = ../src/parsers/parser_cnvnator.hpp; sourceTree = "<group>"; };
+		EF4F563E1D27C8EA00A570E7 /* r_fold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_fold.cpp; path = ../tests/RnaQuin/r_fold.cpp; sourceTree = "<group>"; };
 		EF5180E41AE09A56007010F3 /* r_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_writer.hpp; path = ../src/writers/r_writer.hpp; sourceTree = "<group>"; };
 		EF5A3B6C1D16229F008F2C9F /* vcf_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = vcf_data.hpp; path = ../src/tools/vcf_data.hpp; sourceTree = "<group>"; };
 		EF5A3B6D1D162719008F2C9F /* bed_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bed_data.cpp; path = ../tests/tools/bed_data.cpp; sourceTree = "<group>"; };
@@ -379,8 +380,8 @@
 		EFFC30B21D08F7AA00814E0F /* r_assembly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_assembly.hpp; path = ../src/RnaQuin/r_assembly.hpp; sourceTree = "<group>"; };
 		EFFC30B31D08F7AA00814E0F /* r_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_coverage.cpp; path = ../src/RnaQuin/r_coverage.cpp; sourceTree = "<group>"; };
 		EFFC30B41D08F7AA00814E0F /* r_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_coverage.hpp; path = ../src/RnaQuin/r_coverage.hpp; sourceTree = "<group>"; };
-		EFFC30B51D08F7AA00814E0F /* r_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_diff.cpp; path = ../src/RnaQuin/r_diff.cpp; sourceTree = "<group>"; };
-		EFFC30B61D08F7AA00814E0F /* r_diff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_diff.hpp; path = ../src/RnaQuin/r_diff.hpp; sourceTree = "<group>"; };
+		EFFC30B51D08F7AA00814E0F /* r_fold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_fold.cpp; path = ../src/RnaQuin/r_fold.cpp; sourceTree = "<group>"; };
+		EFFC30B61D08F7AA00814E0F /* r_fold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_fold.hpp; path = ../src/RnaQuin/r_fold.hpp; sourceTree = "<group>"; };
 		EFFC30B71D08F7AA00814E0F /* r_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_express.cpp; path = ../src/RnaQuin/r_express.cpp; sourceTree = "<group>"; };
 		EFFC30B81D08F7AA00814E0F /* r_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_express.hpp; path = ../src/RnaQuin/r_express.hpp; sourceTree = "<group>"; };
 		EFFC30BB1D08F7AA00814E0F /* r_kexpress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_kexpress.cpp; path = ../src/RnaQuin/r_kexpress.cpp; sourceTree = "<group>"; };
@@ -391,7 +392,6 @@
 		EFFC30C01D08F7AA00814E0F /* r_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_viewer.hpp; path = ../src/RnaQuin/r_viewer.hpp; sourceTree = "<group>"; };
 		EFFC30CA1D090A2000814E0F /* r_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_align.cpp; path = ../tests/RnaQuin/r_align.cpp; sourceTree = "<group>"; };
 		EFFC30CB1D090A2000814E0F /* r_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_assembly.cpp; path = ../tests/RnaQuin/r_assembly.cpp; sourceTree = "<group>"; };
-		EFFC30CC1D090A2000814E0F /* r_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_diff.cpp; path = ../tests/RnaQuin/r_diff.cpp; sourceTree = "<group>"; };
 		EFFC30CD1D090A2000814E0F /* r_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_express.cpp; path = ../tests/RnaQuin/r_express.cpp; sourceTree = "<group>"; };
 		EFFC30CE1D090A2000814E0F /* r_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_viewer.cpp; path = ../tests/RnaQuin/r_viewer.cpp; sourceTree = "<group>"; };
 		EFFC30D41D090A3E00814E0F /* r_cuffdiff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_cuffdiff.cpp; path = ../src/RnaQuin/r_cuffdiff.cpp; sourceTree = "<group>"; };
@@ -672,8 +672,8 @@
 				EFAA9B551D0EDD3400AA210E /* r_cufflink.hpp */,
 				EFAA9B501D0EA95300AA210E /* r_DESeq2.cpp */,
 				EFAA9B511D0EA95300AA210E /* r_DESeq2.hpp */,
-				EFFC30B51D08F7AA00814E0F /* r_diff.cpp */,
-				EFFC30B61D08F7AA00814E0F /* r_diff.hpp */,
+				EFFC30B51D08F7AA00814E0F /* r_fold.cpp */,
+				EFFC30B61D08F7AA00814E0F /* r_fold.hpp */,
 				EFFC30B71D08F7AA00814E0F /* r_express.cpp */,
 				EFFC30B81D08F7AA00814E0F /* r_express.hpp */,
 				EF147F7A1D13EA2000BE4790 /* r_genome.cpp */,
@@ -867,8 +867,8 @@
 				EFFC30CA1D090A2000814E0F /* r_align.cpp */,
 				EFFC30CB1D090A2000814E0F /* r_assembly.cpp */,
 				EF320F911D27BB7300593F2A /* r_cuffdiff.cpp */,
-				EFFC30CC1D090A2000814E0F /* r_diff.cpp */,
 				EFFC30CD1D090A2000814E0F /* r_express.cpp */,
+				EF4F563E1D27C8EA00A570E7 /* r_fold.cpp */,
 				EFFC30CE1D090A2000814E0F /* r_viewer.cpp */,
 			);
 			name = RnaQuin;
@@ -1015,7 +1015,6 @@
 				EFB26DB71D19373400B08054 /* minters.cpp in Sources */,
 				EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */,
 				EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */,
-				EFFC30D11D090A2000814E0F /* r_diff.cpp in Sources */,
 				EFBC882B1C3E78F500B604A7 /* t_r_writer.cpp in Sources */,
 				EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */,
 				EF2615751B5FF9AD00BE8037 /* GFastaIndex.cpp in Sources */,
@@ -1036,13 +1035,14 @@
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,
 				EFFC30D21D090A2000814E0F /* r_express.cpp in Sources */,
 				EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */,
-				EFFC30C41D08F7AA00814E0F /* r_diff.cpp in Sources */,
+				EFFC30C41D08F7AA00814E0F /* r_fold.cpp in Sources */,
 				EFD6292B1C4CAE2400FDF262 /* r_writer.cpp in Sources */,
 				EF2615811B5FF9F500BE8037 /* cuffcompare.cpp in Sources */,
 				EF26157D1B5FF9DC00BE8037 /* gffread.cpp in Sources */,
 				EF2493661D22BF2500185C32 /* minters.cpp in Sources */,
 				EF72782F1CACEC5E0012648F /* l_norm.cpp in Sources */,
 				EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */,
+				EF4F563F1D27C8EA00A570E7 /* r_fold.cpp in Sources */,
 				EF4270A21B213BF200C9ED4E /* test.cpp in Sources */,
 				EF8F262A1D12B70200E9A441 /* v_flip.cpp in Sources */,
 				EF6B01D11C60975000D82709 /* t_parser_varscan.cpp in Sources */,
