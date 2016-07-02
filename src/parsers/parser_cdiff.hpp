@@ -69,7 +69,7 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", toks);
                 
-                t.id     = toks[FGeneID];
+                t.gID    = toks[FGeneID];
                 t.tID    = toks[FTestID];
                 t.status = tok2Status.at(toks[FStatus]);
                 t.logF   = stof(toks[FLogFold]);

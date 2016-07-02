@@ -13,10 +13,33 @@ namespace Anaquin
 {
     struct RCuffdiff
     {
+        struct Stats
+        {
+            struct Data
+            {
+                ChrID cID;
+                
+                GeneID gID;
+                
+                // Not always available
+                IsoformID iID;
+                
+                Fold logF;
+                
+                // P-value probability
+                Probability p;
+                
+                // Q-value probability
+                Probability q;
+            };
+            
+            std::vector<Data> data;
+        };
+        
         typedef AnalyzerOptions Options;
 
-        static void analyze(const FileName &, const FileName &, const Options &o = Options());
-        static void report(const FileName &, const Options &o = Options());
+        static Stats stats (const FileName &, const Options &o = Options());
+        static void  report(const FileName &, const Options &o = Options());
     };
 }
 

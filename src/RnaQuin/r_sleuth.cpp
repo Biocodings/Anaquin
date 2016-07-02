@@ -9,13 +9,10 @@ void RSleuth::analyze(const FileName &src, const FileName &output, const RSleuth
     FileWriter out(o.work);
     out.open(output);
     
-    /*
-     * Format: ChrID  Gene_ID  Fold_Change  Fold_SE  PValue  QValue  Average
-     */
-
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
     out.write((boost::format(format) % "ChrID"
-                                     % "IsoID"
+                                     % "GeneID"
+                                     % "IsoformID"
                                      % "FoldChange"
                                      % "FoldSE"
                                      % "PValue"
@@ -25,7 +22,8 @@ void RSleuth::analyze(const FileName &src, const FileName &output, const RSleuth
     ParserSleuth::parse(src, [&](const ParserSleuth::Data &x, const ParserProgress &)
     {
         out.write((boost::format(format) % x.cID
-                                         % x.id
+                                         % "-"
+                                         % x.gID
                                          % x.logF
                                          % x.logFSE
                                          % x.p

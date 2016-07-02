@@ -42,14 +42,14 @@ namespace Anaquin
 
                 if (p.i)
                 {
-                    t.id = toks[Field::Name];
+                    t.gID = toks[Field::Name];
                     
                     /*
                      * DESeq2 wouldn't give the chromosome name, only the name of the gene would be given.
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    if (s.findGene(ChrT, t.id))
+                    if (s.findGene(ChrT, t.gID))
                     {
                         t.cID = ChrT;
                     }

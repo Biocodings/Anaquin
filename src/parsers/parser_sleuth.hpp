@@ -43,7 +43,7 @@ namespace Anaquin
 
                 if (p.i)
                 {
-                    t.id  = toks[Field::TargetID];
+                    t.gID = toks[Field::TargetID];
                     t.cID = ChrT; // TODO: ref.match(t.id) ? ChrT : Endo;
 
                     if (toks[Field::PValue] == "NA" || toks[Field::QValue] == "NA")

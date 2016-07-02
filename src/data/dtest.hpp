@@ -15,9 +15,7 @@ namespace Anaquin
         };
 
         ChrID cID;
-        
-        // Subject, eg: GeneID, SequinID or ExonID
-        FeatureID id;
+        GeneID gID;
         
         // Log-fold ratio
         LogFold logF;
