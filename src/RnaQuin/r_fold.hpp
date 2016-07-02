@@ -112,26 +112,27 @@ namespace Anaquin
                                  "       SST:         %19%, DF: %20%\n";
             o.generate(file);
             o.writer->open(file);
-            o.writer->write((boost::format(summary) % src
-                                                    % n_syn
-                                                    % units
-                                                    % MixRef()
-                                                    % title
-                                                    % stats.n_syn
-                                                    % stats.limit.abund
-                                                    % stats.limit.id
-                                                    % stats.n_gen
-                                                    % lm.m
-                                                    % lm.r
-                                                    % lm.R2
-                                                    % lm.F
-                                                    % lm.p
-                                                    % lm.SSM
-                                                    % lm.SSM_D
-                                                    % lm.SSE
-                                                    % lm.SSE_D
-                                                    % lm.SST
-                                                    % lm.SST_D).str());
+            o.writer->write((boost::format(summary) % src               // 1
+                                                    % n_syn             // 2
+                                                    % units             // 3
+                                                    % MixRef()          // 4
+                                                    % title             // 5
+                                                    % stats.n_syn       // 6
+                                                    % stats.limit.abund // 7
+                                                    % stats.limit.id    // 8
+                                                    % stats.n_gen       // 9
+                                                    % lm.m              // 10
+                                                    % lm.r              // 11
+                                                    % lm.R2             // 12
+                                                    % lm.F              // 13
+                                                    % lm.p              // 14
+                                                    % lm.SSM            // 15
+                                                    % lm.SSM_D          // 16
+                                                    % lm.SSE            // 17
+                                                    % lm.SSE_D          // 18
+                                                    % lm.SST            // 19
+                                                    % lm.SST_D          // 20
+                             ).str());
             o.writer->close();
         }
         
