@@ -43,6 +43,9 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
 
     auto f = [&](const SequinID &id, Concent exp)
     {
+        if (t.p == 0) { o.warn(id + " gives p-value of 0"); }
+        if (t.q == 0) { o.warn(id + " gives q-value of 0"); }
+        
         stats.data[id].p    = t.p;
         stats.data[id].q    = t.q;
         stats.data[id].exp  = exp;
