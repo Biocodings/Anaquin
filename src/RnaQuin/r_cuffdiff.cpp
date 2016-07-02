@@ -58,7 +58,7 @@ void RCuffdiff::report(const FileName &file, const Options &o)
                                                % "Average").str());
         o.writer->write((boost::format(format) % i.cID
                                                % i.gID
-                                               % i.iID
+                                               % (i.iID.empty() ? "-" : i.iID)
                                                % i.logF
                                                % "-"
                                                % i.p
