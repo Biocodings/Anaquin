@@ -18,7 +18,8 @@ namespace Anaquin
         typedef enum
         {
             ChrID,
-            Name,
+            GeneID,
+            IsoformID,
             Log2Fold,
             Log2FoldSE,
             PValue,
@@ -30,8 +31,8 @@ namespace Anaquin
         {
             ::Anaquin::ChrID cID;
 
-            // Eg: genes or isoforms
-            std::string id;
+            ::Anaquin::GeneID gID;
+            ::Anaquin::IsoformID iID;
             
             double logF;
             
@@ -68,7 +69,8 @@ namespace Anaquin
                 if (p.i)
                 {
                     x.cID    = toks[Field::ChrID];
-                    x.id     = toks[Field::Name];
+                    x.gID    = toks[Field::GeneID];
+                    x.iID    = toks[Field::IsoformID] != "-" ? toks[Field::GeneID] : "";
                     x.p      = s2d(toks[Field::PValue]);
                     x.q      = s2d(toks[Field::QValue]);
                     x.mean   = s2d(toks[Field::Mean]);

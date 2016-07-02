@@ -66,20 +66,21 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
     {
         case Metrics::Gene:
         {
-            const auto match = r.findGene(t.cID, t.id);
+            assert(!t.gID.empty());
+            const auto match = r.findGene(t.cID, t.gID);
             
             if (match)
             {
-                stats.hist.at(t.cID).at(t.id)++;
+                stats.hist.at(t.cID).at(t.gID)++;
                 
-                const auto exp_1 = r.concent(t.id, Mix_1);
-                const auto exp_2 = r.concent(t.id, Mix_2);
+                const auto exp_1 = r.concent(t.gID, Mix_1);
+                const auto exp_2 = r.concent(t.gID, Mix_2);
                 
-                f(t.id, log2(exp_2 / exp_1));
+                f(t.gID, log2(exp_2 / exp_1));
             }
             else
             {
-                o.warn(t.id + " not found");
+                o.warn(t.gID + " not found");
             }
 
             break;
@@ -87,20 +88,21 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
 
         case Metrics::Isoform:
         {
-            const auto match = r.match(t.id);
+            assert(!t.iID.empty());
+            const auto match = r.match(t.iID);
             
             if (match)
             {
-                stats.hist.at(t.cID).at(t.id)++;
+                stats.hist.at(t.cID).at(t.iID)++;
                 
                 const auto e1 = match->concent(Mix_1);
                 const auto e2 = match->concent(Mix_2);
                 
-                f(t.id, log2(e2 / e1));
+                f(t.iID, log2(e2 / e1));
             }
             else
             {
-                o.warn(t.id + " not found");
+                o.warn(t.iID + " not found");
             }
             
             break;

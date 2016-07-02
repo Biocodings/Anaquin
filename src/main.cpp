@@ -150,7 +150,6 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
-#define OPT_R_GENO  808
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 
@@ -461,7 +460,6 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
 
-    { "rgen",    required_argument, 0, OPT_R_GENO },
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
@@ -709,11 +707,6 @@ template <typename Reference> void addRef(const ChrID &cID, Reference ref)
     }
 }
 
-/*
- * This provideds a convenient function for adding reference annotations. Genomic annotations are also
- * added if found.
- */
-
 template <typename Reference> void addRef(Reference ref)
 {
     for (const auto &i : _p.opts)
@@ -727,12 +720,6 @@ template <typename Reference> void addRef(Reference ref)
                 case OPT_R_IND:
                 {
                     continue;
-                }
-                    
-                case OPT_R_GENO:
-                {
-                    addRef(Geno, ref, _p.opts[opt]);
-                    break;
                 }
 
                 default:
@@ -1193,12 +1180,6 @@ void parse(int argc, char ** argv)
             case OPT_R_GTF:
             {
                 checkFile(_p.opts[opt] = _p.rFiles[opt] = _p.rAnnot = val);
-                break;
-            }
-                
-            case OPT_R_GENO:
-            {
-                checkFile(_p.opts[opt] = _p.rGeno = val);
                 break;
             }
 

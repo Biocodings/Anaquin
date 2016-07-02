@@ -46,16 +46,17 @@ void RCuffdiff::report(const FileName &file, const Options &o)
     o.generate("RnaCuffdiff_converted.txt");
     o.writer->open("RnaCuffdiff_converted.txt");
 
+    o.writer->write((boost::format(format) % "ChrID"
+                                           % "GeneID"
+                                           % "IsoformID"
+                                           % "FoldChange"
+                                           % "FoldSE"
+                                           % "PValue"
+                                           % "QValue"
+                                           % "Average").str());
+    
     for (const auto &i : stats.data)
     {
-        o.writer->write((boost::format(format) % "ChrID"
-                                               % "GeneID"
-                                               % "IsoformID"
-                                               % "FoldChange"
-                                               % "FoldSE"
-                                               % "PValue"
-                                               % "QValue"
-                                               % "Average").str());
         o.writer->write((boost::format(format) % i.cID
                                                % i.gID
                                                % (i.iID.empty() ? "-" : i.iID)
