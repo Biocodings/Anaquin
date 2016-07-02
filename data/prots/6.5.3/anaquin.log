@@ -1,0 +1,17 @@
+[INFO]: anaquin VarDiscover -o 6.5.3 -m MVA011.v013.csv -rvcf AVA009.v032.vcf -rbed AVA017.v001.bed -ufiles variants.txt 
+[INFO]: 01-07-2016 10:16:27
+[INFO]: Path: /data/Anaquin/6.5.3/6.5.3
+[INFO]: Reading VCF inputs
+[INFO]: Aggregating statistics
+[INFO]: TP: 183
+[INFO]: FP: 21470
+[INFO]: FN: 62
+[INFO]: Generating statistics
+[INFO]: Generating: VarDiscover_sequins.csv
+[INFO]: Generating: VarDiscover_summary.stats
+[INFO]: Generating: VarDiscover_queries.csv
+[INFO]: Generating: VarDiscover_ROC.R
+[INFO]: P-value for scoring
+[INFO]: Generating: VarDiscover_allele.R
+[INFO]: Generating: VarDiscover_LOD.R
+[INFO]: Completed. 1.64457 seconds.
