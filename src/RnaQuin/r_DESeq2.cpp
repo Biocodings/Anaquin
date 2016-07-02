@@ -9,7 +9,7 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
     FileWriter out(o.work);
     out.open(output);
     
-    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f\t%6$.4f\t%7$.4f\t%8$.4f";
+    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f\t%6%\t%7%f\t%8$.4f";
     out.write((boost::format(format) % "ChrID"
                                      % "GeneID"
                                      % "IsoformID"
@@ -26,8 +26,8 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
                                          % "-"
                                          % x.logF
                                          % x.logFSE
-                                         % x.p
-                                         % x.q
+                                         % p2str(x.p)
+                                         % p2str(x.q)
                                          % x.baseMean).str());
     });
 
