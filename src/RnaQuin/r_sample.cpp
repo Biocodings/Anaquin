@@ -1,8 +1,6 @@
 #include "tools/sample.hpp"
-#include <ss/maths/stats.hpp>
 #include "RnaQuin/r_sample.hpp"
 #include "writers/writer_sam.hpp"
-#include "parsers/parser_cufflink.hpp"
 
 using namespace Anaquin;
 
@@ -12,72 +10,17 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     
     o.info(file);
     
-    switch (o.soft)
-    {
-        case Software::None:
-        {
-            break;
-        }
-            
-        case Software::Cufflinks:
-        {
-            ParserCufflink::parse(file, [&](const ParserCufflink::Data &x, const ParserProgress &)
-            {
-                if (x.cID == ChrT)
-                {
-                    stats.n_syn++;
-                    stats.chrT.push_back(x.abund);
-                }
-                else
-                {
-                    stats.n_gen++;
-                    stats.geno.push_back(x.abund);
-                }
-            });
-            
-            break;
-        }
-    }
-
-    /*
-     * Calculate the normalization factor
-     */
-     
     switch (o.meth)
     {
-        case Method::_1:  { stats.prop = 0.01; break; }
-        case Method::_5:  { stats.prop = 0.05; break; }
-        case Method::_10: { stats.prop = 0.10; break; }
-        case Method::_15: { stats.prop = 0.15; break; }
-        case Method::_20: { stats.prop = 0.20; break; }
-        case Method::_50: { stats.prop = 0.50; break; }
-            
-            
-/*
-        case Method::Mean:
-        {
-            stats.genoBefore = SS::mean(stats.geno);
-            stats.chrTBefore = SS::mean(stats.chrT);
-            
-            if (stats.genoBefore >= stats.chrTAfter)
-            {
-                throw std::runtime_error("Sequencing depth for genomic transcripts is at least as high as sequins");
-            }
-            
-            stats.prop = stats.genoBefore / stats.chrTBefore;
-            
-            stats.chrTAfter  = stats.genoBefore;
-            stats.chrTBefore = stats.genoBefore;
-
-            break;
-        }
- */
+        case Method::Prop: { stats.p = o.p; break; }
     }
 
-    assert(stats.prop > 0 && stats.prop < 1.0);
-    
-    o.info("Proportion: " + toString(stats.prop));
-    
+    assert(stats.p > 0 && stats.p < 1.0);
+    o.info("Sampling proportion: " + std::to_string(stats.p));
+
+    // Perform subsampling
+    Sampler::subsample(file, stats.p, o);
+
     return stats;
 }
 
@@ -89,12 +32,7 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
     {
         switch (o.meth)
         {
-            case RSample::Method::_1:  { return "1%";  }
-            case RSample::Method::_5:  { return "5%";  }
-            case RSample::Method::_10: { return "10%"; }
-            case RSample::Method::_15: { return "15%"; }
-            case RSample::Method::_20: { return "20%"; }
-            case RSample::Method::_50: { return "50%"; }
+            case RSample::Method::Prop:  { return std::to_string(o.p); }
         }
     };
     
@@ -129,7 +67,7 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
                          "   Coverage (Synthetic): %12%\n"
                          "   Coverage (Genome):    %13%\n";
     
-    o.info("Generating " + file);
+    o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
                                             % "-"
@@ -156,36 +94,4 @@ void RSample::report(const FileName &file, const Options &o)
      */
     
     generateSummary("RnaSubsample_summary.stats", stats, o);
-    
-    /*
-     * Generating RnaSubsample_sampled.sam
-     */
-    
-    o.generate("RnaSubsample_sampled.sam");
-    
-    WriterSAM writer;
-    writer.open(o.work + "/RnaSubsample_sampled.sam");
-
-    SamplingTool sampler(1 - stats.prop);
-
-    ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
-    {
-        if (!info.p.i && !(info.p.i % 1000000))
-        {
-            o.wait(std::to_string(info.p.i));
-        }
-
-        const auto *b = reinterpret_cast<bam1_t *>(info.b);
-        
-        /*
-         * This is the key, randomly write the reads with certain probability
-         */
-        
-        if (Standard::isSynthetic(x.cID) || sampler.select(bam_get_qname(b)))
-        {
-            writer.write(x);
-        }
-    });
-    
-    writer.close();
 }

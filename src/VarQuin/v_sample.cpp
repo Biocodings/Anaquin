@@ -212,7 +212,6 @@ struct Subsampler
         }
         
         SamplingTool sampler(1.0 - prop);
-        
         SampleStats r;
         
         ParserSAM::parse(src, [&](ParserSAM::Data &x, const ParserSAM::Info &info)

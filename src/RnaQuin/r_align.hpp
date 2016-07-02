@@ -8,21 +8,9 @@
 #define R_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
-#include "data/alignment.hpp"
 
 namespace Anaquin
 {
-    struct UnknownAlignment
-    {
-        UnknownAlignment(const std::string &id, const Locus &l) : l(l) {}
-        
-        // Eg: HISEQ:132:C7F8BANXX:7:1116:11878:9591
-        std::string id;
-        
-        // The position of the alignment
-        Locus l;
-    };
-
     class RAlign : public Analyzer
     {
         public:
@@ -66,11 +54,7 @@ namespace Anaquin
                     AlignLevel  aLvl;
                     IntronLevel iLvl;
 
-                    std::map<ExonID, Counts> e2r;
-                    std::map<IntronID, Counts> i2r;
-                    
                     std::map<GeneID, Counts> g2r;
-                    std::map<GeneID, Confusion> g2i;
                 };
 
                 std::map<ChrID, Data> data;

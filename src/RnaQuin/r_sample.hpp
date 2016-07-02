@@ -7,33 +7,19 @@ namespace Anaquin
 {
     struct RSample
     {
-        enum class Software
-        {
-            None,
-            Cufflinks,
-        };
-        
-        /*
-         * Specififes how subsampling should be done.
-         */
-        
         enum class Method
         {
-            _1,
-            _5,
-            _10,
-            _15,
-            _20,
-            _50
+            Prop
         };
 
         struct Options : public AnalyzerOptions
         {
             Options() {}
             
-            Software soft;
+            // Defined if the method is proportion
+            Proportion p;
             
-            Method meth = Method::_10;
+            Method meth = Method::Prop;
         };
 
         struct Stats : public MappingStats
@@ -53,7 +39,7 @@ namespace Anaquin
             Coverage chrTAfter;
             
             // Proportion required for subsampling
-            Proportion prop;
+            Proportion p;
         };
 
         static Stats stats(const FileName &, const Options &o = Options());
