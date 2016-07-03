@@ -1,0 +1,27 @@
+-------RnaFoldChange Output
+
+       Summary for input: DESeq2.txt
+
+-------Reference Annotations
+
+       Synthetic: 78 genes
+       Mixture file: MTR004.v013.csv
+
+-------Genes Expressed
+
+       Synthetic: 76 genes
+       Genome:    60500 genes
+
+       Detection Sensitivity: 4 (attomol/ul) (R1_43)
+
+-------Linear regression (log2 scale)
+
+       Slope:       0.64319
+       Correlation: 0.797842
+       R2:          0.636551
+       F-statistic: 129.605
+       P-value:     0
+       SSM:         180.632, DF: 1
+       SSE:         103.134, DF: 74
+       SST:         283.766, DF: 75
+

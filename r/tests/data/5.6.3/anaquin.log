@@ -1,0 +1,12 @@
+[INFO]: anaquin RnaFoldChange -o 5.6.3 -m MTR004.v013.csv -ufiles DESeq2.txt 
+[INFO]: 03-07-2016 04:22:31
+[INFO]: Path: /data/Anaquin/5.6.3/5.6.3
+[INFO]: Gene Differential
+[INFO]: Parsing input files
+[INFO]: Generating statistics
+[INFO]: Generating: RnaFoldChange_summary.stats
+[INFO]: Generating: RnaFoldChange_sequins.csv
+[INFO]: Generating: RnaFoldChange_fold.R
+[INFO]: Generating: RnaFoldChange_ROC.R
+[INFO]: Generating: RnaFoldChange_LODR.R
+[INFO]: Completed. 2.0353 seconds.
