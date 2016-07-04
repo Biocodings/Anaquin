@@ -61,8 +61,9 @@ namespace Anaquin
     typedef long long Depth;
     typedef long long Counts;
     
-    const ChrID ChrT = "chrT";
-    const ChrID Geno = "geno";
+    const ChrID ChrT  = "chrT";
+    const ChrID Geno  = "geno";
+    const ChrID ChrIS = "chrIS";
     
     enum Mixture
     {

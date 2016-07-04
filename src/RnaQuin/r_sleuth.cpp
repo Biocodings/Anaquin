@@ -8,7 +8,7 @@ void RSleuth::analyze(const FileName &src, const FileName &output, const RSleuth
 {
     FileWriter out(o.work);
     out.open(output);
-    
+
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
     out.write((boost::format(format) % "ChrID"
                                      % "GeneID"
@@ -18,12 +18,12 @@ void RSleuth::analyze(const FileName &src, const FileName &output, const RSleuth
                                      % "PValue"
                                      % "QValue"
                                      % "Average").str());
-
+ 
     ParserSleuth::parse(src, [&](const ParserSleuth::Data &x, const ParserProgress &)
     {
         out.write((boost::format(format) % x.cID
-                                         % "-"
-                                         % x.gID
+                                         % (!x.gID.empty() ? x.gID : "-")
+                                         % x.iID
                                          % x.logF
                                          % x.logFSE
                                          % x.p

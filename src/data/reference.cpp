@@ -592,6 +592,11 @@ Concent TransRef::concent(const GeneID &gID, Mixture m) const
     throw "Failed to find gene [" + gID + "] for mixture";
 }
 
+GeneID TransRef::s2g(const SequinID &sID) const
+{
+    return _impl->gData.at(ChrT).t2g.at(sID);
+}
+
 const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
 {
     assert(!_impl->gData.at(cID).g2d.empty());

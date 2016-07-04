@@ -71,8 +71,8 @@ namespace Anaquin
                     x.cID    = toks[Field::ChrID];
                     x.gID    = toks[Field::GeneID];
                     x.iID    = toks[Field::IsoformID] != "-" ? toks[Field::GeneID] : "";
-                    x.p      = s2d(toks[Field::PValue]);
-                    x.q      = s2d(toks[Field::QValue]);
+                    x.p      = stold(toks[Field::PValue]);
+                    x.q      = stold(toks[Field::QValue]);
                     x.mean   = s2d(toks[Field::Mean]);
                     x.logF   = s2d(toks[Field::Log2Fold]);
                     x.logFSE = s2d(toks[Field::Log2FoldSE]);

@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("RnaFoldChange_Workflow")
 {
-    Test::RnaFoldChange();
+    Test::clear();
     
     const auto r = Test::test("RnaFoldChange -o 5.5.3 -m data/RnaQuin/MTR004.v013.csv -ufiles tests/data/gene_exp.txt");
 

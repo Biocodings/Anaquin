@@ -558,6 +558,8 @@ namespace Anaquin
             // Concentration at the gene level
             Concent concent(const GeneID &, Mixture m = Mix_1) const;
 
+            GeneID s2g(const SequinID &) const;
+        
             const GeneData *findGene(const ChrID &, const GeneID &) const;
 
         protected:

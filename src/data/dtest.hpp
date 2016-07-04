@@ -15,7 +15,9 @@ namespace Anaquin
         };
 
         ChrID cID;
+
         GeneID gID;
+        IsoformID iID;
         
         // Log-fold ratio
         LogFold logF;

@@ -5,6 +5,7 @@
 #include "data/tokens.hpp"
 #include "data/standard.hpp"
 #include "stats/analyzer.hpp"
+#include "tools/gtf_data.hpp"
 
 namespace Anaquin
 {
@@ -29,13 +30,15 @@ namespace Anaquin
         
         static void parse(const FileName &file, std::function<void (const Data &, const ParserProgress &)> f)
         {
-            Reader r(file);
+            const auto &r = Standard::instance().r_trans;
+
+            Reader read(file);
             ParserProgress p;
             
             std::string line;
             std::vector<std::string> toks;
             
-            while (r.nextLine(line))
+            while (read.nextLine(line))
             {
                 Tokens::split(line, ",", toks);
 
@@ -43,9 +46,14 @@ namespace Anaquin
 
                 if (p.i)
                 {
-                    t.gID = toks[Field::TargetID];
-                    t.cID = ChrT; // TODO: ref.match(t.id) ? ChrT : Endo;
+                    t.iID = toks[Field::TargetID];
+                    
+                    // Can we match to the sequins?
+                    auto m = r.match(t.iID);
 
+                    t.cID = m ? ChrT : Geno;
+                    t.gID = m ? r.s2g(t.iID) : "";
+                    
                     if (toks[Field::PValue] == "NA" || toks[Field::QValue] == "NA")
                     {
                         t.status = DiffTest::Status::NotTested;
