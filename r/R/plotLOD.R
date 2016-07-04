@@ -306,9 +306,13 @@ plotLOD <- function(data, ...,
     # Fill out optional graphical parameters
     #
     
-    if (is.null(x$p_size)) { x$p_size <- 3 }
-    
-    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size, alpha=0.5) + theme_bw()
+    if (is.null(x$p_size))   { x$p_size   <- 3 }
+    if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
+
+    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) +
+                        geom_point(size=x$p_size, alpha=0.5) +
+                        labs(colour=x$legTitle)              +
+                        theme_bw()
     
     if (is.null(x$xBreaks))
     {
