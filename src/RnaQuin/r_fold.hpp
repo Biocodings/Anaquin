@@ -77,65 +77,7 @@ namespace Anaquin
             o.writer->write(RFold::generateQuins(stats, o));
             o.writer->close();
         }
-        
-        template <typename Stats, typename Options> static void generateSummary(const FileName &file,
-                                                                                const FileName &src,
-                                                                                const Stats &stats,
-                                                                                const Options &o,
-                                                                                const Units &units)
-        {
-            const auto &r = Standard::instance().r_trans;
-            const auto lm = stats.linear(false);
 
-            // No reference coordinate annotation given here
-            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
-
-            const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
-
-            const auto summary = "-------RnaFoldChange Output\n\n"
-                                 "       Summary for input: %1%\n\n"
-                                 "-------Reference Annotations\n\n"
-                                 "       Synthetic: %2% %3%\n"
-                                 "       Mixture file: %4%\n\n"
-                                 "-------%5%\n\n"
-                                 "       Synthetic: %6% %3%\n"
-                                 "       Genome:    %7% %3%\n\n"
-                                 "       Detection Sensitivity: %8% (attomol/ul) (%9%)\n\n"
-                                 "-------Linear regression (log2 scale)\n\n"
-                                 "       Slope:       %10%\n"
-                                 "       Correlation: %11%\n"
-                                 "       R2:          %12%\n"
-                                 "       F-statistic: %13%\n"
-                                 "       P-value:     %14%\n"
-                                 "       SSM:         %15%, DF: %16%\n"
-                                 "       SSE:         %17%, DF: %18%\n"
-                                 "       SST:         %19%, DF: %20%\n";
-            o.generate(file);
-            o.writer->open(file);
-            o.writer->write((boost::format(summary) % src               // 1
-                                                    % n_syn             // 2
-                                                    % units             // 3
-                                                    % MixRef()          // 4
-                                                    % title             // 5
-                                                    % stats.n_syn       // 6
-                                                    % stats.n_gen       // 7
-                                                    % stats.limit.abund // 8
-                                                    % stats.limit.id    // 9
-                                                    % lm.m              // 10
-                                                    % lm.r              // 11
-                                                    % lm.R2             // 12
-                                                    % lm.F              // 13
-                                                    % lm.p              // 14
-                                                    % lm.SSM            // 15
-                                                    % lm.SSM_D          // 16
-                                                    % lm.SSE            // 17
-                                                    % lm.SSE_D          // 18
-                                                    % lm.SST            // 19
-                                                    % lm.SST_D          // 20
-                             ).str());
-            o.writer->close();
-        }
-        
         enum class Metrics
         {
             Gene,
