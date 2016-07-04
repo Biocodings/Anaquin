@@ -24,8 +24,7 @@ namespace Anaquin
         
         static void transA();
         static void transB();
-        static void transF();
-        static void transAB();
+        static void RnaFoldChange();
 
         /*
          * Variant analayis

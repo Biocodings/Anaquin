@@ -74,18 +74,9 @@ void Test::transB()
     Standard::instance().r_trans.finalize();
 }
 
-void Test::transF()
+void Test::RnaFoldChange()
 {
     Test::clear();
-    Standard::instance().addTRef(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(TransDataMixF(), DataMode::String));
-    Standard::instance().r_trans.finalize();
-}
-
-void Test::transAB()
-{
-    Test::clear();
-    Standard::instance().addTRef(Reader(TransStandGTF(),  DataMode::String));
     Standard::instance().addTDMix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
