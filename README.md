@@ -18,8 +18,7 @@ The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&r
 
 The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute.
 
-Overview
-========
+## Overview
 
 <img src='http://www.anaquin.org/wp-content/uploads/2015/07/About_Intro_F1_3.svg'>
 
@@ -33,8 +32,7 @@ By combining sequins at different concentrations to from a mixture, we can also 
 
 Finally, to aid in the analysis of sequins, we have also developed a software toolkit we call <b>Anaquin</b>. This contains a wide range of tools for some of the most common analysis or problems that use sequins. This includes quality control and troubleshooting steps in your NGS pipeline, providing quantitative measurements of sequence libraries, or assess third-party bioinformatic software. However, this toolkit is simply a starting point to a huge range of statistical analysis made possible by sequins.
 
-Dependencies
-============
+## Dependencies
 
 <ul>
 <li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
@@ -44,8 +42,7 @@ Dependencies
 
 The source code requires a C++11 compiler to build.
 
-Bioinformatics
-============
+## Bioinformatics
 
 <ul>
 <li>RNA-Seq</li>
@@ -55,8 +52,7 @@ Bioinformatics
 <li>Gene Fusion</li>
 </ul>
 
-Features
-============
+## Features
 
 <ul>
 <li> Statistical analysis</li>
@@ -66,8 +62,7 @@ Features
 <li> R-integration</li>
 </ul>
 
-Visualizations
-============
+## Visualizations
 
 <ul>
 <li> Scatter Plot</li>
