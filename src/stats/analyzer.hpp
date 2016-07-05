@@ -138,7 +138,7 @@ namespace Anaquin
         {
             return update(t, [&](const T &t)
             {
-                return t.cID != ChrT;
+                return !Standard::isSynthetic(t.cID);
             });
         }
     };
