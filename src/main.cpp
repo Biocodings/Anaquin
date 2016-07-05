@@ -261,7 +261,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_R_IGV,       { OPT_U_FILES } },
-    { TOOL_R_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_SUBSAMPLE, { OPT_U_FILES } },
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
@@ -359,6 +359,8 @@ struct Parsing
     std::string command;
 
     unsigned fuzzy = 0;
+    
+    Proportion sampled = NAN;
     
     Tool tool = 0;
     
@@ -738,7 +740,7 @@ static void saveRef()
     {
         if (CHECK_REF(i.first) && !i.second.empty())
         {
-            system(("cp " + i.second + " " + __output__).c_str());
+            //system(("cp " + i.second + " " + __output__).c_str());
         }
     }
 }
@@ -1123,12 +1125,8 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
-
-            case OPT_METHOD:
-            {
-                break;
-            }
+            case OPT_FUZZY:  { parseInt(val, _p.fuzzy); break; }
+            case OPT_METHOD: { parseDouble(_p.opts[opt] = val, _p.sampled); break; }
 
             /*
              * The following options can only be validated by the tool
@@ -1254,7 +1252,7 @@ void parse(int argc, char ** argv)
                 //__hack__ = true;
             }
             
-            if (_p.tool != TOOL_R_IGV)
+            if (_p.tool != TOOL_R_IGV && _p.tool != TOOL_R_SUBSAMPLE)
             {
                 switch (_p.tool)
                 {
@@ -1300,11 +1298,18 @@ void parse(int argc, char ** argv)
                 case TOOL_R_DESEQ2:    { analyze_1<RDESeq2>(OPT_U_FILES);   break; }
                 case TOOL_R_COVERAGE:  { analyze_1<RCoverage>(OPT_U_FILES); break; }
                 case TOOL_R_ASSEMBLY:  { analyze_1<RAssembly>(OPT_U_FILES); break; }
-                case TOOL_R_SUBSAMPLE: { analyze_1<RSample>(OPT_U_FILES);   break; }
                 case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
                 case TOOL_R_CUFFLINK:  { analyze_1<RCufflink>(OPT_U_FILES); break; }
                 case TOOL_R_KALLISTO:  { analyze_1<RKallisto>(OPT_U_FILES); break; }
 
+                case TOOL_R_SUBSAMPLE:
+                {
+                    RSample::Options o;
+                    o.p = _p.sampled;
+                    analyze_1<RSample>(OPT_U_FILES, o);
+                    break;
+                }
+                    
                 case TOOL_R_KEXPRESS:
                 {
                     TKExpress::Options o;

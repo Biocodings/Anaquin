@@ -4,3 +4,11 @@
 
 using namespace Anaquin;
 
+TEST_CASE("RSample_QuickCheck")
+{
+    Test::clear();
+    
+    const auto r = Test::test("RnaSample -method -25 -ufiles tests/data/sampled.bam");
+    
+    REQUIRE(r.status == 0);
+}

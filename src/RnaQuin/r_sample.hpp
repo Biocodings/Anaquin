@@ -28,18 +28,27 @@ namespace Anaquin
             typedef std::vector<double> GenoData;
             
             // Statistics for the sequins
-            ChrTData chrT;
+            ChrTData syn;
             
             // Statistics for the genome
             GenoData geno;
             
-            Coverage genoBefore;
-            Coverage chrTBefore;
-            Coverage genoAfter;
-            Coverage chrTAfter;
+            /*
+             * Coverage before subsampling
+             */
+            
+            Coverage gBefore;
+            Coverage sBefore;
+            
+            /*
+             * Coverage after subsampling
+             */
+            
+            Coverage gAfter;
+            Coverage sAfter;
             
             // Proportion required for subsampling
-            Proportion p;
+            Proportion p = NAN;
         };
 
         static Stats stats(const FileName &, const Options &o = Options());

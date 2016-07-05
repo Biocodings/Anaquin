@@ -77,11 +77,11 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
                                             % "??"
                                             % meth2Str()
                                             % "??"
-                                            % stats.chrTBefore
-                                            % stats.genoBefore
+                                            % stats.sBefore
+                                            % stats.gBefore
                                             % "??"
-                                            % stats.chrTAfter
-                                            % stats.genoAfter).str());
+                                            % stats.sAfter
+                                            % stats.gAfter).str());
     o.writer->close();
 }
 
