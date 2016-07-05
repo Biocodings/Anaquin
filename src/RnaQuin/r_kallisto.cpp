@@ -27,7 +27,7 @@ void RKallisto::analyze(const FileName &src, const FileName &output, const RKall
 
         if (r.match(x.id))
         {
-            out.write((boost::format(format) % "chrT"
+            out.write((boost::format(format) % ChrIS
                                              % x.id
                                              % "-"
                                              % "-"
