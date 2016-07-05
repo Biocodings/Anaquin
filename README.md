@@ -66,5 +66,13 @@ Features
 <li> R-integration</li>
 </ul>
 
+Visualizations
+============
 
-
+<ul>
+<li> Scatter Plot</li>
+<li> LODR Curves</li>
+<li> ROC Plots</li>
+<li> Splicing Plots</li>
+<li> Folding Plots</li>
+</ul>
