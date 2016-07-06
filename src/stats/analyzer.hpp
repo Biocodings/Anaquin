@@ -40,6 +40,11 @@ namespace Anaquin
         return (x == "NA" || x == "-") ? NAN : stod(x);
     }
     
+    inline Probability s2p(const std::string &x)
+    {
+        return (x == "NA" || x == "-") ? NAN : stold(x);
+    }
+    
     template <typename T> Counts count(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
