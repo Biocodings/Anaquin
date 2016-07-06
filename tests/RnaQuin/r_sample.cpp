@@ -10,7 +10,7 @@ TEST_CASE("RSample_Negative")
     
     const auto r = Test::test("RnaSubsample -method -0.5 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid command. -0.5 not expected for option -method. Sampling fraction must be greater than zero.");
+    REQUIRE(r.error == "Invalid command. -0.5 not expected for option -method. Sampling fraction must be greater than zero.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -20,7 +20,7 @@ TEST_CASE("RSample_Zero")
     
     const auto r = Test::test("RnaSubsample -method 0.00 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid command. Unknown tool: RnaSample. Please check the user manual and try again.");
+    REQUIRE(r.error == "Invalid command. 0.00 not expected for option -method. Sampling fraction must be greater than zero.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -30,7 +30,7 @@ TEST_CASE("RSample_One")
     
     const auto r = Test::test("RnaSubsample -method 1.00 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid command. Unknown tool: RnaSample. Please check the user manual and try again.");
+    REQUIRE(r.error == "Invalid command. 1.00 not expected for option -method. Sampling fraction must be less than one.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -40,6 +40,6 @@ TEST_CASE("RSample_Ten")
     
     const auto r = Test::test("RnaSubsample -method 10 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid command. Unknown tool: RnaSample. Please check the user manual and try again.");
+    REQUIRE(r.error == "Invalid command. 10 not expected for option -method. Sampling fraction must be less than one.\n");
     REQUIRE(r.status == 1);
 }

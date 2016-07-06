@@ -21,8 +21,8 @@ TEST_CASE("VSubsample_ZeroProp")
     
     REQUIRE(r.n_gen == 421855);
     REQUIRE(r.n_syn == 32313);
-    REQUIRE(r.syn.size() == 36);
-    REQUIRE(r.gen.size() == 36);
-    REQUIRE(r.synC == Approx(36));
-    REQUIRE(r.genC == Approx(36));
+    REQUIRE(r.syn.size() == 1);
+    REQUIRE(r.gen.size() == 1);
+    REQUIRE(r.synC == Approx(78.3321393416));
+    REQUIRE(r.genC == Approx(0.0112222222));
 }
