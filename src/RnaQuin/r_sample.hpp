@@ -1,6 +1,7 @@
 #ifndef R_SAMPLE_HPP
 #define R_SAMPLE_HPP
 
+#include "tools/sample.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -18,35 +19,17 @@ namespace Anaquin
             
             // Defined if the method is proportion
             Proportion p;
-            
+
             Method meth = Method::Prop;
         };
 
         struct Stats : public MappingStats
         {
-            typedef std::vector<double> ChrTData;
-            typedef std::vector<double> GenoData;
+            typedef Sampler::SGReads SGReads;
             
-            // Statistics for the sequins
-            ChrTData syn;
-            
-            // Statistics for the genome
-            GenoData geno;
-            
-            /*
-             * Coverage before subsampling
-             */
-            
-            Coverage gBefore;
-            Coverage sBefore;
-            
-            /*
-             * Coverage after subsampling
-             */
-            
-            Coverage gAfter;
-            Coverage sAfter;
-            
+            // Reads before and after subsampling
+            SGReads before, after;
+
             // Proportion required for subsampling
             Proportion p = NAN;
         };

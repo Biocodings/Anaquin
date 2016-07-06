@@ -4,8 +4,10 @@
 
 using namespace Anaquin;
 
-void Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, User *user)
+Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, User *user)
 {
+    Sampler::Stats stats;
+    
     assert(p > 0.0 && p < 1.0);    
     Random r(1.0 - p);
 
@@ -20,6 +22,15 @@ void Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOption
         }
         
         const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
+
+        if (shouldWrite)
+        {
+            stats.before.gen++;
+        }
+        else
+        {
+            stats.before.syn++;
+        }
         
         // This is the key, randomly write the reads with certain probability
         if (shouldWrite || r.select(x.name))
@@ -38,6 +49,7 @@ void Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOption
             
             if (!shouldWrite)
             {
+                stats.after.syn++;
                 o.logInfo("Sampled " + x.name);
             }
 
@@ -46,5 +58,10 @@ void Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOption
         }
     }, true);
     
+    assert(stats.before.syn >= stats.after.syn);    
+    stats.after.gen = stats.before.gen;
+    
     w.close();
+    
+    return stats;
 }

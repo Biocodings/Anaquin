@@ -71,7 +71,7 @@ namespace Anaquin
                     }
                     
                     //bam2print(x);
-                    std::cout << _fp->line.s << std::endl;
+                    std::cout << _fp->line.s; //<< std::endl;
                 }
                 else
                 {

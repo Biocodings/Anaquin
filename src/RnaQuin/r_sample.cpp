@@ -19,8 +19,11 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Sampling proportion: " + std::to_string(stats.p));
 
     // Perform subsampling
-    Sampler::subsample(file, stats.p, o);
+    const auto r = Sampler::subsample(file, stats.p, o);
 
+    stats.after  = r.after;
+    stats.before = r.before;
+    
     return stats;
 }
 
@@ -36,52 +39,26 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
         }
     };
     
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   ***\n"
-                         "   *** Proportion of alignments mapped to the synthetic and genome\n"
-                         "   ***\n\n"
-                         "   Unmapped:  %2% reads\n"
-                         "   Synthetic: %3% reads\n"
-                         "   Genome:    %4% reads\n\n"
-                         "   ***\n"
-                         "   *** Reference annotation\n"
-                         "   ***\n\n"
-                         "   File: %5%\n\n"
-                         "   Reference: %6% sequins\n\n"
-                         "   ***                                               \n"
-                         "   *** How the coverage is calculated?               \n"
-                         "   ***                                               \n"
-                         "   *** Please refer to the documentation for details \n"
-                         "   ***                                               \n\n"
-                         "   Method: %7%\n\n"
-                         "   ***                                     \n"
-                         "   ***    Statistics before subsampling    \n"
-                         "   ***                                     \n\n"
-                         "   Aligns: %8%\n"
-                         "   Coverage (Synthetic): %9%\n"
-                         "   Coverage (Genome):    %10%\n\n"
-                         "   ***                                     \n"
-                         "   ***    Statistics after subsampling     \n"
-                         "   ***                                     \n\n"
-                         "   Aligns: %11%\n"
-                         "   Coverage (Synthetic): %12%\n"
-                         "   Coverage (Genome):    %13%\n";
+    const auto summary = "-------RnaSubsample Summary Statistics\n\n"
+                         "       User generated alignment: %1%\n\n"
+                         "-------User alignments (before subsampling)\n\n"
+                         "       Synthetic: %2% reads\n"
+                         "       Genome:    %3% reads\n\n"
+                         "       Method:        %4%\n"
+                         "       Normalization: %5%\n\n"
+                         "-------User alignments (after subsampling)\n\n"
+                         "       Synthetic: %6% reads\n"
+                         "       Genome:    %7% reads\n";
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
-                                            % "-"
-                                            % stats.n_syn
-                                            % stats.n_gen
-                                            % o.rAnnot
-                                            % "??"
+                                            % stats.before.syn
+                                            % stats.before.gen
+                                            % stats.p
                                             % meth2Str()
-                                            % "??"
-                                            % stats.sBefore
-                                            % stats.gBefore
-                                            % "??"
-                                            % stats.sAfter
-                                            % stats.gAfter).str());
+                                            % stats.after.syn
+                                            % stats.after.gen).str());
     o.writer->close();
 }
 

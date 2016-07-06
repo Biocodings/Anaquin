@@ -162,6 +162,7 @@ using namespace Anaquin;
 // Shared with other modules
 bool __hack__ = false;
 
+// Shared with other modules
 bool __showInfo__ = true;
 
 // Shared with other modules
@@ -670,10 +671,7 @@ FileName refFile()
 
 static void printError(const std::string &msg)
 {
-    std::cerr << std::endl;
-    std::cerr << "*********************************************************************" << std::endl;
     std::cerr << msg << std::endl;
-    std::cerr << "*********************************************************************" << std::endl << std::endl;
 }
 
 template <typename Mixture> void addMix(Mixture mix)
@@ -1060,7 +1058,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == TOOL_V_SUBSAMPLE)
+    if (_p.tool == TOOL_V_SUBSAMPLE || _p.tool == TOOL_R_SUBSAMPLE)
     {
         __showInfo__ = false;
     }
@@ -1126,7 +1124,22 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_FUZZY:  { parseInt(val, _p.fuzzy); break; }
-            case OPT_METHOD: { parseDouble(_p.opts[opt] = val, _p.sampled); break; }
+            
+            case OPT_METHOD:
+            {
+                parseDouble(_p.opts[opt] = val, _p.sampled);
+                
+                if (_p.sampled <= 0.0)
+                {
+                    throw InvalidValueException(val, "method. Sampling fraction must be greater than zero");
+                }
+                else if (_p.sampled >= 1.0)
+                {
+                    throw InvalidValueException(val, "method. Sampling fraction must be less than one");
+                }
+
+                break;
+            }
 
             /*
              * The following options can only be validated by the tool
@@ -1217,7 +1230,7 @@ void parse(int argc, char ** argv)
         }
     }
 
-    if (_p.tool != TOOL_VERSION && _p.tool != TOOL_V_SUBSAMPLE)
+    if (_p.tool != TOOL_VERSION && __showInfo__)
     {
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "------------- Sequin Analysis -----------" << std::endl;
@@ -1245,7 +1258,10 @@ void parse(int argc, char ** argv)
         case TOOL_R_KALLISTO:
         case TOOL_R_SUBSAMPLE:
         {
-            std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
+            if (__showInfo__)
+            {
+                std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
+            }
 
             if (_p.tool == TOOL_R_GENOME)
             {
@@ -1942,7 +1958,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("Invalid command. %1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.val).str());
+        printError((boost::format("Invalid command. %1% not expected for option -%2%.") % ex.opt % ex.val).str());
     }
     catch (const MissingOptionError &ex)
     {
