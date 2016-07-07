@@ -594,7 +594,7 @@ Concent TransRef::concent(const GeneID &gID, Mixture m) const
 
 GeneID TransRef::s2g(const SequinID &sID) const
 {
-    return _impl->gData.at(ChrT).t2g.at(sID);
+    return _impl->gData.at(ChrIS).t2g.at(sID);
 }
 
 const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
@@ -735,18 +735,18 @@ void TransRef::validate()
         {
             TransData t;
             
-            t.cID = ChrT;
+            t.cID = ChrIS;
             t.tID = i;
             t.gID = RnaQuin::t2g(i);
             
             GeneData g;
             
-            g.cID = ChrT;
+            g.cID = ChrIS;
             g.gID = t.gID;
             
-            _impl->gData[ChrT].g2d[t.gID] = g;
-            _impl->gData[ChrT].t2d[t.tID] = t;
-            _impl->gData[ChrT].t2g[t.tID] = t.gID;
+            _impl->gData[ChrIS].g2d[t.gID] = g;
+            _impl->gData[ChrIS].t2d[t.tID] = t;
+            _impl->gData[ChrIS].t2g[t.tID] = t.gID;
         }
     }
 }
