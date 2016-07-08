@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("RnaFoldChange_Workflow")
+TEST_CASE("RnaFoldChange_QuickCheck")
 {
     Test::clear();
     
