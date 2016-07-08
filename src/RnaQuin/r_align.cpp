@@ -7,17 +7,23 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName GTFRef();
 
+#ifdef ANAQUIN_DEBUG
 static std::ofstream __iWriter__;
 static std::ofstream __bWriter__;
+#endif
 
 static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
 {
+#ifdef ANAQUIN_DEBUG
     __iWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << gID << "\t" << label << "\n";
+#endif
 }
 
 static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 {
+#ifdef ANAQUIN_DEBUG
     __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
+#endif
 }
 
 static RAlign::Stats init()
@@ -64,15 +70,19 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     const auto &r = Standard::instance().r_trans;
 
     auto stats = init();
-    
+
+#ifdef ANAQUIN_DEBUG
     __bWriter__.open(o.work + "/RnaAlign_qbase.stats");
     __iWriter__.open(o.work + "/RnaAlign_qintrs.stats");
-    
+#endif
+
     // Parsing input files
     f(stats);
 
+#ifdef ANAQUIN_DEBUG
     __iWriter__.close();
     __bWriter__.close();
+#endif
 
     o.info("Collecting statistics");
     
@@ -252,6 +262,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                         const auto gap = Locus(l.start, match->l().start-1);
                         
                         x.bLvl.fp->map(gap);
+                        
                         writeBase(align.cID, gap, "FP");
                     }
                     
@@ -261,6 +272,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                         const auto gap = Locus(match->l().end+1, l.end);
                         
                         x.bLvl.fp->map(gap);
+                        
                         writeBase(align.cID, gap, "FP");
                     }
                 }
@@ -582,15 +594,15 @@ void RAlign::report(const FileName &file, const Options &o)
      * Generating RnaAlign_rintrs.stats
      */
     
-    o.analyze("RnaAlign_rintrs.stats");
-    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
+//    o.analyze("RnaAlign_rintrs.stats");
+//    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
 
     /*
      * Generating RnaAlign_rbase.stats
      */
     
-    o.analyze("RnaAlign_rbase.stats");
-    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
+//    o.analyze("RnaAlign_rbase.stats");
+//    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
     
     /*
      * Generating RnaAlign_report.pdf
