@@ -334,7 +334,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             }
             else
             {
-                o.logWarn("Ignore: " + x.name);
+                o.logWarn("Ignore: " + x.name + "  " + x.cID);
             }
         });
     });
