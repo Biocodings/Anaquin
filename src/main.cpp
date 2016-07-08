@@ -503,7 +503,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "v1.5" << std::endl;
+    std::cout << "v0.5" << std::endl;
 }
 
 template <typename F> bool testFile(const FileName &x, F f)
