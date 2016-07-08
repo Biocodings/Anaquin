@@ -5,6 +5,11 @@
 #include "data/intervals.hpp"
 #include "parsers/parser_gtf.hpp"
 
+#ifdef ANAQUIN_DEBUG
+#include <iostream>
+static std::ofstream debug;
+#endif
+
 namespace Anaquin
 {
     struct ExonData
@@ -401,15 +406,19 @@ namespace Anaquin
         GTFData c2d;
         
         // Used for unique exons
-        std::set<Locus> m_exons;
+        std::map<std::string, Locus> m_exons;
         
         // Used for unique introns
-        std::set<Locus> m_intrs;
+        std::map<std::string, Locus> m_intrs;
         
         ExonData ed;
         GeneData gd;
         TransData td;
         IntronData id;
+        
+#ifdef ANAQUIN_DEBUG
+        debug.open("/Users/tedwong/Sources/QA/uniqueExons.txt");
+#endif
 
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
@@ -447,10 +456,22 @@ namespace Anaquin
 
                     c2d[x.cID].t2e[ed.tID].insert(ed);
 
-                    if (!m_exons.count(x.l))
+                    // The key represents a unique exon
+                    const auto key = (boost::format("%1%_%2%_%3%-%4%") % x.cID
+                                                                       % x.strand
+                                                                       % x.l.start
+                                                                       % x.l.end).str();
+                    
+                    if (!m_exons.count(key))
                     {
+#ifdef ANAQUIN_DEBUG
+                        if (!Standard::isSynthetic(x.cID))
+                        {
+                            debug << x.cID << "\t" << x.l.start-1 << "\t" << x.l.end << x.gID << x.tID << std::endl;
+                        }
+#endif
+                        m_exons[key] = x.l;
                         c2d[x.cID].uexons++;
-                        m_exons.insert(x.l);
                         c2d[x.cID].t2ue[ed.tID].insert(ed);
                     }
                     
@@ -461,6 +482,10 @@ namespace Anaquin
                 default: { break; }
             }
         });
+        
+#ifdef ANAQUIN_DEBUG
+        debug.close();
+#endif
         
         /*
          * The information we have is sufficient for exons, transcripts and genes. We just
@@ -488,21 +513,25 @@ namespace Anaquin
                     const auto &x = sorted[j-1];
                     const auto &y = sorted[j];
                     
+                    id.cID = x.cID;
                     id.gID = x.gID;
                     id.tID = x.tID;
-                    id.cID = x.cID;
                     
                     // Intron spans between exons
                     id.l = Locus(x.l.end+1, y.l.start-1);
 
                     #define MIN_INTRON_LEN 20
                     
+                    const auto key = (boost::format("%1%_%2%-%3%") % x.cID
+                                                                   % id.l.start
+                                                                   % id.l.end).str();
+                    
                     if (Standard::isSynthetic(i.first) || id.l.length() > MIN_INTRON_LEN)
                     {
-                        if (!m_intrs.count(id.l))
+                        if (!m_intrs.count(key))
                         {
                             c2d[x.cID].uintrs++;
-                            m_intrs.insert(id.l);
+                            m_intrs[key] = id.l;
                             c2d[x.cID].t2ui[id.tID].insert(id);
                         }
                     }
