@@ -527,8 +527,6 @@ static void writeQuins(const FileName &file,
                 // Statistics for the exon within the gene
                 const auto is = j.second.stats();
                 
-                assert(is.nonZeros == 0 || is.nonZeros == is.length);
-                
                 if (!is.nonZeros)
                 {
                     em[gID].fn()++;
