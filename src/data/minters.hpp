@@ -25,6 +25,7 @@ namespace Anaquin
                 inline Proportion covered() const { return static_cast<double>(nonZeros) / length; }
             };
 
+            MergedInterval() {}
             MergedInterval(const IntervalID &id, const Locus &l) : _id(id), _l(l) {}
             MergedInterval(const IntervalID &id,
                            const Locus      &l,

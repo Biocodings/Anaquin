@@ -613,6 +613,11 @@ MC2Intervals TransRef::mergedExons() const
     return _impl->gData.mergedExons();
 }
 
+MC2Intervals TransRef::meInters() const
+{
+    return _impl->gData.meInters();
+}
+
 MC2Intervals TransRef::ueInters() const
 {
     return _impl->gData.ueInters();

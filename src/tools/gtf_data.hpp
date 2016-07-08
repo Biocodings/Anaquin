@@ -263,6 +263,64 @@ namespace Anaquin
             return r;
         }
         
+        // Intervals for merged exons
+        inline MC2Intervals meInters() const
+        {
+            MC2Intervals r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = meInters(i.first);
+            }
+            
+            return r;
+        }
+        
+        // Intervals for merged exons (only possible at the gene level)
+        inline MergedIntervals<> meInters(const ChrID &cID) const
+        {
+            MergedIntervals<> r;
+
+            // This is needed to merge exons over all transcripts
+            std::map<GeneID, MergedInterval> merged;
+            
+            // For each transcript...
+            for (const auto &i : at(cID).t2ue)
+            {
+                const auto &tID = i.first;
+                const auto &gID = at(cID).t2g.at(tID);
+
+                if (!merged.count(gID))
+                {
+                    // Merging the unique exons (it doesn't matter how long this is)
+                    merged[gID] = MergedInterval(gID, Locus(1, std::numeric_limits<Base>::max()));
+                }
+                
+                // For each exon in the transcript...
+                for (const auto &j : i.second)
+                {
+                    // This'll merge all the overlapping exons
+                    merged.at(gID).map(j.l);
+                }
+            }
+            
+            // For each gene in the chromosome...
+            for (const auto &i : merged)
+            {
+                const auto &gID = i.first;
+
+                // For each merged exon in the gene...
+                for (const auto &j : i.second._data)
+                {
+                    const auto &l = j.second;
+                    r.add(MergedInterval(gID + "-" + toString(l.start) + "-" + toString(l.end), l, gID, gID));
+                }
+            }
+
+            r.build();
+            return r;
+        }
+
         // Intervals for unique exons
         inline MergedIntervals<> ueInters(const ChrID &cID) const
         {

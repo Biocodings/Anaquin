@@ -35,8 +35,17 @@ static RAlign::Stats init()
 
     RAlign::Stats stats;
 
-    stats.eInters = r.ueInters();
     stats.iInters = r.uiInters();
+
+    /*
+     * It's important to use meInters() rather than ueInters(). Due to alternative splicing, two
+     * different transcripts can give overlapping exons. We don't know where exactly the read
+     * come from. Transcript 1? Transcript 2? We don't have the information. But we can construct
+     * an non-overlapping (or merged) exon regions and use it to calculate statistics such as
+     * base-level sensitivity.
+     */
+
+    stats.eInters = r.meInters();
 
     assert(stats.eInters.size());
     assert(stats.iInters.size());
@@ -216,9 +225,6 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     
     GeneID gID = "";
 
-    // Alternative splicing...
-    std::vector<MergedInterval *> ms;
-    
     // Check all cigar blocks...
     while (align.nextCigar(l, spliced))
     {
@@ -245,7 +251,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
         else
         {
             // Can we find an contained match for the exon?
-            const auto match = stats.eInters.at(align.cID).contains(l, &ms);
+            const auto match = stats.eInters.at(align.cID).contains(l);
             
 #ifdef DEBUG_ANAQUIN
             if (ms.size() > 1)
@@ -267,7 +273,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
             else
             {
                 // Can we find an overlapping match for the exon?
-                const auto match = stats.eInters.at(align.cID).overlap(l, &ms);
+                const auto match = stats.eInters.at(align.cID).overlap(l);
 
                 if (match)
                 {
@@ -473,27 +479,20 @@ static void writeIQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        //if (Standard::isSynthetic(cID))
+        for (const auto &j : stats.iInters.at(cID).data())
         {
-            for (const auto &j : stats.iInters.at(cID).data())
+            auto is = j.second.stats();
+            assert(is.nonZeros == 0 || is.nonZeros == is.length);
+            
+            const auto pos = (toString(j.second.l().start) + "-" + toString(j.second.l().end));
+            
+            if (is.nonZeros)
             {
-                auto is = j.second.stats();
-                assert(is.nonZeros == 0 || is.nonZeros == is.length);
-                
-                const auto pos = (toString(j.second.l().start) + "-" + toString(j.second.l().end));
-                
-                if (is.nonZeros)
-                {
-                    o.writer->write((boost::format(format) % cID
-                                                           % pos
-                                                           % "TP").str());
-                }
-                else
-                {
-                    o.writer->write((boost::format(format) % cID
-                                                           % pos
-                                                           % "FN").str());
-                }
+                o.writer->write((boost::format(format) % cID % pos % "TP").str());
+            }
+            else
+            {
+                o.writer->write((boost::format(format) % cID % pos % "FN").str());
             }
         }
     }
@@ -525,10 +524,13 @@ static void writeQuins(const FileName &file,
         
         if (Standard::isSynthetic(cID))
         {
-            std::map<GeneID, Confusion> bm, em, im;
+            std::map<GeneID, Confusion> bm, im;
 
+#ifdef ANAQUIN_DEBUG
+            std::map<GeneID, Confusion> em;
+            
             /*
-             * Calculating exon statistics for genes
+             * Calculating exon statistics for the genes
              */
             
             for (const auto &j : stats.eInters.at(cID).data())
@@ -548,9 +550,10 @@ static void writeQuins(const FileName &file,
                     em[gID].tp()++;
                 }
             }
+#endif
             
             /*
-             * Calculating intron statistics for genes
+             * Calculating intron statistics for the genes
              */
             
             for (const auto &j : stats.iInters.at(cID).data())
@@ -574,7 +577,7 @@ static void writeQuins(const FileName &file,
             }
             
             /*
-             * Calculating base statistics for genes
+             * Calculating base statistics for the genes
              */
             
             for (const auto &j : stats.eInters.at(cID).data())
