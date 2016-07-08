@@ -1067,7 +1067,7 @@ void parse(int argc, char ** argv)
     {
         if (argc != 3)
         {
-            throw "Too many arguments for -h. Usage: anaquin <tool> -h";
+            throw std::runtime_error("Too many arguments for -h. Usage: anaquin <tool> -h");
         }
         
         std::cout << manual(_p.tool) << std::endl;
