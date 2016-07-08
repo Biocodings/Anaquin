@@ -7,6 +7,8 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName GTFRef();
 
+#define ANAQUIN_DEBUG
+
 #ifdef ANAQUIN_DEBUG
 static std::ofstream __iWriter__;
 static std::ofstream __bWriter__;
