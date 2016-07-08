@@ -433,18 +433,12 @@ static void writeBQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        //if (Standard::isSynthetic(cID))
+        for (const auto &j : stats.eInters.at(cID).data())
         {
-            for (const auto &j : stats.eInters.at(cID).data())
+            for (const auto &k : j.second._data)
             {
-                for (const auto &k : j.second._data)
-                {
-                    const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
-                    
-                    o.writer->write((boost::format(format) % cID
-                                                           % pos
-                                                           % "TP").str());
-                }
+                const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
+                o.writer->write((boost::format(format) % cID % pos % "TP").str());
             }
         }
     }
@@ -536,6 +530,7 @@ static void writeQuins(const FileName &file,
                 
                 if (!is.nonZeros)
                 {
+                    o.info("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
                     em[gID].fn()++;
                 }
                 else
@@ -559,6 +554,7 @@ static void writeQuins(const FileName &file,
                 
                 if (!is.nonZeros)
                 {
+                    o.info("Intron: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
                     im[gID].fn()++;
                 }
                 else
