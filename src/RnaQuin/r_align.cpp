@@ -413,6 +413,7 @@ static void writeBQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
+#ifdef ANAQUIN_DEBUG
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -439,6 +440,7 @@ static void writeBQuins(const FileName &file,
     }
     
     o.writer->close();
+#endif
 }
 
 static void writeIQuins(const FileName &file,
@@ -446,6 +448,7 @@ static void writeIQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
+#ifdef ANAQUIN_DEBUG
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -481,6 +484,7 @@ static void writeIQuins(const FileName &file,
     }
     
     o.writer->close();
+#endif
 }
 
 static void writeQuins(const FileName &file,
@@ -580,29 +584,29 @@ void RAlign::report(const FileName &file, const Options &o)
      * Generating RnaAlign_summary.stats
      */
     
-    o.analyze("RnaAlign_summary.stats");
+    o.generate("RnaAlign_summary.stats");
     generateSummary("RnaAlign_summary.stats", file, stats, o);
 
     /*
      * Generating RnaAlign_sequins.stats
      */
     
-    o.analyze("RnaAlign_sequins.stats");
+    o.generate("RnaAlign_sequins.stats");
     writeQuins("RnaAlign_sequins.stats", file, stats, o);
 
     /*
      * Generating RnaAlign_rintrs.stats
      */
     
-//    o.analyze("RnaAlign_rintrs.stats");
-//    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
+    o.analyze("RnaAlign_rintrs.stats");
+    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
 
     /*
      * Generating RnaAlign_rbase.stats
      */
     
-//    o.analyze("RnaAlign_rbase.stats");
-//    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
+    o.analyze("RnaAlign_rbase.stats");
+    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
     
     /*
      * Generating RnaAlign_report.pdf

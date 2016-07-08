@@ -164,6 +164,10 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
 
             // Is this a multi alignment?
             info.multi = t->core.n_cigar > 1;
+
+            /*
+             * Quickly check the properties of the alignment
+             */
             
             info.ins  = false;
             info.del  = false;
@@ -192,15 +196,6 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
             align.nextCigar(align.l, spliced);
             
             RESET_CIGAR
-            
-            const auto cig = bam_get_cigar(t);
-            const auto ol  = bam_cigar_oplen(cig[0]);
-            
-            // 1-based leftmost coordinate is assumed
-            //align.l.start = t->core.pos+1;
-            
-            // 1-based leftmost coordinate is assumed
-            //align.l.end = t->core.pos+ol;
             
             x(align, info);
         }
