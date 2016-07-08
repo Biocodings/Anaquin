@@ -36,6 +36,9 @@ namespace Anaquin
         // Bitwise FLAG
         int flag;
 
+        // Is this mapped to forward strand?
+        bool isForw;
+        
         // Reference sequence name of the primary alignment
         std::string rnext;
         
