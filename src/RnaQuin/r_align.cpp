@@ -215,6 +215,9 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     bool isTP = true;
     
     GeneID gID = "";
+
+    // Alternative splicing...
+    std::vector<MergedInterval *> ms;
     
     // Check all cigar blocks...
     while (align.nextCigar(l, spliced))
@@ -241,8 +244,16 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
         }
         else
         {
-            // Can we find an overlapping match for the exon?
-            const auto match = stats.eInters.at(align.cID).contains(l);
+            // Can we find an contained match for the exon?
+            const auto match = stats.eInters.at(align.cID).contains(l, &ms);
+            
+#ifdef DEBUG_ANAQUIN
+            if (ms.size() > 1)
+            {
+                o.logInfo("Mult1: " + align.cID + "\t" + match->tID() + "\t" + std::to_string(l.start) + "-" std::to_string(l.end));
+                o.logInfo("Mult2: " + align.cID + "\t" + match->tID() + "\t" + std::to_string(match->l.start) + "-" std::to_string(match->l.end));
+            }
+#endif
             
             if (match)
             {
@@ -256,7 +267,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
             else
             {
                 // Can we find an overlapping match for the exon?
-                const auto match = stats.eInters.at(align.cID).overlap(l);
+                const auto match = stats.eInters.at(align.cID).overlap(l, &ms);
 
                 if (match)
                 {
@@ -516,27 +527,27 @@ static void writeQuins(const FileName &file,
         {
             std::map<GeneID, Confusion> bm, em, im;
 
-//            /*
-//             * Calculating exon statistics for genes
-//             */
-//            
-//            for (const auto &j : stats.eInters.at(cID).data())
-//            {
-//                const auto &gID = j.second.gID();
-//                
-//                // Statistics for the exon within the gene
-//                const auto is = j.second.stats();
-//                
-//                if (!is.nonZeros)
-//                {
-//                    o.logInfo("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
-//                    em[gID].fn()++;
-//                }
-//                else
-//                {
-//                    em[gID].tp()++;
-//                }
-//            }
+            /*
+             * Calculating exon statistics for genes
+             */
+            
+            for (const auto &j : stats.eInters.at(cID).data())
+            {
+                const auto &gID = j.second.gID();
+                
+                // Statistics for the exon within the gene
+                const auto is = j.second.stats();
+                
+                if (!is.nonZeros)
+                {
+                    o.logInfo("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
+                    em[gID].fn()++;
+                }
+                else
+                {
+                    em[gID].tp()++;
+                }
+            }
             
             /*
              * Calculating intron statistics for genes
