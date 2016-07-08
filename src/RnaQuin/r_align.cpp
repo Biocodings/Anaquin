@@ -530,7 +530,7 @@ static void writeQuins(const FileName &file,
                 
                 if (!is.nonZeros)
                 {
-                    o.info("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
+                    o.logInfo("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
                     em[gID].fn()++;
                 }
                 else
@@ -554,7 +554,7 @@ static void writeQuins(const FileName &file,
                 
                 if (!is.nonZeros)
                 {
-                    o.info("Intron: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
+                    o.logInfo("Intron: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
                     im[gID].fn()++;
                 }
                 else
