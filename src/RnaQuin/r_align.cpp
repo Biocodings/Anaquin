@@ -499,13 +499,12 @@ static void writeQuins(const FileName &file,
     const auto &r = Standard::instance().r_trans;
 
     const auto h2g = r.histGene();
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
                                            % "Length"
                                            % "Reads"
-                                           % "SnExon"
                                            % "SnIntron"
                                            % "SnBase").str());
 
@@ -517,27 +516,27 @@ static void writeQuins(const FileName &file,
         {
             std::map<GeneID, Confusion> bm, em, im;
 
-            /*
-             * Calculating exon statistics for genes
-             */
-            
-            for (const auto &j : stats.eInters.at(cID).data())
-            {
-                const auto &gID = j.second.gID();
-                
-                // Statistics for the exon within the gene
-                const auto is = j.second.stats();
-                
-                if (!is.nonZeros)
-                {
-                    o.logInfo("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
-                    em[gID].fn()++;
-                }
-                else
-                {
-                    em[gID].tp()++;
-                }
-            }
+//            /*
+//             * Calculating exon statistics for genes
+//             */
+//            
+//            for (const auto &j : stats.eInters.at(cID).data())
+//            {
+//                const auto &gID = j.second.gID();
+//                
+//                // Statistics for the exon within the gene
+//                const auto is = j.second.stats();
+//                
+//                if (!is.nonZeros)
+//                {
+//                    o.logInfo("Exon: (FN): " + gID + " " + std::to_string(j.second.l().start) + "-" + std::to_string(j.second.l().end));
+//                    em[gID].fn()++;
+//                }
+//                else
+//                {
+//                    em[gID].tp()++;
+//                }
+//            }
             
             /*
              * Calculating intron statistics for genes
@@ -592,13 +591,9 @@ static void writeQuins(const FileName &file,
                 // Sensitivity at the intron level
                 const auto isn = im.count(gID) ? std::to_string(im.at(gID).sn()) : "-";
                 
-                // Sensitivity at the exon level
-                const auto esn = std::to_string(em.at(gID).sn());
-                
                 o.writer->write((boost::format(format) % gID
                                                        % r.findGene(cID, gID)->l.length()
                                                        % reads
-                                                       % esn
                                                        % isn
                                                        % bm.at(gID).sn()).str());
             }
