@@ -135,14 +135,15 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
         
         if (details)
         {
-            align.flag  = t->core.flag;
-            align.mapq  = t->core.qual;
-            align.seq   = bam2seq(t);
-            align.qual  = bam2qual(t);
-            align.cigar = hasCID ? bam2cigar(t) : "*";
-            align.tlen  = hasCID ? t->core.isize : 0;
-            align.rnext = hasCID ? bam2rnext(h, t) : "*";
-            align.pnext = hasCID ? std::to_string(t->core.mpos) : "0";
+            align.flag   = t->core.flag;
+            align.mapq   = t->core.qual;
+            align.seq    = bam2seq(t);
+            align.qual   = bam2qual(t);
+            align.isForw = !bam_is_rev(t);
+            align.cigar  = hasCID ? bam2cigar(t) : "*";
+            align.tlen   = hasCID ? t->core.isize : 0;
+            align.rnext  = hasCID ? bam2rnext(h, t) : "*";
+            align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
         }
         
         if (hasCID)

@@ -32,7 +32,7 @@ namespace Anaquin
             ChrID cID;
             
             // Forward or reverse strand?
-            Strand strand;
+            Strand str;
             
             // The location of the feature relative to the chromosome
             Locus l;
@@ -103,9 +103,9 @@ namespace Anaquin
 
                 x.l.start = stoi(toks[3]);
                 x.l.end   = stoi(toks[4]);
-                x.strand  = toks[6] == "+" ? Strand::Forward : Strand::Backward;
 
                 assert(toks[6] == "+" || toks[6] == "-");
+                x.str = toks[6] == "+" ? Strand::Forward : Strand::Backward;
                 
                 /*
                  * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"

@@ -39,6 +39,8 @@ namespace Anaquin
         // Eg: ENST00000456328.2
         TransID tID;
         
+        Strand str;
+        
         Locus l;
     };
     
@@ -417,7 +419,7 @@ namespace Anaquin
         IntronData id;
         
 #ifdef ANAQUIN_DEBUG
-        debug.open("/Users/tedwong/Sources/QA/uniqueExons.txt");
+        debug.open("/Users/tedwong/Sources/QA/uniques.txt");
 #endif
 
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
@@ -450,6 +452,7 @@ namespace Anaquin
                 case Exon:
                 {
                     ed.l   = x.l;
+                    ed.str = x.str;
                     ed.cID = x.cID;
                     ed.gID = x.gID;
                     ed.tID = x.tID;
@@ -458,7 +461,7 @@ namespace Anaquin
 
                     // The key represents a unique exon
                     const auto key = (boost::format("%1%_%2%_%3%-%4%") % x.cID
-                                                                       % x.strand
+                                                                       % x.str
                                                                        % x.l.start
                                                                        % x.l.end).str();
                     
@@ -467,7 +470,7 @@ namespace Anaquin
 #ifdef ANAQUIN_DEBUG
                         if (!Standard::isSynthetic(x.cID))
                         {
-                            debug << x.cID << "\t" << x.l.start-1 << "\t" << x.l.end << x.gID << x.tID << std::endl;
+                            //debug << x.cID << "\t" << x.l.start-1 << "\t" << x.l.end << x.gID << x.tID << std::endl;
                         }
 #endif
                         m_exons[key] = x.l;
@@ -482,10 +485,6 @@ namespace Anaquin
                 default: { break; }
             }
         });
-        
-#ifdef ANAQUIN_DEBUG
-        debug.close();
-#endif
         
         /*
          * The information we have is sufficient for exons, transcripts and genes. We just
@@ -516,20 +515,28 @@ namespace Anaquin
                     id.cID = x.cID;
                     id.gID = x.gID;
                     id.tID = x.tID;
+                    id.str = x.str;
                     
                     // Intron spans between exons
                     id.l = Locus(x.l.end+1, y.l.start-1);
 
-                    #define MIN_INTRON_LEN 20
+                    #define MIN_INTRON_LEN 4
                     
                     const auto key = (boost::format("%1%_%2%-%3%") % x.cID
                                                                    % id.l.start
                                                                    % id.l.end).str();
                     
-                    if (Standard::isSynthetic(i.first) || id.l.length() > MIN_INTRON_LEN)
+                    if (Standard::isSynthetic(i.first) || id.l.length() >= MIN_INTRON_LEN)
                     {
                         if (!m_intrs.count(key))
                         {
+#ifdef ANAQUIN_DEBUG
+                            if (!Standard::isSynthetic(x.cID))
+                            {
+                                debug << x.cID << "\t" << id.l.start-1 << "\t" << id.l.end /*<< x.gID << x.tID */<< std::endl;
+                            }
+#endif
+                            
                             c2d[x.cID].uintrs++;
                             m_intrs[key] = id.l;
                             c2d[x.cID].t2ui[id.tID].insert(id);
@@ -538,6 +545,10 @@ namespace Anaquin
                 }
             }
         }
+
+#ifdef ANAQUIN_DEBUG
+        debug.close();
+#endif
 
         return c2d;
     }

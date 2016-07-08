@@ -1,3 +1,4 @@
+#include "tools/gtf_data.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/file_writer.hpp"
@@ -497,13 +498,15 @@ static void writeQuins(const FileName &file,
     const auto &r = Standard::instance().r_trans;
 
     const auto h2g = r.histGene();
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
+                                           % "Length"
                                            % "Reads"
-                                           % "Sn_intron"
-                                           % "Sn_base").str());
+                                           % "SnExon"
+                                           % "SnIntron"
+                                           % "SnBase").str());
 
     for (const auto &i : stats.data)
     {
@@ -511,7 +514,30 @@ static void writeQuins(const FileName &file,
         
         if (Standard::isSynthetic(cID))
         {
-            std::map<GeneID, Confusion> bm, im;
+            std::map<GeneID, Confusion> bm, em, im;
+
+            /*
+             * Calculating exon statistics for genes
+             */
+            
+            for (const auto &j : stats.eInters.at(cID).data())
+            {
+                const auto &gID = j.second.gID();
+                
+                // Statistics for the exon within the gene
+                const auto is = j.second.stats();
+                
+                assert(is.nonZeros == 0 || is.nonZeros == is.length);
+                
+                if (!is.nonZeros)
+                {
+                    em[gID].fn()++;
+                }
+                else
+                {
+                    em[gID].tp()++;
+                }
+            }
             
             /*
              * Calculating intron statistics for genes
@@ -562,11 +588,16 @@ static void writeQuins(const FileName &file,
                 // Number of reads aligned
                 const auto reads = data.g2r.count(gID) ? data.g2r.at(gID) : 0;
 
-                // Check for genes without an intron (eg: single exon)
-                const auto isn = im.count(gID) ? toString(im.at(gID).sn()) : "-";
+                // Sensitivity at the intron level
+                const auto isn = im.count(gID) ? std::to_string(im.at(gID).sn()) : "-";
+                
+                // Sensitivity at the exon level
+                const auto esn = std::to_string(em.at(gID).sn());
                 
                 o.writer->write((boost::format(format) % gID
+                                                       % r.findGene(cID, gID)->l.length()
                                                        % reads
+                                                       % esn
                                                        % isn
                                                        % bm.at(gID).sn()).str());
             }
