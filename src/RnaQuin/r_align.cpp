@@ -89,6 +89,9 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
 
     o.info("Collecting statistics");
     
+    o.logInfo("stats.data.size() == " + std::to_string(stats.data.size()));
+    o.logInfo("stats.eInters.size() == " + std::to_string(stats.eInters.size()));
+    
     // For each reference chromosome...
     for (const auto i : stats.eInters)
     {
@@ -328,6 +331,10 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             else if (Standard::isSynthetic(x.cID) || Standard::isGenomic(x.cID))
             {
                 match(stats, info, x);
+            }
+            else
+            {
+                o.logWarn("Ignore: " + x.name);
             }
         });
     });
