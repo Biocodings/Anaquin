@@ -14,7 +14,6 @@
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_DESeq2.hpp"
-#include "RnaQuin/r_sleuth.hpp"
 #include "RnaQuin/r_genome.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_kexpress.hpp"
@@ -123,7 +122,6 @@ typedef std::set<Value> Range;
 #define TOOL_R_CUFFDIFF  306
 #define TOOL_R_DESEQ2    307
 #define TOOL_R_KALLISTO  308
-#define TOOL_R_SLEUTH    309
 #define TOOL_V_SEQUENCE  310
 #define TOOL_R_GENOME    311
 
@@ -217,7 +215,6 @@ static std::map<Value, Tool> _tools =
     { "RnaDESeq2",      TOOL_R_DESEQ2    },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
     { "RnaKallisto",    TOOL_R_KALLISTO  },
-    { "RnaSleuth",      TOOL_R_SLEUTH    },
     { "RnaGenome",      TOOL_R_GENOME    },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
@@ -273,7 +270,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_KALLISTO,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_SLEUTH,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_GENOME,    { OPT_R_GTF, OPT_U_FILES } },
 
     /*
@@ -1246,7 +1242,6 @@ void parse(int argc, char ** argv)
         case TOOL_T_NORM:
         case TOOL_R_FOLD:
         case TOOL_R_ALIGN:
-        case TOOL_R_SLEUTH:
         case TOOL_R_DESEQ2:
         case TOOL_R_GENOME:
         case TOOL_R_EXPRESS:
@@ -1274,7 +1269,6 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_R_ALIGN:
                     case TOOL_R_DESEQ2:
-                    case TOOL_R_SLEUTH:
                     case TOOL_R_GENOME:
                     case TOOL_R_KALLISTO:
                     case TOOL_R_CUFFDIFF:
@@ -1309,7 +1303,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_R_GENOME:    { analyze_1<RGenome>(OPT_U_FILES);   break; }
-                case TOOL_R_SLEUTH:    { analyze_1<RSleuth>(OPT_U_FILES);   break; }
                 case TOOL_R_ALIGN:     { analyze_1<RAlign>(OPT_U_FILES);    break; }
                 case TOOL_R_DESEQ2:    { analyze_1<RDESeq2>(OPT_U_FILES);   break; }
                 case TOOL_R_COVERAGE:  { analyze_1<RCoverage>(OPT_U_FILES); break; }

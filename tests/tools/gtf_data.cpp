@@ -22,19 +22,38 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(r.countUExonSyn() == 869);
     REQUIRE(r.countUIntr()    == 754);
     REQUIRE(r.countUIntrSyn() == 754);
-
+    
     //REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
     //REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
-
+    
     REQUIRE(r.ueInters().size() == 1);
     REQUIRE(r.uiInters().size() == 1);
-
+    
+    auto merged = r.meInters();
+    REQUIRE(merged.count(ChrT));
+    
+    std::map<GeneID, Locus> g2l;
+    
+    // For each merged exon...
+    for (auto &i : merged.at(ChrT)._inters)
+    {
+        g2l[i.second.id()] = i.second.l();
+    }
+    
+    REQUIRE(g2l.count("R1_102-6790136-6790296"));
+    REQUIRE(g2l["R1_102-6790136-6790296"].start == 6790136);
+    REQUIRE(g2l["R1_102-6790136-6790296"].end   == 6790296);
+    
+    REQUIRE(g2l.count("R1_102-6794368-6794699"));
+    REQUIRE(g2l["R1_102-6794368-6794699"].start == 6794368);
+    REQUIRE(g2l["R1_102-6794368-6794699"].end   == 6794699);
+    
     const auto eIntrs = r.ueInters(ChrT);
     const auto iIntrs = r.uiInters(ChrT);
-
+    
     REQUIRE(eIntrs.size() == 869); // 1192 for non-unique
     REQUIRE(iIntrs.size() == 754); // 1028 for non-unique
-
+    
     REQUIRE(eIntrs.contains(Locus(3014253, 3014390)));
     REQUIRE(eIntrs.contains(Locus(3014255, 3014390)));
     REQUIRE(!eIntrs.contains(Locus(3014252, 3014390)));
