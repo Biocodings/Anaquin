@@ -1,133 +1,133 @@
 RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 RnaExpression - Quantitative analysis of sequin expression
+     RnaExpression - Quantitative analysis of sequin expression
 
 DESCRIPTION
-	 RnaExpression can be used for analyzing the gene or isoform expression of RNA sequins within a library.
-	 Comparing the measured expression (typically in FPKM) relative to the known input concentrations provides
-	 an indication of the quantitative accuracy for measuring gene expression.
+     RnaExpression can be used for analyzing the gene or isoform expression of RNA sequins within a library.
+     Comparing the measured expression (typically in FPKM) relative to the known input concentrations provides
+     an indication of the quantitative accuracy for measuring gene expression.
 
-	 Specifically, RnaExpression builds a linear model regressing the measured expression (dependent variable)
-	 with the input concentration (independent variable; defined by the mixture). Singular Value Decomposition (SVD)
-	 is used to estimate the regression parameters, including:
+     Specifically, RnaExpression builds a linear model regressing the measured expression (dependent variable)
+     with the input concentration (independent variable; defined by the mixture). Singular Value Decomposition (SVD)
+     is used to estimate the regression parameters, including:
 
-	   Correlation      – provides a measure of quantitative accuracy across a range of input concentrations. 
+       Correlation      – provides a measure of quantitative accuracy across a range of input concentrations. 
 
        Slope            - indicates the quantitative linearity for gene expression measures.
 
        Coefficient (R2) – indicates the amount of variation that can be accounted for by the linear model.
-	   
-	 RnaExpression can accept both single replicate or multiple replicate libraries. If multiple libraries are
-	 provided, RnaExpression will report statistics with standard deviation indicated.  
+       
+     RnaExpression can accept both single replicate or multiple replicate libraries. If multiple libraries are
+     provided, RnaExpression will report statistics with standard deviation indicated.  
 
 BIOINFORMATICS SOFTWARE
-	 RnaExpression is compatible with many popular gene expression tools, including: Cufflinks, StringTie and
-	 Kallisto. In addition, RnaExpression can be used in R and is compatible with edgeR, DESeq2. Users of
-	 alternative software may need to modify their results to conform with file formats produced by these popular
-	 software tools, before provision to the tool.
+     RnaExpression is compatible with many popular gene expression tools, including: Cufflinks, StringTie and
+     Kallisto. In addition, RnaExpression can be used in R and is compatible with edgeR, DESeq2. Users of
+     alternative software may need to modify their results to conform with file formats produced by these popular
+     software tools, before provision to the tool.
 
 INPUTS
-	 Reference RnaQuin mixgture file in CSV format
-	 Generated expression file in GTF format or text format
-	 
-	 Details about the text format can be found in on our user guide.
-	 
+     Reference RnaQuin mixgture file in CSV format
+     Generated expression file in GTF format or text format
+     
+     Details about the text format can be found in on our user guide.
+     
 USAGE EXAMPLE
-	 For single replicate:
-	 anaquin RnaExpression –m mixture.csv –ufiles genes.gtf
+     For single replicate:
+     anaquin RnaExpression –m mixture.csv –ufiles genes.gtf
 
-	 For multiple replicates:
-	 anaquin RnaExpression –m mixture.csv –ufiles A1.gtf –ufiles A2.gtf –ufiles A3.gtf
+     For multiple replicates:
+     anaquin RnaExpression –m mixture.csv –ufiles A1.gtf –ufiles A2.gtf –ufiles A3.gtf
 
 TOOL OPTIONS
-	 Required:
-	 	-m           Reference VarQuin mixture file in CSV format
-		-ufiles      Generated alignment files in SAM/BAM format
+     Required:
+        -m           Reference VarQuin mixture file in CSV format
+        -ufiles      Generated alignment files in SAM/BAM format
 
-	 Optional:
-		-o = output	 Directory in which the output files are written to
+     Optional:
+        -o = output  Directory in which the output files are written to
 
 OUTPUTS
-	 RnaExpression_summary.stats - reports global summary statistics determined from all sequins. Field
-	 							   definitions:
+     RnaExpression_summary.stats - reports global summary statistics determined from all sequins. Field
+                                   definitions:
 
-	 	Input							User generated expression file in GTF format or text format 
-		Reference Transcript         	Number of genes/isoforms on the in-silico chromosome in the reference
-										annotation
-		Mixture file					Reference RnaQuin mixture file in CSV format
-		Synthetic				    	Number of genes/isoforms on the in-silico chromosome in the generated
-										expression file
-		Detection Sensitivity			Sequin with the lowest input that are detected
-		Genome					    	Number of genes/isoforms on the human genome in the generated expression
-										file
-		LOQ Break						Breakpoint estimated by piecewise segmentation
-		LOQ Intercept					Intercept before and after the breakpoint
-		LOQ Slope						Slope before and after the breakpoint
-		LOQ Correlation					Correlation before and after the breakpoint
-		LOQ R2							Coefficient of determination before and after the breakpoint
-		LOQ Genome						Number of genes/isoforms in the human genome expressed below/above the LOQ
-		Correlation						Pearson’s correlation of the linear model
-		Slope							Regression slope of the linear model
-		R2								Coefficient of determination of the linear model
-		F-statistic						Test statistic of the linear model
-		P-value							P-value probability
-		SSM								Sum of squares of the linear model
-		SSE								Sum of squares of residuals
-		SST								Sum of squares of the total variation
+        Input                           User generated expression file in GTF format or text format 
+        Reference Transcript            Number of genes/isoforms on the in-silico chromosome in the reference
+                                        annotation
+        Mixture file                    Reference RnaQuin mixture file in CSV format
+        Synthetic                       Number of genes/isoforms on the in-silico chromosome in the generated
+                                        expression file
+        Detection Sensitivity           Sequin with the lowest input that are detected
+        Genome                          Number of genes/isoforms on the human genome in the generated expression
+                                        file
+        LOQ Break                       Breakpoint estimated by piecewise segmentation
+        LOQ Intercept                   Intercept before and after the breakpoint
+        LOQ Slope                       Slope before and after the breakpoint
+        LOQ Correlation                 Correlation before and after the breakpoint
+        LOQ R2                          Coefficient of determination before and after the breakpoint
+        LOQ Genome                      Number of genes/isoforms in the human genome expressed below/above the LOQ
+        Correlation                     Pearson’s correlation of the linear model
+        Slope                           Regression slope of the linear model
+        R2                              Coefficient of determination of the linear model
+        F-statistic                     Test statistic of the linear model
+        P-value                         P-value probability
+        SSM                             Sum of squares of the linear model
+        SSE                             Sum of squares of residuals
+        SST                             Sum of squares of the total variation
 
-	 RnaExpress_sequins.csv - detailed statistics for each sequin in the reference. Field definitions:
-	    ID						  	    Name of the sequin
-		Length							Length of the sequin
-		InputConcent					Input concentration in attomol/ul
-		Observed						Observed expression (eg: FPKM)
+     RnaExpress_sequins.csv - detailed statistics for each sequin in the reference. Field definitions:
+        ID                              Name of the sequin
+        Length                          Length of the sequin
+        InputConcent                    Input concentration in attomol/ul
+        Observed                        Observed expression (eg: FPKM)
 
-	RnaExpress_express.R - R-script for building a linear model between expression level (dependent variable) and
-						   input concentration (independent variable) on the logarithm scale.
+    RnaExpress_express.R - R-script for building a linear model between expression level (dependent variable) and
+                           input concentration (independent variable) on the logarithm scale.
 
 EXAMPLE OUTPUT
 
-	-------RnaExpression Output
-    	   Summary for input: A1/transcripts.gtf
-		   *Arithmetic average and standard deviation are shown
+    -------RnaExpression Output
+           Summary for input: A1/transcripts.gtf
+           *Arithmetic average and standard deviation are shown
 
-	-------Reference Transcript Annotations
+    -------Reference Transcript Annotations
 
-    	   Synthetic: 164 isoforms
-		   Mixture file: MRN027_v001.csv
+           Synthetic: 164 isoforms
+           Mixture file: MRN027_v001.csv
 
-	-------Isoform Expressed
+    -------Isoform Expressed
 
-		   Synthetic: 164
-		   Detection Sensitivity: 0.00393391 (attomol/ul) (R2_38_1)
+           Synthetic: 164
+           Detection Sensitivity: 0.00393391 (attomol/ul) (R2_38_1)
 
-		   Genome: 198485
+           Genome: 198485
 
     -------Limit of Quantification (LOQ)
 
-    	   *Estimated by piecewise segmented regression
+           *Estimated by piecewise segmented regression
 
-		   Break: 3.55 attomol/ul (R1_32_1)
+           Break: 3.55 attomol/ul (R1_32_1)
 
-		   *Below LOQ
-		   Intercept:   2.52
-      	   Slope:       0.15
-       	   Correlation: 0.48
-       	   R2:          0.23
-       	   Genome:      193948
+           *Below LOQ
+           Intercept:   2.52
+           Slope:       0.15
+           Correlation: 0.48
+           R2:          0.23
+           Genome:      193948
 
-		   *Above LOQ
-		   Intercept:   2.07
-		   Slope:       1.01
-       	   Correlation: 0.95
-      	   R2:          0.91
+           *Above LOQ
+           Intercept:   2.07
+           Slope:       1.01
+           Correlation: 0.95
+           R2:          0.91
            Genome:      4537
 
-	-------Linear regression (log2 scale)
+    -------Linear regression (log2 scale)
 
-    	   Correlation: 0.95
-		   Slope:       0.73
-       	   R2:          0.90
+           Correlation: 0.95
+           Slope:       0.73
+           R2:          0.90
            F-statistic: 1288.39
            P-value:     0.00
            SSM:         2604.38, DF: 1

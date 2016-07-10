@@ -1,173 +1,173 @@
 RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 RnaAssembly -- Measures the read alignment from sequins to the in silico chromosome.
+     RnaAssembly -- Measures the read alignment from sequins to the in silico chromosome.
 
 DESCRIPTION
-	 We can use RNAAssembly to compare the assembly of spliced isoform assemblies to known synthetic gene
-	 annotations in the in silico chromosome. We provide quantitative statistics at exon, intron, intron-chain,
-	 transcript and nucleotide level using previous definition by Trapnel et al., 2010. The following statistics
-	 are provided:
+     We can use RNAAssembly to compare the assembly of spliced isoform assemblies to known synthetic gene
+     annotations in the in silico chromosome. We provide quantitative statistics at exon, intron, intron-chain,
+     transcript and nucleotide level using previous definition by Trapnel et al., 2010. The following statistics
+     are provided:
 
-	 Sensitivity - the fraction of annotated features that are detected by assembly. For example, if a transcript
-	 			   has 10 introns, of which 7 are assembled, the sensitivity (at intron level) will be 0.7. 
+     Sensitivity - the fraction of annotated features that are detected by assembly. For example, if a transcript
+                   has 10 introns, of which 7 are assembled, the sensitivity (at intron level) will be 0.7. 
 
-	 Precision – the fraction of correctly assembled features relative to the total number of assembled features
-	 			 (both true and false positive). This provides an indication of assembly accuracy. For example,
-				 if 10 introns are identified by assembly, but 4 are erroneous, we would have a precision of 0.6.
+     Precision – the fraction of correctly assembled features relative to the total number of assembled features
+                 (both true and false positive). This provides an indication of assembly accuracy. For example,
+                 if 10 introns are identified by assembly, but 4 are erroneous, we would have a precision of 0.6.
 
 BIOINFORMATICS SOFTWARE
-	 Any software that assembles transcript models from alignments, with common examples including Cufflinks
-	 and StringTie. Assembled transcript models must be provided to Anaquin in GTF file format.
+     Any software that assembles transcript models from alignments, with common examples including Cufflinks
+     and StringTie. Assembled transcript models must be provided to Anaquin in GTF file format.
 
 INPUTS
-	 Reference annotation file in GTF format
-	 Reference RnaQuin mixture file in CSV format
-	 Generated transcriptome file in GTF format
-	 
+     Reference annotation file in GTF format
+     Reference RnaQuin mixture file in CSV format
+     Generated transcriptome file in GTF format
+     
 USAGE EXAMPLE
-	 anaquin RnaAssembly –rgtf reference.gtf –ufiles transcripts.gtf
+     anaquin RnaAssembly –rgtf reference.gtf –ufiles transcripts.gtf
 
 TOOL OPPTIONS
-	 Required:
-	 	-rgtf	    Reference annotation file in GTF format.
-	 	-ufiles    Generated transcriptome in GTF format.
+     Required:
+        -rgtf       Reference annotation file in GTF format.
+        -ufiles    Generated transcriptome in GTF format.
 
-	 Optional:
-		-o = output	Directory in which the output files are written to.
+     Optional:
+        -o = output Directory in which the output files are written to.
 
 OUTPUTS
-	RnaAssembly_summary.stats - provides useful statistics to describe to describe the global alignment
-							    profile. Field definitions:
+    RnaAssembly_summary.stats - provides useful statistics to describe to describe the global alignment
+                                profile. Field definitions:
 
-	 	User assembly file						Input sample transcriptome file in GTF format
-	 	Reference annotation file				Reference transcriptome annotation file in GTF format
-	 	Reference Gene Annotations (Synthetic)	Number of exons, introns, isoforms and genes on the in silico
-											    chromosome in the reference annotation
-	 	Reference Gene Annotations (Genome)		Number of exons, introns, isoforms and genes on the genome in
-												the reference annotation
-	 	Synthetic (User Assemblies)				Number of exons, introns, isoforms and genes on the in silico
-												chromosome in the user assembly file
-	 	Genome (User Assemblies)				Number of exons, introns, isoforms and genes on the genome in the
-												user assembly file
-	 	Sensitivity								Sensitivity for exon, intron, base, intron-chain and transcript
-												levels for both the in silico chromosome and the genome
-	 	Specificity								Specificity for exon, intron, base, intron-chain and transcript
-												levels for both the in silico chromosome and the genome
-	 	Missing									Missing exons and introns for both the in silico chromosome and
-												the genome
-	 	Novel									Novel exons and introns for both the in silico chromosome and
-												the genome
+        User assembly file                      Input sample transcriptome file in GTF format
+        Reference annotation file               Reference transcriptome annotation file in GTF format
+        Reference Gene Annotations (Synthetic)  Number of exons, introns, isoforms and genes on the in silico
+                                                chromosome in the reference annotation
+        Reference Gene Annotations (Genome)     Number of exons, introns, isoforms and genes on the genome in
+                                                the reference annotation
+        Synthetic (User Assemblies)             Number of exons, introns, isoforms and genes on the in silico
+                                                chromosome in the user assembly file
+        Genome (User Assemblies)                Number of exons, introns, isoforms and genes on the genome in the
+                                                user assembly file
+        Sensitivity                             Sensitivity for exon, intron, base, intron-chain and transcript
+                                                levels for both the in silico chromosome and the genome
+        Specificity                             Specificity for exon, intron, base, intron-chain and transcript
+                                                levels for both the in silico chromosome and the genome
+        Missing                                 Missing exons and introns for both the in silico chromosome and
+                                                the genome
+        Novel                                   Novel exons and introns for both the in silico chromosome and
+                                                the genome
 
-	RnaAsssembly_sequins.csv - – provides statistics for each individual sequin. Field definitions:
-	
-	 	ID										Name of the sequin
-	 	Length									Length of the sequin
-	 	InputConcent							Input concentration in attomol/ul
-	 	Sn										Sensitivity of the sequin
+    RnaAsssembly_sequins.csv - – provides statistics for each individual sequin. Field definitions:
+    
+        ID                                      Name of the sequin
+        Length                                  Length of the sequin
+        InputConcent                            Input concentration in attomol/ul
+        Sn                                      Sensitivity of the sequin
 
-	RnaAssembly_assembly.R - R-script for building a non-linear model between sensitivity (dependent variable)
-							 and input concentration (independent variable). Useful for visualizing the abundance
-							 dependent bias and assembly limit for a library.
+    RnaAssembly_assembly.R - R-script for building a non-linear model between sensitivity (dependent variable)
+                             and input concentration (independent variable). Useful for visualizing the abundance
+                             dependent bias and assembly limit for a library.
 
 ADDITIONAL INFORMATION
-	Internally, the tool embeds the CuffDiff (http://cole-trapnell-lab.github.io/cufflinks) software for
-	quantifying a transcriptome GTF file. The results are exactly identical to what Cuffdiff reports.
+    Internally, the tool embeds the CuffDiff (http://cole-trapnell-lab.github.io/cufflinks) software for
+    quantifying a transcriptome GTF file. The results are exactly identical to what Cuffdiff reports.
 
-	For additional detail on the definition and method for comparing transcript models, please refer to:
+    For additional detail on the definition and method for comparing transcript models, please refer to:
 
-	‘Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching
-	during cell differentiation.’ Trapnell et. al., Nature Biotechnology. 2010 May;28(5):511-5.
+    ‘Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching
+    during cell differentiation.’ Trapnell et. al., Nature Biotechnology. 2010 May;28(5):511-5.
 
-	‘Evaluation of gene structure prediction programs.’ Burset et. al., Genomics. 1996 Jun 15;34(3):353-67.
+    ‘Evaluation of gene structure prediction programs.’ Burset et. al., Genomics. 1996 Jun 15;34(3):353-67.
 
 EXAMPLE SUMMARY STATISTICS
 
-	-------RnaAssembly Summary Statistics
+    -------RnaAssembly Summary Statistics
 
-		User assembly file: transcript.gtf
-		Reference annotation file: combined.gtf
+        User assembly file: transcript.gtf
+        Reference annotation file: combined.gtf
 
-	-------Reference Gene Annotations (Synthetic)
+    -------Reference Gene Annotations (Synthetic)
 
-		Synthetic: 869 exons
-		Synthetic: 754 introns
-		Synthetic: 164 isoforms
-		Synthetic: 78 genes
+        Synthetic: 869 exons
+        Synthetic: 754 introns
+        Synthetic: 164 isoforms
+        Synthetic: 78 genes
 
-	-------Reference Gene Annotations (Genome)
+    -------Reference Gene Annotations (Genome)
 
-		Genome: 570957 exons
-		Genome: 347410 introns
-		Genome: 199169 isoforms
-		Genome: 60554 genes
+        Genome: 570957 exons
+        Genome: 347410 introns
+        Genome: 199169 isoforms
+        Genome: 60554 genes
 
-	-------User Gene Assemblies (Synthetic)
+    -------User Gene Assemblies (Synthetic)
 
-		Synthetic: 515 exons
-		Synthetic: 416 introns
-		Synthetic: 99 isoforms
-		Synthetic: 74 genes
+        Synthetic: 515 exons
+        Synthetic: 416 introns
+        Synthetic: 99 isoforms
+        Synthetic: 74 genes
 
-	-------User Gene Assemblies (Genome)
+    -------User Gene Assemblies (Genome)
 
-		Genome: 1366 exons
-		Genome: 835 introns
-		Genome: 531 isoforms
-		Genome: 524 genes
+        Genome: 1366 exons
+        Genome: 835 introns
+        Genome: 531 isoforms
+        Genome: 524 genes
 
-	-------Comparison of assembly to annotations (Synthetic)
+    -------Comparison of assembly to annotations (Synthetic)
 
-		*Exon level
-		Sensitivity: 0.417401
-		Specificity: 0.908873
+        *Exon level
+        Sensitivity: 0.417401
+        Specificity: 0.908873
 
-		*Intron
-		Sensitivity: 0.454907
-		Specificity: 0.988473
+        *Intron
+        Sensitivity: 0.454907
+        Specificity: 0.988473
 
-		*Base level
-		Sensitivity: 0.059783
-		Specificity: 0.928484
+        *Base level
+        Sensitivity: 0.059783
+        Specificity: 0.928484
 
-		*Intron Chain
-		Sensitivity: 0.269231
-		Specificity: 0.575342
+        *Intron Chain
+        Sensitivity: 0.269231
+        Specificity: 0.575342
 
-		*Transcript level
-		Sensitivity: 0.000000
-		Specificity: 0.000000
+        *Transcript level
+        Sensitivity: 0.000000
+        Specificity: 0.000000
 
-		Missing exons:   468
-		Missing introns: 371
+        Missing exons:   468
+        Missing introns: 371
 
-		Novel exons:   16
-		Novel introns: 1
+        Novel exons:   16
+        Novel introns: 1
 
-	-------Comparison of assembly to annotations (Genome)
+    -------Comparison of assembly to annotations (Genome)
 
-		*Exon level
-		Sensitivity: 0.002264
- 	 	Specificity: 0.951111
+        *Exon level
+        Sensitivity: 0.002264
+        Specificity: 0.951111
 
-		*Intron
-		Sensitivity: 0.002351
-		Specificity: 0.989104
+        *Intron
+        Sensitivity: 0.002351
+        Specificity: 0.989104
 
-		*Base level
-		Sensitivity: 0.001730
-		Specificity: 0.959860
+        *Base level
+        Sensitivity: 0.001730
+        Specificity: 0.959860
 
-		*Intron Chain
-		Sensitivity: 0.000534
-		Specificity: 0.303333
+        *Intron Chain
+        Sensitivity: 0.000534
+        Specificity: 0.303333
 
-		*Transcript level
-		Sensitivity: 0.000000
-		Specificity: 0.000000
+        *Transcript level
+        Sensitivity: 0.000000
+        Specificity: 0.000000
 
-		Missing exons:   563469
-		Missing introns: 345991
+        Missing exons:   563469
+        Missing introns: 345991
 
-		Novel exons:   18
-		Novel introns: 1
+        Novel exons:   18
+        Novel introns: 1

@@ -1,95 +1,95 @@
 RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 RnaFoldChange - Assess fold-changes in gene expression between multiple samples
+     RnaFoldChange - Assess fold-changes in gene expression between multiple samples
 
 DESCRIPTION
-	RnaFoldChange can be used to analyse the differential expression of sequins between different mixtures
-	that have been alternately spiked-in to multiple samples. 
+    RnaFoldChange can be used to analyse the differential expression of sequins between different mixtures
+    that have been alternately spiked-in to multiple samples. 
 
-	The differential expression of sequins is emulated by modulating the relative concentration of sequins
-	between alternative mixtures (such as between Mixture A and B) and provides a known reference scale of
-	differential expression between samples. This scale can be used to assess the measurement of fold-changes
-	in gene expression between RNA-Seq libraries, and estimate diagnostic power and confidence limits.
+    The differential expression of sequins is emulated by modulating the relative concentration of sequins
+    between alternative mixtures (such as between Mixture A and B) and provides a known reference scale of
+    differential expression between samples. This scale can be used to assess the measurement of fold-changes
+    in gene expression between RNA-Seq libraries, and estimate diagnostic power and confidence limits.
 
-	Specifically, RnaFoldChange builds a linear model regressing the measured log-fold (dependent variable;
-	provided by third party tool such as Cufflinks) to the input concentration (independent variable) defined
-	by a mixture. Singular Value Decomposition (SVD) is used to estimate the regression parameters. 
+    Specifically, RnaFoldChange builds a linear model regressing the measured log-fold (dependent variable;
+    provided by third party tool such as Cufflinks) to the input concentration (independent variable) defined
+    by a mixture. Singular Value Decomposition (SVD) is used to estimate the regression parameters. 
 
-	RnaFoldChange can also be used to assess the diagnostic performance for detecting sequin fold-change
-	between mixtures with receiver operating characteristic (ROC) curves, area under the curve (AUC) statistics
-	and limit of detection of ratio (LODR) estimates.
+    RnaFoldChange can also be used to assess the diagnostic performance for detecting sequin fold-change
+    between mixtures with receiver operating characteristic (ROC) curves, area under the curve (AUC) statistics
+    and limit of detection of ratio (LODR) estimates.
 
 BIOINFORMATICS SOFTWARE
-	RnaFoldChange is compatible with many popular gene expression tools, including: Cuffcompare. In addition,
-	RnaFoldChange can be used in R and is compatible with edgeR, DESeq2. Users of alternative software may
-	need to modify their results to conform with file formats produced by these popular software tools,
-	before provision to RnaExpression.
+    RnaFoldChange is compatible with many popular gene expression tools, including: Cuffcompare. In addition,
+    RnaFoldChange can be used in R and is compatible with edgeR, DESeq2. Users of alternative software may
+    need to modify their results to conform with file formats produced by these popular software tools,
+    before provision to RnaExpression.
 
 INPUTS
-	 Reference RnaQuin mixture in CSV format (must have two columns, for input concentration defined for
-	 mixture A and B respectively)
-	 Generated differential analysis file in text format
-	 
+     Reference RnaQuin mixture in CSV format (must have two columns, for input concentration defined for
+     mixture A and B respectively)
+     Generated differential analysis file in text format
+     
 USAGE EXAMPLE
-	 anaquin RnaFoldChange –rgtf reference.gtf –m mixture.csv –ufiles diff.txt
+     anaquin RnaFoldChange –rgtf reference.gtf –m mixture.csv –ufiles diff.txt
 
 ADDITIONAL INFORMATION
-	For additional information on the use of ROC / LODR plots to assess differential gene expression, please refer to:
+    For additional information on the use of ROC / LODR plots to assess differential gene expression, please refer to:
 
-	‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control ratio mixtures.’ Munro et al., Nature Communications.
-	2014 Sep 25;5:5125.
+    ‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control ratio mixtures.’ Munro et al., Nature Communications.
+    2014 Sep 25;5:5125.
 
 TOOL OPTIONS
-	 Required:
-	 	-m        	 Reference RnaQuin mixture file in CSV format
-		-ufiles      User generated differential analysis file
+     Required:
+        -m           Reference RnaQuin mixture file in CSV format
+        -ufiles      User generated differential analysis file
 
-	 Optional:
-		-o = output	 Directory in which the output files are written to
+     Optional:
+        -o = output  Directory in which the output files are written to
 
 OUTPUTS
-	 RnaFoldChange_summary.stats - gives the summary statistics. Field definitions:
+     RnaFoldChange_summary.stats - gives the summary statistics. Field definitions:
 
-	 	Input file 					User generated differential analysis file
-		Reference (Synthetic)  		Number of genes/isoforms detected on the in silico chromosome
-		Mixture  					Reference RnaQuin mixture file
-		Synthetic (Expressed)       Number of genes/isoforms expressed on the in silico chromosome 
-		Genome (Expressed) 			Number of genes/isoforms expressed on the genome
-		Slope						Regression slope of the linear model
-		Correlation					Pearson’s correlation of the linear model
-		R2							Coefficient of determination of the linear model
-		F-statistic					Test statistic of the linear model
-		P-value						P-value probability
-		SSM							Sum of squares of the linear model
-		SSE							Sum of squares of residuals
-		SST							Sum of squares of the total variation
+        Input file                  User generated differential analysis file
+        Reference (Synthetic)       Number of genes/isoforms detected on the in silico chromosome
+        Mixture                     Reference RnaQuin mixture file
+        Synthetic (Expressed)       Number of genes/isoforms expressed on the in silico chromosome 
+        Genome (Expressed)          Number of genes/isoforms expressed on the genome
+        Slope                       Regression slope of the linear model
+        Correlation                 Pearson’s correlation of the linear model
+        R2                          Coefficient of determination of the linear model
+        F-statistic                 Test statistic of the linear model
+        P-value                     P-value probability
+        SSM                         Sum of squares of the linear model
+        SSE                         Sum of squares of residuals
+        SST                         Sum of squares of the total variation
 
-	 RnaFoldChange_sequins.csv - gives detailed statistics for each sequin. Field definitions:
-	    ID						    Name of the sequin
-		Length						Length of the sequin
-		ExpectLFold					Expected fold-change change
-		ObserveLFold				Observed log-fold change
-		SD							Standard deviation of the measurement
-		Pval						Observed p-value probability
-		Qval						Observed q-value probability
+     RnaFoldChange_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+        ID                          Name of the sequin
+        Length                      Length of the sequin
+        ExpectLFold                 Expected fold-change change
+        ObserveLFold                Observed log-fold change
+        SD                          Standard deviation of the measurement
+        Pval                        Observed p-value probability
+        Qval                        Observed q-value probability
 
-	 RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and expected log-folds (independent variable).
+     RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and expected log-folds (independent variable).
 
-	 RnaFoldChange_ROC.R - R script for building the ROC curve (including AUC statistics) for each sequin group.
+     RnaFoldChange_ROC.R - R script for building the ROC curve (including AUC statistics) for each sequin group.
 
-	 RnaFoldChange_LODR.R - R script for building the limit-of-detection-ratio (LODR) curves for the sequin groups.
+     RnaFoldChange_LODR.R - R script for building the limit-of-detection-ratio (LODR) curves for the sequin groups.
 
 EXAMPLE OUTPUT
 
-	-------RnaFoldChange Output
+    -------RnaFoldChange Output
 
            Summary for input: DESeq2.txt
 
-	-------Reference Annotations
+    -------Reference Annotations
 
-		   Synthetic: 78 genes
-		   Mixture file: MRN029_v001.csv
+           Synthetic: 78 genes
+           Mixture file: MRN029_v001.csv
 
     -------Genes Expressed
 
