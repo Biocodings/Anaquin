@@ -93,16 +93,16 @@ namespace Anaquin
                 o.writer->write(RWriter::createScatterNeedLog(csv, title,
                                                               "Expected Expression (log2)",
                                                               "Measured Expression (log2)",
-                                                              "Expected",
-                                                              "Measured", true));
+                                                              "InputConcent",
+                                                              "Observed", true));
             }
             else
             {
                 o.writer->write(RWriter::createMultiScatter(csv, title,
                                                             "Expected Expression (log2)",
                                                             "Measured Expression (log2)",
-                                                            "Expected",
-                                                            "Measured", true, true));
+                                                            "InputConcent",
+                                                            "Observed", true, true));
             }
             
             o.writer->close();

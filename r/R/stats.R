@@ -116,11 +116,36 @@ showLOQ <- function(x, y, showDetails=FALSE)
         print(p)
     }
 
-    # The optimial breakpoint is where the minimum SSE is
-    b <- r[which.min(r$sums),]    
+    #
+    # How to define the LOQ breakpoint?
+    #
+    #   - Minimum where the SSE is
+    #
     
+    percentile <- ecdf(x)
+    
+    # Filter out the upper and lower quartiles
+    a <- r[percentile(r$k) > 0.25 & percentile(r$k) <= 0.60,]
+    
+    # Where the minimum SSE is
+    b1 <- r[which.min(r$sums),]    
+
+    # Where the maximum above R2 is
+    b2 <- a[which.max(a$rR2),]
+
+    b1q <- percentile(b1$k) 
+    b2q <- percentile(b2$k) 
+    
+    b <- b1
+
+    if (b1q < 0.05)
+    {
+        # This is potentially a better breakpoint
+        b <- b2        
+    }
+
     # Fit the model again
-    fit <- plm(which.min(r$sums)+1)
+    fit <- plm(as.numeric(row.names(b)))
     
     stopifnot(all.equal(summary(fit$lModel)$r.squared, b$lR2))  
     stopifnot(all.equal(summary(fit$rModel)$r.squared, b$rR2))

@@ -298,7 +298,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     writeQueries("RnaExpression_queries.csv", stats, o);
     
     /*
-     * Generating RnaExpression_sequins.csv
+     * Generating RnaExpression_express.R
      */
     
     RExpress::generateR("RnaExpression_express.R", "RnaExpression_sequins.csv", stats, o);

@@ -95,7 +95,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         x <- paste(x, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=loq$breaks$k, y=0), label=x, colour='black', show.legend=FALSE)
+        p <- p + geom_label(aes(x=loq$breaks$k, y=min(y)), label=x, colour='black', show.legend=FALSE)
     }
 
     if (!is.null(xBreaks))
