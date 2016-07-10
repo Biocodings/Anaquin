@@ -215,7 +215,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     }
 
     /*
-     * Counting exons, introns and transcripts
+     * Counting exons, introns and transcripts (reuse the gtfData() function)
      */
     
     const auto gs = gtfData(Reader(file));
@@ -235,23 +235,25 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 static void generateQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-    const auto format = "%1%\t%2%\t%3%";
+    const auto format = "%1%\t%2%\t%3%\t%4%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "Expected"
-                                           % "Measured").str());
+                                           % "Length"
+                                           % "ECon"
+                                           % "Sn").str());
 
     for (const auto &i : stats.tSPs)
     {
         o.writer->write((boost::format(format) % i.first
+                                               % r.match(i.first)->l.length()
                                                % r.match(i.first)->concent()
                                                % (stats.tSPs.at(i.first) / 100.0)).str());
     }
     
     o.writer->close();
-}
+}   
 
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
@@ -278,12 +280,12 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                         "       Genome: %8% introns\n"
                         "       Genome: %9% isoforms\n"
                         "       Genome: %10% genes\n\n"
-                        "-------User Gene Assemblies (Synthetic)\n\n"
+                        "-------User Assemblies (Synthetic)\n\n"
                         "       Synthetic: %11% exons\n"
                         "       Synthetic: %12% introns\n"
                         "       Synthetic: %13% isoforms\n"
                         "       Synthetic: %14% genes\n\n"
-                        "-------User Gene Assemblies (Genome)\n\n"
+                        "-------User Assemblies (Genome)\n\n"
                         "       Genome: %15% exons\n"
                         "       Genome: %16% introns\n"
                         "       Genome: %17% isoforms\n"
