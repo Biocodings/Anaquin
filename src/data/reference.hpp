@@ -517,6 +517,7 @@ namespace Anaquin
      */
     
     struct GeneData;
+    struct TransData;
     
     class TransRef : public Reference<SequinData, DefaultStats>
     {
@@ -561,7 +562,8 @@ namespace Anaquin
 
             GeneID s2g(const SequinID &) const;
         
-            const GeneData *findGene(const ChrID &, const GeneID &) const;
+            const GeneData  *findGene (const ChrID &, const GeneID &) const;
+            const TransData *findTrans(const ChrID &, const GeneID &) const;
 
         protected:
         

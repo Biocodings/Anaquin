@@ -246,8 +246,9 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 
     for (const auto &i : stats.tSPs)
     {
+        const auto m = r.findTrans(ChrIS, i.first);
         o.writer->write((boost::format(format) % i.first
-                                               % r.match(i.first)->l.length()
+                                               % m->l.length()
                                                % r.match(i.first)->concent()
                                                % (stats.tSPs.at(i.first) / 100.0)).str());
     }
