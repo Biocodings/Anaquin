@@ -8,19 +8,12 @@ namespace Anaquin
 {
     struct RSample
     {
-        enum class Method
-        {
-            Prop
-        };
-
         struct Options : public AnalyzerOptions
         {
             Options() {}
             
-            // Defined if the method is proportion
+            // Fraction required for the spike-in
             Proportion p;
-
-            Method meth = Method::Prop;
         };
 
         struct Stats : public MappingStats
@@ -30,8 +23,8 @@ namespace Anaquin
             // Reads before and after subsampling
             SGReads before, after;
 
-            // Proportion required for subsampling
-            Proportion p = NAN;
+            // Normalization factor
+            Proportion norm;
         };
 
         static Stats stats(const FileName &, const Options &o = Options());

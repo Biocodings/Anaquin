@@ -7,8 +7,8 @@ using namespace Anaquin;
 Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, User *user)
 {
     Sampler::Stats stats;
-    
-    assert(p > 0.0 && p < 1.0);    
+
+    assert(p > 0.0 && p <= 1.0);
     Random r(1.0 - p);
 
     WriterSAM w;

@@ -13,6 +13,11 @@ namespace Anaquin
         struct SGReads
         {
             Reads syn = 0, gen = 0;
+            
+            inline Proportion dilut() const
+            {
+                return static_cast<Proportion>(syn) / (syn + gen);
+            }
         };
 
         struct Stats
