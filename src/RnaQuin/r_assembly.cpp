@@ -151,8 +151,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     auto compareGTF = [&](const ChrID &cID, const FileName &ref, const FileName &qry)
     {
-        o.info("Reference: " + ref);
-        o.info("Query: " + qry);
+        o.logInfo("Reference: " + ref);
+        o.logInfo("Query: " + qry);
         
         #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
@@ -199,7 +199,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      * Comparing for the synthetic
      */
 
-    o.info("Generating for the synthetic");
+    o.logInfo("Generating for the synthetic");
     compareGTF(ChrIS, createGTFSyn(GTFRef()), createGTFSyn(file));
     copyStats(ChrIS);
     
@@ -209,7 +209,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     if (stats.data.size() > 1)
     {
-        o.info("Generating for the genome");
+        o.logInfo("Generating for the genome");
         compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
         copyStats(Geno);
     }
