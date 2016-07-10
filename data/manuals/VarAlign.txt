@@ -1,56 +1,115 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign - Measures the read alignment from sequins to the in silico chromosome.
+     VarAlign - Measures the read alignment from sequins to the in silico chromosome.
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+    VarAlign calculates several useful statistics from an alignment file.  
+    
+    Dilution - the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
 
-	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
+    Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of
+                  which 500nt have reads aligned, would have a sensitivity of 0.5. Please note that terminal flanking regions
+                  (up to 200nt) should be trimmed to omit edge effects from sequencing.
 
-       Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
-	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
-
-       Precision – The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
-	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+    Precision - the fraction annotated regions that are covered by alignments, relative to total regions of alignments.
+                This indicates the accuracy of alignments. For example, if 1000nt of alignments overlap with only 500nt annotated
+                regions, this will have a specificity of 0.5.
 
 BIOINFORMATICS SOFTWARE
-	 Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+     Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
 
 INPUTS
-	 Reference annotation file in BED format
-	 Generated alignment file in SAM/BAM format
-	 
+     Reference annotation file in BED format
+     Generated alignment file in SAM/BAM format
+     
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
 
 TOOL OPTIONS
-	 Required:
-	 	-rbed        Reference annotation file in BED format
-		-ufiles      Generated alignment files in SAM/BAM format
+     Required:
+        -rbed        Reference annotation file in BED format
+        -ufiles      Generated alignment files in SAM/BAM format
 
-	 Optional:
-		-o = output	 Directory in which the output files are written to
+     Optional:
+        -o = output  Directory in which the output files are written to
 
 OUTPUTS
-	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
+     VarAlign_summary.stats - gives the summary statistics. Field definitions:
+        Reference annotation file         Reference annotation file in BED format 
+        User alignment file               User generated sample alignments in SAM/BAM format
+        Alignments (Synthetic)            Number of alignments mapped to the in-silico genome
+        Alignments (Genome)               Number of alignments mapped to the human genome
+        Dilution                          Alignments (Synthetic) / (Alignments (Synthetic) + Alignments (Genome))
+        Reference annotation (Synthetic)  Number of regions and nucleotide bases on the in silico chromosome in the reference
+                                          annotation
+        Reference annotation (Genome)     Number of regions and nucleotide bases on the human genome in the reference
+                                          annotation
+        Alignment Correct                 Number of alignments considered true-positive on the in silico chromosome
+        Alignment Incorrect               Number of alignments considered false-positive on the in silico chromosome
+        Alignment Precision               Alignment Correct / (Alignment Correct + Alignment Incorrect)
+        Nucleotide Covered                Number of nucleotide bases with alignments for both the in silico chromosome
+                                          and the human genome
+        Nucleotide Uncovered              Number of nucleotide bases without alignments for both the in silico chromosome and
+                                          the human genome
+        Nucleotide Erroneous              Number of nucleotide bases outside the sequin regions
+        Nucleotide Total                  Nucleotide Covered + Nucleotide Uncovered
+        Nucleotide Sensitivity            Sensitivity at the nucleotide level for both the in silico chromosome and the human
+                                          genome
+        Nucleotide Precision              Precision at the nucleotide level for both the in silico chromosome and the human
+                                          genome
 
-	 	Reference annotation file	Reference annotation file in BED format 
-		User alignment file         User generated sample alignments in SAM/BAM format
-		Synthetic				    Number of alignments mapped to the in-silico genome
-		Genome					    Number of alignments mapped to the human genome
-		Dilution					Proportion of alignments mapped to the in-silico chromosome
-		Covered						Number of nucleotide bases with alignments
-		Uncovered					Number of nucleotide bases without alignments
-		Total						Covered + Uncovered
-		Sensitivity					Sensitivity of the alignments for the in-silico genome and the human genome
-		Precision					Precision of the alignments for the in-silico genome and the human genome
-
-	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
-	    ID						    Name of the sequin
-		Length						Length of the sequin
-		Reads						Number of reads aligned
-		Sn							Base-level sensitivity of alignments 
-		Pc							Base-level precision of alignments
+     VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+        ID                          Name of the sequin
+        Length                      Length of the sequin
+        Reads                       Number of reads aligned
+        Sn                          Base-level sensitivity of alignments 
+        Pc                          Base-level precision of alignments
 
 EXAMPLE OUTPUT
+
+    -------VarAlign Summary Statistics
+
+           Reference annotation file: combined.bed
+           User alignment file: sorted.bam
+
+    -------Alignments
+
+           Synthetic: 32155050 (7.07778)
+           Genome:    422154887 (92.9222)
+           Dilution:  0.07
+
+    -------Reference annotation (Synthetic)
+
+           Synthetic: 36 regions
+           Synthetic: 36572 bases
+
+    -------Reference annotation (Genome)
+
+           Genome: 455 regions
+           Genome: 3209285650 bases
+
+    -------Comparison of alignments to annotation (Synthetic)
+
+           *Alignment level
+           Correct:     32149498
+           Incorrect:   5552
+           Precision:   0.9998
+
+           *Nucleotide level
+           Covered:     36541
+           Uncovered:   31
+           Erroneous:   122
+           Total:       36694
+
+           Sensitivity: 0.9992
+           Precision:   0.9967
+
+    -------Comparison of alignments to annotation (Genome)
+
+           *Nucleotide level
+           Covered:     3001839956
+           Uncovered:   207445694
+           Total:       3209285650
+
+           Sensitivity: 0.9354

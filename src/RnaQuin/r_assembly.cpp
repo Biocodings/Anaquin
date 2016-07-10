@@ -200,8 +200,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      */
 
     o.info("Generating for the synthetic");
-    compareGTF(ChrT, createGTFSyn(GTFRef()), createGTFSyn(file));
-    copyStats(ChrT);
+    compareGTF(ChrIS, createGTFSyn(GTFRef()), createGTFSyn(file));
+    copyStats(ChrIS);
     
     /*
      * Comparing for the genome
@@ -259,7 +259,7 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 
     const auto hasGen = stats.data.size() > 1;
     
-    const auto sData = stats.data.at(ChrT);
+    const auto sData = stats.data.at(ChrIS);
     const auto gData = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
 
     #define C(x) (std::to_string(x))

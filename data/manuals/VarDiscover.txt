@@ -1,43 +1,44 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarDiscover - Assesses the identification of variants from alignments to the in-silico chromosome.
+	 VarDiscover - Assesses the identification of variants from alignments to the in silico chromosome
 
 DESCRIPTION
-	VarDiscover can be used for analyzing the identification of variants on the in-silico chromosome, and provides several useful statistics
-	to describe the identification of variants, including:
+	VarDiscover can be used for analyzing the identification of variants and quantifying synthetic variant allele
+	frequency on the in silico chromosome, and provides several useful statistics to describe the identification of variants,
+	including:
 
-	  Sensitivity - the fraction of annotated synthetic variants that are identified within the library. For example, if only 7, of 10 known variants
-	  				are detected, the sensitivity will equal 0.7. 
+	  Sensitivity - the fraction of annotated synthetic variants that are identified within the library. For example, if only 7,
+	                of 10 known variants are detected, the sensitivity will equal 0.7. 
 					 
-	  Precision   – the fraction of correctly identified (or true positive) variants. This provides a measure of identification accuracy. For example,
-	  				if 10 variants are identified, but 4 do not exist (and were mistakenly identified from sequencing errors) we would have a precision of 0.6.
+	  Precision   – the fraction of correctly identified (or true positive) variants. This provides a measure of identification
+	                accuracy. For example, if 10 variants are identified, but 4 do not exist (and were mistakenly identified
+					from sequencing errors) we would have a precision of 0.6.
 
-	  Specificity – the fraction of correctly identified (or true negative) variants. This provides a measure of statistical power, typically by the p-value.
-	  				For example, if 10 variants are statistically rejected, but 5 are true-positive, we would have a specificity of 0.5.
+	  Specificity – the fraction of correctly identified (or true negative) variants. This provides a measure of statistical power,
+	                typically by the p-value. For example, if 10 variants are statistically rejected, but 5 are true-positive, we
+					would have a specificity of 0.5.
 
-	VarDiscover can also be used to assess the diagnostic performance for variant identification with receiver operating characteristic (ROC) curves and area
-	under the curve (AUC).
+	VarDiscover can also be used to assess the diagnostic performance for variant identification with receiver operating
+	characteristic (ROC) curves and area under the curve (AUC).
 
 BIOINFORMATICS SOFTWARE
-	VarDiscover takes the standard VCF file that is provided by popular variant identification software, such as GATK. VarDiscover also supports output files
-	by other softwares by conversion.
+	VarDiscover takes the standard VCF file that is provided by popular variant identification software, such as GATK.
+	VarDiscover also supports output files by other softwares by conversion.
 
 INPUTS
-	Reference coordinate annotation file in BED format
 	Reference variant file in VCF format
+	Reference coordinate annotation file in BED format
 	Reference VarQuin mixture file in CSV format
 	Generated variant file in VCF or text format
 
-	Details on the text format can be found in the user manual on www.sequin.xyz.
-
 USAGE EXAMPLE
-	 anaquin –t VarDiscover –rbed reference.bed –rvcf reference.vcf –m mixture.csv –ufiles variants.vcf
+	 anaquin VarDiscover –rbed reference.bed –rvcf reference.vcf –m mixture.csv –ufiles variants.vcf
 
 TOOL OPTIONS
 	 Required:
-	 	-rbed        Reference coordinate annotation file in BED format
 		-rvcf        Reference variant annotation file in VCF format
+	 	-rbed        Reference coordinate annotation file in BED format
 		-m			 Reference VarQuin mixture file in CSV format
 		-ufiles      Generated variants in VCF format
 
@@ -61,22 +62,125 @@ OUTPUTS
 		Specificity						TN / (FP+TN)
 		Precision						TP / (TP+FP)
 		FDR Rate						FP / (TP+FP)
+		LOQ Break						Breakpoint estimated by piecewise segmentation
+		LOQ Intercept					Intercept before and after the breakpoint
+		LOQ Slope						Slope before and after the breakpoint
+		LOQ Correlation					Correlation before and after the breakpoint
+		LOQ R2							Coefficient of determination before and after the breakpoint
+		LOQ Genome						Number of variants in the human genome with minor allele frequency below/above
+									    the LOQ
+		Correlation						Pearson’s correlation of the linear model
+		Slope							Regression slope of the linear model
+		R2								Coefficient determination of the linear model
+		F-statistic						Test statistic of the linear model
+		P-value							P-value of the linear model
+		SSM								Sum of squares of the model
+		SSE								Sum of squares of residuals
+		SST								Sum of squares of the total variation
 
 	 VarDiscover_sequins.csv - gives detailed statistics for each sequin. Field definitions:
 	    ID						        Name of the sequin
 		Pos								Position of the variant
-		Label							Whether it’s true-positive (TP), false-positive (TP), true-negative (TN) or false-negative (FN)
+		Label							Whether it’s true-positive (TP), false-positive (TP), true-negative (TN) or
+									    false-negative (FN)
 		Pval							P-value probability 
 		ReadR							Number of reads supporting the reference allele
 		ReadV							Number of reads supporting the variant allele
 		Depth							Depth coverage. For example, the DP field in VCF file
-		EFrac							Expected allele fraction
-		EFreq							Expected allele frequency
+		ERef							Expected concentration for the reference allele in attomol/ul
+		EVar							Expected concentration for the variant allele in attomol/ul
 		MFreq							Measured allele frequency
-		Type							Whether this is an SNP or an Indel
+		Type							Whether this is an SNP, insertion and deletion
 
-	VarDiscover_ROC.R – R-script that plots a ROC curve and report AUC statistics. See Appendix B.1 for further details and example.
+	VarDiscover_ROC.R – R-script that plots a ROC curve and report AUC statistics. See Appendix B.1 for further details and
+						example.
 
 	VarDiscover_LOD.R - generates a limit-of-detection (LOD) plot in R. Only generated if p-values are given.
 
-EXAMPLE OUTPUT
+	VarDiscover_allele.R - builds a linear model relating the measured allele frequency (dependent variable) to the expected
+						   allele frequency (independent variable) defined by a mixture.
+
+EXAMPLE SUMMARY STATISTICS
+
+	-------VarDiscover Output Results
+
+	-------VarDiscover Output
+
+           Reference variant annotations:    AVA009.v032.vcf
+           Reference coordinate annotations: AVA017_v001.bed
+           Sequin mixture file:              MVA011.v013.csv
+           User identified variants:         variants.txt
+
+    -------Reference variant annotations
+
+           Synthetic: 137 SNPs
+           Synthetic: 108 indels
+           Synthetic: 245 variants
+
+    -------User identified variants
+
+           Synthetic: 21289 SNPs
+           Synthetic: 364 indels
+           Synthetic: 21653 variants
+
+           Detection Sensitivity: 0.00049 (attomol/ul) (D_3_12)
+
+    -------Identification of synthetic variants
+
+           True Positive:  128 SNPS
+           True Positive:  55 indels
+           True Positive:  183 variants
+
+           False Positive: 21161 SNPs
+           False Positive: 309 indels
+           False Positive: 21470 variants
+
+           False Negative: 9 SNPs
+           False Negative: 53 indels
+           False Negative: 62 variants
+
+    -------Diagnostic Performance (Synthetic)
+
+           *Variants
+           Sensitivity: 0.7469
+           Precision:   0.0085
+           FDR Rate:    0.9915
+
+           *SNVs
+           Sensitivity: 0.9343
+           Precision:   0.0060
+           FDR Rate:    0.9940
+
+           *Indels
+           Sensitivity: 0.5093
+           Precision:   0.1511
+           FDR Rate:    0.8489
+
+    -------Limit of Quantification (LOQ)
+          *Estimated by piecewise segmented regression
+
+           Break LOQ: 0.00389 attomol/ul (D_1_9)
+
+          *Below LOQ
+           Intercept:   -7.45796
+           Slope:       0.233005
+           Correlation: 0.269504
+           R2:          0.0726324
+
+          *Above LOQ
+           Intercept:   -0.182159
+           Slope:       1.0591
+           Correlation: 0.960971
+           R2:          0.923466
+
+     -------Overall linear regression (log2 scale)
+
+          Slope:       0.983395
+          Correction:  0.964927
+          R2:          0.931084
+          F-statistic: 2445.38
+          P-value:     0
+          SSM:         1510.5, DF: 1
+          SSE:         111.803, DF: 181
+          SST:         1622.3, DF: 182
+	  

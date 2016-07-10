@@ -358,12 +358,12 @@ struct Subsampler
          */
         
         const auto summary = "-------VarSubsample Summary Statistics\n\n"
-                             "       Reference regions: %1%\n"
-                             "       User generated alignment: %2%\n\n"
+                             "       Reference annotation file: %1%\n"
+                             "       User alignment file: %2%\n\n"
                              "-------Reference regions\n\n"
                              "       Synthetic regions:   %3%\n"
-                             "       Human genom regions: %4%\n\n"
-                             "       Normalization: %5%\n\n"
+                             "       Genomic regions: %4%\n\n"
+                             "       Method: %5%\n\n"
                              "-------User alignments (before subsampling)\n\n"
                              "       Synthetic: %6%\n"
                              "       Genome:    %7%\n\n"

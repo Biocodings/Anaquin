@@ -1,21 +1,22 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarSubsample - Subsample an alignment file to match with the genome.
+	 VarSubsample - Calibrate the sequence coverage of sequins to accompanying human genome
 
 DESCRIPTION
-	Alignment subsampling is a simple and effective method for calibrating the sequence coverage of sequins to accompanying diploid human genome.
+	Alignment subsampling is a simple and effective method for calibrating the sequence coverage of sequins to accompanying
+	diploid human genome. This tool calculates the sequence coverage for the genomic regions and use that to perform
+	calibration on the reads aligned to the in silico chromosome.
 
 BIOINFORMATICS SOFTWARE
 	 Short-read aligner that generates a SAM/BAM file, including Bowtie and BWA.
 
 INPUTS
 	 Reference annotation file in BED format
-	 Reference VarQuin mixture in CSV format
 	 Generated alignment file in SAM/BAM format
 	 
 USAGE EXAMPLE
-	 anaquin VarSubsample –rbed reference.bed –ufiles aligned.bam
+	 anaquin VarSubsample –rbed reference.bed –meth mean –ufiles aligned.bam
 
 TOOL OPTIONS
 	 Required:
@@ -28,20 +29,45 @@ TOOL OPTIONS
 OUTPUTS
 	 VarSubsample_summary.stats gives the summary statistics. Field definitions:
 
-	 	Reference regions			Reference region annotation in BED format 
-		User alignment file   		User generated sample alignments in SAM/BAM format
-		Genomic regions				Number of genomic regions in the reference annotation file
-		Synthetic regions			Number of synthetic regions in the reference annotation file
-		Genome 						Number of alignments on the human genome before and after subsampling
-		Synthetic					Number of alignments on the in-silico genome before and after subsampling
-		Method						Method used in subsampling
-		Genome coverage				Genomic coverage before and after subsampling
-		Synthetic coverage			In-silico coverage before and after subsampling
-
-	VarSubsample_sampled.sam is the subsampled output alignment file in SAM format.
-
-	VarSubsample_before.bedgraph gives the base coverage for the in-silico genome before subsampling .
-
-	VarSubsample_after.bedgraph gives the base coverage for the in-silico genome after subsampling.
+	 Reference annotation file	Reference coordinate annotation file in BED format
+	 User alignment file        User generated alignment file in SAM/BAM format
+	 Reference regions          Number of regions on the in silico chromosome and genome in the reference annotation file
+	 Method                     Method used in subsampling
+	 User alignment (Before)    Number of alignments on the in silico regions and genomic regions before subsampling
+	 User alignment (After)     Number of alignments on the in silico regions and genomic regions after subsampling
+	 Coverage (Before)          Coverage for the in silico regions and genomic regions before subsampling
+	 Coverage (After)           Coverage for the in silico regions and genomic regions after subsampling
 
 EXAMPLE OUTPUT
+
+    -------VarSubsample Summary Statistics
+
+           Reference annotation file: AVA019.bed
+           User alignment file: sorted.bam
+
+    -------Reference regions
+
+           Synthetic regions: 36
+           Genomic regions:   36
+
+           Normalization: Mean
+
+    -------User alignments (before subsampling)
+
+           Synthetic: 32155050
+           Genome:    422154887
+
+    -------User alignments (after subsampling)
+
+           Synthetic: 13949
+           Genome:    422154887
+
+    -------Before subsampling
+
+           Synthetic coverage: 78067.3
+           Genome coverage:    11.6469
+
+    -------After subsampling
+
+           Synthetic coverage: 10.7811
+           Genome coverage:    11.6469

@@ -46,13 +46,14 @@ OUTPUTS
         Input alignment file       Input sample alignment file in SAM/BAM format
         Reference annotation file  User generated sample alignments in SAM/BAM format
         Synthetic                  Number of alignments mapped to the in silico chromosome
-        Genome                     Number of alignments mapped to the human genome		
+        Genome                     Number of alignments mapped to the human genome      
         Dilution                   Proportion of alignments mapped to the in silico chromosome
         Reference annotation       Number of exons, introns and bases on the in silico chromosome and the genome
         Non-spliced                Number of non-spliced reads on the in silico chromosome and the genome
         Spliced                    Number of spliced reads for on the in silico chromosome and the genome
         Total                      Spliced + Non-spliced
-        Sensitivity                Sensitivity of the alignments at levels: exon, intron and base (in silico chromosome and genome)
+        Sensitivity                Sensitivity of the alignments at levels: exon, intron and base (in silico chromosome and
+                                   genome)
         Precision                  Precision of the alignments at levels: intron and base (in silico chromosome and genome)
 
      RnaAlign_sequins.csv - gives detailed statistics for each individual sequin gene. Field definitions:

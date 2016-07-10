@@ -23,8 +23,6 @@ data  = [ 'data/manual.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
-          'data/manuals/VarFrequency.txt',
-          'data/manuals/VarVarScan.txt',
 
           'scripts/viewer.py',
           'scripts/reports.py',

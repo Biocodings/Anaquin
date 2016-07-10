@@ -271,40 +271,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_GENOME,    { OPT_R_GTF, OPT_U_FILES } },
 
     /*
-     * Ladder Analysis
-     */
-
-    { TOOL_L_NORM, { OPT_U_FILES, OPT_MIXTURE } },
-
-    /*
-     * Structural analysis
-     */
-    
-    { TOOL_S_DISCOVER, { OPT_R_BED, OPT_U_FILES } },
-
-    /*
-     * Metagenomics Analysis
-     */
-
-    { TOOL_M_IGV,      { OPT_U_FILES } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
-    { TOOL_M_KDIFF,    { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_M_ABUND,    { OPT_R_BED,   OPT_U_FILES } },
-    { TOOL_M_KABUND,   { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
-    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES } },
-
-    /*
-     * Fusion Analysis
-     */
-
-    { TOOL_F_DISCOVER, { OPT_R_BED, OPT_SOFT, OPT_U_FILES               } },
-    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
-    { TOOL_F_FUSION,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
-    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                         } },
-    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_MIXTURE, OPT_U_FILES } },
-
-    /*
      * Variant Analysis
      */
 

@@ -362,7 +362,7 @@ static Scripts summary()
     return "-------RnaAlign Summary Statistics\n\n"
            "       Input alignment file: %1%\n"
            "       Reference annotation file: %2%\n\n"
-           "-------Number of alignments mapped to the synthetic chromosome and human genome\n\n"
+           "-------Number of alignments mapped to the synthetic chromosome and genome\n\n"
            "       Synthetic: %3%\n"
            "       Genome:    %4%\n"
            "       Dilution:  %5$.2f\n\n"
