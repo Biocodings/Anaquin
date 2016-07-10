@@ -40,15 +40,15 @@ TOOL OPTIONS
 OUTPUTS
      RnaSubsample_summary.stats - reports summary statistics for the subsampling. Field definitions:
 
-        User generated alignment  Input sample alignment file in SAM/BAM format
-        Synthetic (Before)        Number of alignments mapped to the in silico chromosome
-        Genome (Before)           Number of alignments mapped to the human genome      
-        Dilution (Before)         Proportion of alignments mapped to the in silico chromosome
-        Fraction                  Number of exons, introns and bases on the in silico chromosome and the genome
-        Normalization             Number of non-spliced reads on the in silico chromosome and the genome
-        Synthetic (After)         Number of alignments mapped to the in silico chromosome
-        Genome (After)            Number of alignments mapped to the human genome      
-        Dilution (After)          Proportion of alignments mapped to the in silico chromosome
+        User generated alignment  User generated alignment file in SAM/BAM format
+        Synthetic (Before)        Number of alignments mapped to the in silico chromosome before subsampling
+        Genome (Before)           Number of alignments not mapped to the in silico chromosome before subsampling      
+        Dilution (Before)         Synthetic (Before) / (Synthetic (Before) + Genome (Before))
+        Fraction                  User specified fraction of spike-in required
+        Normalization             Calculated normalization factors applied in subsampling in silico alignments 
+        Synthetic (After)         Number of alignments mapped to the in silico chromosome after subsampling
+        Genome (After)            Number of alignments not mapped to the in silico chromosome after subsampling      
+        Dilution (After)          Synthetic (After) / (Synthetic (After) + Genome (After))
 
 EXAMPLE SUMMARY STATISTICS
 
