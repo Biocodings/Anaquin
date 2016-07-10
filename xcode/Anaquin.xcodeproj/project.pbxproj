@@ -136,6 +136,7 @@
 		EFFC645A1D17C43200827474 /* t_biology.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC64591D17C43200827474 /* t_biology.cpp */; };
 		EFFD3B591D0F6D42002FEC35 /* gtf_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */; };
 		EFFD9A891D26BB6A00A7A80B /* sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFD9A881D26BB6A00A7A80B /* sample.cpp */; };
+		EFFDE9701D3297E400D8B2D9 /* t_convert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFDE96F1D3297E400D8B2D9 /* t_convert.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -400,6 +401,8 @@
 		EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtf_data.cpp; path = ../tests/tools/gtf_data.cpp; sourceTree = "<group>"; };
 		EFFD9A881D26BB6A00A7A80B /* sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sample.cpp; path = ../src/tools/sample.cpp; sourceTree = "<group>"; };
 		EFFD9A8A1D26BF5100A7A80B /* parser_vcf_.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf_.hpp; path = ../src/parsers/parser_vcf_.hpp; sourceTree = "<group>"; };
+		EFFDE96E1D3297BB00D8B2D9 /* convert.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = convert.hpp; path = ../src/data/convert.hpp; sourceTree = "<group>"; };
+		EFFDE96F1D3297E400D8B2D9 /* t_convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_convert.cpp; path = ../tests/data/t_convert.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -584,6 +587,7 @@
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
+				EFFDE96E1D3297BB00D8B2D9 /* convert.hpp */,
 				EF94CB061CC4D2D600EDDDA7 /* data.hpp */,
 				EF5B07BF1C48E24100751B46 /* dtest.hpp */,
 				EF92BC3D1CA3A9000054E8C8 /* errors.hpp */,
@@ -770,6 +774,7 @@
 			isa = PBXGroup;
 			children = (
 				EFFC64591D17C43200827474 /* t_biology.cpp */,
+				EFFDE96F1D3297E400D8B2D9 /* t_convert.cpp */,
 				EF17D29C1BCF246700F503F7 /* t_intervals.cpp */,
 				EFB108441C22D29E004DCBCF /* t_itree.cpp */,
 				EFB7FF381B4F848D0045DC6A /* t_locus.cpp */,
@@ -1010,6 +1015,7 @@
 				EFDD6ACC1B0DD76C00450029 /* cram_index.c in Sources */,
 				EFDD6AD51B0DD76C00450029 /* sam_header.c in Sources */,
 				EFB26DB71D19373400B08054 /* minters.cpp in Sources */,
+				EFFDE9701D3297E400D8B2D9 /* t_convert.cpp in Sources */,
 				EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */,
 				EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */,
 				EFBC882B1C3E78F500B604A7 /* t_r_writer.cpp in Sources */,
