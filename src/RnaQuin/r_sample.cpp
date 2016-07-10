@@ -71,7 +71,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     return stats;
 }
 
-static void generateSummary(const FileName &file, const RSample::Stats &stats, const RSample::Options &o)
+static void generateSummary(const FileName &file, const FileName &src, const RSample::Stats &stats, const RSample::Options &o)
 {
     o.generate(file);
     
@@ -92,7 +92,7 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % file
+    o.writer->write((boost::format(summary) % src
                                             % stats.before.syn
                                             % stats.before.gen
                                             % stats.before.dilut()
@@ -112,5 +112,5 @@ void RSample::report(const FileName &file, const Options &o)
      * Generating RnaSubsample_summary.stats
      */
     
-    generateSummary("RnaSubsample_summary.stats", stats, o);
+    generateSummary("RnaSubsample_summary.stats", file, stats, o);
 }
