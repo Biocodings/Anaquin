@@ -1,6 +1,7 @@
 #ifndef V_DISCOVER_HPP
 #define V_DISCOVER_HPP
 
+#include <set>
 #include <vector>
 #include "stats/analyzer.hpp"
 #include "tools/vcf_data.hpp"
@@ -185,7 +186,21 @@ namespace Anaquin
             std::map<ChrID, HashHist> hist;
 
             std::map<ChrID, Data> data;
+
+            /*
+             * Structure for the query data. This is important because we might not be given
+             * an annoation for the genome but we still might need to calculate number of variants
+             * with allele frequency below and above the LOQ.
+             */
             
+            struct QueryData
+            {
+                // Measured allele frequency
+                std::set<Proportion> af;
+            };
+
+            std::map<ChrID, QueryData> query;
+
             /*
              * Statistics for allele frequency
              */

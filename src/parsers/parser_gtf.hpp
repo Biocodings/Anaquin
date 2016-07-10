@@ -104,13 +104,20 @@ namespace Anaquin
                 x.l.start = stoi(toks[3]);
                 x.l.end   = stoi(toks[4]);
 
-                if (toks[6] != "+" && toks[6] != "-")
+                if (toks[6] != "+" && toks[6] != "-" && toks[6] != ".")
                 {
                     throw std::runtime_error("File: " + r.src() + ". Invalid strand: [" + toks[6] + "]. Line: " + line );
                 }
 
-                x.str = toks[6] == "+" ? Strand::Forward : Strand::Backward;
-                
+                if (toks[6] == ".")
+                {
+                    x.str = Strand::Unknown;
+                }
+                else
+                {
+                    x.str = toks[6] == "+" ? Strand::Forward : Strand::Backward;
+                }
+
                 /*
                  * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
                  */

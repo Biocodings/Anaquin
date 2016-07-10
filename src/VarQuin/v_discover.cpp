@@ -62,6 +62,9 @@ struct VDiscoverImpl : public VCFDataUser
             if (!isnan(m.query.p))     { __countP__++; }
             if (!isnan(m.query.depth)) { __countD__++; }
 
+            // Always work on the queries
+            stats->query[cID].af.insert(m.query.alleleFreq());
+            
             /*
              * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
              * remains unchanged.
@@ -430,6 +433,26 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     Counts n_below = 0;
     Counts n_above = 0;
     
+    // For each query chromosome...
+    for (const auto &i : stats.query)
+    {
+        // For each genomic chromosome...
+        if (!Standard::isSynthetic(i.first))
+        {
+            for (const auto &j : i.second.af)
+            {
+                if (j >= ms.b)
+                {
+                    n_above++;
+                }
+                else
+                {
+                    n_below++;
+                }
+            }
+        }
+    }
+
     // For each reference chromosome...
     for (const auto &i : stats.data)
     {
