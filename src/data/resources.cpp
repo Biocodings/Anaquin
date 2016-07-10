@@ -15,7 +15,6 @@
 #include "resources/VarAlign.txt"
 #include "resources/VarDiscover.txt"
 #include "resources/VarSubsample.txt"
-#include "resources/VarFrequency.txt"
 
 /*
  * Scripts
@@ -177,11 +176,6 @@ Scripts VarSubsample()
 Scripts VarDiscover()
 {
     return ToString(data_manuals_VarDiscover_txt);
-}
-
-Scripts VarFrequency()
-{
-    return ToString(data_manuals_VarFrequency_txt);
 }
 
 /*
