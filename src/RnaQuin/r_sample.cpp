@@ -81,7 +81,7 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
                          "       Synthetic: %2% reads\n"
                          "       Genome:    %3% reads\n"
                          "       Dilution:  %4%\n\n"
-                         "       * Fraction of dilution specified:\n"
+                         "       * Dilution specified by the user:\n"
                          "       Fraction: %5%\n\n"
                          "       * Normalization applied in subsampling:\n"
                          "       Normalization: %6%\n\n"

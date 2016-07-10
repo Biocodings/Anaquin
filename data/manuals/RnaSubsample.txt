@@ -15,8 +15,10 @@ DESCRIPTION
     For example, most differential analysis package models gene dispersions. The estimation might be inaccurate unless
     the sequins are comparable across the replicates.
 
-    Users need to specify a spike-in fraction, typically, we recommend 1% to 10%. Further details are discussed in
-    Section 5.4.3. Firstly, this tool calculates the number of alignments on the in silico chromosome and genome. This is
+    Users need to specify preferred dilution fraction, typically, we recommend 1% to 10%. Further details are discussed in
+    Section 5.4.3.
+
+    Firstly, this tool calculates the number of alignments on the in silico chromosome and genome. This is
     reported as “Before subsampling” in the summary statistics. Next, it uses the specified fraction to deduce how much
     the reads on the in silico chromosome should be subsampled and is reported as “After subsampling” in the summary
     statistics.
@@ -28,10 +30,11 @@ INPUTS
      User generated SAM/BAM alignment file
 
 USAGE EXAMPLE
-     anaquin RnaSubsample –ufiles alignment.bam
+     anaquin RnaSubsample -method 0.01 –ufiles alignment.bam
 
 TOOL OPTIONS
      Required:
+        -method      Dilution factor as a floating number. For example, 0.01 is 1% and 0.10 is 10% etc.
         -ufiles      User generated SAM/BAM alignment file
 
      Optional:
@@ -44,7 +47,7 @@ OUTPUTS
         Synthetic (Before)        Number of alignments mapped to the in silico chromosome before subsampling
         Genome (Before)           Number of alignments not mapped to the in silico chromosome before subsampling      
         Dilution (Before)         Synthetic (Before) / (Synthetic (Before) + Genome (Before))
-        Fraction                  User specified fraction of spike-in required
+        User Dilution             User specified dilution (specified by -method)
         Normalization             Calculated normalization factors applied in subsampling in silico alignments 
         Synthetic (After)         Number of alignments mapped to the in silico chromosome after subsampling
         Genome (After)            Number of alignments not mapped to the in silico chromosome after subsampling      
