@@ -1,56 +1,75 @@
-VarQuin Analysis                     Anaquin Manual                    
+RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+     RnaSubsample - Calibrate the sequence coverage of sequins across multiple replicates
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+     RnaSubsample enables calibration of sequin coverage across multiple RNA-Seq replicates. The tool is useful to ensure
+     the sequencing depth comparable across different libraries.
 
-	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
+     For example, if we have two technical libraries, and they have the following characteristics:
+        * Library A with 2 million reads on the in silico chromosome
+        * Library B with 1 million reads on the in silico chromosome
 
-       Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
-	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
+    Obviously library A has higher sequencing depth than library B, and would create bias in the statistical results.
+    For example, most differential analysis package models gene dispersions. The estimation might be inaccurate unless
+    the sequins are comparable across the replicates.
 
-       Precision –- The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
-	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+    Users need to specify a spike-in fraction, typically, we recommend 1% to 10%. Further details are discussed in
+    Section 5.4.3. Firstly, this tool calculates the number of alignments on the in silico chromosome and genome. This is
+    reported as “Before subsampling” in the summary statistics. Next, it uses the specified fraction to deduce how much
+    the reads on the in silico chromosome should be subsampled and is reported as “After subsampling” in the summary
+    statistics.
 
 BIOINFORMATICS SOFTWARE
-	 Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+     Any short-reads spliced aligner that generates SAM/BAM outputs. Common examples include TopHat2 and STAR.
 
 INPUTS
-	 Reference annotation file in BED format
-	 Generated alignment file in SAM/BAM format
-	 
+     User generated SAM/BAM alignment file
+
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin RnaSubsample –ufiles alignment.bam
 
 TOOL OPTIONS
-	 Required:
-	 	-rbed        Reference VarQuin annotation file in BED format
-		-ufiles      Generated alignment files in SAM/BAM format
+     Required:
+        -ufiles      User generated SAM/BAM alignment file
 
-	 Optional:
-		-o = output	 Directory in which the output files are written to
+     Optional:
+        -o = output  Directory in which the output files are written to
 
 OUTPUTS
-	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
+     RnaSubsample_summary.stats - reports summary statistics for the subsampling. Field definitions:
 
-	 	Reference annotation file	Reference annotation file in BED format 
-		User alignment file         User generated sample alignments in SAM/BAM format
-		Synthetic				    Number of alignments mapped to the in-silico genome
-		Genome					    Number of alignments mapped to the human genome
-		Dilution					Proportion of alignments mapped to the in-silico chromosome
-		Covered						Number of nucleotide bases with alignments
-		Uncovered					Number of nucleotide bases without alignments
-		Total						Covered + Uncovered
-		Sensitivity					Sensitivity of the alignments for the in-silico genome and the human genome
-		Precision					Precision of the alignments for the in-silico genome and the human genome
+        User generated alignment  Input sample alignment file in SAM/BAM format
+        Synthetic (Before)        Number of alignments mapped to the in silico chromosome
+        Genome (Before)           Number of alignments mapped to the human genome      
+        Dilution (Before)         Proportion of alignments mapped to the in silico chromosome
+        Fraction                  Number of exons, introns and bases on the in silico chromosome and the genome
+        Normalization             Number of non-spliced reads on the in silico chromosome and the genome
+        Synthetic (After)         Number of alignments mapped to the in silico chromosome
+        Genome (After)            Number of alignments mapped to the human genome      
+        Dilution (After)          Proportion of alignments mapped to the in silico chromosome
 
-	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
-	    ID						    Name of the sequin
-		Length						Length of the sequin
-		Reads						Number of reads aligned
-		Sn							Base-level sensitivity of alignments 
-		Pc							Base-level precision of alignments
+EXAMPLE SUMMARY STATISTICS
 
-EXAMPLE OUTPUT
+    -------RnaSubsample Summary Statistics
+
+           User generated alignment: RnaSubsample_summary.stats
+
+    -------User alignments (before subsampling)
+
+           Synthetic: 36552138 reads
+           Genome:    11493036 reads
+           Dilution:  0.760787
+
+           * Fraction of spike-ins specified:
+           Fraction: 0.050000
+
+           * Normalization applied in subsampling:
+           Normalization: 0.0165489
+
+    -------User alignments (after subsampling)
+
+           Synthetic: 603687 reads
+           Genome:    11493036 reads
+           Dilution:  0.049905

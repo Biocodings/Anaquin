@@ -521,6 +521,7 @@ template <typename F> bool testFile(const FileName &x, F f)
 static Scripts manual(Tool tool)
 {
     extern Scripts RnaAlign();
+    extern Scripts RnaSubsample();
     extern Scripts RnaAssembly();
     extern Scripts RnaExpression();
     extern Scripts RnaFoldChange();
@@ -535,10 +536,10 @@ static Scripts manual(Tool tool)
         case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
         case TOOL_R_EXPRESS:   { return RnaExpression(); }
         case TOOL_R_FOLD:      { return RnaFoldChange(); }
+        case TOOL_R_SUBSAMPLE: { return RnaSubsample();  }
         case TOOL_V_ALIGN:     { return VarAlign();      }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
         case TOOL_V_DISCOVER:  { return VarDiscover();   }
-        case TOOL_V_FREQ:      { return VarFrequency();  }
     }
 
     throw "Manual not found";

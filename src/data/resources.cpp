@@ -1,3 +1,4 @@
+
 #include <string>
 #include <algorithm>
 
@@ -7,6 +8,7 @@
 
 #include "resources/manual.txt"
 #include "resources/RnaAlign.txt"
+#include "resources/RnaSubsample.txt"
 #include "resources/RnaAssembly.txt"
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
@@ -136,6 +138,11 @@ Scripts PlotSensitivity()
 /*
  * Manuals
  */
+
+Scripts RnaSubsample()
+{
+    return ToString(data_manuals_RnaSubsample_txt);
+}
 
 Scripts RnaAlign()
 {

@@ -19,8 +19,6 @@ data  = [ 'data/manual.txt',
           'data/manuals/RnaExpression.txt',
           'data/manuals/RnaFoldChange.txt',
           'data/manuals/RnaSubsample.txt',
-          'data/manuals/RnaCuffdiff.txt',
-          'data/manuals/RnaDESeq2.txt',
 
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',

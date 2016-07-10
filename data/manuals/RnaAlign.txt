@@ -1,7 +1,7 @@
 RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-     RnaAlign -- Measure the spliced read alignments from sequins to the in silico chromosome
+     RnaAlign - Measure the spliced read alignments from sequins to the in silico chromosome
 
 DESCRIPTION
      RnaAlign calculates several useful statistics from an alignment file, including:
@@ -62,7 +62,57 @@ OUTPUTS
         SnIntron                   Sensitivity at the intron level 
         SnBase                     Sensitivity at the base level 
 
-EXAMPLE OUTPUT
+EXAMPLE SUMMARY STATISTICS
 
+    -------RnaAlign Summary Statistics
 
- 
+           Input alignment file: A1/accepted_hits.bam
+           Reference annotation file: combined.gtf
+
+    -------Number of alignments mapped to the synthetic chromosome and human genome
+
+           Synthetic: 36552138
+           Genome:    11493036
+           Dilution:  0.76
+
+    -------Reference annotation (Synthetic)
+
+           Synthetic: 869 exons
+           Synthetic: 754 introns
+           Synthetic: 5490967 bases
+
+    -------Reference annotation (Genome)
+
+           Genome: 570980 exons
+           Genome: 347657 introns
+           Genome: 1758049931 bases
+
+    -------Alignments (Synthetic)
+
+           Non-spliced: 20575711
+           Spliced:     15976427
+
+    -------Alignments (Genome)
+
+           Non-spliced: 8611159
+           Spliced:     1754969
+
+    -------Comparison of alignments to reference annotation (Synthetic)
+
+           *Intron level
+            Sensitivity: 0.99
+            Precision:   0.70
+
+           *Base level
+            Sensitivity: 0.99
+            Precision:   0.98
+
+    -------Comparison of alignments to reference annotation (Genome)
+
+           *Intron level
+            Sensitivity: 0.29
+            Precision:   0.90
+
+           *Base level
+            Sensitivity: 0.31
+            Precision:   0.30
