@@ -408,8 +408,8 @@ void RAssembly::report(const FileName &file, const Options &o)
                                                "Assembly Detection",
                                                "Input Concentration (log2)",
                                                "Sensitivity",
-                                               "Expected",
-                                               "Measured",
+                                               "InputConcent",
+                                               "Sn",
                                                true));
     o.writer->close();
     
