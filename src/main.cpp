@@ -262,7 +262,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
@@ -1088,17 +1088,32 @@ void parse(int argc, char ** argv)
             
             case OPT_METHOD:
             {
-                parseDouble(_p.opts[opt] = val, _p.sampled);
+                switch (_p.tool)
+                {
+                    case TOOL_R_EXPRESS: { _p.opts[opt] = val; break; }
+                        
+                    case TOOL_R_SUBSAMPLE:
+                    {
+                        parseDouble(_p.opts[opt] = val, _p.sampled);
+                        
+                        if (_p.sampled <= 0.0)
+                        {
+                            throw InvalidValueException(val, "method. Sampling fraction must be greater than zero");
+                        }
+                        else if (_p.sampled >= 1.0)
+                        {
+                            throw InvalidValueException(val, "method. Sampling fraction must be less than one");
+                        }
+                        
+                        break;
+                    }
+                        
+                    case TOOL_V_SUBSAMPLE:
+                    {
+                        break;
+                    }
+                }
                 
-                if (_p.sampled <= 0.0)
-                {
-                    throw InvalidValueException(val, "method. Sampling fraction must be greater than zero");
-                }
-                else if (_p.sampled >= 1.0)
-                {
-                    throw InvalidValueException(val, "method. Sampling fraction must be less than one");
-                }
-
                 break;
             }
 
@@ -1297,26 +1312,19 @@ void parse(int argc, char ** argv)
                 {
                     RExpress::Options o;
                     
+                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
+                    {
+                        throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
+                    }
+
+                    o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
+                    
                     // Is this a GTF by extension?
                     const auto isGTF = _p.inputs[0].find(".gtf") != std::string::npos;
                     
-                    o.inputs = isGTF ? RExpress::Inputs::GTF : RExpress::Inputs::Text;
-
-                    switch (o.inputs)
+                    if (isGTF)
                     {
-                        case RExpress::Inputs::GTF:
-                        {
-                            o.metrs = RExpress::Metrics::Isoform;
-                            break;
-                        }
-
-                        case RExpress::Inputs::Text:
-                        {
-                            o.metrs = ParserExpress::isIsoform(Reader(_p.inputs[0]))
-                                                               ? RExpress::Metrics::Isoform
-                                                               : RExpress::Metrics::Gene;
-                            break;
-                        }
+                        o.inputs = RExpress::Inputs::GTF;
                     }
 
                     analyze_n<RExpress>(o);
