@@ -62,9 +62,6 @@ struct VDiscoverImpl : public VCFDataUser
             if (!isnan(m.query.p))     { __countP__++; }
             if (!isnan(m.query.depth)) { __countD__++; }
 
-            // Always work on the queries
-            stats->query[cID].af.insert(m.query.alleleFreq());
-            
             /*
              * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
              * remains unchanged.
@@ -131,6 +128,9 @@ struct VDiscoverImpl : public VCFDataUser
             }
         };
         
+        // Always work on the queries
+        stats->query[cID].af.insert(m.query.alleleFreq());
+
         if (Standard::isSynthetic(cID))
         {
             stats->n_syn++;
