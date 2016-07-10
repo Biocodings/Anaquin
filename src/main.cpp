@@ -175,8 +175,6 @@ Path __output__;
 // Full path where Anaquin is
 Path __anaquin__;
 
-
-
 // Shared with other modules
 std::string date()
 {
@@ -990,7 +988,7 @@ void parse(int argc, char ** argv)
         }
         catch (...)
         {
-            throw;
+            throw std::runtime_error(str + " is not a valid floating number. Please check and try again.");
         }
     };
 
@@ -1005,7 +1003,7 @@ void parse(int argc, char ** argv)
         }
         catch (...)
         {
-            throw std::runtime_error("Failed to parse: " + std::to_string(r));
+            throw std::runtime_error(str + " is not a valid integer. Please check and try again.");
         }
     };
     

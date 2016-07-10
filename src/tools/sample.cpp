@@ -23,13 +23,13 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         
         const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
 
-        if (shouldWrite)
+        if (Standard::isSynthetic(x.cID))
         {
-            stats.before.gen++;
+            stats.before.syn++;
         }
         else
         {
-            stats.before.syn++;
+            stats.before.gen++;
         }
         
         // This is the key, randomly write the reads with certain probability
@@ -47,7 +47,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
                 }
             }
             
-            if (!shouldWrite)
+            if (Standard::isSynthetic(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);

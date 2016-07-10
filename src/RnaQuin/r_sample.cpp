@@ -66,7 +66,6 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     // Perform subsampling
     const auto r = Sampler::subsample(file, stats.norm, o);
 
-    stats.before = r.before;
     stats.after = r.after;
 
     return stats;
@@ -82,9 +81,9 @@ static void generateSummary(const FileName &file, const RSample::Stats &stats, c
                          "       Synthetic: %2% reads\n"
                          "       Genome:    %3% reads\n"
                          "       Dilution:  %4%\n\n"
-                         "       * Fraction of spike-ins specified:"
+                         "       * Fraction of spike-ins specified:\n"
                          "       Fraction: %5%\n\n"
-                         "       * Normalization applied in subsampling:"
+                         "       * Normalization applied in subsampling:\n"
                          "       Normalization: %6%\n\n"
                          "-------User alignments (after subsampling)\n\n"
                          "       Synthetic: %7% reads\n"
