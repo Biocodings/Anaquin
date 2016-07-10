@@ -173,6 +173,90 @@ static void writeQueries(const FileName &output, const std::vector<RExpress::Sta
 {
 }
 
+static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
+{
+    const auto &r = Standard::instance().r_trans;
+    
+    std::set<SequinID> seqs;
+    
+    // This is the data structure that will be convenient
+    std::map<unsigned, std::map<SequinID, Concent>> data;
+    
+    // Expected concentration
+    std::map<SequinID, Concent> expect;
+    
+    std::stringstream ss;
+    ss << "ID\tLength\tExpected";
+    
+    for (auto i = 0; i < stats.size(); i++)
+    {
+        ss << ((boost::format("\tObserved%1%") % (i+1)).str());
+        
+        for (const auto &j : stats[i])
+        {
+            seqs.insert(j.first);
+            expect[j.first]  = j.second.x;
+            data[i][j.first] = j.second.y;
+        }
+    }
+    
+    ss << "\n";
+    
+    for (const auto &seq : seqs)
+    {
+        ss << ((boost::format("%1%\t%2%\t%3%") % seq
+                % r.match(seq)->l.length()
+                % expect.at(seq)).str());
+        
+        for (auto i = 0; i < stats.size(); i++)
+        {
+            if (data[i].count(seq))
+            {
+                ss << "\t" << data[i][seq];
+            }
+            else
+            {
+                ss << "\tNA";
+            }
+        }
+        
+        ss << "\n";
+    }
+    
+    return ss.str();
+}
+
+static void generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
+{
+    const auto &r = Standard::instance().r_trans;
+
+    o.info("Generating " + output);
+    o.writer->open(output);
+    
+    if (stats.size() == 1)
+    {
+        const auto format = "%1%\t%2%\t%3%\t%4%";
+        
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Length"
+                                               % "InputConcent"
+                                               % "Observed").str());
+        for (const auto &i : stats[0])
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % r.match(i.first)->l.length()
+                                                   % i.second.x
+                                                   % i.second.y).str());
+        }
+    }
+    else
+    {
+        o.writer->write(multipleCSV(stats));
+    }
+    
+    o.writer->close();
+}
+
 void RExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto m = std::map<RExpress::Metrics, std::string>
@@ -205,7 +289,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_sequins.csv
      */
     
-    RExpress::generateCSV("RnaExpression_sequins.csv", stats, o);
+    generateCSV("RnaExpression_sequins.csv", stats, o);
 
     /*
      * Generating RnaExpression_queries.csv

@@ -241,7 +241,7 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
                                            % "Length"
-                                           % "ECon"
+                                           % "InputConcent"
                                            % "Sn").str());
 
     for (const auto &i : stats.tSPs)

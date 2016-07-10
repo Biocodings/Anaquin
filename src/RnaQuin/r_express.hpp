@@ -23,55 +23,6 @@ namespace Anaquin
 {
     struct RExpress : public Analyzer
     {
-        template <typename Stats> static Scripts multipleCSV(const std::vector<Stats> &stats)
-        {
-            std::set<SequinID> seqs;
-            
-            // This is the data structure that will be convenient
-            std::map<unsigned, std::map<SequinID, Concent>> data;
-            
-            // Expected concentration
-            std::map<SequinID, Concent> expect;
-            
-            std::stringstream ss;
-            ss << "ID\tExpected";
-            
-            for (auto i = 0; i < stats.size(); i++)
-            {
-                ss << ((boost::format("\tObserved%1%") % (i+1)).str());
-                
-                for (const auto &j : stats[i])
-                {
-                    seqs.insert(j.first);
-                    expect[j.first]  = j.second.x;
-                    data[i][j.first] = j.second.y;
-                }
-            }
-            
-            ss << "\n";
-            
-            for (const auto &seq : seqs)
-            {
-                ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
-                
-                for (auto i = 0; i < stats.size(); i++)
-                {
-                    if (data[i].count(seq))
-                    {
-                        ss << "\t" << data[i][seq];
-                    }
-                    else
-                    {
-                        ss << "\tNA";
-                    }
-                }
-                
-                ss << "\n";
-            }
-            
-            return ss.str();
-        }
-        
         typedef ParserCufflink::Data TestData;
         
         enum class Metrics
@@ -152,29 +103,6 @@ namespace Anaquin
                                                             "Measured Expression (log2)",
                                                             "Expected",
                                                             "Measured", true, true));
-            }
-            
-            o.writer->close();
-        }
-
-        /*
-         * Generate sequin statistics in the CSV format
-         */
-        
-        template <typename Stats, typename Options> static void generateCSV(const FileName &output,
-                                                                            const std::vector<Stats> &stats,
-                                                                            const Options &o)
-        {
-            o.info("Generating " + output);
-            o.writer->open(output);
-            
-            if (stats.size() == 1)
-            {
-                o.writer->write(StatsWriter::writeCSV(stats[0]));
-            }
-            else
-            {
-                o.writer->write(RExpress::multipleCSV(stats));
             }
             
             o.writer->close();

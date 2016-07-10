@@ -37,7 +37,7 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * Generating RnaKExpress_sequins.csv
      */
     
-    RExpress::generateCSV("RnaKExpress_sequins.csv", stats, o);
+//    RExpress::generateCSV("RnaKExpress_sequins.csv", stats, o);
     
     /*
      * Generating RnaKExpress_express.R

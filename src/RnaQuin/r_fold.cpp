@@ -55,13 +55,6 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         
         if (!isnan(exp) && !isnan(t.logF))
         {
-            // The higher the LFC the easier it's being detected
-            if (isnan(stats.limit.abund) || fabs(exp) < fabs(stats.limit.abund))
-            {
-                stats.limit.id = id;
-                stats.limit.abund = fabs(exp);
-            }
-
             stats.add(id, exp, t.logF);
         }
     };
@@ -160,6 +153,42 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     });
 }
 
+static Scripts generateQuins(const RFold::Stats &stats, const RFold::Options &o)
+{
+    std::stringstream ss;
+    ss << "ID\tMean\tExpectLFold\tObserveLFold\tSD\tPval\tQval\n";
+    
+    for (const auto &i : stats.data)
+    {
+        const auto &x = i.second;
+        
+        if (isnan(x.p))
+        {
+            ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % i.first).str();
+        }
+        else
+        {
+            ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % i.first
+                                                                         % n2str(x.mean)
+                                                                         % n2str(x.exp)
+                                                                         % n2str(x.obs)
+                                                                         % n2str(x.se)
+                                                                         % p2str(x.q)
+                                                                         % p2str(x.p)).str());
+        }
+    }
+    
+    return ss.str();
+}
+
+static void generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+{
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(generateQuins(stats, o));
+    o.writer->close();
+}
+
 static void generateSummary(const FileName &file,
                             const FileName &src,
                             const RFold::Stats &stats,
@@ -182,16 +211,15 @@ static void generateSummary(const FileName &file,
                          "-------%5%\n\n"
                          "       Synthetic: %6% %3%\n"
                          "       Genome:    %7% %3%\n\n"
-                         "       Detection Sensitivity: %8% (attomol/ul) (%9%)\n\n"
                          "-------Linear regression (log2 scale)\n\n"
-                         "       Slope:       %10%\n"
-                         "       Correlation: %11%\n"
-                         "       R2:          %12%\n"
-                         "       F-statistic: %13%\n"
-                         "       P-value:     %14%\n"
-                         "       SSM:         %15%, DF: %16%\n"
-                         "       SSE:         %17%, DF: %18%\n"
-                         "       SST:         %19%, DF: %20%\n";
+                         "       Slope:       %8%\n"
+                         "       Correlation: %9%\n"
+                         "       R2:          %10%\n"
+                         "       F-statistic: %11%\n"
+                         "       P-value:     %12%\n"
+                         "       SSM:         %13%, DF: %14%\n"
+                         "       SSE:         %15%, DF: %16%\n"
+                         "       SST:         %17%, DF: %18%\n";
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src               // 1
@@ -201,19 +229,17 @@ static void generateSummary(const FileName &file,
                                             % title             // 5
                                             % stats.n_syn       // 6
                                             % stats.n_gen       // 7
-                                            % stats.limit.abund // 8
-                                            % stats.limit.id    // 9
-                                            % lm.m              // 10
-                                            % lm.r              // 11
-                                            % lm.R2             // 12
-                                            % lm.F              // 13
-                                            % lm.p              // 14
-                                            % lm.SSM            // 15
-                                            % lm.SSM_D          // 16
-                                            % lm.SSE            // 17
-                                            % lm.SSE_D          // 18
-                                            % lm.SST            // 19
-                                            % lm.SST_D          // 20
+                                            % lm.m              // 8
+                                            % lm.r              // 9
+                                            % lm.R2             // 10
+                                            % lm.F              // 11
+                                            % lm.p              // 12
+                                            % lm.SSM            // 13
+                                            % lm.SSM_D          // 14
+                                            % lm.SSE            // 15
+                                            % lm.SSE_D          // 16
+                                            % lm.SST            // 17
+                                            % lm.SST_D          // 18
                      ).str());
     o.writer->close();
 }
@@ -250,7 +276,7 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_sequins.csv
      */
 
-    RFold::generateCSV("RnaFoldChange_sequins.csv", stats, o);
+    generateCSV("RnaFoldChange_sequins.csv", stats, o);
     
     /*
      * Generating RnaFoldChange_fold.R
@@ -262,8 +288,8 @@ void RFold::report(const FileName &file, const Options &o)
                                         "Fold Change",
                                         "Expected fold change (log2)",
                                         "Measured fold change (log2)",
-                                        "Expected",
-                                        "Measured", false));
+                                        "ExpectLFold",
+                                        "ObserveLFold", false));
     o.writer->close();
 
     /*
