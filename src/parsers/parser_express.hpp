@@ -1,9 +1,9 @@
 #ifndef PARSER_EXPRESS_HPP
 #define PARSER_EXPRESS_HPP
 
-#include <fstream>
 #include "data/data.hpp"
 #include "data/tokens.hpp"
+#include "data/convert.hpp"
 
 namespace Anaquin
 {
@@ -12,9 +12,8 @@ namespace Anaquin
         typedef enum
         {
             ChrID,
-            Name,
-            Start,
-            End,
+            GeneID,
+            IsoID,
             Abund,
         } Field;
 
@@ -22,17 +21,37 @@ namespace Anaquin
         {
             ::Anaquin::ChrID cID;
 
-            // Eg: genes or isoforms
-            std::string id;
-
-            // Position of the gene/isoform
-            Locus l;
+            // Eg: R1_1 or R1_1
+            GenericID id;
             
             // Eg: FPKM, counts
             double abund;
         };
 
-        template <typename F> static void parse(const Reader &r, F f)
+        static bool isExpress(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+
+                if (toks.size() == 4 &&
+                    toks[0] == "ChrID" &&
+                    toks[1] == "GeneID" &&
+                    toks[2] == "IsoformID" &&
+                    toks[3] == "Abund")
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
         {
             ParserProgress p;
             std::string line;
@@ -45,37 +64,23 @@ namespace Anaquin
 
                 if (p.i)
                 {
-                    x.id    = toks[Field::Name];
-                    x.cID   = toks[Field::ChrID];
-                    x.abund = stod(toks[Field::Abund]);
-                    
-                    if (toks[Field::Start] != "-" && toks[Field::End] != "-")
+                    if (shouldGene)
                     {
-                        x.l.end   = stold(toks[Field::End]);
-                        x.l.start = stold(toks[Field::Start]);
+                        x.id = toks[Field::GeneID];
                     }
                     else
                     {
-                        x.l = Locus(0, 0);
+                        x.id = toks[Field::IsoID];
                     }
-
+                    
+                    x.cID   = toks[Field::ChrID];
+                    x.abund = ns2ld(toks[Field::Abund]);
+                    
                     f(x, p);
                 }
 
                 p.i++;
             }
-        }
-        
-        static bool isIsoform(const Reader &r)
-        {
-            std::vector<Tokens::Token> toks;
-            
-            if (r.nextTokens(toks, "\t"))
-            {
-                return toks[1] == "IsoID";
-            }
-            
-            return true;
         }
     };
 }

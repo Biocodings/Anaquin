@@ -1319,12 +1319,22 @@ void parse(int argc, char ** argv)
 
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
                     
+                    const auto &file = _p.inputs[0];
+                    
                     // Is this a GTF by extension?
-                    const auto isGTF = _p.inputs[0].find(".gtf") != std::string::npos;
+                    const auto isGTF = file.find(".gtf") != std::string::npos;
                     
                     if (isGTF)
                     {
                         o.inputs = RExpress::Inputs::GTF;
+                    }
+                    else if (ParserExpress::isExpress(file))
+                    {
+                        o.inputs = RExpress::Inputs::Text;
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Unknown file type: " + file + ". Input file should be a GTF file or Anaquin standard format. Please note Anaquin standard format requires a header.");
                     }
 
                     analyze_n<RExpress>(o);

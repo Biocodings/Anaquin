@@ -127,7 +127,8 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
         {
             case Inputs::Text:
             {
-                ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &p)
+                ParserExpress::parse(Reader(file), o.metrs == Metrics::Gene,
+                                     [&](const ParserExpress::Data &x, const ParserProgress &p)
                 {
                     if (p.i && !(p.i % 100000))
                     {
@@ -157,7 +158,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     {
                         if (matched)
                         {
-                            t.l     = x.l;
                             t.cID   = x.cID;
                             t.id    = metrs == Metrics::Gene ? x.gID : x.tID;
                             t.abund = x.fpkm;
