@@ -16,7 +16,11 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     # The variable for the y-axis
     data$y <- NULL
     
-    if (!is.null(data$input))    { data$x <- data$input    }
+    if (!is.null(data$input))
+    { 
+        data$expected <- data$input
+    }
+
     if (!is.null(data$expected)) { data$x <- data$expected }
     if (!is.null(data$measured)) { data$y <- data$measured }
     

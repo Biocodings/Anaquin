@@ -79,40 +79,6 @@ namespace Anaquin
             o.writer->close();
         }
 
-        /*
-         * Generate an R-script for expected abundance against measured abundance
-         */
-        
-        template <typename Options> static void generateR(const FileName &output,
-                                                          const FileName &csv,
-                                                          const std::vector<Stats> &stats,
-                                                          const Options &o)
-        {
-            o.info("Generating " + output);
-            o.writer->open(output);
-            
-            const auto title = o.metrs == Metrics::Gene ? "Gene Expression" : "Isoform Expression";
-            
-            if (stats.size() == 1)
-            {
-                o.writer->write(RWriter::createScatterNeedLog(csv, title,
-                                                              "Expected Expression (log2)",
-                                                              "Measured Expression (log2)",
-                                                              "InputConcent",
-                                                              "Observed", true));
-            }
-            else
-            {
-                o.writer->write(RWriter::createMultiScatter(csv, title,
-                                                            "Expected Expression (log2)",
-                                                            "Measured Expression (log2)",
-                                                            "InputConcent",
-                                                            "Observed", true, true));
-            }
-            
-            o.writer->close();
-        }
-        
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
         {
             std::vector<RExpress::Stats> stats;

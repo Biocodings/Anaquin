@@ -11,12 +11,12 @@
 
     data <- data$seqs
 
-    stopifnot(!is.null(data$expected))
-    stopifnot(!is.null(data$measured))    
+    stopifnot(!is.null(data$input))
+    stopifnot(!is.null(data$sensitivity))    
     
     data$f   <- NA
-    data$x   <- data$expected
-    data$y   <- data$measured
+    data$x   <- data$input
+    data$y   <- data$sensitivity
     data$grp <- as.factor(round(abs(data$x)))
     
     stopifnot(length(data$x) > 0)
@@ -32,7 +32,7 @@
         # Fit a sigmoid curve to the data, which is equivalent to logistic regression.
         #
         
-        perf <- min(data[data$y >= 1.00,]$expected)
+        perf <- min(data[data$y >= 1.00,]$input)
         
         t <- data
         t <- t[t$x <= perf | t$y > 0,]
@@ -72,7 +72,7 @@
         }
         else
         {
-            r <- round(min(t$expected),2)
+            r <- round(min(t$input),2)
 
             label <- 2^r
             label <- paste('LOA:', signif(label, 3))
@@ -92,7 +92,7 @@
     print(p)
 }
 
-plotSensitivity <- function(data, title, xlab, ylab, showLOA=TRUE, threshold=0.98)
+plotSensitivity <- function(data, title='', xlab='', ylab='', showLOA=TRUE, threshold=0.70)
 {
     stopifnot(class(data) == 'Anaquin')
     .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOA=showLOA, threshold=threshold)    

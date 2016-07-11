@@ -6,12 +6,13 @@
 
 .createData <- function(x, keys)
 {
-    if (is.null(x$seqs))
+    # Do we have sequin names?
+    if (is.null(x$names))
     {
         return (NULL)
     }
     
-    data <- data.frame(row.names=x$seqs)
+    data <- data.frame(row.names=x$names)
     
     for (key in keys)
     {
@@ -51,14 +52,19 @@
     return (NULL)
 }
 
-Anaquin <- function(...)
+CreateDataForAnaquin <- function(...)
 {
     x <- list(...)
 
-    keys <- c('sd', 'pval', 'qval', 'mean', 'expected', 'input', 'measured', 'label', 'score')
+    # Metrics Anaquin supports
+    keys <- c('sd', 'pval', 'qval', 'mean', 'expected', 'input', 'measured', 'sensitivity', 'label', 'score')
 
     r <- list('seqs'=.createData(x, keys))
-    stopifnot(!is.null(r$seqs))
+    
+    if (is.null(r$seqs))
+    {
+        stop('Please specify sequin names, for example, CreateDataForAnaquin(names=...)')
+    }
     
     class(r) <- 'Anaquin'
     return (r)

@@ -422,6 +422,44 @@ static void generateSummary(const FileName &summary,
     o.writer->close();
 }
 
+static void generateR(const FileName &output,
+                      const FileName &csv,
+                      const std::vector<RExpress::Stats> &stats,
+                      const RExpress::Options &o)
+{
+    o.info("Generating " + output);
+    o.writer->open(output);
+    
+    const auto title = o.metrs == Metrics::Gene ? "Gene Expression" : "Isoform Expression";
+    
+    Units measured;
+    
+    switch (o.inputs)
+    {
+        case RExpress::Inputs::GTF:  { measured = "FPKM"; break; }
+        case RExpress::Inputs::Text: { measured = "FPKM"; break; }
+    }
+
+    if (stats.size() == 1)
+    {
+        o.writer->write(RWriter::createScatterNeedLog(csv, title,
+                                                      "Expected Expression (log2)",
+                                                      measured + " (log2)",
+                                                      "InputConcent",
+                                                      "Observed", true));
+    }
+    else
+    {
+        o.writer->write(RWriter::createMultiScatter(csv, title,
+                                                    "Expected Expression (log2)",
+                                                    "Measured Expression (log2)",
+                                                    "InputConcent",
+                                                    "Observed", true, true));
+    }
+    
+    o.writer->close();
+}
+
 static void generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
@@ -507,5 +545,5 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_express.R
      */
     
-    RExpress::generateR("RnaExpression_express.R", "RnaExpression_sequins.csv", stats, o);
+    generateR("RnaExpression_express.R", "RnaExpression_sequins.csv", stats, o);
 }
