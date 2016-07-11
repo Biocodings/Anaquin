@@ -100,7 +100,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         x <- paste(x, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=max(x), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=1)
+        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=1)
     }
     
     p <- p + annotate("text",

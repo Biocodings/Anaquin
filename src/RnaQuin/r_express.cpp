@@ -244,7 +244,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     std::map<SequinID, Concent> expect;
     
     std::stringstream ss;
-    ss << "ID\tLength\tExpected";
+    ss << "ID\tLength\tInputConcent";
     
     for (auto i = 0; i < stats.size(); i++)
     {
