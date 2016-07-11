@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include "tools/gtf_data.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
@@ -7,7 +8,10 @@ using namespace Anaquin;
 
 typedef RExpress::Metrics Metrics;
 
-template <typename T> void update(RExpress::Stats &stats, const T &x, const RExpress::Options &o)
+template <typename T> void update(RExpress::Stats &stats,
+                                  const T &x,
+                                  RExpress::Metrics metrs,
+                                  const RExpress::Options &o)
 {
     if (Standard::isSynthetic(x.cID))
     {
@@ -18,7 +22,9 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
         Concent  exp = NAN;
         Measured obs = NAN;
 
-        switch (o.metrs)
+        auto hist = metrs == Metrics::Isoform ? stats.isosHist : stats.geneHist;
+        
+        switch (metrs)
         {
             case Metrics::Isoform:
             {
@@ -26,7 +32,7 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
                 
                 if (m)
                 {
-                    stats.hist.at(x.cID).at(m->id)++;
+                    hist.at(x.cID).at(m->id)++;
 
                     if (!isnan(x.abund) && x.abund)
                     {
@@ -49,7 +55,7 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
 
                 if (m)
                 {
-                    stats.hist.at(x.cID).at(x.id)++;
+                    hist.at(x.cID).at(x.id)++;
                     
                     if (!isnan(x.abund) && x.abund)
                     {
@@ -69,12 +75,14 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
         
         if (!id.empty())
         {
-            stats.add(id, exp, obs);
+            auto &ls = metrs == RExpress::Metrics::Isoform ? stats.isos : stats.genes;
             
-            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+            ls.add(id, exp, obs);
+
+            if (isnan(ls.limit.abund) || exp < ls.limit.abund)
             {
-                stats.limit.id = id;
-                stats.limit.abund = exp;
+                ls.limit.id = id;
+                ls.limit.abund = exp;
             }
         }
     }
@@ -93,17 +101,15 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
     
     const auto &r = Standard::instance().r_trans;
     
-    switch (o.metrs)
-    {
-        case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
-        case Metrics::Gene:    { stats.hist = r.histGene(); break; }
-    }
+    stats.isosHist = r.histIsof();
+    stats.geneHist = r.histGene();
     
-    assert(!stats.hist.empty());
+    assert(!stats.isosHist.empty());
+    assert(!stats.geneHist.empty());
     
     f(stats);
     
-    if (stats.empty())
+    if (stats.genes.empty() && stats.isos.empty())
     {
         throw std::runtime_error("Failed to find anything for the synthetic chromosome");
     }
@@ -123,7 +129,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             {
                 ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    update(stats, x, o.metrs, o);
                 });
                 
                 break;
@@ -132,12 +138,27 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             case Inputs::GTF:
             {
                 ParserExpress::Data t;
-                
+
                 ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
                 {
                     bool matched = false;
+
+                    auto f = [&](Metrics metrs)
+                    {
+                        if (matched)
+                        {
+                            t.l     = x.l;
+                            t.cID   = x.cID;
+                            t.id    = metrs == Metrics::Gene ? x.gID : x.tID;
+                            t.abund = x.fpkm;
+                            
+                            update(stats, t, metrs, o);
+                        }
+                    };
+
+                    Metrics metrs;
                     
-                    switch (o.metrs)
+                    switch (metrs = o.metrs)
                     {
                         case Metrics::Isoform:
                         {
@@ -152,28 +173,55 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                         }
                     }
                     
-                    if (matched)
+                    f(metrs);
+
+                    /*
+                     * A transcriptome GTF file might not have genes defined. We'll need to add
+                     * the transcripts together.
+                     */
+
+                    if (metrs == Metrics::Gene && o.inputs == RExpress::Inputs::GTF)
                     {
-                        t.l     = x.l;
-                        t.cID   = x.cID;
-                        t.id    = o.metrs == Metrics::Gene ? x.gID : x.tID;
-                        t.abund = x.fpkm;
-                        
-                        update(stats, t, o);                        
+                        matched = x.type == RNAFeature::Transcript;
+                        f(Metrics::Isoform);
                     }
                 });
 
                 break;
             }
         }
+        
+        if (o.metrs == Metrics::Gene && o.inputs == RExpress::Inputs::GTF)
+        {
+            const auto &r = Standard::instance().r_trans;
+
+            if (stats.genes.empty() && !stats.isos.empty())
+            {
+                std::map<GeneID, FPKM> fpkm;
+                
+                for (const auto &i : stats.isos)
+                {
+                    const auto m = r.findTrans(ChrIS, i.first);
+                    
+                    // Add up the isoform expressions for each of the sequin gene
+                    fpkm[m->gID] += i.second.y;
+                }
+                
+                for (const auto &i : fpkm)
+                {
+                    stats.genes.add(i.first, r.concent(i.first), i.second);
+                }
+
+                o.info("Sequin isoform expressions added for genes: " + std::to_string(stats.genes.size()));
+            }
+        }
     });
 }
 
 static void writeQueries(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
-{
-}
+{}
 
-static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
+static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics metrs)
 {
     const auto &r = Standard::instance().r_trans;
     
@@ -190,9 +238,11 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
     
     for (auto i = 0; i < stats.size(); i++)
     {
+        auto &ls = metrs == RExpress::Metrics::Isoform ? stats[i].isos : stats[i].genes;
+
         ss << ((boost::format("\tObserved%1%") % (i+1)).str());
         
-        for (const auto &j : stats[i])
+        for (const auto &j : ls)
         {
             seqs.insert(j.first);
             expect[j.first]  = j.second.x;
@@ -226,12 +276,160 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
     return ss.str();
 }
 
+/*
+ * Generate summary statistics for a single sample and multiple samples.
+ */
+
+static void generateSummary(const FileName &summary,
+                            const std::vector<FileName >&files,
+                            const std::vector<RExpress::Stats> &stats,
+                            const RExpress::Options  &o,
+                            const Units &units)
+{
+    const auto &r = Standard::instance().r_trans;
+    
+    o.info("Generating " + summary);
+    o.writer->open(summary);
+    
+    std::vector<SequinHist>   hists;
+    std::vector<LinearStats>  lStats;
+    std::vector<MappingStats> mStats;
+    
+    // Detection limit for the replicates
+    Limit limit;
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[i].isos : stats[i].genes;
+        
+        mStats.push_back(stats[i]);
+        lStats.push_back(ls);
+        //hists.push_back(stats[i].hist);
+        
+        if (isnan(limit.abund) || ls.limit.abund < limit.abund)
+        {
+            limit = ls.limit;
+        }
+    }
+    
+    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+    
+    const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, mStats, lStats);
+    
+    // Breakpoint estimated by piecewise regression
+    const auto b = ms.b.mean();
+    
+    // Number of genomic features above the breakpoint
+    SCounts n_above;
+    
+    // Number of genomic features below the breakpoint
+    SCounts n_below;
+    
+    // Counting all replicates
+    for (const auto &i : stats)
+    {
+        Counts above = 0;
+        Counts below = 0;
+        
+        for (const auto &j : i.gData)
+        {
+            assert(!isnan(j.second.abund));
+            
+            if (j.second.abund >= b)
+            {
+                above++;
+            }
+            else
+            {
+                below++;
+            }
+        }
+        
+        n_above.add((Counts)above);
+        n_below.add((Counts)below);
+    }
+    
+    // No reference coordinate annotation given here
+    const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
+    
+    const auto format = "-------RnaExpression Output\n"
+                        "       Summary for input: %1%\n"
+                        "       *Arithmetic average and standard deviation are shown\n\n"
+                        "-------Reference Transcript Annotations\n\n"
+                        "       Synthetic: %2%\n"
+                        "       Mixture file: %3%\n\n"
+                        "-------%4%\n\n"
+                        "       Synthetic: %5%\n"
+                        "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
+                        "       Genome: %8%\n\n"
+                        "-------Limit of Quantification (LOQ)\n\n"
+                        "       *Estimated by piecewise segmented regression\n\n"
+                        "       Break LOQ: %9% attomol/ul (%10%)\n\n"
+                        "       *Below LOQ\n"
+                        "       Intercept:   %11%\n"
+                        "       Slope:       %12%\n"
+                        "       Correlation: %13%\n"
+                        "       R2:          %14%\n"
+                        "       Genome:      %15%\n\n"
+                        "       *Above LOQ\n"
+                        "       Intercept:   %16%\n"
+                        "       Slope:       %17%\n"
+                        "       Correlation: %18%\n"
+                        "       R2:          %19%\n"
+                        "       Genome:      %20%\n\n"
+                        "-------Linear regression (log2 scale)\n\n"
+                        "       Slope:       %21%\n"
+                        "       Correlation: %22%\n"
+                        "       R2:          %23%\n"
+                        "       F-statistic: %24%\n"
+                        "       P-value:     %25%\n"
+                        "       SSM:         %26%, DF: %27%\n"
+                        "       SSE:         %28%, DF: %29%\n"
+                        "       SST:         %30%, DF: %31%\n";
+    
+    o.writer->write((boost::format(format) % STRING(ms.files)      // 1
+                                           % n_syn                 // 2
+                                           % MixRef()              // 3
+                                           % title                 // 4
+                                           % STRING(ms.n_syn)      // 5
+                                           % limit.abund           // 6
+                                           % limit.id              // 7
+                                           % STRING(ms.n_gen)      // 8
+                                           % STRING(ms.b)          // 9
+                                           % STRING(ms.bID)        // 10
+                                           % STRING(ms.lInt)       // 11
+                                           % STRING(ms.lSl)        // 12
+                                           % STRING(ms.lr)         // 13
+                                           % STRING(ms.lR2)        // 14
+                                           % STRING(n_below)       // 15
+                                           % STRING(ms.rInt)       // 16
+                                           % STRING(ms.rSl)        // 17
+                                           % STRING(ms.rr)         // 18
+                                           % STRING(ms.rR2)        // 19
+                                           % STRING(n_above)       // 20
+                                           % STRING(ms.wLog.sl)    // 21
+                                           % STRING(ms.wLog.r)     // 22
+                                           % STRING(ms.wLog.R2)    // 23
+                                           % STRING(ms.wLog.F)     // 24
+                                           % STRING(ms.wLog.p)     // 25
+                                           % STRING(ms.wLog.SSM)   // 26
+                                           % STRING(ms.wLog.SSM_D) // 27
+                                           % STRING(ms.wLog.SSE)   // 28
+                                           % STRING(ms.wLog.SSE_D) // 29
+                                           % STRING(ms.wLog.SST)   // 30
+                                           % STRING(ms.wLog.SST_D) // 31
+                     ).str());
+    o.writer->close();
+}
+
 static void generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
     o.info("Generating " + output);
     o.writer->open(output);
+    
+    auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
     
     if (stats.size() == 1)
     {
@@ -241,19 +439,27 @@ static void generateCSV(const FileName &output, const std::vector<RExpress::Stat
                                                % "Length"
                                                % "InputConcent"
                                                % "Observed").str());
-        for (const auto &i : stats[0])
+        for (const auto &i : ls)
         {
+            Locus l;
+            
+            switch (o.metrs)
+            {
+                case RExpress::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
+                case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
+            }
+
             o.writer->write((boost::format(format) % i.first
-                                                   % r.match(i.first)->l.length()
+                                                   % l.length()
                                                    % i.second.x
                                                    % i.second.y).str());
         }
     }
     else
     {
-        o.writer->write(multipleCSV(stats));
+        o.writer->write(multipleCSV(stats, o.metrs));
     }
-    
+
     o.writer->close();
 }
 
@@ -283,7 +489,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_summary.stats
      */
     
-    RExpress::generateSummary("RnaExpression_summary.stats", files, stats, o, units);
+    generateSummary("RnaExpression_summary.stats", files, stats, o, units);
     
     /*
      * Generating RnaExpression_sequins.csv

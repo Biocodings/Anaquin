@@ -47,13 +47,18 @@ namespace Anaquin
             Metrics metrs;
         };
         
-        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats
+        struct Stats : public MappingStats
         {
             struct GenData
             {
                 // Eg: FPKM
                 double abund = NAN;
             };
+
+            // Histogram distribution
+            std::map<ChrID, Hist> isosHist, geneHist;
+
+            LinearStats isos, genes;
 
             // Data for the genome
             std::map<GenoID, GenData> gData;
@@ -105,150 +110,6 @@ namespace Anaquin
                                                             "Observed", true, true));
             }
             
-            o.writer->close();
-        }
-
-        /*
-         * Generate summary statistics for a single sample and multiple samples.
-         */
-        
-        template <typename Stats, typename Options> static void generateSummary(const FileName &summary,
-                                                                                const std::vector<FileName >&files,
-                                                                                const std::vector<Stats> &stats,
-                                                                                const Options  &o,
-                                                                                const Units &units)
-        {
-            const auto &r = Standard::instance().r_trans;
-            
-            o.info("Generating " + summary);
-            o.writer->open(summary);
-            
-            std::vector<SequinHist>   hists;
-            std::vector<LinearStats>  lStats;
-            std::vector<MappingStats> mStats;
-            
-            // Detection limit for the replicates
-            Limit limit;
-
-            for (auto i = 0; i < files.size(); i++)
-            {
-                mStats.push_back(stats[i]);
-                lStats.push_back(stats[i]);
-                //hists.push_back(stats[i].hist);
-
-                if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
-                {
-                    limit = stats[i].limit;
-                }
-            }
-            
-            const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
-
-            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, mStats, lStats);
-
-            // Breakpoint estimated by piecewise regression
-            const auto b = ms.b.mean();
-
-            // Number of genomic features above the breakpoint
-            SCounts n_above;
-
-            // Number of genomic features below the breakpoint
-            SCounts n_below;
-            
-            // Counting all replicates
-            for (const auto &i : stats)
-            {
-                Counts above = 0;
-                Counts below = 0;
-
-                for (const auto &j : i.gData)
-                {
-                    assert(!isnan(j.second.abund));
-                    
-                    if (j.second.abund >= b)
-                    {
-                        above++;
-                    }
-                    else
-                    {
-                        below++;
-                    }
-                }
-
-                n_above.add((Counts)above);
-                n_below.add((Counts)below);
-            }
-            
-            // No reference coordinate annotation given here
-            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
-
-            const auto format = "-------RnaExpression Output\n"
-                                "       Summary for input: %1%\n"
-                                "       *Arithmetic average and standard deviation are shown\n\n"
-                                "-------Reference Transcript Annotations\n\n"
-                                "       Synthetic: %2%\n"
-                                "       Mixture file: %3%\n\n"
-                                "-------%4%\n\n"
-                                "       Synthetic: %5%\n"
-                                "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
-                                "       Genome: %8%\n\n"
-                                "-------Limit of Quantification (LOQ)\n\n"
-                                "       *Estimated by piecewise segmented regression\n\n"
-                                "       Break LOQ: %9% attomol/ul (%10%)\n\n"
-                                "       *Below LOQ\n"
-                                "       Intercept:   %11%\n"
-                                "       Slope:       %12%\n"
-                                "       Correlation: %13%\n"
-                                "       R2:          %14%\n"
-                                "       Genome:      %15%\n\n"
-                                "       *Above LOQ\n"
-                                "       Intercept:   %16%\n"
-                                "       Slope:       %17%\n"
-                                "       Correlation: %18%\n"
-                                "       R2:          %19%\n"
-                                "       Genome:      %20%\n\n"
-                                "-------Linear regression (log2 scale)\n\n"
-                                "       Slope:       %21%\n"
-                                "       Correlation: %22%\n"
-                                "       R2:          %23%\n"
-                                "       F-statistic: %24%\n"
-                                "       P-value:     %25%\n"
-                                "       SSM:         %26%, DF: %27%\n"
-                                "       SSE:         %28%, DF: %29%\n"
-                                "       SST:         %30%, DF: %31%\n";
-
-            o.writer->write((boost::format(format) % STRING(ms.files)      // 1
-                                                   % n_syn                 // 2
-                                                   % MixRef()              // 3
-                                                   % title                 // 4
-                                                   % STRING(ms.n_syn)      // 5
-                                                   % limit.abund           // 6
-                                                   % limit.id              // 7
-                                                   % STRING(ms.n_gen)      // 8
-                                                   % STRING(ms.b)          // 9
-                                                   % STRING(ms.bID)        // 10
-                                                   % STRING(ms.lInt)       // 11
-                                                   % STRING(ms.lSl)        // 12
-                                                   % STRING(ms.lr)         // 13
-                                                   % STRING(ms.lR2)        // 14
-                                                   % STRING(n_below)       // 15
-                                                   % STRING(ms.rInt)       // 16
-                                                   % STRING(ms.rSl)        // 17
-                                                   % STRING(ms.rr)         // 18
-                                                   % STRING(ms.rR2)        // 19
-                                                   % STRING(n_above)       // 20
-                                                   % STRING(ms.wLog.sl)    // 21
-                                                   % STRING(ms.wLog.r)     // 22
-                                                   % STRING(ms.wLog.R2)    // 23
-                                                   % STRING(ms.wLog.F)     // 24
-                                                   % STRING(ms.wLog.p)     // 25
-                                                   % STRING(ms.wLog.SSM)   // 26
-                                                   % STRING(ms.wLog.SSM_D) // 27
-                                                   % STRING(ms.wLog.SSE)   // 28
-                                                   % STRING(ms.wLog.SSE_D) // 29
-                                                   % STRING(ms.wLog.SST)   // 30
-                                                   % STRING(ms.wLog.SST_D) // 31
-                             ).str());
             o.writer->close();
         }
         
