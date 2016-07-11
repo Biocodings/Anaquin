@@ -264,9 +264,17 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     
     for (const auto &seq : seqs)
     {
+        Locus l;
+        
+        switch (metrs)
+        {
+            case RExpress::Metrics::Gene:    { l = r.findGene(ChrIS, seq)->l;  break; }
+            case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, seq)->l; break; }
+        }
+        
         ss << ((boost::format("%1%\t%2%\t%3%") % seq
-                % r.match(seq)->l.length()
-                % expect.at(seq)).str());
+                                               % l.length()
+                                               % expect.at(seq)).str());
         
         for (auto i = 0; i < stats.size(); i++)
         {
