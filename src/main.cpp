@@ -1235,7 +1235,7 @@ void parse(int argc, char ** argv)
         {
             if (__showInfo__)
             {
-                std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
+                std::cout << "[INFO]: RNA-Seq Analysis" << std::endl;
             }
 
             if (_p.tool == TOOL_R_GENOME)

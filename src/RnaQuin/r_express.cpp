@@ -119,7 +119,7 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
 
 RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
 {
-    o.info("Parsing: " + file);
+    o.analyze(file);
     
     return calculate(o, [&](RExpress::Stats &stats)
     {
@@ -127,8 +127,13 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
         {
             case Inputs::Text:
             {
-                ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &)
+                ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &p)
                 {
+                    if (p.i && !(p.i % 100000))
+                    {
+                        o.wait(std::to_string(p.i));
+                    }
+                    
                     update(stats, x, o.metrs, o);
                 });
                 
@@ -139,8 +144,13 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             {
                 ParserExpress::Data t;
 
-                ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
+                ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &p)
                 {
+                    if (p.i && !(p.i % 100000))
+                    {
+                        o.wait(std::to_string(p.i));
+                    }
+                    
                     bool matched = false;
 
                     auto f = [&](Metrics metrs)
@@ -212,7 +222,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     stats.genes.add(i.first, r.concent(i.first), i.second);
                 }
 
-                o.info("Sequin isoform expressions added for genes: " + std::to_string(stats.genes.size()));
+                o.logInfo("Sequin isoform expressions added for genes: " + std::to_string(stats.genes.size()));
             }
         }
     });
@@ -520,7 +530,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
 
     for (const auto &i : stats)
     {
-        o.info("Genome: " + toString(i.gData.size()));
+        o.logInfo("Genome: " + toString(i.gData.size()));
     }
 
     /*

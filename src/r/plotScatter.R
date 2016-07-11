@@ -20,6 +20,6 @@ input <- %8%
 measured <- %9%
 
 # Create Anaquin data for plotScatter
-data <- CreateDataForAnaquin(seqs=row.names(data), expected=input, measured=measured)
+data <- CreateDataForAnaquin(names=row.names(data), expected=input, measured=measured)
 
 plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=%10%)
