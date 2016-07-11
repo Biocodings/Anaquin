@@ -6,6 +6,7 @@
 
 plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL)
 {
+    require(grid)
     require(ggplot2)
 
     data <- data$seqs
@@ -107,7 +108,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
                       x=min(data$x),
                       y=max(data$y)-y_off,
                       size=4.0,
-                      colour='blue',
+                      colour='grey24',
                       parse=TRUE,
                       hjust=0,
                       vjust=0)
@@ -117,7 +118,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
                       x=min(data$x),
                       y=max(data$y)-2.2*y_off,
                       size=4.0,
-                      colour='blue',
+                      colour='grey24',
                       parse=TRUE,
                       hjust=0,
                       vjust=0)
@@ -134,15 +135,15 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     
     p <- .transformPlot(p)
 
-    t1 <- grid.text(parse(text=paste(c('bold(Regression)~bold((Overall)): ', overall), collapse='')), draw=TRUE)
-    t2 <- grid.text(parse(text=paste(c('bold(Above~LOQ): ', above), collapse='')), draw=TRUE)
+    #t1 <- grid.text(parse(text=paste(c('bold(Regression)~bold((Overall)): ', overall), collapse='')), draw=TRUE)
+    #t2 <- grid.text(parse(text=paste(c('bold(Above~LOQ): ', above), collapse='')), draw=TRUE)
 
-    grid.newpage()
+    #grid.newpage()
     #g <- arrangeGrob(t1, t2, nrow=2, heights=c(0.10,0.10))
-    g <- arrangeGrob(t2, nrow=1, heights=c(0.10))    
+    #g <- arrangeGrob(t2, nrow=1, heights=c(0.10))    
 
-    gb <- rectGrob(height = .98, width = .98, gp = gpar(lwd=0, col='black', fill = NA)) # border
-    gt <- gTree(children = gList(g, gb))
+    #gb <- rectGrob(height = .98, width = .98, gp = gpar(lwd=0, col='black', fill = NA)) # border
+    #gt <- gTree(children = gList(g, gb))
     #grid.draw(gt) TODO: Do we need it?
     
 #    grid.arrange(p, gt, nrow=2, heights=c(2, 0.22))

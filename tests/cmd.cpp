@@ -8,5 +8,5 @@ TEST_CASE("Anaquin_Version")
     const auto r = Test::test("-v");
     
     REQUIRE(r.status == 0);
-    REQUIRE(r.output == "v0.5\n");
+    REQUIRE(r.output == "v0.6\n");
 }

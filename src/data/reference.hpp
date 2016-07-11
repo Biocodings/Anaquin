@@ -241,19 +241,26 @@ namespace Anaquin
                 return merge(x, x);
             }
 
+            inline const MixtureData * findMix(Mixture mix, const SequinID &id) const
+            {
+                for (auto &i : _mixes.at(mix))
+                {
+                    if (i.id == id)
+                    {
+                        return &i;
+                    }
+                }
+                
+                return nullptr;
+            }
+
             // Validated sequins
             std::map<SequinID, Data> _data;
 
-            // Statistics about the sequins, only valid after validate()
-            Stats _stats;
-
-            /*
-             * Raw data - before validation
-             */
-        
             // Set of IDs defined in the mixture
             std::set<SequinID> _rawMIDs;
 
+            // Data for mixture (if defined)
             std::map<Mixture, std::set<MixtureData>> _mixes;
     };
 

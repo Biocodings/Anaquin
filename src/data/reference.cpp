@@ -755,6 +755,14 @@ void TransRef::validate()
             g.cID = ChrIS;
             g.gID = t.gID;
             
+            const auto mix = findMix(Mix_1, t.tID);
+            assert(mix);
+            
+            g.l = _impl->gData[ChrIS].g2d[t.gID].l;
+
+            // Merge the transcripts...
+            g.l.merge(Locus(1, mix->length));
+            
             _impl->gData[ChrIS].g2d[t.gID] = g;
             _impl->gData[ChrIS].t2d[t.tID] = t;
             _impl->gData[ChrIS].t2g[t.tID] = t.gID;
