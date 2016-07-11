@@ -57,11 +57,6 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         data$sd <- NULL
     }
     
-    #data$sd   <- if (isMulti) apply(data$y, 1, sd) else NULL
-    #data$y    <- if (isMulti) rowMeans(data$y)     else data$y
-    #data$ymax <- if (isMulti) data$y + data$sd     else NULL
-    #data$ymin <- if (isMulti) data$y - data$sd     else NULL
-
     data <- data[!is.na(data$y),]
     
     p <- ggplot(data=data, aes(x=x, y=y)) +
@@ -100,7 +95,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         x <- paste(x, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=1.5)
+        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=1.7)
     }
     
     p <- p + annotate("text",
