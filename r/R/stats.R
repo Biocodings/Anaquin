@@ -145,7 +145,7 @@ showLOQ <- function(x, y, showDetails=FALSE)
     if (b1q < 0.05)
     {
         # This is potentially a better breakpoint
-        b <- b2        
+        # TODO: b <- b2        
     }
 
     # Fit the model again

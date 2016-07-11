@@ -219,7 +219,15 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 
                 for (const auto &i : fpkm)
                 {
-                    stats.genes.add(i.first, r.concent(i.first), i.second);
+                    const auto input = r.concent(i.first);
+                    
+                    stats.genes.add(i.first, input, i.second);
+                    
+                    if (isnan(stats.genes.limit.abund) || input < stats.genes.limit.abund)
+                    {
+                        stats.genes.limit.id = i.first;
+                        stats.genes.limit.abund = input;
+                    }
                 }
 
                 o.logInfo("Sequin isoform expressions added for genes: " + std::to_string(stats.genes.size()));
@@ -322,13 +330,16 @@ static void generateSummary(const FileName &summary,
         
         mStats.push_back(stats[i]);
         lStats.push_back(ls);
-        //hists.push_back(stats[i].hist);
         
+        assert(!isnan(ls.limit.abund) && !ls.limit.id.empty());
+
         if (isnan(limit.abund) || ls.limit.abund < limit.abund)
         {
             limit = ls.limit;
         }
     }
+    
+    assert(!isnan(limit.abund) && !limit.id.empty());
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
