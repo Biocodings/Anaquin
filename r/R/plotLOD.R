@@ -384,11 +384,6 @@ plotLOD <- function(data, ...,
         p <- p + scale_y_log10(breaks=x$yBreaks)
     }
     
-    if (!is.null(x$drawTable))
-    {
-        annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(p, my_table), ncol = 1, heights = c(2,0.5)))
-    }
-    
     p <- .transformPlot(p)
     print(p)
 }

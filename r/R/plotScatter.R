@@ -73,24 +73,24 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
                 theme_bw()
 
     p <-p + guides(colour=FALSE)
-    y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 0.5)
-
-    # Position the regression model to the left
-    p <- p + annotate("text",
-                      label=lm2str(data),
-                      x=min(data$x),
-                      y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
+    y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.7, 0.7)
 
     if (showIntercept)
     {
         p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
         p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
     }
+    
+    overall <- .lm2str(data)
+    above   <- .lm2str(data)
 
     if (showLOQ)
     {
         # Fit piecewise segmentation
         loq <- showLOQ(data$x, data$y)
+
+        # Print out the regression above LOQ
+        above <- .m2str(loq$model$rModel)
 
         # We can assume the break-point is on the log2-scale. Let's convert it back.
         label <- 2^loq$breaks$k
@@ -99,9 +99,29 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         x <- paste(x, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=loq$breaks$k, y=min(y)), label=x, colour='black', show.legend=FALSE)
+        p <- p + geom_label(aes(x=max(x), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=1)
     }
+    
+    p <- p + annotate("text",
+                      label=paste(c('bold(Overall): ', overall), collapse=''),
+                      x=min(data$x),
+                      y=max(data$y)-y_off,
+                      size=4.0,
+                      colour='blue',
+                      parse=TRUE,
+                      hjust=0,
+                      vjust=0)
 
+    p <- p + annotate("text",
+                      label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
+                      x=min(data$x),
+                      y=max(data$y)-2.2*y_off,
+                      size=4.0,
+                      colour='blue',
+                      parse=TRUE,
+                      hjust=0,
+                      vjust=0)
+    
     if (!is.null(xBreaks))
     {
         p <- p + scale_x_continuous(breaks=xBreaks)
@@ -113,6 +133,20 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     }
     
     p <- .transformPlot(p)
+
+    t1 <- grid.text(parse(text=paste(c('bold(Regression)~bold((Overall)): ', overall), collapse='')), draw=TRUE)
+    t2 <- grid.text(parse(text=paste(c('bold(Above~LOQ): ', above), collapse='')), draw=TRUE)
+
+    grid.newpage()
+    #g <- arrangeGrob(t1, t2, nrow=2, heights=c(0.10,0.10))
+    g <- arrangeGrob(t2, nrow=1, heights=c(0.10))    
+
+    gb <- rectGrob(height = .98, width = .98, gp = gpar(lwd=0, col='black', fill = NA)) # border
+    gt <- gTree(children = gList(g, gb))
+    #grid.draw(gt) TODO: Do we need it?
+    
+#    grid.arrange(p, gt, nrow=2, heights=c(2, 0.22))
+#    grid.arrange(p, gt, nrow=2, heights=c(2, 0.15))
     print(p)
 }
 

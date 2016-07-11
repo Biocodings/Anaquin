@@ -190,7 +190,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         // Compare everything about the chromosome against the reference
         CUFFCOMPARE(ref, qry);
 
-        o.info("Compare complated");
+        o.logInfo("Compare complated");
     };
 
     o.info("Analyzing transcripts");
