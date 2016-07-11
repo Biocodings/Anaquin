@@ -464,7 +464,9 @@ static void generateR(const FileName &output,
                                                       "Expected Expression (log2)",
                                                       measured + " (log2)",
                                                       "InputConcent",
-                                                      "Observed", true));
+                                                      "Observed",
+                                                      "input",
+                                                      true));
     }
     else
     {
@@ -472,7 +474,10 @@ static void generateR(const FileName &output,
                                                     "Expected Expression (log2)",
                                                     "Measured Expression (log2)",
                                                     "InputConcent",
-                                                    "Observed", true, true));
+                                                    "Observed",
+                                                    "input",
+                                                    true,
+                                                    true));
     }
     
     o.writer->close();

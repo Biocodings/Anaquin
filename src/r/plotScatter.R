@@ -7,6 +7,8 @@
 #
 
 library(Anaquin)
+
+# Load reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 title <- '%5%'
@@ -20,6 +22,6 @@ input <- %8%
 measured <- %9%
 
 # Create Anaquin data for plotScatter
-data <- CreateDataForAnaquin(names=row.names(data), expected=input, measured=measured)
+data <- CreateDataForAnaquin(names=row.names(data), %10%=input, measured=measured)
 
-plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=%10%)
+plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)

@@ -79,6 +79,7 @@ Scripts RWriter::createScatterNoLog(const FileName    &file,
                                     const std::string &ylab,
                                     const std::string &expected,
                                     const std::string &measured,
+                                    const std::string &xname,
                                     bool showLOQ)
 {
     return (boost::format(PlotScatter()) % date()
@@ -90,6 +91,7 @@ Scripts RWriter::createScatterNoLog(const FileName    &file,
                                           % ylab
                                           % ("data$" + expected)
                                           % ("data$" + measured)
+                                          % xname
                                           % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
@@ -99,6 +101,7 @@ Scripts RWriter::createMultiScatter(const FileName    &file,
                                     const std::string &ylab,
                                     const std::string &expected,
                                     const std::string &measured,
+                                    const std::string &xname,
                                     bool showLOQ,
                                     bool shouldLog)
 {
@@ -114,6 +117,7 @@ Scripts RWriter::createMultiScatter(const FileName    &file,
                                          % ylab
                                          % exp
                                          % obs
+                                         % xname
                                          % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
@@ -123,6 +127,7 @@ Scripts RWriter::createScatterNeedLog(const FileName    &file,
                                       const std::string &ylab,
                                       const std::string &expected,
                                       const std::string &measured,
+                                      const std::string &xname,
                                       bool showLOQ)
 {
     return (boost::format(PlotScatter()) % date()
@@ -134,6 +139,7 @@ Scripts RWriter::createScatterNeedLog(const FileName    &file,
                                          % ylab
                                          % ("log2(data$" + expected + ")")
                                          % ("log2(data$" + measured + ")")
+                                         % xname
                                          % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 

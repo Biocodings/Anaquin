@@ -308,7 +308,9 @@ void VFreq::report(const FileName &file, const Options &o)
                                                   "Expected allele frequency (log2)",
                                                   "Measured allele frequency (log2)",
                                                   "Expected",
-                                                  "Observed", true));
+                                                  "Observed",
+                                                  "expected",
+                                                  true));
     o.writer->close();
     
     /*

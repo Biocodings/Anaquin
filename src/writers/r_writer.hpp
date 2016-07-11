@@ -91,6 +91,7 @@ namespace Anaquin
                                           const std::string &,
                                           const std::string &,
                                           const std::string &,
+                                          const std::string &,
                                           bool showLOQ,
                                           bool shouldLog);
 
@@ -108,9 +109,11 @@ namespace Anaquin
                                             const std::string &,
                                             const std::string &,
                                             const std::string &,
+                                            const std::string &,                                            
                                             bool showLOQ);
 
         static Scripts createScatterNoLog(const FileName    &,
+                                          const std::string &,
                                           const std::string &,
                                           const std::string &,
                                           const std::string &,

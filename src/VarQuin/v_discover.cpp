@@ -746,7 +746,9 @@ void VDiscover::report(const FileName &file, const Options &o)
                                                       "Expected allele frequency (log2)",
                                                       "Measured allele frequency (log2)",
                                                       "EFreq",
-                                                      "MFreq", true));
+                                                      "MFreq",
+                                                      "expected",
+                                                      true));
         o.writer->close();
     }
     
