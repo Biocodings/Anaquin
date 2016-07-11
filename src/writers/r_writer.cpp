@@ -254,7 +254,6 @@ Scripts StatsWriter::linearSummary(const FileName &file,
 SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
                                        const FileName                  &endoR,
                                        const std::vector<FileName>     &files,
-                                       //const std::vector<SequinHist>   &hist,
                                        const std::vector<MappingStats> &mStats,
                                        const std::vector<LinearStats>  &lstats)
 {
