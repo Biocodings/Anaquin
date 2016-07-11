@@ -98,25 +98,46 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=1.7)
     }
     
-    p <- p + annotate("text",
-                      label=paste(c('bold(Overall): ', overall), collapse=''),
-                      x=min(data$x),
-                      y=max(data$y)-y_off,
-                      size=4.0,
-                      colour='grey24',
-                      parse=TRUE,
-                      hjust=0,
-                      vjust=0)
+    a <- paste(c('bold(Overall): ', overall), collapse='')
+ #   a <- expression(atop('ddd', 'sadaddd'))
+    
+#    title <- list( bquote( paste( "Histogram of " , 'dddd') )  ,
+#                   bquote( paste( "Bootstrap samples, Allianz" ) ) )
+    
+#    t1 <- grid.text(parse(text='bold(Overall)'), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1)
+#    t2 <- grid.text(parse(text='bold(Above~LOQ)'), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1)
+    
+#    t3 <- grid.text(parse(text=overall), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1.0)
+#    t4 <- grid.text(parse(text=above), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1.0)
 
-    p <- p + annotate("text",
+#    grid.newpage()
+#    g <- arrangeGrob(t1, t3, t2, t4, nrow=2, ncol=2, widths=c(1,1), heights=c(1,1))
+#    p <- p + annotation_custom(g, xmin=min(data$x), ymin=max(data$y)-1.5*y_off)
+    
+    r <- abs(max(data$y) - min(data$y))
+    y_off <- 0.06 * r 
+    
+    overall <- annotate("text",
+                        label=a,
+                        x=min(data$x),
+                        y=max(data$y)-y_off,
+                        size=4.0,
+                        colour='grey24',
+                        parse=TRUE,
+                        hjust=0,
+                        vjust=0)
+    
+    above <- annotate("text",
                       label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
                       x=min(data$x),
-                      y=max(data$y)-2.2*y_off,
+                      y=max(data$y)-2*y_off,
                       size=4.0,
                       colour='grey24',
                       parse=TRUE,
                       hjust=0,
                       vjust=0)
+    p <- p + overall
+    p <- p + above
     
     if (!is.null(xBreaks))
     {

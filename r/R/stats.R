@@ -129,7 +129,7 @@ showLOQ <- function(x, y, showDetails=FALSE)
     percentile <- ecdf(x)
     
     # Filter out the upper and lower quartiles
-    a <- r[percentile(r$k) > 0.25 & percentile(r$k) <= 0.60,]
+    a <- r[percentile(r$k) > 0.30 & percentile(r$k) <= 0.60,]
     
     # Where the minimum SSE is
     b1 <- r[which.min(r$sums),]    
@@ -142,10 +142,17 @@ showLOQ <- function(x, y, showDetails=FALSE)
     
     b <- b1
 
-    if (b1q < 0.05)
+    #
+    # Always prefer minimum SST if possible. Switch to upper R2 if: 
+    #
+    #   - Solution for minimum SST is too small
+    #   - Solution for upper R2 exists
+    #
+    
+    if (b1q < 0.30 & nrow(b2) > 0)
     {
         # This is potentially a better breakpoint
-        # TODO: b <- b2        
+        b <- b2        
     }
 
     # Fit the model again
