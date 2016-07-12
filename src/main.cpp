@@ -1969,7 +1969,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("Invalid command. %1% not expected for option -%2%.") % ex.opt % ex.val).str());
+        printError((boost::format("Invalid command. %1% not expected for -%2%.") % ex.val % ex.opt).str());
     }
     catch (const MissingOptionError &ex)
     {

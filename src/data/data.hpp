@@ -2,6 +2,7 @@
 #define DATA_HPP
 
 #include <string>
+#include <cmath>
 
 namespace Anaquin
 {
@@ -91,6 +92,14 @@ namespace Anaquin
         SNP,
         Insertion,
         Deletion
+    };
+    
+    struct Limit
+    {
+        SequinID id;
+        
+        // Expected concentration for the sequin
+        Concent abund = NAN;
     };
 }
 

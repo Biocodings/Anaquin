@@ -1,6 +1,7 @@
+#include "data/convert.hpp"
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_discover.hpp"
-#include <fstream>
+
 using namespace Anaquin;
 
 // Defined in resources.cpp
@@ -279,7 +280,7 @@ static void writeQuins(const FileName &file,
                         o.writer->write((boost::format(format) % id
                                                                % m->l.start
                                                                % label
-                                                               % (isnan(t.query.p) ? "-" : p2str(t.query.p))
+                                                               % (isnan(t.query.p) ? "-" : ld2ss(t.query.p))
                                                                % t.query.readR
                                                                % t.query.readV
                                                                % t.query.depth
@@ -387,7 +388,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                     const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
                     const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
 
-                    const auto pval  = (isnan(i.query.p) ? "-" : p2str(i.query.p));
+                    const auto pval  = (isnan(i.query.p) ? "-" : ld2ss(i.query.p));
                     const auto mFreq = i.query.alleleFreq();
                     
                     o.writer->write((boost::format(format) % sID

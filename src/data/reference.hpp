@@ -5,7 +5,6 @@
 #include "data/data.hpp"
 #include "data/hist.hpp"
 #include "data/reader.hpp"
-#include "stats/limit.hpp"
 #include "data/variant.hpp"
 #include "data/minters.hpp"
 #include "data/intervals.hpp"

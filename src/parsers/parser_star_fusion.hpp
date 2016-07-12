@@ -5,6 +5,7 @@
 #include "data/reader.hpp"
 #include "parsers/parser.hpp"
 #include "stats/analyzer.hpp"
+#include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {

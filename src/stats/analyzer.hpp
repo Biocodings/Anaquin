@@ -5,13 +5,11 @@
 #include <memory>
 #include <numeric>
 #include <sstream>
-#include "data/data.hpp"
 #include "data/standard.hpp"
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
 #include "writers/pdf_writer.hpp"
 #include "writers/mock_writer.hpp"
-#include <boost/algorithm/string/replace.hpp>
 
 // Defined in main.cpp
 extern bool __showInfo__;
@@ -25,16 +23,6 @@ namespace Anaquin
         return out.str();
     }
 
-    template <typename T> std::string p2str(const T &x)
-    {
-        return isnan(x) ? "NA" : toString(x, 310);
-    }
-    
-    inline double s2d(const std::string &x)
-    {
-        return (x == "NA" || x == "-") ? NAN : stod(x);
-    }
-    
     template <typename T> Counts count(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
@@ -69,11 +57,6 @@ namespace Anaquin
         {
             return c + p.second;
         });
-    }
-    
-    inline void replace(std::string &s, const std::string &src, const std::string &dst)
-    {
-        boost::replace_all(s, src, dst);
     }
     
     struct Analyzer
@@ -214,9 +197,6 @@ namespace Anaquin
         inline void out(const std::string &s) const { output->write(s); }
     };
 
-    // Forward delcaration. Any analyzer doesn't need it need not link against it.
-    class Experiment;
-
     struct AnalyzerOptions : public WriterOptions
     {
         // Reference annotation (eg: GTF, BED)
@@ -253,26 +233,6 @@ namespace Anaquin
     {
         Mixture mix_1 = Mix_1;
         Mixture mix_2 = Mix_2;
-    };
-    
-    struct CalledFusion
-    {
-        inline operator Locus() const
-        {
-            return Locus(l1, l2);
-        }
-        
-        // Chromosome for the left and right
-        ChrID cID_1, cID_2;
-        
-        // Strand for the left and right
-        Strand s1, s2;
-        
-        // Where the fusion occurs
-        Base l1, l2;
-        
-        // Number of reads that span the fusion (junction reads)
-        Reads reads;
     };
 }
 

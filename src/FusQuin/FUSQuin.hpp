@@ -1,11 +1,11 @@
-#ifndef F_CLASSIFY_HPP
-#define F_CLASSIFY_HPP
+#ifndef FUSQUIN_HPP
+#define FUSQUIN_HPP
 
 #include "data/standard.hpp"
 #include "stats/analyzer.hpp"
 #include "data/reference.hpp"
-#include "parsers/parser_top_fusion.hpp"
-#include "parsers/parser_star_fusion.hpp"
+//#include "parsers/parser_top_fusion.hpp"
+//#include "parsers/parser_star_fusion.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 namespace Anaquin
@@ -14,6 +14,26 @@ namespace Anaquin
     {
         StarFusion,
         TopHatFusion,
+    };
+
+    struct CalledFusion
+    {
+        inline operator Locus() const
+        {
+            return Locus(l1, l2);
+        }
+        
+        // Chromosome for the left and right
+        ChrID cID_1, cID_2;
+        
+        // Strand for the left and right
+        Strand s1, s2;
+        
+        // Where the fusion occurs
+        Base l1, l2;
+        
+        // Number of reads that span the fusion (junction reads)
+        Reads reads;
     };
 
     struct FUSQuin
@@ -91,25 +111,25 @@ namespace Anaquin
 
             switch (o.soft)
             {
-                case StarFusion:
-                {
-                    ParserStarFusion::parse(Reader(file), [&](const CalledFusion &t, const ParserProgress &)
-                    {
-                        f(classifyFusion(t, o.fuzzy));
-                    });
-
-                    break;
-                }
-                    
-                case TopHatFusion:
-                {
-//                    ParserTopFusion::parse(Reader(file), [&](const CalledFusion &t, const ParserProgress &)
+//                case StarFusion:
+//                {
+//                    ParserStarFusion::parse(Reader(file), [&](const CalledFusion &t, const ParserProgress &)
 //                    {
 //                        f(classifyFusion(t, o.fuzzy));
 //                    });
-
-                    break;
-                }
+//
+//                    break;
+//                }
+//                    
+//                case TopHatFusion:
+//                {
+////                    ParserTopFusion::parse(Reader(file), [&](const CalledFusion &t, const ParserProgress &)
+////                    {
+////                        f(classifyFusion(t, o.fuzzy));
+////                    });
+//
+//                    break;
+//                }
             }
         }
     };

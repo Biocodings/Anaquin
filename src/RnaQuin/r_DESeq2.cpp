@@ -1,3 +1,4 @@
+#include "data/convert.hpp"
 #include "RnaQuin/r_DESeq2.hpp"
 #include "writers/file_writer.hpp"
 #include "parsers/parser_DESeq2.hpp"
@@ -26,8 +27,8 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
                                          % "-"
                                          % x.logF
                                          % x.logFSE
-                                         % p2str(x.p)
-                                         % p2str(x.q)
+                                         % ld2ss(x.p)
+                                         % ld2ss(x.q)
                                          % x.mean).str());
     });
 

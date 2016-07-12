@@ -216,8 +216,8 @@ static Scripts generateQuins(const RFold::Stats &stats, const RFold::Options &o)
                                                                          % x2ns(x.exp)
                                                                          % x2ns(x.obs)
                                                                          % x2ns(x.se)
-                                                                         % ld2ss(x.q)
-                                                                         % x2ns(x.p)).str());
+                                                                         % ld2ss(x.p)
+                                                                         % ld2ss(x.q)).str());
         }
     }
     

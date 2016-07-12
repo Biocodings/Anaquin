@@ -1,10 +1,10 @@
 #ifndef PARSER_TOP_FUSION_HPP
 #define PARSER_TOP_FUSION_HPP
 
+#include "FusQuin/FUSQuin.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "parsers/parser.hpp"
-#include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {

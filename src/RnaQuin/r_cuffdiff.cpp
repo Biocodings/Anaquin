@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
+#include "data/convert.hpp"
 #include "RnaQuin/r_cuffdiff.hpp"
 #include "parsers/parser_cdiff.hpp"
 
@@ -62,8 +63,8 @@ void RCuffdiff::report(const FileName &file, const Options &o)
                                                % (i.iID.empty() ? "-" : i.iID)
                                                % i.logF
                                                % "-"
-                                               % p2str(i.p)
-                                               % p2str(i.q)
+                                               % ld2ss(i.p)
+                                               % ld2ss(i.q)
                                                % "-").str());
     }
     

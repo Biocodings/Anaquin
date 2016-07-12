@@ -8,6 +8,11 @@
 
 namespace Anaquin
 {
+    inline double s2d(const std::string &x)
+    {
+        return (x == "NA" || x == "-") ? NAN : stod(x);
+    }
+
     inline long double ss2ld(const std::string &s)
     {
         std::istringstream os(s);
@@ -28,14 +33,7 @@ namespace Anaquin
 
     template <typename T> std::string x2ns(const T &x)
     {
-        auto f = [&](unsigned n=2)
-        {
-            std::ostringstream out;
-            out << std::fixed << std::setprecision(n) << x;
-            return out.str();
-        };
-
-        return isnan(x) ? "NA" : f(x);
+        return isnan(x) ? "NA" : std::to_string(x);
     }
 }
 
