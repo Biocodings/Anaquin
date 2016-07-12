@@ -140,7 +140,6 @@ template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Func
 
     assert(!stats.hist.empty());
 
-    o.info("Parsing input files");
     f(stats);
     
     return stats;
@@ -148,6 +147,8 @@ template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Func
 
 RFold::Stats RFold::analyze(const FileName &file, const Options &o)
 {
+    o.analyze(file);
+    
     return calculate(o, [&](RFold::Stats &stats)
     {
         switch (o.format)
@@ -349,7 +350,7 @@ void RFold::report(const FileName &file, const Options &o)
         case Format::edgeR:
         case Format::Cuffdiff:
         {
-            o.info("Skipp RnaFoldChange_LODR.R because no average counts given");
+            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
             break;
         }
             

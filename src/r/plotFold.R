@@ -21,4 +21,4 @@ measured <- %9%
 # Create Anaquin data set
 data <- CreateDataForAnaquin(names=row.names(data), expected=expected, measured=measured)
 
-plotScatter(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)
+plotScatter(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%, showLOQ=FALSE)

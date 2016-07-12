@@ -8,18 +8,15 @@
 
 library(Anaquin)
 
-#
-# Generate ROC curves for RNA-Seq differential analysis.
-#
-
+# Load the reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Create Anaquin data set
-data <- Anaquin(seqs=row.names(data), expected=data$Expected, measured=data$Measured, score=1-data$Pval, qval=data$Qval)
+data <- CreateDataForAnaquin(names=row.names(data), expected=data$ExpectLFold, measured=data$ObserveLFold, score=1-data$Pval, qval=data$Qval)
 
 data$seqs <- TransDiff_(data)
 
 # Change this for another title
 title <- 'ROC Plot'
 
-plotROC(data, title=title, refRats=0) 
+plotROC(data, title=title, refRats=0)
