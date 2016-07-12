@@ -28,7 +28,7 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
                                          % x.logFSE
                                          % p2str(x.p)
                                          % p2str(x.q)
-                                         % x.baseMean).str());
+                                         % x.mean).str());
     });
 
     out.close();

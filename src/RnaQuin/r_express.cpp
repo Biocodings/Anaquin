@@ -123,9 +123,9 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](RExpress::Stats &stats)
     {
-        switch (o.inputs)
+        switch (o.format)
         {
-            case Inputs::Text:
+            case Format::Text:
             {
                 ParserExpress::parse(Reader(file), o.metrs == Metrics::Gene,
                                      [&](const ParserExpress::Data &x, const ParserProgress &p)
@@ -141,7 +141,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 break;
             }
                 
-            case Inputs::GTF:
+            case Format::GTF:
             {
                 ParserExpress::Data t;
 
@@ -190,7 +190,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                      * the transcripts together.
                      */
 
-                    if (metrs == Metrics::Gene && o.inputs == RExpress::Inputs::GTF)
+                    if (metrs == Metrics::Gene && o.format == RExpress::Format::GTF)
                     {
                         matched = x.type == RNAFeature::Transcript;
                         f(Metrics::Isoform);
@@ -201,7 +201,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             }
         }
         
-        if (o.metrs == Metrics::Gene && o.inputs == RExpress::Inputs::GTF)
+        if (o.metrs == Metrics::Gene && o.format == RExpress::Format::GTF)
         {
             const auto &r = Standard::instance().r_trans;
 
@@ -463,10 +463,10 @@ static void generateR(const FileName &output,
     
     Units measured;
     
-    switch (o.inputs)
+    switch (o.format)
     {
-        case RExpress::Inputs::GTF:  { measured = "FPKM"; break; }
-        case RExpress::Inputs::Text: { measured = "FPKM"; break; }
+        case RExpress::Format::GTF:  { measured = "FPKM"; break; }
+        case RExpress::Format::Text: { measured = "FPKM"; break; }
     }
 
     if (stats.size() == 1)

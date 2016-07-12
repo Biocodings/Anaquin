@@ -27,32 +27,35 @@ namespace Anaquin
             Mean
         } Field;
 
-        struct Data
+        typedef DiffTest Data;
+        
+        static bool isDiff(const Reader &r)
         {
-            ::Anaquin::ChrID cID;
-
-            ::Anaquin::GeneID gID;
-            ::Anaquin::IsoformID iID;
+            std::string line;
+            std::vector<Tokens::Token> toks;
             
-            double logF;
-            
-            // Not always reported (eg: Cuffdiff)
-            double logFSE = NAN;
-
-            Probability p;
-            
-            // Adjusted p-values
-            Probability q;
-            
-            // Eg: Basemean in DESeq2
-            double mean;
-
-            inline bool hasSE() const
+            // Read the header
+            if (r.nextLine(line))
             {
-                return !isnan(logFSE);
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 8        &&
+                    toks[0] == "ChrID"      &&
+                    toks[1] == "GeneID"     &&
+                    toks[2] == "IsoformID"  &&
+                    toks[3] == "FoldChange" &&
+                    toks[4] == "FoldSE"     &&
+                    toks[5] == "PValue"     &&
+                    toks[6] == "QValue"     &&
+                    toks[7] == "Average")
+                {
+                    return true;
+                }
             }
-        };
-
+            
+            return false;
+        }
+        
         template <typename F> static void parse(const FileName &file, F f)
         {
             Reader r(file);

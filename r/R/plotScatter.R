@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL)
+plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL, showIntercept=FALSE)
 {
     require(grid)
     require(ggplot2)
@@ -95,7 +95,7 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         x <- paste(x, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=1.7)
+        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
     }
     
     a <- paste(c('bold(Overall): ', overall), collapse='')
@@ -165,11 +165,6 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
 #    grid.arrange(p, gt, nrow=2, heights=c(2, 0.22))
 #    grid.arrange(p, gt, nrow=2, heights=c(2, 0.15))
     print(p)
-}
-
-plotFold <- function(data, showIntercept=FALSE, title='', xlab='', ylab='', xBreaks=NULL)
-{
-    plotScatter(data, showIntercept=showIntercept, showLOQ=FALSE, title=title, xlab=xlab, ylab=ylab, xBreaks=xBreaks)
 }
 
 plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)

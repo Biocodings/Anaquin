@@ -6,6 +6,9 @@
 
 #include "RnaQuin/r_fold.hpp"
 #include "parsers/parser_diff.hpp"
+#include "parsers/parser_edgeR.hpp"
+#include "parsers/parser_cdiff.hpp"
+#include "parsers/parser_DESeq2.hpp"
 
 using namespace Anaquin;
 
@@ -146,10 +149,48 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
 {
     return calculate(o, [&](RFold::Stats &stats)
     {
-        ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
+        switch (o.format)
         {
-            update(stats, x, o);
-        });
+            case Format::Anaquin:
+            {
+                ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+
+                break;
+            }
+
+            case Format::DESeq2:
+            {
+                ParserDESeq2::parse(file, [&](const ParserDESeq2::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+                
+                break;
+            }
+                
+            case Format::edgeR:
+            {
+                ParserEdgeR::parse(file, [&](const ParserEdgeR::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+                
+                break;
+            }
+                
+            case Format::Cuffdiff:
+            {
+                ParserCDiff::parse(file, [&](const ParserCDiff::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+                
+                break;
+            }
+        }
     });
 }
 
@@ -263,9 +304,6 @@ void RFold::report(const FileName &file, const Options &o)
     
     o.info("Generating statistics");
     
-    // Eg: DESeq2
-    const auto shouldLOD = true;
-    
     /*
      * Generating RnaFoldChange_summary.stats
      */
@@ -305,8 +343,20 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_LODR.R
      */
     
-    if (shouldLOD)
+    switch (o.format)
     {
-        RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
+        case Format::edgeR:
+        case Format::Cuffdiff:
+        {
+            o.info("Skipp RnaFoldChange_LODR.R because no average counts given");
+            break;
+        }
+            
+        case Format::DESeq2:
+        case Format::Anaquin:
+        {
+            RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
+            break;
+        }
     }
 }

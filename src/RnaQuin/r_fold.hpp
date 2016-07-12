@@ -46,9 +46,18 @@ namespace Anaquin
             Isoform
         };
 
+        enum class Format
+        {
+            DESeq2,
+            edgeR,
+            Cuffdiff,
+            Anaquin            
+        };
+        
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
+            Format format;
             Metrics metrs;
         };
 
@@ -82,9 +91,6 @@ namespace Anaquin
             
             // Log-fold ratios standard deviation
             std::vector<double> ses;
-            
-            // Average counts for each condition if provided
-            //std::vector<std::map<std::string, Counts>> avgs;
         };
 
         /*

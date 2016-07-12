@@ -27,6 +27,30 @@ namespace Anaquin
             // Estimated abundance
             Coverage abund;
         };
+        
+        static bool isKallisto(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 5         &&
+                    toks[0]  == "target_id"  &&
+                    toks[1]  == "length"     &&
+                    toks[2]  == "eff_length" &&
+                    toks[3]  == "est_counts" &&
+                    toks[4]  == "tpm")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
         {
@@ -48,7 +72,9 @@ namespace Anaquin
                     Tokens::split(line, "\t", toks);
                     
                     d.id    = toks[TargetID];
-                    d.abund = stod(toks[EstCounts]);
+                    
+                    // Normalized abunda (like FPKM)
+                    d.abund = stod(toks[TPM]);
                     
                     f(d, p);
                 }

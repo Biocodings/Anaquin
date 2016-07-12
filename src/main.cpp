@@ -62,8 +62,11 @@
 #include "parsers/parser_diff.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
+#include "parsers/parser_edgeR.hpp"
+#include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_express.hpp"
 #include "parsers/parser_cufflink.hpp"
+#include "parsers/parser_kallisto.hpp"
 
 #include "writers/pdf_writer.hpp"
 #include "writers/file_writer.hpp"
@@ -261,7 +264,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
@@ -1090,6 +1093,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_R_FOLD:
                     case TOOL_R_EXPRESS: { _p.opts[opt] = val; break; }
                         
                     case TOOL_R_SUBSAMPLE:
@@ -1326,11 +1330,11 @@ void parse(int argc, char ** argv)
                     
                     if (isGTF)
                     {
-                        o.inputs = RExpress::Inputs::GTF;
+                        o.format = RExpress::Format::GTF;
                     }
                     else if (ParserExpress::isExpress(file))
                     {
-                        o.inputs = RExpress::Inputs::Text;
+                        o.format = RExpress::Format::Text;
                     }
                     else
                     {
@@ -1345,9 +1349,40 @@ void parse(int argc, char ** argv)
                 {
                     RFold::Options o;
 
-                    o.metrs = ParserDiff::isIsoform(Reader(_p.inputs[0]))
-                                                            ? RFold::Metrics::Isoform
-                                                            : RFold::Metrics::Gene;
+                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
+                    {
+                        throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
+                    }
+                    
+                    o.metrs = _p.opts[OPT_METHOD] == "gene" ? RFold::Metrics::Gene : RFold::Metrics::Isoform;
+                    
+                    const auto &file = _p.inputs[0];
+                    
+                    if (ParserCDiff::isTracking(Reader(file)))
+                    {
+                        o.format = RFold::Format::Cuffdiff;
+                        std::cout << "[INFO]: Cuffdiff format" << std::endl;
+                    }
+                    else if (ParserDESeq2::isDESeq2(Reader(file)))
+                    {
+                        o.format = RFold::Format::DESeq2;
+                        std::cout << "[INFO]: DESeq2 format" << std::endl;
+                    }
+                    else if (ParserEdgeR::isEdgeR(Reader(file)))
+                    {
+                        o.format = RFold::Format::edgeR;
+                        std::cout << "[INFO]: edgeR format" << std::endl;
+                    }
+                    else if (ParserDiff::isDiff(Reader(file)))
+                    {
+                        o.format = RFold::Format::Anaquin;
+                        std::cout << "[INFO]: Anaquin format" << std::endl;
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Unknown file format: " + file + ". Input file should be a valid differential analysis input file. Anaquin supports Cuffdiff, DESeq2, edgeR and it's own standardized format. Please note the input file requires a header.");
+                    }
+
                     analyze_1<RFold>(OPT_U_FILES, o);
                     break;
                 }

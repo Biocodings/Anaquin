@@ -43,6 +43,8 @@ ADDITIONAL INFORMATION
 TOOL OPTIONS
      Required:
         -m           Reference RnaQuin mixture file in CSV format
+		-method      Whether the analysis should be done at the gene or isoform level. The value must be either
+                     "gene" or "isoform".
         -ufiles      User generated differential analysis file
 
      Optional:

@@ -599,12 +599,22 @@ GeneID TransRef::s2g(const SequinID &sID) const
 
 const TransData *TransRef::findTrans(const ChrID &cID, const TransID &tID) const
 {
+    if (!_impl->gData.count(cID))
+    {
+        return nullptr;
+    }
+    
     assert(!_impl->gData.at(cID).t2d.empty());
     return _impl->gData.at(cID).t2d.count(tID) ? &(_impl->gData.at(cID).t2d[tID]) : nullptr;
 }
 
 const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
 {
+    if (!_impl->gData.count(cID))
+    {
+        return nullptr;
+    }
+    
     assert(!_impl->gData.at(cID).g2d.empty());
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }

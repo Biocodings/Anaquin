@@ -15,7 +15,31 @@ namespace Anaquin
             LogCPM,
             PValue
         } Field;
+
+        static bool isEdgeR(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+
+                if (toks.size() == 3     &&
+                    toks[0]  == "logFC"  &&
+                    toks[1]  == "logCPM" &&
+                    toks[2]  == "PValue")
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
         
+        typedef DiffTest Data;
+
         static void parse(const FileName &file, std::function<void (const DiffTest &, const ParserProgress &)> f)
         {
             Reader r(file);
@@ -35,14 +59,14 @@ namespace Anaquin
                 
                 if (p.i)
                 {
-                    t.id = toks[Field::Name];
-                    
+                    t.gID = toks[Field::Name];
+
                     /*
                      * edgeR wouldn't give the chromosome name, only the name of the gene would be given.
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    if (s.findGene(ChrT, t.id))
+                    if (s.findGene(ChrT, t.gID))
                     {
                         t.cID = ChrT;
                     }

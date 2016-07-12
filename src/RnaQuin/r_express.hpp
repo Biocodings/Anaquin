@@ -31,7 +31,7 @@ namespace Anaquin
             Isoform
         };
         
-        enum class Inputs
+        enum class Format
         {
             GTF,
             Text
@@ -41,7 +41,7 @@ namespace Anaquin
         {
             Options() {}
             
-            Inputs inputs;
+            Format format;
 
             // Gene or isoform?
             Metrics metrs;

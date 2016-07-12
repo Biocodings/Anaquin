@@ -7,6 +7,8 @@
 #
 
 library(Anaquin)
+
+# Load referebce sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 title <- '%5%'
@@ -17,6 +19,6 @@ expected <- %8%
 measured <- %9%
 
 # Create Anaquin data set
-data <- Anaquin(seqs=row.names(data), expected=expected, measured=measured)
+data <- CreateDataForAnaquin(names=row.names(data), expected=expected, measured=measured)
 
-plotFold(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)
+plotScatter(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)

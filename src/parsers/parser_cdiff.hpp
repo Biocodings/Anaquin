@@ -41,6 +41,39 @@ namespace Anaquin
             double stats;
         };
 
+        static bool isTracking(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 14               &&
+                    toks[0]  == "test_id"           &&
+                    toks[1]  == "gene_id"           &&
+                    toks[2]  == "gene"              &&
+                    toks[3]  == "locus"             &&
+                    toks[4]  == "sample_1"          &&
+                    toks[5]  == "sample_2"          &&
+                    toks[6]  == "status"            &&
+                    toks[7]  == "value_1"           &&
+                    toks[8]  == "value_2"           &&
+                    toks[9]  == "log2(fold_change)" &&
+                    toks[10] == "test_stat"         &&
+                    toks[11] == "p_value"           &&
+                    toks[12] == "q_value"           &&
+                    toks[13] == "significant")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
         template <typename F> static void parse(const FileName &file, F f)
         {
             static const std::map<ParserCDiff::TrackID, DiffTest::Status> tok2Status =

@@ -23,6 +23,31 @@ namespace Anaquin
         
         typedef DiffTest Data;
 
+        static bool isDESeq2(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 6             &&
+                    toks[0]  == "baseMean"       &&
+                    toks[1]  == "log2FoldChange" &&
+                    toks[2]  == "lfcSE"          &&
+                    toks[3]  == "stat"           &&
+                    toks[4]  == "pvalue"         &&
+                    toks[5]  == "padj")
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
         template <typename F> static void parse(const FileName &file, F f)
         {
             Reader r(file);
@@ -75,7 +100,7 @@ namespace Anaquin
                         t.status = DiffTest::Status::Tested;
 
                         // Normalized average counts
-                        t.baseMean = stod(toks[Field::BaseMean]);
+                        t.mean = stod(toks[Field::BaseMean]);
                         
                         // Measured log-fold change
                         t.logF = stod(toks[Field::Log2Fold]);

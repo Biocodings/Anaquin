@@ -28,11 +28,11 @@ namespace Anaquin
         Status status = Status::Tested;
         
         /*
-         * Optional inputs
+         * Optional inputs (not always available)
          */
         
         // Normalized average counts
-        double baseMean = NAN;
+        double mean = NAN;
 
         // Standard error for the log-fold
         double logFSE = NAN;
