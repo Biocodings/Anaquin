@@ -78,7 +78,7 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
     }
     
     overall <- .lm2str(data)
-    above   <- .lm2str(data)
+    above   <- NULL
 
     if (showLOQ)
     {
@@ -98,7 +98,6 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
         p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
     }
     
-    a <- paste(c('bold(Overall): ', overall), collapse='')
  #   a <- expression(atop('ddd', 'sadaddd'))
     
 #    title <- list( bquote( paste( "Histogram of " , 'dddd') )  ,
@@ -116,7 +115,16 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
     
     r <- abs(max(data$y) - min(data$y))
     y_off <- 0.06 * r 
-    
+
+    if (showLOQ)
+    {
+        a <- paste(c('bold(Overall): ', overall), collapse='')
+    }
+    else
+    {
+        a <- overall
+    }
+
     overall <- annotate("text",
                         label=a,
                         x=min(data$x),
@@ -127,18 +135,22 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
                         hjust=0,
                         vjust=0)
     
-    above <- annotate("text",
-                      label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
-                      x=min(data$x),
-                      y=max(data$y)-2*y_off,
-                      size=4.0,
-                      colour='grey24',
-                      parse=TRUE,
-                      hjust=0,
-                      vjust=0)
     p <- p + overall
-    p <- p + above
     
+    if (showLOQ)
+    {
+        above <- annotate("text",
+                          label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
+                          x=min(data$x),
+                          y=max(data$y)-2*y_off,
+                          size=4.0,
+                          colour='grey24',
+                          parse=TRUE,
+                          hjust=0,
+                          vjust=0)
+        p <- p + above
+    }
+
     if (!is.null(xBreaks))
     {
         p <- p + scale_x_continuous(breaks=xBreaks)
