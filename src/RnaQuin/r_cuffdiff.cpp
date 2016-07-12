@@ -24,7 +24,7 @@ RCuffdiff::Stats RCuffdiff::stats(const FileName &file, const RCuffdiff::Options
             d.cID  = x.cID;
             d.gID  = x.gID;
             d.logF = x.logF;
-            d.iID  = x.gID == x.tID ? "" : x.tID;
+            d.iID  = x.gID == x.iID ? "" : x.iID;
 
             stats.data.push_back(d);
         }

@@ -74,7 +74,7 @@ namespace Anaquin
                     }
                     
                     x.cID   = toks[Field::ChrID];
-                    x.abund = ns2ld(toks[Field::Abund]);
+                    x.abund = ss2ld(toks[Field::Abund]);
                     
                     f(x, p);
                 }

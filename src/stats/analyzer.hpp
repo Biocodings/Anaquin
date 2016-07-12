@@ -25,11 +25,6 @@ namespace Anaquin
         return out.str();
     }
 
-    template <typename T> std::string n2str(const T &x)
-    {
-        return isnan(x) ? "NA" : toString(x);
-    }
-    
     template <typename T> std::string p2str(const T &x)
     {
         return isnan(x) ? "NA" : toString(x, 310);
@@ -38,11 +33,6 @@ namespace Anaquin
     inline double s2d(const std::string &x)
     {
         return (x == "NA" || x == "-") ? NAN : stod(x);
-    }
-    
-    inline Probability s2p(const std::string &x)
-    {
-        return (x == "NA" || x == "-") ? NAN : stold(x);
     }
     
     template <typename T> Counts count(const std::map<T, Counts> &x)

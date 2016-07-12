@@ -35,8 +35,6 @@ namespace Anaquin
         
         struct Data : public DiffTest
         {
-            TrackID tID;
-            
             // Test statistics
             double stats;
         };
@@ -103,7 +101,7 @@ namespace Anaquin
                 Tokens::split(line, "\t", toks);
                 
                 t.gID    = toks[FGeneID];
-                t.tID    = toks[FTestID];
+                t.iID    = toks[FTestID];
                 t.status = tok2Status.at(toks[FStatus]);
                 t.logF   = stof(toks[FLogFold]);
                 t.stats  = stof(toks[FTestStats]);

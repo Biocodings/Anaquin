@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
+#include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "parsers/parser_diff.hpp"
 #include "parsers/parser_edgeR.hpp"
@@ -210,12 +211,12 @@ static Scripts generateQuins(const RFold::Stats &stats, const RFold::Options &o)
         else
         {
             ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % i.first
-                                                                         % n2str(x.mean)
-                                                                         % n2str(x.exp)
-                                                                         % n2str(x.obs)
-                                                                         % n2str(x.se)
-                                                                         % p2str(x.q)
-                                                                         % p2str(x.p)).str());
+                                                                         % x2ns(x.mean)
+                                                                         % x2ns(x.exp)
+                                                                         % x2ns(x.obs)
+                                                                         % x2ns(x.se)
+                                                                         % ld2ss(x.q)
+                                                                         % x2ns(x.p)).str());
         }
     }
     
