@@ -1,7 +1,7 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-     VarSubsample - Calibrate the sequence coverage of sequins to accompanying human genome
+     VarSubsample - Calibrate sequence coverage of sequins to accompanying human genome
 
 DESCRIPTION
     Alignment subsampling is a simple and effective method for calibrating the sequence coverage of sequins to accompanying
@@ -20,7 +20,13 @@ USAGE EXAMPLE
 
 TOOL OPTIONS
      Required:
-        -rbed        Reference VarQuin annotation file in BED format
+        -rbed           Reference VarQuin annotation file in BED format
+        -method = mean  Algorithm used for subsampling. Possible values include mean, median, raw, x.
+                          mean    sequencing coverage calculated by taking arithmetic average.
+                          median  sequencing coverage calculated by taking median.
+                          reads   sequencing coverage calculated by number of reads
+                          x       where x is the fraction of reads aligned to chrIS to subsample. For example,
+                                  0.01 is 1%, 0.10 is 10% etc.      
         -ufiles      Generated alignment files in SAM/BAM format
 
      Optional:
