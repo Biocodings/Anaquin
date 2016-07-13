@@ -160,7 +160,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         stats.data[i.first];
     }
 
-    o.info("Reading VCF inputs");
+    o.analyze(file);
 
     VDiscoverImpl impl;
     impl.o = &o;

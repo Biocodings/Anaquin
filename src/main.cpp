@@ -1614,7 +1614,7 @@ void parse(int argc, char ** argv)
                     {
                         o.format = VarFormat::Anaquin;
                     }
-                    
+
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;
                 }
