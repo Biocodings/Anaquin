@@ -1,5 +1,4 @@
 #include "data/convert.hpp"
-#include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
@@ -168,7 +167,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     impl.stats = &stats;
 
     // Read the input variant file and process them
-    stats.vData = vcfData(file, o.input, &impl);
+    stats.vData = vcfData(file, o.format, &impl);
 
     o.info("Aggregating statistics");
 
@@ -471,7 +470,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
         }
     }
     
-    const auto mm = r.findVar(ChrT, stol(ms.id));
+    const auto mm = r.findVar(ChrIS, stol(ms.id));
     assert(mm);
     
     auto writeNoScale = [&]()

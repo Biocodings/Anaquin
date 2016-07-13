@@ -11,13 +11,13 @@ namespace Anaquin
 {
     struct VDiscover
     {
-        typedef VarInput Input;
+        typedef VarFormat Format;
         
         struct Options : public AnalyzerOptions
         {
             Options() {}
 
-            Input input;
+            Format format;
         };
 
         struct Stats : public MappingStats, public VariantStats

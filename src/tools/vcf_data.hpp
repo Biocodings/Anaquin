@@ -6,6 +6,7 @@
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"
 #include "parsers/parser_vcf.hpp"
+#include "parsers/parser_varscan.hpp"
 #include "parsers/parser_variants.hpp"
 
 namespace Anaquin
@@ -159,10 +160,11 @@ namespace Anaquin
         }
     };
 
-    enum class VarInput
+    enum class VarFormat
     {
-        VCFInput,
-        TxtInput,
+        VarScan,
+        VCF,
+        Anaquin,
     };
 
     struct VCFDataUser
@@ -170,13 +172,42 @@ namespace Anaquin
         virtual void variantProcessed(const ParserVCF::Data &, const ParserProgress &) = 0;
     };
     
-    inline VCFData vcfData(const Reader &r, VarInput input = VarInput::VCFInput, VCFDataUser *user = nullptr)
+    inline VCFData vcfData(const Reader &r, VarFormat format = VarFormat::VCF, VCFDataUser *user = nullptr)
     {
         VCFData c2d;
         
-        switch (input)
+        switch (format)
         {
-            case VarInput::VCFInput:
+            case VarFormat::VarScan:
+            {
+                ParserVarScan::parse(r, [&](const ParserVarScan::Data &x, const ParserProgress &p)
+                {
+                    switch (x.type())
+                    {
+                        case Mutation::SNP:
+                        {
+                            c2d[x.cID].s2d[x.l.start] = x;
+                            break;
+                        }
+                            
+                        case Mutation::Deletion:
+                        case Mutation::Insertion:
+                        {
+                            c2d[x.cID].i2d[x.l.start] = x;
+                            break;
+                        }
+                    }
+                    
+                    if (user)
+                    {
+                        user->variantProcessed(x, p);
+                    }
+                });
+                
+                break;
+            }
+                
+            case VarFormat::VCF:
             {
                 ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &p)
                 {
@@ -205,7 +236,7 @@ namespace Anaquin
                 break;
             }
 
-            case VarInput::TxtInput:
+            case VarFormat::Anaquin:
             {
                 ParserVariant::parse(r, [&](const ParserVariant::Data &x, const ParserProgress &p)
                 {

@@ -38,6 +38,44 @@ namespace Anaquin
 
         typedef std::function<void(const Data &, const ParserProgress &)> Functor;
 
+        static bool isVarScan(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 19         &&
+                    toks[0]  == "Chrom"       &&
+                    toks[1]  == "Position"    &&
+                    toks[2]  == "Ref"         &&
+                    toks[3]  == "Cons"        &&
+                    toks[4]  == "Reads1"      &&
+                    toks[5]  == "Reads2"      &&
+                    toks[6]  == "VarFreq"     &&
+                    toks[7]  == "Strands1"    &&
+                    toks[8]  == "Strands2"    &&
+                    toks[9]  == "Qual1"       &&
+                    toks[10] == "Qual2"       &&
+                    toks[11] == "Pvalue"      &&
+                    toks[12] == "MapQual1"    &&
+                    toks[13] == "MapQual2"    &&
+                    toks[14] == "Reads1Plus"  &&
+                    toks[15] == "Reads1Minus" &&
+                    toks[16] == "Reads2Plus"  &&
+                    toks[17] == "Reads2Minus" &&
+                    toks[18] == "VarAllele")
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
         static void parse(const Reader &r, Functor f)
         {
             Data d;

@@ -16,7 +16,6 @@
 #include "RnaQuin/r_DESeq2.hpp"
 #include "RnaQuin/r_genome.hpp"
 #include "RnaQuin/r_express.hpp"
-#include "RnaQuin/r_kexpress.hpp"
 #include "RnaQuin/r_assembly.hpp"
 #include "RnaQuin/r_coverage.hpp"
 #include "RnaQuin/r_cuffdiff.hpp"
@@ -24,14 +23,11 @@
 #include "RnaQuin/r_kallisto.hpp"
 
 #include "VarQuin/v_flip.hpp"
-#include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_viewer.hpp"
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_express.hpp"
-#include "VarQuin/v_kallele.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
 
@@ -64,6 +60,7 @@
 #include "parsers/parser_quast.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
+#include "parsers/parser_varscan.hpp"
 #include "parsers/parser_express.hpp"
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
@@ -96,7 +93,6 @@ typedef std::set<Value> Range;
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_VSCAN     276
 #define TOOL_V_IGV       277
-#define TOOL_V_FREQ      278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_R_SUBSAMPLE 281
@@ -115,11 +111,8 @@ typedef std::set<Value> Range;
 #define TOOL_F_COVERAGE  294
 #define TOOL_F_DIFF      295
 #define TOOL_L_COPY      296
-#define TOOL_V_EXPRESS   297
-#define TOOL_R_KEXPRESS  299
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
-#define TOOL_V_KALLELE   303
 #define TOOL_S_DISCOVER  304
 #define TOOL_V_FLIP      305
 #define TOOL_R_CUFFDIFF  306
@@ -206,7 +199,6 @@ static std::map<Value, Tool> _tools =
     { "RnaAlign",       TOOL_R_ALIGN     },
     { "RnaAssembly",    TOOL_R_ASSEMBLY  },
     { "RnaExpression",  TOOL_R_EXPRESS   },
-    { "RnaKExpress",    TOOL_R_KEXPRESS  },
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaNorm",        TOOL_T_NORM      },
     { "RnaIGV",         TOOL_R_IGV       },
@@ -222,12 +214,9 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarIGV",         TOOL_V_IGV       },
-    { "VarFrequency",   TOOL_V_FREQ      },
     { "VarCoverage",    TOOL_V_COVERAGE  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
-    { "VarExpress",     TOOL_V_EXPRESS   },
-    { "VarKAllele",     TOOL_V_KALLELE   },
-    { "VarFlip",        TOOL_V_FLIP   },
+    { "VarFlip",        TOOL_V_FLIP      },
     { "VarSequence",    TOOL_V_SEQUENCE  },
 
     { "MetaAbund",      TOOL_M_ABUND    },
@@ -262,7 +251,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_IGV,       { OPT_U_FILES } },
     { TOOL_R_SUBSAMPLE, { OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
@@ -284,9 +272,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_R_VCF,   OPT_U_FILES   } },
-    { TOOL_V_FREQ,      { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
 };
 
@@ -1229,7 +1214,6 @@ void parse(int argc, char ** argv)
         case TOOL_R_DESEQ2:
         case TOOL_R_GENOME:
         case TOOL_R_EXPRESS:
-        case TOOL_R_KEXPRESS:
         case TOOL_R_ASSEMBLY:
         case TOOL_R_COVERAGE:
         case TOOL_R_CUFFDIFF:
@@ -1303,15 +1287,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_R_KEXPRESS:
-                {
-                    TKExpress::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    analyze_2<TKExpress>(o);
-
-                    break;
-                }
-
                 case TOOL_R_EXPRESS:
                 {
                     RExpress::Options o;
@@ -1550,26 +1525,13 @@ void parse(int argc, char ** argv)
 
         case TOOL_V_IGV:
         case TOOL_V_FLIP:
-        case TOOL_V_FREQ:
         case TOOL_V_VSCAN:
         case TOOL_V_ALIGN:
-        case TOOL_V_EXPRESS:
-        case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
         case TOOL_V_SEQUENCE:
         case TOOL_V_SUBSAMPLE:
         {
-            auto parseExpress = [&](const std::string &str)
-            {
-                const static std::map<Value, VExpress::Software> m =
-                {
-                    { "kallisto", VExpress::Software::Kallisto },
-                };
-
-                return parseEnum("soft", str, m);
-            };
-            
             if (__showInfo__)
             {
                 std::cout << "[INFO]: Variant Analysis" << std::endl;
@@ -1595,14 +1557,6 @@ void parse(int argc, char ** argv)
                         addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
-                        break;
-                    }
-
-                    case TOOL_V_FREQ:
-                    case TOOL_V_EXPRESS:
-                    {
-                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
 
@@ -1642,38 +1596,25 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
-                case TOOL_V_KALLELE:
-                {
-                    VKAllele::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    analyze_2<VKAllele>(o);
-                    break;
-                }
-
-                case TOOL_V_EXPRESS:
-                {
-                    VExpress::Options o;
-                    o.soft = parseExpress(_p.opts.at(OPT_SOFT));
-                    
-                    analyze_1<VExpress>(OPT_U_FILES, o);
-                    break;
-                }
-                    
-                case TOOL_V_FREQ:
-                {
-                    VFreq::Options o;
-                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VFreq::Input::VCFInput : VFreq::Input::TxtInput;
-
-                    analyze_1<VFreq>(OPT_U_FILES, o);
-                    break;
-                }
-
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
                     
-                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VDiscover::Input::VCFInput : VDiscover::Input::TxtInput;
-
+                    const auto file = _p.opts.at(OPT_U_FILES);
+                    
+                    if (ParserVarScan::isVarScan(file))
+                    {
+                        o.format = VarFormat::VarScan;
+                    }
+                    else if (checkVCF(file))
+                    {
+                        o.format = VarFormat::VCF;
+                    }
+                    else if (ParserVariant::isVariant(file))
+                    {
+                        o.format = VarFormat::Anaquin;
+                    }
+                    
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;
                 }

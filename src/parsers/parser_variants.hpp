@@ -29,6 +29,35 @@ namespace Anaquin
 
         typedef std::function<void(const Data &, const ParserProgress &)> Functor;
 
+        static bool isVariant(const Reader &r)
+        {
+            std::string line;
+            std::vector<Tokens::Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() == 10      &&
+                    toks[0]  == "Chrom"    &&
+                    toks[1]  == "Position" &&
+                    toks[2]  == "Ref"      &&
+                    toks[3]  == "Alt"      &&
+                    toks[4]  == "ReadR"    &&
+                    toks[5]  == "ReadV"    &&
+                    toks[6]  == "Depth"    &&
+                    toks[7]  == "QualR"    &&
+                    toks[8]  == "QualV"    &&
+                    toks[9]  == "Pvalue")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
         static void parse(const Reader &r, Functor f)
         {
             Data d;

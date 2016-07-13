@@ -109,9 +109,7 @@ namespace Anaquin
             o.info("Fuzzy level: " + std::to_string(o.fuzzy));
             o.info("Parsing alignment file");
 
-            switch (o.soft)
-            {
-//                case StarFusion:
+///                case StarFusion:
 //                {
 //                    ParserStarFusion::parse(Reader(file), [&](const CalledFusion &t, const ParserProgress &)
 //                    {
@@ -130,7 +128,7 @@ namespace Anaquin
 //
 //                    break;
 //                }
-            }
+//            }
         }
     };
 }
