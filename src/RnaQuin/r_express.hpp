@@ -34,6 +34,7 @@ namespace Anaquin
         enum class Format
         {
             GTF,
+            Kallisto,
             Text
         };
         

@@ -4,6 +4,7 @@
 #include "data/data.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
+#include "data/standard.hpp"
 #include "parsers/parser.hpp"
 
 namespace Anaquin
@@ -21,6 +22,8 @@ namespace Anaquin
 
         struct Data
         {
+            ChrID cID;
+            
             // Eg: R1_101_1
             IsoformID id;
 
@@ -52,17 +55,19 @@ namespace Anaquin
             return false;
         }
 
-        static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
+        static void parse(const Reader &rr, std::function<void(const Data &, const ParserProgress &)> f)
         {
             protectParse("Kallisto TSV format", [&]()
             {
+                const auto &r = Standard::instance().r_trans;
+
                 Data d;
                 ParserProgress p;
                 
                 Line line;
                 std::vector<Tokens::Token> toks;
                 
-                while (r.nextLine(line))
+                while (rr.nextLine(line))
                 {
                     if (p.i++ == 0)
                     {
@@ -71,8 +76,18 @@ namespace Anaquin
                     
                     Tokens::split(line, "\t", toks);
                     
-                    d.id    = toks[TargetID];
+                    d.id = toks[TargetID];
                     
+                    if (r.findTrans(ChrIS, d.id))
+                    {
+                        d.cID = ChrIS;
+                    }
+                    else
+                    {
+                        // We don't know exactly where it is...
+                        d.cID = Geno;
+                    }
+
                     // Normalized abunda (like FPKM)
                     d.abund = stod(toks[TPM]);
                     

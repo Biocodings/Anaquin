@@ -3,6 +3,7 @@
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
+#include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
 
@@ -125,6 +126,21 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
     {
         switch (o.format)
         {
+            case Format::Kallisto:
+            {
+                ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &x, const ParserProgress &p)
+                {
+                    if (p.i && !(p.i % 100000))
+                    {
+                        o.wait(std::to_string(p.i));
+                    }
+                    
+                    update(stats, x, o.metrs, o);
+                });
+                
+                break;
+            }
+                
             case Format::Text:
             {
                 ParserExpress::parse(Reader(file), o.metrs == Metrics::Gene,

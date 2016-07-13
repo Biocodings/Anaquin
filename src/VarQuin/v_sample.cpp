@@ -107,8 +107,8 @@ struct Subsampler
         assert(!stats.syn.empty());
         assert(!stats.gen.empty());
         
-        o.info(toString(stats.syn.size()) + " reference synthetic regions");
-        o.info(toString(stats.gen.size()) + " reference genomic regions");
+        o.info(std::to_string(stats.syn.size()) + " reference synthetic regions");
+        o.info(std::to_string(stats.gen.size()) + " reference genomic regions");
         
         const auto ss = stats.syn.stats();
         const auto gs = stats.gen.stats();
@@ -167,8 +167,8 @@ struct Subsampler
         {
             case VSample::Method::Mean:   { return stats.mean; }
             case VSample::Method::Median: { return stats.p50;  }
-            case VSample::Method::Reads:  { throw "????"; }
-            case VSample::Method::Prop:   { throw "????"; }
+            case VSample::Method::Reads:  { throw "????";      }
+            case VSample::Method::Prop:   { throw "????";      }
         }
     }
     
@@ -324,7 +324,6 @@ struct Subsampler
         o.info("Coverage (after): " + toString(g_after));
         
 #ifdef NEED_BEDGRAPH
-        
         /*
          * Generating bedgraph before subsampling (only synthetic)
          */

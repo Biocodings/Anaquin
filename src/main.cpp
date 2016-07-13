@@ -1080,7 +1080,7 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_R_FOLD:
                     case TOOL_R_EXPRESS: { _p.opts[opt] = val; break; }
-                        
+
                     case TOOL_R_SUBSAMPLE:
                     {
                         parseDouble(_p.opts[opt] = val, _p.sampled);
@@ -1094,11 +1094,6 @@ void parse(int argc, char ** argv)
                             throw InvalidValueException(val, "method. Sampling fraction must be less than one");
                         }
                         
-                        break;
-                    }
-                        
-                    case TOOL_V_SUBSAMPLE:
-                    {
                         break;
                     }
                 }
@@ -1310,6 +1305,10 @@ void parse(int argc, char ** argv)
                     else if (ParserExpress::isExpress(file))
                     {
                         o.format = RExpress::Format::Text;
+                    }
+                    else if (ParserKallisto::isKallisto(file))
+                    {
+                        o.format = RExpress::Format::Kallisto;
                     }
                     else
                     {
@@ -1623,7 +1622,41 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_SUBSAMPLE: { analyze_1<VSample>(OPT_U_FILES); break; }
+                case TOOL_V_SUBSAMPLE:
+                {
+                    VSample::Options o;
+                    
+                    // Eg: "mean", "median", "reads", "0.75"
+                    const auto meth = _p.opts[OPT_METHOD];
+                    
+                    try
+                    {
+                        o.p = stod(meth);
+                        o.meth = VSample::Method::Prop;
+                    }
+                    catch (...)
+                    {
+                        if (meth == "mean")
+                        {
+                            o.meth = VSample::Method::Mean;
+                        }
+                        else if (meth == "median")
+                        {
+                            o.meth = VSample::Method::Median;
+                        }
+                        else if (meth == "reads")
+                        {
+                            o.meth = VSample::Method::Reads;
+                        }
+                        else
+                        {
+                            throw std::runtime_error("Unknown method: " + meth);
+                        }
+                    }
+
+                    analyze_1<VSample>(OPT_U_FILES, o);
+                    break;
+                }
             }
 
             break;
