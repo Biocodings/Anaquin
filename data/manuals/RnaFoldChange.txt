@@ -76,7 +76,8 @@ OUTPUTS
         Pval                        Observed p-value probability
         Qval                        Observed q-value probability
 
-     RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and expected log-folds (independent variable).
+     RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and
+                            expected log-folds (independent variable).
 
      RnaFoldChange_ROC.R - R script for building the ROC curve (including AUC statistics) for each sequin group.
 
