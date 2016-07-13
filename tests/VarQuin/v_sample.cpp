@@ -19,8 +19,8 @@ TEST_CASE("VSubsample_ZeroProp")
     
     const auto r = VSample::stats("tests/data/sampled.bam");
     
-    REQUIRE(r.n_gen == 421855);
-    REQUIRE(r.n_syn == 32313);
+    REQUIRE(r.tot.syn == 32323);
+    REQUIRE(r.tot.gen == 422673);
     REQUIRE(r.syn.size() == 1);
     REQUIRE(r.gen.size() == 1);
     REQUIRE(r.synC == Approx(78.3321393416));
