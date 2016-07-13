@@ -59,11 +59,11 @@ data  = [ 'data/manual.txt',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
 
-          'data/RnaQuin/ATR001.v032.gtf',
-          'data/RnaQuin/MTR002.v013.csv',
-          'data/RnaQuin/MTR003.v013.csv',
-          'data/RnaQuin/MTR004.v013.csv',          
-          'data/RnaQuin/MTR005.v013.csv',
+          'data/RnaQuin/ARN020_v001.gtf',
+          'data/RnaQuin/MRN027_v001.csv',
+          'data/RnaQuin/MRN028_v001.csv',
+          'data/RnaQuin/MRN029_v001.csv',          
+          'data/RnaQuin/MRN030_v001.csv',
 
           # ---------- META ----------
 
@@ -84,10 +84,10 @@ data  = [ 'data/manual.txt',
           'src/r/plotVROC2.R',          
           'src/r/plotVDensity.R',
 
-          'data/VarQuin/AVA017.v001.bed',
-          'data/VarQuin/AVA009.v032.vcf',
-          'data/VarQuin/MVA011.v013.csv',
-          'data/VarQuin/MVA012.v013.csv',
+          'data/VarQuin/AVA017_v001.bed',
+          'data/VarQuin/AVA009_v001.vcf',
+          'data/VarQuin/MVA011_v001.csv',
+          'data/VarQuin/MVA012_v001.csv',
           'data/VarQuin/AVA019_v001.bed',
         ]
 tests = [ ]

@@ -61,11 +61,11 @@
 #include "resources/plotTLODR.R"
 #include "resources/plotTMinor.R"
 
-#include "resources/ATR001.v032.gtf"
-#include "resources/MTR002.v013.csv"
-#include "resources/MTR003.v013.csv"
-#include "resources/MTR004.v013.csv"
-#include "resources/MTR005.v013.csv"
+#include "resources/ARN020_v001.gtf"
+#include "resources/MRN027_v001.csv"
+#include "resources/MRN028_v001.csv"
+#include "resources/MRN029_v001.csv"
+#include "resources/MRN030_v001.csv"
 
 /*
  * Metagenomics Resources
@@ -90,10 +90,10 @@
 #include "resources/plotVDensity.R"
 
 #include "resources/AVA019_v001.bed"
-#include "resources/AVA009.v032.vcf"
-#include "resources/MVA011.v013.csv"
-#include "resources/MVA012.v013.csv"
-#include "resources/AVA017.v001.bed"
+#include "resources/AVA009_v001.vcf"
+#include "resources/MVA011_v001.csv"
+#include "resources/MVA012_v001.csv"
+#include "resources/AVA017_v001.bed"
 
 typedef std::string Scripts;
 
@@ -306,27 +306,27 @@ Scripts PlotTLODR()
 
 Scripts TransStandGTF()
 {
-    return ToString(data_RnaQuin_ATR001_v032_gtf);
+    return ToString(data_RnaQuin_ARN020_v001_gtf);
 }
 
 Scripts TransDataMixA()
 {
-    return ToString(data_RnaQuin_MTR002_v013_csv);
+    return ToString(data_RnaQuin_MRN027_v001_csv);
 }
 
 Scripts TransDataMixB()
 {
-    return ToString(data_RnaQuin_MTR003_v013_csv);
+    return ToString(data_RnaQuin_MRN028_v001_csv);
 }
 
 Scripts TransDataMixF()
 {
-    return ToString(data_RnaQuin_MTR005_v013_csv);
+    return ToString(data_RnaQuin_MRN030_v001_csv);
 }
 
 Scripts TransDataMixAB()
 {
-    return ToString(data_RnaQuin_MTR004_v013_csv);
+    return ToString(data_RnaQuin_MRN029_v001_csv);
 }
 
 /*
@@ -355,17 +355,17 @@ Scripts PlotVDensity()
 
 Scripts VarDataMixA()
 {
-    return ToString(data_VarQuin_MVA011_v013_csv);
+    return ToString(data_VarQuin_MVA011_v001_csv);
 }
 
 Scripts VarDataMixF()
 {
-    return ToString(data_VarQuin_MVA012_v013_csv);
+    return ToString(data_VarQuin_MVA012_v001_csv);
 }
 
 Scripts VarDataVCF()
 {
-    return ToString(data_VarQuin_AVA009_v032_vcf);
+    return ToString(data_VarQuin_AVA009_v001_vcf);
 }
 
 Scripts VarDataBed()
