@@ -6,6 +6,12 @@
 
 namespace Anaquin
 {
+    struct SynGenAligns
+    {
+        Counts syn = 0;
+        Counts gen = 0;
+    };
+
     struct VSample
     {
         enum class Method
@@ -33,8 +39,11 @@ namespace Anaquin
             // Calculated coverage for the query (eg: chr21)
             Coverage genC;
             
-            Counts n_syn = 0;
-            Counts n_gen = 0;
+            // Total alignments (not just sampling regions)
+            SynGenAligns tot;
+            
+            // Alignments within sampling regionssubsampling
+            SynGenAligns samp;
         };
 
         struct Options : public AnalyzerOptions

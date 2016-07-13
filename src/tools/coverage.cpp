@@ -19,9 +19,17 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
             std::cout << std::to_string(info.p.i) << std::endl;
         }
         
-        if (x.mapped)
+        if (Standard::isSynthetic(x.cID))
         {
-            stats.update(x);
+            stats.n_syn++;
+        }
+        else if (x.cID != "*")
+        {
+            stats.n_gen++;
+        }
+        else
+        {
+            stats.n_unmap++;
         }
         
         if (x.mapped && inters.count(x.cID))

@@ -271,7 +271,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_SEQUENCE,  { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
 };
 
@@ -1079,7 +1079,8 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_R_FOLD:
-                    case TOOL_R_EXPRESS: { _p.opts[opt] = val; break; }
+                    case TOOL_R_EXPRESS:
+                    case TOOL_V_SUBSAMPLE: { _p.opts[opt] = val; break; }
 
                     case TOOL_R_SUBSAMPLE:
                     {
@@ -1629,29 +1630,34 @@ void parse(int argc, char ** argv)
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];
                     
-                    try
+                    auto isFloat = [&]()
+                    {
+                        std::istringstream iss(meth);
+                        float f;
+                        iss >> std::noskipws >> f;
+                        return iss.eof() && !iss.fail();
+                    };
+                    
+                    if (meth == "mean")
+                    {
+                        o.meth = VSample::Method::Mean;
+                    }
+                    else if (meth == "median")
+                    {
+                        o.meth = VSample::Method::Median;
+                    }
+                    else if (meth == "reads")
+                    {
+                        o.meth = VSample::Method::Reads;
+                    }
+                    else if (isFloat())
                     {
                         o.p = stod(meth);
                         o.meth = VSample::Method::Prop;
                     }
-                    catch (...)
+                    else
                     {
-                        if (meth == "mean")
-                        {
-                            o.meth = VSample::Method::Mean;
-                        }
-                        else if (meth == "median")
-                        {
-                            o.meth = VSample::Method::Median;
-                        }
-                        else if (meth == "reads")
-                        {
-                            o.meth = VSample::Method::Reads;
-                        }
-                        else
-                        {
-                            throw std::runtime_error("Unknown method: " + meth);
-                        }
+                        throw std::runtime_error("Unknown method: " + meth);
                     }
 
                     analyze_1<VSample>(OPT_U_FILES, o);
