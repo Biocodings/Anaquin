@@ -9,6 +9,12 @@ using namespace Anaquin;
 
 typedef RExpress::Metrics Metrics;
 
+static bool shouldAggregate(const RExpress::Options &o)
+{
+    return (o.metrs == Metrics::Gene && o.format == RExpress::Format::GTF) ||
+           (o.metrs == Metrics::Gene && o.format == RExpress::Format::Kallisto);
+}
+
 template <typename T> void update(RExpress::Stats &stats,
                                   const T &x,
                                   RExpress::Metrics metrs,
@@ -135,7 +141,15 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                         o.wait(std::to_string(p.i));
                     }
                     
-                    update(stats, x, o.metrs, o);
+                    // Should we aggregate because this is at the gene level?
+                    if (shouldAggregate(o))
+                    {
+                        update(stats, x, Metrics::Isoform, o);
+                    }
+                    else
+                    {
+                        update(stats, x, o.metrs, o);
+                    }
                 });
                 
                 break;
@@ -206,7 +220,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                      * the transcripts together.
                      */
 
-                    if (metrs == Metrics::Gene && o.format == RExpress::Format::GTF)
+                    if (shouldAggregate(o))
                     {
                         matched = x.type == RNAFeature::Transcript;
                         f(Metrics::Isoform);
@@ -217,26 +231,30 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             }
         }
         
-        if (o.metrs == Metrics::Gene && o.format == RExpress::Format::GTF)
+        if (shouldAggregate(o))
         {
             const auto &r = Standard::instance().r_trans;
 
             if (stats.genes.empty() && !stats.isos.empty())
             {
-                std::map<GeneID, FPKM> fpkm;
+                std::map<GeneID, FPKM> express;
                 
                 for (const auto &i : stats.isos)
                 {
                     const auto m = r.findTrans(ChrIS, i.first);
                     
                     // Add up the isoform expressions for each of the sequin gene
-                    fpkm[m->gID] += i.second.y;
+                    express[m->gID] += i.second.y;
                 }
                 
-                for (const auto &i : fpkm)
+                // Important, we'll need to reset counting for isoforms
+                stats.n_syn = 0;
+                
+                for (const auto &i : express)
                 {
                     const auto input = r.concent(i.first);
                     
+                    stats.n_syn++;                    
                     stats.genes.add(i.first, input, i.second);
                     
                     if (isnan(stats.genes.limit.abund) || input < stats.genes.limit.abund)
@@ -395,8 +413,8 @@ static void generateSummary(const FileName &summary,
     }
     
     // No reference coordinate annotation given here
-    const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
-    
+    const auto n_syn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
+
     const auto format = "-------RnaExpression Output\n"
                         "       Summary for input: %1%\n"
                         "       *Arithmetic average and standard deviation are shown\n\n"
@@ -481,8 +499,9 @@ static void generateR(const FileName &output,
     
     switch (o.format)
     {
-        case RExpress::Format::GTF:  { measured = "FPKM"; break; }
-        case RExpress::Format::Text: { measured = "FPKM"; break; }
+        case RExpress::Format::GTF:      { measured = "FPKM";         break; }
+        case RExpress::Format::Text:     { measured = "FPKM";         break; }
+        case RExpress::Format::Kallisto: { measured = "K-mer counts"; break; }
     }
 
     if (stats.size() == 1)
