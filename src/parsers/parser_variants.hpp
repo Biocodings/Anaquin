@@ -40,7 +40,7 @@ namespace Anaquin
                 Tokens::split(line, "\t", toks);
                 
                 if (toks.size() == 10      &&
-                    toks[0]  == "Chrom"    &&
+                    toks[0]  == "ChrID"    &&
                     toks[1]  == "Position" &&
                     toks[2]  == "Ref"      &&
                     toks[3]  == "Alt"      &&

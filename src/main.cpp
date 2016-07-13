@@ -1614,6 +1614,10 @@ void parse(int argc, char ** argv)
                     {
                         o.format = VarFormat::Anaquin;
                     }
+                    else
+                    {
+                        throw std::runtime_error("Unknown input file type: " + file + ". Input file should be in the format of VCF, VarScan or Anaquin. Please consult our usage guide (Section 6) for details on the supported formats.");
+                    }
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;
