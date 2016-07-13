@@ -35,14 +35,17 @@ TOOL OPTIONS
 OUTPUTS
      VarSubsample_summary.stats gives the summary statistics. Field definitions:
 
-     Reference annotation file  Reference coordinate annotation file in BED format
-     User alignment file        User generated alignment file in SAM/BAM format
-     Reference regions          Number of regions on the in silico chromosome and genome in the reference annotation file
-     Method                     Method used in subsampling
-     User alignment (Before)    Number of alignments on the in silico regions and genomic regions before subsampling
-     User alignment (After)     Number of alignments on the in silico regions and genomic regions after subsampling
-     Coverage (Before)          Coverage for the in silico regions and genomic regions before subsampling
-     Coverage (After)           Coverage for the in silico regions and genomic regions after subsampling
+     Reference annotation file          Reference coordinate annotation file in BED format
+     User alignment file                User generated alignment file in SAM/BAM format
+     Reference regions                  Number of regions on the in silico chromosome and genome in the reference annotation file
+     Method                             Method used in subsampling
+     Total alignments (Before)          Total alignments on the in silico chromosome and genome before subsampling
+     Total alignments (After)           Total alignments on the in silico chromosome and genome after subsampling    
+     Alignments within regions (Before) Total alignments on the in silico regions and genomic regions before subsampling
+     Alignments within regions (After)  Total alignments on the in silico regions and genomic regions after subsampling
+     Normalization                      Normalization factor applied in subsampling
+     Coverage (Before)                  Coverage on the in silico regions and genomic regions before subsampling
+     Coverage (After)                   Coverage on the in silico regions and genomic regions after subsampling
 
 EXAMPLE OUTPUT
 
