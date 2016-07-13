@@ -254,7 +254,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 {
                     const auto input = r.concent(i.first);
                     
-                    stats.n_syn++;                    
+                    stats.n_syn++;
                     stats.genes.add(i.first, input, i.second);
                     
                     if (isnan(stats.genes.limit.abund) || input < stats.genes.limit.abund)
@@ -501,7 +501,7 @@ static void generateR(const FileName &output,
     {
         case RExpress::Format::GTF:      { measured = "FPKM";         break; }
         case RExpress::Format::Text:     { measured = "FPKM";         break; }
-        case RExpress::Format::Kallisto: { measured = "K-mer counts"; break; }
+        case RExpress::Format::Kallisto: { measured = "K-mer Counts"; break; }
     }
 
     if (stats.size() == 1)
