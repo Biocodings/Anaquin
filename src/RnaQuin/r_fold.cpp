@@ -325,7 +325,7 @@ void RFold::report(const FileName &file, const Options &o)
     o.generate("RnaFoldChange_fold.R");
     o.writer->open("RnaFoldChange_fold.R");
     o.writer->write(RWriter::createFold("RnaFoldChange_sequins.csv",
-                                        "Fold Change",
+                                        o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
                                         "Expected fold change (log2)",
                                         "Measured fold change (log2)",
                                         "ExpectLFold",
