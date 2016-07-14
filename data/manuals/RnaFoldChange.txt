@@ -67,7 +67,7 @@ OUTPUTS
         SSE                         Sum of squares of residuals
         SST                         Sum of squares of the total variation
 
-     RnaFoldChange_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+     RnaFoldChange_sequins.csv - gives detailed statistics for individual sequin in the reference. Field definitions:
         ID                          Name of the sequin
         Length                      Length of the sequin
         ExpectLFold                 Expected fold-change change
