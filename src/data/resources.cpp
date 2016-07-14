@@ -27,7 +27,6 @@
 #include "resources/plotFold.R"
 #include "resources/plotScatter.R"
 #include "resources/plotSensitivity.R"
-#include "resources/plotMultScatter.R"
 
 /*
  * Fusion Resources
@@ -122,11 +121,6 @@ Scripts PlotScatter()
 Scripts PlotFold()
 {
     return ToString(src_r_plotFold_R);
-}
-
-Scripts plotMultScatter()
-{
-    return ToString(src_r_plotMultScatter_R);
 }
 
 Scripts PlotSensitivity()

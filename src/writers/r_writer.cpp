@@ -106,7 +106,7 @@ Scripts RWriter::createMultiScatter(const FileName    &file,
                                     bool shouldLog)
 {
     const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
-    const auto obs = shouldLog ? ("log2(data[,2:ncol(data)])") : ("data[,2:ncol(data)]");
+    const auto obs = shouldLog ? ("log2(data[,3:ncol(data)])") : ("data[,3:ncol(data)]");
     
     return (boost::format(PlotScatter()) % date()
                                          % __full_command__
