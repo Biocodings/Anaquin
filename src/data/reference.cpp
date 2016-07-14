@@ -943,23 +943,22 @@ void VarRef::validate()
     /*
      * Rules:
      *
-     *   1: Annotation (eg: VarAlign and VarDiscover)
-     *   2: Mixture (eg: VarAlign)
-     *   3: Variants & mixture (eg: VarFrequency)
+     *   1: Annotation (eg: VarAlign, VarSubsample)
+     *   2: Variants & mixture (eg: VarDiscover, VarFrequency)
      */
     
-    // Rule: 2 and 3
+    // Rule: 2
     if (!_rawMIDs.empty())
     {
         merge(_rawMIDs);
     }
     
     // Rule: 1
-    else if (!_impl->bData[ChrT].g2d.empty())
+    else if (!_impl->bData[ChrIS].g2d.empty())
     {
         std::set<SequinID> ids;
         
-        for (const auto &i : _impl->bData[ChrT].g2d)
+        for (const auto &i : _impl->bData[ChrIS].g2d)
         {
             ids.insert(i.first);
         }
@@ -969,7 +968,7 @@ void VarRef::validate()
 
     else
     {
-        throw std::runtime_error("Failed to validate for VarQuin");
+        throw std::runtime_error("Validation for resources files failed for VarQuin. No in silico chromosomes found.");
     }
     
     /*
