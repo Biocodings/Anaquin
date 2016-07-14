@@ -24,7 +24,8 @@ pval <- function(data)
                      band='pred',
                      chosenFDR=0.1,
                      shouldTable=FALSE,
-                     multiTest=TRUE)
+                     multiTest=TRUE,
+                     shouldPlotFitting=FALSE)
 {
     require(locfit)
     
@@ -143,13 +144,19 @@ pval <- function(data)
             {
                 print(paste('Estmating LODR for', ratio))
                 
-                plot(log10(t$measured), log10(t$pval))
+                if (shouldPlotFitting)
+                {
+                    plot(log10(t$measured), log10(t$pval))
+                }
                 
                 # Performs a local regression
                 fit <- locfit(log10(t$pval)~lp(log10(t$measured)), maxk=300)
                 
                 # Plot how the points are fitted
-                plot(fit, band=band, get.data=TRUE, main=paste('Local regression for LFC:', ratio))
+                if (shouldPlotFitting)
+                {
+                    plot(fit, band=band, get.data=TRUE, main=paste('Local regression for LFC:', ratio))
+                }
                 
                 #
                 # Generate new data points and use those data points for the prediction band
