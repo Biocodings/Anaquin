@@ -28,10 +28,9 @@ data  = [ 'data/manual.txt',
           'scripts/reports.py',
           'scripts/sleuth.R',
 
-          'src/r/plotScatter.R',
-          'src/r/plotMultScatter.R',
-    	  'src/r/plotSensitivity.R',
           'src/r/plotFold.R',
+          'src/r/plotScatter.R',
+    	  'src/r/plotSensitivity.R',
 
           # ------- Fusion -------
 
