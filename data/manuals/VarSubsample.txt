@@ -51,32 +51,44 @@ EXAMPLE OUTPUT
 
     -------VarSubsample Summary Statistics
 
-           Reference annotation file: AVA019.bed
-           User alignment file: sorted.bam
+        Reference annotation file: sampled.bed
+        User alignment file: sorted.bam
 
     -------Reference regions
 
-           Synthetic regions: 36
-           Genomic regions:   36
+        Synthetic regions: 36
+        Genomic regions:   36
 
-           Normalization: Mean
+        Method: Mean
 
-    -------User alignments (before subsampling)
+    -------Total alignments (before subsampling)
 
-           Synthetic: 32155050
-           Genome:    422154887
+        Synthetic: 36168285
+        Genome:    423028646
 
-    -------User alignments (after subsampling)
+    -------Total alignments (after subsampling)
 
-           Synthetic: 13949
-           Genome:    422154887
+        Synthetic: 45609
+        Genome:    423028646
 
-    -------Before subsampling
+    -------Alignments within sampling regions (before subsampling)
 
-           Synthetic coverage: 78067.3
-           Genome coverage:    11.6469
+        Synthetic: 36121654
+        Genome:    4234
 
-    -------After subsampling
+    -------Alignments within sampling regions (after subsampling)
 
-           Synthetic coverage: 10.7811
-           Genome coverage:    11.6469
+        Synthetic: 45002
+        Genome:    4234
+
+        Normalization: 0.000136642
+
+    -------Before subsampling (within sampling regions)
+
+        Synthetic coverage: 85009.7
+        Genome coverage:    11.6159
+
+    -------After subsampling (within sampling regions)
+
+        Synthetic coverage: 11.5982
+        Genome coverage:    11.6159
