@@ -15,6 +15,11 @@ namespace Anaquin
 
     inline long double ss2ld(const std::string &s)
     {
+        if (s == "NA" || s == "-" || s == "*")
+        {
+            return NAN;
+        }
+
         std::istringstream os(s);
         long double p;
         os >> p;

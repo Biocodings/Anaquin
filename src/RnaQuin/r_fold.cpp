@@ -6,7 +6,8 @@
 
 #include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
-#include "parsers/parser_diff.hpp"
+#include "tools/gtf_data.hpp"
+#include "parsers/parser_adiff.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_DESeq2.hpp"
@@ -43,6 +44,11 @@ std::vector<std::string> RFold::classify(const std::vector<double> &qs, const st
 
 template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RFold::Options &o)
 {
+    if (t.status == DiffTest::Status::NotTested)
+    {
+        return;
+    }
+    
     const auto &r = Standard::instance().r_trans;
 
     auto f = [&](const SequinID &id, Concent exp)
@@ -196,39 +202,46 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     });
 }
 
-static Scripts generateQuins(const RFold::Stats &stats, const RFold::Options &o)
+static void generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
+    o.generate(file);
+    o.writer->open(file);
+    
     std::stringstream ss;
-    ss << "ID\tMean\tExpectLFold\tObserveLFold\tSD\tPval\tQval\n";
+    ss << "ID\tLength\tExpectLFold\tObserveLFold\tSD\tPval\tQval\tMean\n";
     
     for (const auto &i : stats.data)
     {
         const auto &x = i.second;
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
         
         if (isnan(x.p))
         {
-            ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % i.first).str();
+            ss << (boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % i.first).str();
         }
         else
         {
-            ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % i.first
-                                                                         % x2ns(x.mean)
-                                                                         % x2ns(x.exp)
-                                                                         % x2ns(x.obs)
-                                                                         % x2ns(x.se)
-                                                                         % ld2ss(x.p)
-                                                                         % ld2ss(x.q)).str());
+            Locus l;
+            
+            switch (o.metrs)
+            {
+                case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
+                case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
+            }
+            
+            o.writer->write((boost::format(format) % i.first
+                                                   % l.length()
+                                                   % x2ns(x.exp)
+                                                   % x2ns(x.obs)
+                                                   % x2ns(x.se)
+                                                   % ld2ss(x.p)
+                                                   % ld2ss(x.q)
+                                                   % x2ns(x.mean)).str());
         }
     }
-    
-    return ss.str();
-}
 
-static void generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
-{
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write(generateQuins(stats, o));
     o.writer->close();
 }
 

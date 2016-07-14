@@ -69,6 +69,12 @@ namespace Anaquin
                 {
                     t.gID = toks[Field::Name];
                     
+                    if (t.gID == "R2_33")
+                    {
+                        t.gID = t.gID;
+                    }
+                    
+                    
                     /*
                      * DESeq2 wouldn't give the chromosomes, only the gene names.
                      * We have to consult the reference annotation to make a decision.
@@ -77,14 +83,11 @@ namespace Anaquin
                     t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : Geno;
                     
                     /*
-                     * Handle the NA case:
-                     *
-                     *     ENSG00000000003.14,0,NA,NA,NA,NA,NA
+                     * Eg: ENSG00000000003.14,0,NA,NA,NA,NA,NA
                      */
                     
-                    if (toks[Field::PValue]   == "NA" ||
-                        toks[Field::QValue]   == "NA" ||
-                        toks[Field::Log2Fold] == "NA")
+                    
+                    if (toks[Field::PValue] == "NA" || toks[Field::Log2Fold] == "NA")
                     {
                         t.status = DiffTest::Status::NotTested;
                     }
@@ -102,7 +105,16 @@ namespace Anaquin
                         t.logFSE = stod(toks[Field::Log2FoldSE]);
                         
                         t.p = stold(toks[Field::PValue]);
-                        t.q = stold(toks[Field::QValue]);
+                        
+                        try
+                        {
+                            // Not always available, but we can proceed if we have p-value
+                            t.q = stold(toks[Field::QValue]);
+                        }
+                        catch (...)
+                        {
+                            t.q = NAN;
+                        }
                     }
 
                     f(t, p);

@@ -306,7 +306,7 @@
 		EFA9DE721BCB7D6100780182 /* coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = coverage.hpp; path = ../src/tools/coverage.hpp; sourceTree = "<group>"; };
 		EFAA9B501D0EA95300AA210E /* r_DESeq2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_DESeq2.cpp; path = ../src/RnaQuin/r_DESeq2.cpp; sourceTree = "<group>"; };
 		EFAA9B511D0EA95300AA210E /* r_DESeq2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_DESeq2.hpp; path = ../src/RnaQuin/r_DESeq2.hpp; sourceTree = "<group>"; };
-		EFAA9B531D0EB05700AA210E /* parser_diff.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_diff.hpp; path = ../src/parsers/parser_diff.hpp; sourceTree = "<group>"; };
+		EFAA9B531D0EB05700AA210E /* parser_adiff.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_adiff.hpp; path = ../src/parsers/parser_adiff.hpp; sourceTree = "<group>"; };
 		EFAA9B541D0EDD3400AA210E /* r_cufflink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_cufflink.cpp; path = ../src/RnaQuin/r_cufflink.cpp; sourceTree = "<group>"; };
 		EFAA9B551D0EDD3400AA210E /* r_cufflink.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_cufflink.hpp; path = ../src/RnaQuin/r_cufflink.hpp; sourceTree = "<group>"; };
 		EFAA9B571D0EE0CF00AA210E /* parser_express.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_express.hpp; path = ../src/parsers/parser_express.hpp; sourceTree = "<group>"; };
@@ -540,7 +540,7 @@
 				EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */,
 				EF3860DC1AD3783A0062D246 /* parser_cufflink.hpp */,
 				EF5B07C01C48E8A900751B46 /* parser_DESeq2.hpp */,
-				EFAA9B531D0EB05700AA210E /* parser_diff.hpp */,
+				EFAA9B531D0EB05700AA210E /* parser_adiff.hpp */,
 				EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */,
 				EFAA9B571D0EE0CF00AA210E /* parser_express.hpp */,
 				EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */,

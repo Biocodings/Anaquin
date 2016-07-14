@@ -55,7 +55,7 @@
 
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_blat.hpp"
-#include "parsers/parser_diff.hpp"
+#include "parsers/parser_adiff.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
 #include "parsers/parser_edgeR.hpp"
@@ -1355,7 +1355,7 @@ void parse(int argc, char ** argv)
                     }
                     else
                     {
-                        throw std::runtime_error("Unknown file format: " + file + ". Input file should be a valid differential analysis input file. Anaquin supports Cuffdiff, DESeq2, edgeR and it's own standardized format. Please note the input file requires a header.");
+                        throw std::runtime_error("Unknown file format: " + file + ". Anaquin supports Cuffdiff, DESeq2, edgeR and it's FoldChange format. Please note the input file requires a header.");
                     }
 
                     analyze_1<RFold>(OPT_U_FILES, o);
