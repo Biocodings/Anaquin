@@ -213,33 +213,36 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
 
     o.writer->write("ID\tLength\tExpectLFold\tObserveLFold\tSD\tPval\tQval\tMean");
     
-    for (const auto &i : stats.data)
+    for (const auto &i : r.data())
     {
-        const auto &x = i.second;
+        // Eg: R2_17
+        const auto &sID = i.first;
+
+        // Either it's undetected or nothing informative detected...
+        if (!stats.data.count(sID) || isnan(stats.data.at(sID).p) || isnan(stats.data.at(sID).obs))
+        {
+            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % sID).str());
+            continue;
+        }
         
-        if (isnan(x.p))
+        const auto &x = stats.data.at(sID);
+        
+        Locus l;
+        
+        switch (o.metrs)
         {
-            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % i.first).str());
+            case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
+            case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
         }
-        else
-        {
-            Locus l;
-            
-            switch (o.metrs)
-            {
-                case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
-                case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
-            }
-            
-            o.writer->write((boost::format(format) % i.first
-                                                   % l.length()
-                                                   % x2ns(x.exp)
-                                                   % x2ns(x.obs)
-                                                   % x2ns(x.se)
-                                                   % ld2ss(x.p)
-                                                   % ld2ss(x.q)
-                                                   % x2ns(x.mean)).str());
-        }
+        
+        o.writer->write((boost::format(format) % i.first
+                                               % l.length()
+                                               % x2ns(x.exp)
+                                               % x2ns(x.obs)
+                                               % x2ns(x.se)
+                                               % ld2ss(x.p)
+                                               % ld2ss(x.q)
+                                               % x2ns(x.mean)).str());
     }
 
     o.writer->close();

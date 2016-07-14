@@ -108,7 +108,7 @@ namespace Anaquin
                         
                         try
                         {
-                            // Not always available, but we can proceed if we have p-value
+                            // Not always available, but we can still proceed if we have p-value
                             t.q = stold(toks[Field::QValue]);
                         }
                         catch (...)
