@@ -29,8 +29,6 @@ template <typename T> void update(RExpress::Stats &stats,
         Concent  exp = NAN;
         Measured obs = NAN;
 
-        auto hist = metrs == Metrics::Isoform ? stats.isosHist : stats.geneHist;
-        
         switch (metrs)
         {
             case Metrics::Isoform:
@@ -39,8 +37,6 @@ template <typename T> void update(RExpress::Stats &stats,
                 
                 if (m)
                 {
-                    hist.at(x.cID).at(m->id)++;
-
                     if (!isnan(x.abund) && x.abund)
                     {
                         id  = m->id;
@@ -62,8 +58,6 @@ template <typename T> void update(RExpress::Stats &stats,
 
                 if (m)
                 {
-                    hist.at(x.cID).at(x.id)++;
-                    
                     if (!isnan(x.abund) && x.abund)
                     {
                         id  = x.id;
@@ -84,7 +78,16 @@ template <typename T> void update(RExpress::Stats &stats,
         {
             auto &ls = metrs == RExpress::Metrics::Isoform ? stats.isos : stats.genes;
             
-            ls.add(id, exp, obs);
+            if (ls.contains(id))
+            {
+                o.warn("Duplicate: " + id);
+                ls.sum(id, exp, obs);
+                stats.n_syn--;
+            }
+            else
+            {
+                ls.add(id, exp, obs);
+            }
 
             if (isnan(ls.limit.abund) || exp < ls.limit.abund)
             {

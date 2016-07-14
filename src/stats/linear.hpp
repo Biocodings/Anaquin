@@ -146,9 +146,20 @@ namespace Anaquin
         // Absolute detection limit
         Limit limit;
 
+        inline bool contains(const SequinID &id) const
+        {
+            return (*this).count(id);
+        }
+        
         inline void add(const SequinID &id, double x, double y)
         {
             (*this)[id] = Point(x, y);
+        }
+        
+        inline void sum(const SequinID &id, double x, double y)
+        {
+            assert((*this)[id].x == x);            
+            (*this)[id].y += y;
         }
         
         // Return the x-values and y-values after filtering

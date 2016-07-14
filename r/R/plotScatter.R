@@ -11,8 +11,13 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
 
     data <- data$seqs
     
-    data <- data[!is.na(data$measured),]
-    data <- data[!is.infinite(data$measured),]
+    # TODO: Fix this....
+    if (!is.data.frame(data$measured))
+    {
+        data <- data[!is.na(data$measured),]
+    }
+    
+    #data <- data[!is.infinite(data$measured),]
 
     # The variable for the x-axis
     data$x <- NULL
