@@ -31,15 +31,15 @@ namespace Anaquin
             // Read the header
             if (r.nextLine(line))
             {
-                Tokens::split(line, "\t", toks);
+                Tokens::split(line, ",", toks);
                 
-                if (toks.size() == 6             &&
-                    toks[0]  == "baseMean"       &&
-                    toks[1]  == "log2FoldChange" &&
-                    toks[2]  == "lfcSE"          &&
-                    toks[3]  == "stat"           &&
-                    toks[4]  == "pvalue"         &&
-                    toks[5]  == "padj")
+                if (toks.size() == 7             &&
+                    toks[1]  == "baseMean"       &&
+                    toks[2]  == "log2FoldChange" &&
+                    toks[3]  == "lfcSE"          &&
+                    toks[4]  == "stat"           &&
+                    toks[5]  == "pvalue"         &&
+                    toks[6]  == "padj")
                 {
                     return true;
                 }
@@ -70,18 +70,11 @@ namespace Anaquin
                     t.gID = toks[Field::Name];
                     
                     /*
-                     * DESeq2 wouldn't give the chromosome name, only the name of the gene would be given.
+                     * DESeq2 wouldn't give the chromosomes, only the gene names.
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    if (s.findGene(ChrT, t.gID))
-                    {
-                        t.cID = ChrT;
-                    }
-                    else
-                    {
-                        t.cID = Geno;
-                    }
+                    t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : Geno;
                     
                     /*
                      * Handle the NA case:
