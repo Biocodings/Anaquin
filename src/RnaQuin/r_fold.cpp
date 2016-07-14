@@ -209,17 +209,17 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     o.generate(file);
     o.writer->open(file);
     
-    std::stringstream ss;
-    ss << "ID\tLength\tExpectLFold\tObserveLFold\tSD\tPval\tQval\tMean\n";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+
+    o.writer->write("ID\tLength\tExpectLFold\tObserveLFold\tSD\tPval\tQval\tMean");
     
     for (const auto &i : stats.data)
     {
         const auto &x = i.second;
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
         
         if (isnan(x.p))
         {
-            ss << (boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % i.first).str();
+            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % i.first).str());
         }
         else
         {
