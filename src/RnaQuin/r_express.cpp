@@ -510,7 +510,7 @@ static void generateR(const FileName &output,
     if (stats.size() == 1)
     {
         o.writer->write(RWriter::createScatterNeedLog(csv, title,
-                                                      "Expected Expression (log2)",
+                                                      "Input Concentration (log2)",
                                                       measured + " (log2)",
                                                       "InputConcent",
                                                       "Observed",
@@ -520,7 +520,7 @@ static void generateR(const FileName &output,
     else
     {
         o.writer->write(RWriter::createMultiScatter(csv, title,
-                                                    "Expected Expression (log2)",
+                                                    "Input Concentration (log2)",
                                                     "Measured Expression (log2)",
                                                     "InputConcent",
                                                     "Observed",
