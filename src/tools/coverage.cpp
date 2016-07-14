@@ -45,7 +45,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
             
             while (x.nextCigar(l, spliced))
             {
-                const auto m = inters[x.cID].contains(l);
+                const auto m = inters[x.cID].overlap(l);
                 
                 if (m)
                 {
