@@ -439,33 +439,27 @@ static void writeBQuins(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ChrID" % "Position" % "Label").str());
     
+    // For each chromosome...
     for (const auto &i : stats.data)
     {
         const auto &cID = i.first;
         
-        //if (Standard::isSynthetic(cID))
+        // For each region in the chromosome...
+        for (const auto &j : stats.inters.at(cID).data())
         {
-            for (const auto &j : stats.inters.at(cID).data())
+            // For each mapped fragment in the region...
+            for (const auto &k : j.second._data)
             {
-                for (const auto &k : j.second._data)
-                {
-                    const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
-                    
-                    o.writer->write((boost::format(format) % cID
-                                                           % pos
-                                                           % "TP").str());
-                }
-                
-                const auto zeros = j.second.zeros();
-                
-                for (const auto &k : zeros)
-                {
-                    const auto pos = (toString(k.start) + "-" + toString(k.end));
-                    
-                    o.writer->write((boost::format(format) % cID
-                                                           % pos
-                                                           % "FN").str());
-                }
+                const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
+                o.writer->write((boost::format(format) % cID % pos % "TP").str());
+            }
+            
+            const auto zeros = j.second.zeros();
+            
+            for (const auto &k : zeros)
+            {
+                const auto pos = (toString(k.start) + "-" + toString(k.end));
+                o.writer->write((boost::format(format) % cID % pos % "FN").str());
             }
         }
     }
