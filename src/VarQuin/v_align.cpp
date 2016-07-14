@@ -3,11 +3,17 @@
 
 using namespace Anaquin;
 
+#define DEBUG_VALIGN
+
+#ifdef DEBUG_VALIGN
 static std::ofstream __bWriter__;
+#endif
 
 static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 {
+#ifdef DEBUG_VALIGN
     __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
+#endif
 }
 
 static VAlign::Stats init()
@@ -427,6 +433,7 @@ static void writeBQuins(const FileName &file,
                         const VAlign::Stats &stats,
                         const VAlign::Options &o)
 {
+#ifdef DEBUG_VALIGN
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -464,6 +471,7 @@ static void writeBQuins(const FileName &file,
     }
     
     o.writer->close();
+#endif
 }
 
 static void writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
@@ -508,6 +516,7 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
 
 static void writeQueries(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
+#ifdef DEBUG_VALIGN
     o.generate(file);
     o.writer->open(file);
     
@@ -526,6 +535,7 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     }
     
     o.writer->close();
+#endif
 }
 
 void VAlign::report(const FileName &file, const Options &o)
