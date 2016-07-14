@@ -1654,6 +1654,15 @@ void parse(int argc, char ** argv)
                     {
                         o.p = stod(meth);
                         o.meth = VSample::Method::Prop;
+                        
+                        if (o.p <= 0.0)
+                        {
+                            throw std::runtime_error("Normalization factor must be greater than zero");
+                        }
+                        else if (o.p <= 1.0)
+                        {
+                            throw std::runtime_error("Normalization factor must be less than one");
+                        }
                     }
                     else
                     {

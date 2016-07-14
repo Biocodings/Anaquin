@@ -36,10 +36,10 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         }
     });
 
-    o.info("Alignments mapped to the in silico (before subsampling): " + std::to_string(stats.before.syn));
+    o.info("Alignments mapped to the in-silico (before subsampling): " + std::to_string(stats.before.syn));
     o.info("Alignments mapped to the genome (before subsampling): " + std::to_string(stats.before.gen));
     
-    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in silico chromosome"); }
+    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico chromosome"); }
     if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the genome");   }
 
     /*

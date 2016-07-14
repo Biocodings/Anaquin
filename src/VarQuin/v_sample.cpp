@@ -251,13 +251,6 @@ struct Subsampler
                     if (isSyn) { r.tot.syn++; }
                     if (isGen) { r.tot.gen++; }
                     
-                    std::cout << inters.size() << std::endl;
-                    
-                    if (inRegion && isGen)
-                    {
-                        std::cout << 1;
-                    }
-                    
                     if (inRegion)
                     {
                         if (isSyn) { r.samp.syn++; }
@@ -277,19 +270,23 @@ struct Subsampler
         
         writ.close();
         
+        /*
+         * Calculating sequence coverage on the in-silico chromosome after subsampling
+         */
+        
         switch (o.meth)
         {
+            case VSample::Method::Prop:   { r.cov = r.tot.syn;           break; }
             case VSample::Method::Mean:   { r.cov = inters.stats().mean; break; }
             case VSample::Method::Median: { r.cov = inters.stats().p50;  break; }
-
+                
             /*
-             * Sequence coverage is number of synthetic alignments within the sampling regions
-             * after subsampling. For example, we might subsample from 100 million alignments down
-             * to 2 million alignments (this implies the genomic regions have 2 million alignments).
+             * Total synthetic alignments within the sampling regions after subsampling.
+             * For example, we might subsample from 100 million alignments down to 2 million
+             * alignments (this implies the genomic regions have 2 million alignments).
              */
 
             case VSample::Method::Reads:  { r.cov = r.samp.syn; break; }
-            case VSample::Method::Prop:   { throw "????";      }
         }
         
         assert(!isnan(r.cov));
@@ -302,10 +299,10 @@ struct Subsampler
         {
             switch (o.meth)
             {
-                case VSample::Method::Mean:   { return "Mean";   }
-                case VSample::Method::Median: { return "Median"; }
-                case VSample::Method::Reads:  { return "Reads";  }
-                case VSample::Method::Prop:   { return "Prop";   }
+                case VSample::Method::Mean:   { return "Mean";       }
+                case VSample::Method::Median: { return "Median";     }
+                case VSample::Method::Reads:  { return "Reads";      }
+                case VSample::Method::Prop:   { return "Proportion"; }
             }
         };
         
@@ -333,7 +330,7 @@ struct Subsampler
             {
                 if (before.genC > before.synC)
                 {
-                    throw std::runtime_error("Anaquin is not able to subsample because there are more alignments in the genomic regions than the in silico regions. Genomic alignments: " + std::to_string(before.genC) + ". Synthetic alignments: " + std::to_string(before.synC));
+                    throw std::runtime_error("Anaquin is not able to subsample because there are more alignments in the genomic regions than the in-silico regions. Genomic alignments: " + std::to_string(before.genC) + ". Synthetic alignments: " + std::to_string(before.synC));
                 }
                 
                 break;
@@ -424,17 +421,17 @@ struct Subsampler
                              "-------Total alignments (after subsampling)\n\n"
                              "       Synthetic: %8%\n"
                              "       Genome:    %9%\n\n"
-                             "-------Alignments within sampling region (before subsampling)\n\n"
+                             "-------Alignments within sampling regions (before subsampling)\n\n"
                              "       Synthetic: %10%\n"
                              "       Genome:    %11%\n\n"
-                             "-------Alignments within sampling region (after subsampling)\n\n"
+                             "-------Alignments within sampling regions (after subsampling)\n\n"
                              "       Synthetic: %12%\n"
                              "       Genome:    %13%\n\n"
                              "       Normalization: %14%\n\n"
-                             "-------Before subsampling (within sampling region)\n\n"
+                             "-------Before subsampling (within sampling regions)\n\n"
                              "       Synthetic coverage: %15%\n"
                              "       Genome coverage:    %16%\n\n"
-                             "-------After subsampling (within sampling region)\n\n"
+                             "-------After subsampling (within sampling regions)\n\n"
                              "       Synthetic coverage: %17%\n"
                              "       Genome coverage:    %18%\n";
         

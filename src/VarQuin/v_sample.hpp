@@ -42,7 +42,7 @@ namespace Anaquin
             // Total alignments (not just sampling regions)
             SynGenAligns tot;
             
-            // Alignments within sampling regionssubsampling
+            // Alignments within sampling regions
             SynGenAligns samp;
         };
 
