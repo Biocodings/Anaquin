@@ -2,6 +2,8 @@
 #include "VarQuin/v_sample.hpp"
 #include "writers/writer_sam.hpp"
 
+#define DEBUG_VSAMPLE
+
 // Defined in main.cpp
 extern Anaquin::FileName BedRef();
 
@@ -375,7 +377,7 @@ struct Subsampler
         o.info("Coverage (after): " + std::to_string(after.cov));
         o.info("Coverage (after): " + std::to_string(before.genC));
         
-#ifdef NEED_BEDGRAPH
+#ifdef DEBUG_VSAMPLE
         /*
          * Generating bedgraph before subsampling (only synthetic)
          */
