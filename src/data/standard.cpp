@@ -165,17 +165,6 @@ void Standard::addMMix(const Reader &r)
     }
 }
 
-void Standard::addSStruct(const Anaquin::Reader &r)
-{
-    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
-    {
-        if (Standard::isSynthetic(f.cID))
-        {
-            r_str.addStruct(f.name);
-        }
-    });
-}
-
 void Standard::addLMix(const Reader &r)
 {
     const auto n = countColumns(r);

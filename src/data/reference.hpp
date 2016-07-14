@@ -264,27 +264,6 @@ namespace Anaquin
     };
 
     /*
-     * -------------------- Structural Analysis --------------------
-     */
-    
-    class StructRef : public Reference<SequinData, DefaultStats>
-    {
-        public:
-        
-            void addStruct(const SequinID &) const;
-        
-        protected:
-        
-            void validate() override;
-        
-        private:
-        
-            struct StructRefImpl;
-
-            std::shared_ptr<StructRefImpl> _impl;
-    };
-    
-    /*
      * -------------------- Ladder Analysis --------------------
      */
     

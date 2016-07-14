@@ -175,30 +175,6 @@ void LadderRef::concent(const LadderRef::JoinID &id, Concent &a, Concent &b, Con
 }
 
 /*
- * ------------------------- Structual Analysis -------------------------
- */
-
-struct StructRef::StructRefImpl
-{
-    struct Data
-    {
-        // TODO: Implement me
-    };
-
-    std::map<SequinID, Data> data;
-};
-
-void StructRef::addStruct(const SequinID &id) const
-{
-    _impl->data[id];
-}
-
-void StructRef::validate()
-{
-    
-}
-
-/*
  * ------------------------- Fusion Analysis -------------------------
  */
 
@@ -769,9 +745,12 @@ void TransRef::validate()
             assert(mix);
             
             g.l = _impl->gData[ChrIS].g2d[t.gID].l;
+            t.l = Locus(1, mix->length);
 
             // Merge the transcripts...
             g.l.merge(Locus(1, mix->length));
+            
+            assert(g.l.length() > 1);
             
             _impl->gData[ChrIS].g2d[t.gID] = g;
             _impl->gData[ChrIS].t2d[t.tID] = t;

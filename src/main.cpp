@@ -113,7 +113,6 @@ typedef std::set<Value> Range;
 #define TOOL_L_COPY      296
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
-#define TOOL_S_DISCOVER  304
 #define TOOL_V_FLIP      305
 #define TOOL_R_CUFFDIFF  306
 #define TOOL_R_DESEQ2    307
@@ -227,8 +226,6 @@ static std::map<Value, Tool> _tools =
     { "MetaIGV",        TOOL_M_IGV      },
     { "MetaCoverage",   TOOL_M_COVERAGE },
 
-    { "StructDiscover", TOOL_S_DISCOVER },
-    
     { "LadCopy",     TOOL_L_COPY     },
     { "LadNorm",     TOOL_L_NORM     },
     { "LadDiff",     TOOL_L_DIFF     },
@@ -1363,34 +1360,6 @@ void parse(int argc, char ** argv)
                 }
 
                 case TOOL_R_IGV: { viewer<TViewer>(); break; }
-            }
-
-            break;
-        }
-
-        case TOOL_S_DISCOVER:
-        {
-            std::cout << "[INFO]: Structual Analysis" << std::endl;
-            
-            switch (_p.tool)
-            {
-                case TOOL_S_DISCOVER:
-                {
-                    applyRef(std::bind(&Standard::addSStruct, &s, std::placeholders::_1), OPT_R_BED);
-                    break;
-                }
-
-                default: { break; }
-            }
-            
-            switch (_p.tool)
-            {
-                case TOOL_S_DISCOVER:
-                {
-                    break;
-                }
-                    
-                default: { break; }
             }
 
             break;

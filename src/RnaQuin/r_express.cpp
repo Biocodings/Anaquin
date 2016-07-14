@@ -556,6 +556,7 @@ static void generateCSV(const FileName &output, const std::vector<RExpress::Stat
                 case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
             }
 
+            assert(l.length() > 1);
             o.writer->write((boost::format(format) % i.first
                                                    % l.length()
                                                    % i.second.x

@@ -77,14 +77,6 @@ namespace Anaquin
             LadderRef r_lad;
 
             /*
-             * ---------------- Structual analysis ----------------
-             */
-        
-            void addSStruct(const Reader &);
-
-            StructRef r_str;
-        
-            /*
              * ---------------- Fusion analysis ----------------
              */
         
