@@ -55,17 +55,19 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
     {
         if (t.p == 0) { o.warn(id + " gives p-value of 0"); }
         if (t.q == 0) { o.warn(id + " gives q-value of 0"); }
-        
-        stats.data[id].p    = t.p;
-        stats.data[id].q    = t.q;
-        stats.data[id].exp  = exp;
-        stats.data[id].obs  = t.logF;
-        stats.data[id].se   = t.logFSE;
-        stats.data[id].mean = t.mean;
-        
-        if (!isnan(exp) && !isnan(t.logF))
+
+        stats.data[id].p     = t.p;
+        stats.data[id].q     = t.q;
+        stats.data[id].exp   = exp;
+        stats.data[id].obs   = t.logF_;
+        stats.data[id].se    = t.logFSE;
+        stats.data[id].mean  = t.mean;
+        stats.data[id].samp1 = t.samp1;
+        stats.data[id].samp2 = t.samp2;
+
+        if (!isnan(exp) && !isnan(t.logF_))
         {
-            stats.add(id, exp, t.logF);
+            stats.add(id, exp, t.logF_);
         }
     };
     
@@ -209,9 +211,9 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     o.generate(file);
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
-    o.writer->write("ID\tLength\tExpFC\tObsFC\tSD\tPval\tQval\tMean");
+    o.writer->write("ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean");
     
     for (const auto &i : r.data())
     {
@@ -221,7 +223,7 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
         // Either it's undetected or nothing informative detected...
         if (!stats.data.count(sID) || isnan(stats.data.at(sID).p) || isnan(stats.data.at(sID).obs))
         {
-            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\n") % sID).str());
+            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\tNA\tNA\n") % sID).str());
             continue;
         }
         
@@ -237,6 +239,8 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
         
         o.writer->write((boost::format(format) % i.first
                                                % l.length()
+                                               % x.samp1
+                                               % x.samp2
                                                % x2ns(x.exp)
                                                % x2ns(x.obs)
                                                % x2ns(x.se)
@@ -344,8 +348,8 @@ void RFold::report(const FileName &file, const Options &o)
                                         o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
                                         "Expected fold change (log2)",
                                         "Measured fold change (log2)",
-                                        "ExpectLFold",
-                                        "ObserveLFold", false));
+                                        "ExpLFC",
+                                        "ObsLFC", false));
     o.writer->close();
 
     /*
