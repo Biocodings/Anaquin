@@ -81,11 +81,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
             if (match)
             {
                 stats.hist.at(t.cID).at(t.gID)++;
-                
-                const auto exp_1 = r.concent(t.gID, Mix_1);
-                const auto exp_2 = r.concent(t.gID, Mix_2);
-                
-                f(t.gID, log2(exp_2 / exp_1));
+                f(t.gID, r.logFoldGene(t.gID));
             }
             else
             {
@@ -103,11 +99,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
             if (match)
             {
                 stats.hist.at(t.cID).at(t.iID)++;
-                
-                const auto e1 = match->concent(Mix_1);
-                const auto e2 = match->concent(Mix_2);
-                
-                f(t.iID, log2(e2 / e1));
+                f(t.iID, r.logFoldSeq(t.iID));
             }
             else
             {
@@ -212,7 +204,6 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     o.writer->open(file);
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
-
     o.writer->write("ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean");
     
     const auto ids = o.metrs == RFold::Metrics::Gene ? r.getGenesSyn() : r.getTransSyn();
@@ -220,28 +211,50 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     // For each sequin gene or isoform...
     for (const auto id : ids)
     {
-        // Either it's undetected or nothing informative detected...
+        Locus l;
+        LogFold fold;
+
+        switch (o.metrs)
+        {
+            case RFold::Metrics::Gene:
+            {
+                fold = r.logFoldGene(id);
+                l = r.findGene(ChrIS, id)->l;
+                break;
+            }
+
+            case RFold::Metrics::Isoform:
+            {
+                fold = r.logFoldSeq(id);
+                l = r.findTrans(ChrIS, id)->l;
+                break;
+            }
+        }
+
+        // Undetected or nothing informative detected...
         if (!stats.data.count(id) || isnan(stats.data.at(id).p) || isnan(stats.data.at(id).obs))
         {
-            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\tNA\tNA") % id).str());
+            o.writer->write((boost::format(format) % id
+                                                   % l.length()
+                                                   % "NA"
+                                                   % "NA"
+                                                   % x2ns(fold)
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA").str());
             continue;
         }
         
         const auto &x = stats.data.at(id);
+        assert(fold == x.exp);
         
-        Locus l;
-        
-        switch (o.metrs)
-        {
-            case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, id)->l;  break; }
-            case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, id)->l; break; }
-        }
-
         o.writer->write((boost::format(format) % id
                                                % l.length()
                                                % x2ns(x.samp1)
                                                % x2ns(x.samp2)
-                                               % x2ns(x.exp)
+                                               % x2ns(fold)
                                                % x2ns(x.obs)
                                                % x2ns(x.se)
                                                % ld2ss(x.p)
