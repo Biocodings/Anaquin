@@ -65,7 +65,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         stats.data[id].samp1 = t.samp1;
         stats.data[id].samp2 = t.samp2;
 
-        if (!isnan(exp) && !isnan(t.logF_))
+        if (!isnan(exp) && !isnan(t.logF_) && isfinite(t.logF_))
         {
             stats.add(id, exp, t.logF_);
         }
@@ -239,8 +239,8 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
 
         o.writer->write((boost::format(format) % id
                                                % l.length()
-                                               % x.samp1
-                                               % x.samp2
+                                               % x2ns(x.samp1)
+                                               % x2ns(x.samp2)
                                                % x2ns(x.exp)
                                                % x2ns(x.obs)
                                                % x2ns(x.se)
