@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
+#include <cmath>
 #include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
