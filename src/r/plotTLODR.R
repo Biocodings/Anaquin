@@ -8,8 +8,11 @@
 
 library(Anaquin)
 
+# Load reference sequins
 data <- read.csv('%3%/%4%', row.name=1, sep='\t')
-data <- data[!is.na(data$ExpectLFold),]
+
+# Remove undetected sequins
+data <- data[!is.na(data$ObsLFC),]
 
 # Create Anaquin data set
 data <- CreateDataForAnaquin(names=row.names(data), mean=data$Mean, input=data$ExpLFC, pval=data$Pval)
