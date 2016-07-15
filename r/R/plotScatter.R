@@ -15,6 +15,7 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
     if (!is.data.frame(data$measured))
     {
         data <- data[!is.na(data$measured),]
+        data <- data[!is.infinite(data$measured),]        
     }
     
     #data <- data[!is.infinite(data$measured),]
