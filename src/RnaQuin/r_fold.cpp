@@ -215,29 +215,29 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
 
     o.writer->write("ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean");
     
-    for (const auto &i : r.data())
-    {
-        // Eg: R2_17
-        const auto &sID = i.first;
+    const auto ids = o.metrs == RFold::Metrics::Gene ? r.getGenesSyn() : r.getTransSyn();
 
+    // For each sequin gene or isoform...
+    for (const auto id : ids)
+    {
         // Either it's undetected or nothing informative detected...
-        if (!stats.data.count(sID) || isnan(stats.data.at(sID).p) || isnan(stats.data.at(sID).obs))
+        if (!stats.data.count(id) || isnan(stats.data.at(id).p) || isnan(stats.data.at(id).obs))
         {
-            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\tNA\tNA\n") % sID).str());
+            o.writer->write((boost::format("%1%\tNA\tNA\tNA\tNA\tNA\tNA\tNA") % id).str());
             continue;
         }
         
-        const auto &x = stats.data.at(sID);
+        const auto &x = stats.data.at(id);
         
         Locus l;
         
         switch (o.metrs)
         {
-            case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
-            case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
+            case RFold::Metrics::Gene:    { l = r.findGene(ChrIS, id)->l;  break; }
+            case RFold::Metrics::Isoform: { l = r.findTrans(ChrIS, id)->l; break; }
         }
-        
-        o.writer->write((boost::format(format) % i.first
+
+        o.writer->write((boost::format(format) % id
                                                % l.length()
                                                % x.samp1
                                                % x.samp2
