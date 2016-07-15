@@ -30,6 +30,7 @@ namespace Anaquin
     
     typedef double Fold;
     typedef double LogFold;
+    typedef double Express;
     typedef double Proportion;
     typedef long double Probability;
     

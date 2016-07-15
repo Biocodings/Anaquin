@@ -19,8 +19,11 @@ namespace Anaquin
         GeneID gID;
         IsoformID iID;
         
+        // Expression level for the samples
+        Express samp1, samp2;
+        
         // Log-fold ratio
-        LogFold logF;
+        LogFold logF_;
 
         // The p-value and q-value under null hypothesis
         Probability p, q;

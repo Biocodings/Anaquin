@@ -33,8 +33,6 @@ namespace Anaquin
                            const TransID    &tID) :
                         _id(id), _tID(tID), _gID(gID), _l(l) {}
 
-        void sanityCheck(const Locus &l);
-
         std::set<Locus> zeros() const;
         
         Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr);

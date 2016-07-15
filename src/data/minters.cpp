@@ -2,64 +2,6 @@
 
 using namespace Anaquin;
 
-void MergedInterval::sanityCheck(const Locus &l)
-{
-//    if (_id == "chrM")
-//    {
-//
-//        std::vector<Locus *> v;
-//        std::vector<Base> k;
-//        
-//        for (auto &i : _data)
-//        {
-//            v.push_back(&i.second);
-//            k.push_back(i.first);
-//        }
-//        
-//        if (v.size() >= 3)
-//        {
-//            
-//            for (auto i = 0; i < v.size() - 2; i++)
-//            {
-//                //i.map(Locus(2, 115));
-//                //std::cout << v[i]->start << "-" << v[i]->end << std::endl;
-//                std::cout << k[i] << "   " << "i.map(Locus(" << v[i]->start << "," << v[i]->end << "));" << std::endl;
-//            }
-//            //2180
-//            //2280
-//            for (auto i = 0; i < v.size() - 2; i++)
-//            {
-//                //2002-2211
-//                //2180-2280
-//                assert(!v[i]->overlap(*v[i+1]));
-//            }
-//        }
-//        
-//        if (l.start == 2180 && l.end == 2280)
-//        {
-//            _id = _id;
-//            auto it = _data.lower_bound(l.start);
-//            
-//            auto a = it->second.start;
-//            auto b = it->second.end;
-//            
-//            a = a;
-//            b = b;
-//        }
-//        
-//        //                if (v.size() >= 3)
-//        //                {
-//        //                    std::cout << "---------" << std::endl;
-//        //                    std::cout << l.start << "-" << l.end << std::endl;
-//        //                    std::cout << v[0]->start << "-" << v[0]->end << std::endl;
-//        //                    std::cout << v[1]->start << "-" << v[1]->end << std::endl;
-//        //                    std::cout << v[2]->start << "-" << v[2]->end << std::endl;
-//        //
-//        //                    assert(!v[0]->overlap(*v[1]));
-//        //                }
-//    }
-}
-
 std::set<Locus> MergedInterval::zeros() const
 {
     std::set<Locus> r;
@@ -81,8 +23,6 @@ std::set<Locus> MergedInterval::zeros() const
 
 Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
 {
-    sanityCheck(l);
-    
     bool added = true;
     bool p1 = true;
     bool p2 = false;
@@ -178,7 +118,6 @@ Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
                         _y = _data.end()->second.end;
                         
                         fixKey();
-                        sanityCheck(l);
 
                         return (left + right);
                     }
@@ -227,6 +166,5 @@ Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
     _x = _data.begin()->second.start;
     _y = _data.rbegin()->second.end;
     
-    sanityCheck(l);
     return left + right;
 }
