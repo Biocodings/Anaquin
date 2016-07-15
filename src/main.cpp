@@ -13,14 +13,9 @@
 #include "RnaQuin/r_viewer.hpp"
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
-#include "RnaQuin/r_DESeq2.hpp"
-#include "RnaQuin/r_genome.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
-#include "RnaQuin/r_coverage.hpp"
-#include "RnaQuin/r_cuffdiff.hpp"
 #include "RnaQuin/r_cufflink.hpp"
-#include "RnaQuin/r_kallisto.hpp"
 
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_vscan.hpp"
@@ -88,7 +83,6 @@ typedef std::set<Value> Range;
 #define TOOL_R_FOLD      270
 #define TOOL_T_NORM      271
 #define TOOL_R_IGV       272
-#define TOOL_R_COVERAGE  273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_VSCAN     276
@@ -114,11 +108,7 @@ typedef std::set<Value> Range;
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
 #define TOOL_V_FLIP      305
-#define TOOL_R_CUFFDIFF  306
-#define TOOL_R_DESEQ2    307
-#define TOOL_R_KALLISTO  308
 #define TOOL_V_SEQUENCE  310
-#define TOOL_R_GENOME    311
 
 /*
  * Options specified in the command line
@@ -201,13 +191,8 @@ static std::map<Value, Tool> _tools =
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaNorm",        TOOL_T_NORM      },
     { "RnaIGV",         TOOL_R_IGV       },
-    { "RnaCoverage",    TOOL_R_COVERAGE  },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
-    { "RnaCuffdiff",    TOOL_R_CUFFDIFF  },
-    { "RnaDESeq2",      TOOL_R_DESEQ2    },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
-    { "RnaKallisto",    TOOL_R_KALLISTO  },
-    { "RnaGenome",      TOOL_R_GENOME    },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -248,15 +233,10 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_IGV,       { OPT_U_FILES } },
     { TOOL_R_SUBSAMPLE, { OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_KALLISTO,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_GENOME,    { OPT_R_GTF, OPT_U_FILES } },
 
     /*
      * Variant Analysis
@@ -1204,14 +1184,9 @@ void parse(int argc, char ** argv)
         case TOOL_T_NORM:
         case TOOL_R_FOLD:
         case TOOL_R_ALIGN:
-        case TOOL_R_DESEQ2:
-        case TOOL_R_GENOME:
         case TOOL_R_EXPRESS:
         case TOOL_R_ASSEMBLY:
-        case TOOL_R_COVERAGE:
-        case TOOL_R_CUFFDIFF:
         case TOOL_R_CUFFLINK:
-        case TOOL_R_KALLISTO:
         case TOOL_R_SUBSAMPLE:
         {
             if (__showInfo__)
@@ -1219,20 +1194,11 @@ void parse(int argc, char ** argv)
                 std::cout << "[INFO]: RNA-Seq Analysis" << std::endl;
             }
 
-            if (_p.tool == TOOL_R_GENOME)
-            {
-                //__hack__ = true;
-            }
-            
             if (_p.tool != TOOL_R_IGV && _p.tool != TOOL_R_SUBSAMPLE)
             {
                 switch (_p.tool)
                 {
                     case TOOL_R_ALIGN:
-                    case TOOL_R_DESEQ2:
-                    case TOOL_R_GENOME:
-                    case TOOL_R_KALLISTO:
-                    case TOOL_R_CUFFDIFF:
                     {
                         addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
                         break;
@@ -1263,14 +1229,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_R_GENOME:    { analyze_1<RGenome>(OPT_U_FILES);   break; }
-                case TOOL_R_ALIGN:     { analyze_1<RAlign>(OPT_U_FILES);    break; }
-                case TOOL_R_DESEQ2:    { analyze_1<RDESeq2>(OPT_U_FILES);   break; }
-                case TOOL_R_COVERAGE:  { analyze_1<RCoverage>(OPT_U_FILES); break; }
-                case TOOL_R_ASSEMBLY:  { analyze_1<RAssembly>(OPT_U_FILES); break; }
-                case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
-                case TOOL_R_CUFFLINK:  { analyze_1<RCufflink>(OPT_U_FILES); break; }
-                case TOOL_R_KALLISTO:  { analyze_1<RKallisto>(OPT_U_FILES); break; }
+                case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);    break; }
+                case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES); break; }
+                case TOOL_R_CUFFLINK: { analyze_1<RCufflink>(OPT_U_FILES); break; }
 
                 case TOOL_R_SUBSAMPLE:
                 {
