@@ -43,7 +43,7 @@ ADDITIONAL INFORMATION
 TOOL OPTIONS
      Required:
         -m           Reference RnaQuin mixture file in CSV format
-		-method      Whether the analysis should be done at the gene or isoform level. The value must be either
+        -method      Whether the analysis should be done at the gene or isoform level. The value must be either
                      "gene" or "isoform".
         -ufiles      User generated differential analysis file
 
@@ -70,11 +70,14 @@ OUTPUTS
      RnaFoldChange_sequins.csv - gives detailed statistics for individual sequin in the reference. Field definitions:
         ID                          Name of the sequin
         Length                      Length of the sequin
-        ExpectLFold                 Expected fold-change change
-        ObserveLFold                Observed log-fold change
+        Sample1                     Expression level for the first sample
+        Sample2                     Expression level for the second sample
+        ExpLFC                      Expected log-fold change
+        ObsLFC                      Observed log-fold change
         SD                          Standard deviation of the measurement
         Pval                        Observed p-value probability
         Qval                        Observed q-value probability
+        Average                     Normalized counts of all samples
 
      RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and
                             expected log-folds (independent variable).
