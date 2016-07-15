@@ -4,7 +4,6 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include <cmath>
 #include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
@@ -66,7 +65,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         stats.data[id].samp1 = t.samp1;
         stats.data[id].samp2 = t.samp2;
 
-        if (!isnan(exp) && !isnan(t.logF_) && isfinite(t.logF_))
+        if (!isnan(exp) && !isnan(t.logF_) && std::isfinite(t.logF_))
         {
             stats.add(id, exp, t.logF_);
         }
