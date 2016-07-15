@@ -21,8 +21,10 @@ namespace Anaquin
             ChrID,
             GeneID,
             IsoformID,
-            Log2Fold,
-            Log2FoldSE,
+            Sample1,
+            Sample2,
+            LogFold,
+            LogFoldSE,
             PValue,
             QValue,
             Mean
@@ -40,15 +42,17 @@ namespace Anaquin
             {
                 Tokens::split(line, "\t", toks);
                 
-                if (toks.size() == 8        &&
-                    toks[0] == "ChrID"      &&
-                    toks[1] == "GeneID"     &&
-                    toks[2] == "IsoformID"  &&
-                    toks[3] == "LogFold" &&
-                    toks[4] == "LogFoldSE"     &&
-                    toks[5] == "PValue"     &&
-                    toks[6] == "QValue"     &&
-                    toks[7] == "Average")
+                if (toks.size() == 10      &&
+                    toks[0] == "ChrID"     &&
+                    toks[1] == "GeneID"    &&
+                    toks[2] == "IsoformID" &&
+                    toks[3] == "Sample1"   &&
+                    toks[4] == "Sample2"   &&
+                    toks[5] == "LogFold"   &&
+                    toks[6] == "LogFoldSE" &&
+                    toks[7] == "PValue"    &&
+                    toks[8] == "QValue"    &&
+                    toks[9] == "Average")
                 {
                     return true;
                 }
@@ -79,8 +83,10 @@ namespace Anaquin
                     x.p      = ss2ld(toks[Field::PValue]);
                     x.q      = ss2ld(toks[Field::QValue]);
                     x.mean   = s2d(toks[Field::Mean]);
-                    x.logF   = s2d(toks[Field::Log2Fold]);
-                    x.logFSE = s2d(toks[Field::Log2FoldSE]);
+                    x.logF_   = s2d(toks[Field::LogFold]);
+                    x.logFSE = s2d(toks[Field::LogFoldSE]);
+                    x.samp1  = s2d(toks[Field::Sample1]);
+                    x.samp2  = s2d(toks[Field::Sample2]);
 
                     // Eg: DESeq2 wouldn't give the chromoname name
                     x.cID = toks[Field::ChrID];

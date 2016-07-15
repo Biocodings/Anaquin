@@ -103,7 +103,7 @@ namespace Anaquin
                 t.gID    = toks[FGeneID];
                 t.iID    = toks[FTestID];
                 t.status = tok2Status.at(toks[FStatus]);
-                t.logF   = stof(toks[FLogFold]);
+                t.logF_   = stof(toks[FLogFold]);
                 t.stats  = stof(toks[FTestStats]);
                 
                 // Eg: chrT:1082119-1190836

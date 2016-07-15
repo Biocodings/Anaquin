@@ -99,7 +99,10 @@ namespace Anaquin
                         t.mean = stod(toks[Field::BaseMean]);
                         
                         // Measured log-fold change
-                        t.logF = stod(toks[Field::Log2Fold]);
+                        t.logF_ = stod(toks[Field::Log2Fold]);
+
+                        t.samp1 = NAN;
+                        t.samp2 = NAN;
 
                         // Standard error for the log-fold change
                         t.logFSE = stod(toks[Field::Log2FoldSE]);

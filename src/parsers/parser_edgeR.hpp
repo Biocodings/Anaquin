@@ -82,21 +82,15 @@ namespace Anaquin
                     else
                     {
                         t.status = DiffTest::Status::Tested;
-                        
-                        // Normalized average counts
-                        //t.baseMean = stod(toks[Field::BaseMean]);
-                        
+
                         // Measured log-fold change
-                        t.logF = stod(toks[Field::LogFC]);
+                        t.logF_ = stod(toks[Field::LogFC]);
                         
-                        // Standard error for the log-fold change
-                        //t.logFSE = stod(toks[Field::Log2FoldSE]);
+                        t.samp1 = NAN;
+                        t.samp2 = NAN;
                         
                         // Probability under the null hypothesis
                         t.p = stold(toks[Field::PValue]);
-                        
-                        // Probability adjusted for multi-testing
-                        //t.q = stold(toks[Field::QValue]);
                     }
                     
                     f(t, p);
