@@ -595,6 +595,30 @@ const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }
 
+std::set<GeneID>  TransRef::getGenes(const ChrID &cID) const
+{
+    std::set<GeneID> ids;
+    
+    for (const auto &i : _impl->gData.at(cID).g2d)
+    {
+        ids.insert(i.first);
+    }
+    
+    return ids;
+}
+
+std::set<TransID> TransRef::getTrans(const ChrID &cID) const
+{
+    std::set<GeneID> ids;
+    
+    for (const auto &i : _impl->gData.at(cID).t2d)
+    {
+        ids.insert(i.first);
+    }
+    
+    return ids;
+}
+
 MergedIntervals<> TransRef::mergedExons(const ChrID &cID) const
 {
     return _impl->gData.mergedExons(cID);

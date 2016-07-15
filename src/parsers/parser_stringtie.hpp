@@ -76,7 +76,7 @@ namespace Anaquin
                 {
                     t.id = toks[GeneField::GeneID];
                     
-                    if (Standard::instance().r_trans.findGene(ChrT, t.id))
+                    if (Standard::instance().r_trans.findGene(ChrIS, t.id))
                     {
                         t.cID = ChrT;
                     }
