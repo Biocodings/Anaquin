@@ -964,21 +964,10 @@ Counts VarRef::countGeneGen() const
 
 void VarRef::validate()
 {
-    /*
-     * Rules:
-     *
-     *   1: Annotation (eg: VarAlign, VarSubsample)
-     *   2: Variants & mixture (eg: VarDiscover, VarFrequency)
-     */
+    // Coordinate annotation?
+    const auto shouldCoord = !_impl->bData[ChrIS].g2d.empty();
     
-    // Rule: 2
-    if (!_rawMIDs.empty())
-    {
-        merge(_rawMIDs);
-    }
-    
-    // Rule: 1
-    else if (!_impl->bData[ChrIS].g2d.empty())
+    if (shouldCoord)
     {
         std::set<SequinID> ids;
         
@@ -986,13 +975,12 @@ void VarRef::validate()
         {
             ids.insert(i.first);
         }
-
+        
         merge(ids);
     }
-
     else
     {
-        throw std::runtime_error("Validation for resources files failed for VarQuin. No in silico chromosomes found.");
+        throw std::runtime_error("Failed to find VarQuin sequins in the annotation file");
     }
     
     /*

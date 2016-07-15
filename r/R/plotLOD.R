@@ -4,18 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-pval <- function(data)
-{
-    stopifnot(class(data) == 'Anaquin')
-    
-    if (is.null(data$seqs$pval)) 
-    {
-        stop('Probability not provided. Please check and try again.')
-    }
-    
-    return (data$seqs$pval)
-}
-
 .fitLODR <- function(data,
                      legend='LFC Fold',
                      xlab='Average Counts',
@@ -274,9 +262,9 @@ plotLOD <- function(data, ...,
     data <- data$seqs
     
     stopifnot(!is.null(data$pval))
-    stopifnot(!is.null(data$expected))    
+    stopifnot(!is.null(data$ratio))    
+    stopifnot(!is.null(data$measured))
     
-    data$ratio <- data$expected
     #data$ratio <- revalue(data$expected, c('0'='FP'))
 
     p <- min(data[data$pval != 0,]$pval)
@@ -285,7 +273,8 @@ plotLOD <- function(data, ...,
     # Can we plot zero probability? Probably not.    
     data <- data[data$pval != 0,]
     
-    .plotLODR(data, title=title,
+    .plotLODR(data,
+              title=title,
               xlab=xlab,
               ylab=ylab,
               legTitle=legTitle,
@@ -398,15 +387,15 @@ plotLOD <- function(data, ...,
 plotProb <- function(data, title=NULL)
 {
     # Probability under the null hypothesis (y-axis)
-    pval <- data$seqs$pval #pval(data)
+    pval <- data$seqs$pval
     
     # Number of reads for the reference
     rReads <- data$seqs$rRead
     
     # Number of reads for the variant
     vReads <- data$seqs$vRead
-    
-    .fitLODR(data.frame(abund=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
+
+    .fitLODR(data.frame(measured=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
 }
 
 plotLODR <- function(data,
@@ -422,5 +411,15 @@ plotLODR <- function(data,
                      shouldBand  = FALSE)
 {
     seqs <- data$seqs
-    .fitLODR(data.frame(measured=seqs$mean, pval=pval(data), ratio=abs(round(seqs$input))), multiTest=FALSE)
+    
+    # The y-axis of the curves
+    pval <- seqs$pval
+    
+    # Measured abundance (eg: average counts)
+    measured <- seqs$measured
+    
+    # Sequin groups
+    ratio <- seqs$ratio
+    
+    .fitLODR(data.frame(measured=measured, pval=pval, ratio=abs(round(ratio))), multiTest=FALSE)
 }

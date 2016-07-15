@@ -28,6 +28,11 @@ namespace Anaquin
     
     inline std::string ld2ss(long double p)
     {
+        if (isnan(p) || !isfinite(p))
+        {
+            return "NA";
+        }
+        
         std::ostringstream out;
         
         // Convert the probability into scientific notation
@@ -38,7 +43,12 @@ namespace Anaquin
 
     template <typename T> std::string x2ns(const T &x)
     {
-        return isnan(x) ? "NA" : std::to_string(x);
+        if (isnan(x) || !isfinite(x))
+        {
+            return "NA";
+        }
+        
+        return std::to_string(x);
     }
 }
 

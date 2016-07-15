@@ -41,10 +41,10 @@ score <- %5%
 data$name <- paste(data$ID, data$Pos, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
-data$EFold <- round(data$ERef / data$EVar)
-r <- unique(sort(data$EFold))
+data$ExpFold <- round(data$ExpRef / data$ExpVar)
+r <- unique(sort(data$ExpFold))
 
 # Create Anaquin data set
-data <- Anaquin(seqs=data$name, expected=data$EFold, score=score, label=data$Label)
+data <- CreateDataForAnaquin(names=data$name, expected=data$ExpFold, score=score, label=data$Label)
 
 plotROC(data, title=title, legTitle=legTitle, refRats=r)

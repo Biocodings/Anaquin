@@ -57,7 +57,7 @@ CreateDataForAnaquin <- function(...)
     x <- list(...)
 
     # Metrics Anaquin supports
-    keys <- c('sd', 'pval', 'qval', 'mean', 'expected', 'input', 'measured', 'sensitivity', 'label', 'score')
+    keys <- c('sd', 'pval', 'qval', 'ratio', 'mean', 'expected', 'input', 'measured', 'sensitivity', 'label', 'score')
 
     r <- list('seqs'=.createData(x, keys))
     

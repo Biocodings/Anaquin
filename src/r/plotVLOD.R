@@ -8,10 +8,11 @@
 
 library(Anaquin)
 
+# Load reference sequins
 data <- read.csv('%3%/%4%', sep='\t')
 
-# False-positives have no probabilites
-data <- data[data$Label != 'FP',]
+# False-positives have no probability
+data <- data[data$Label!='FP',]
 
 # Change to 'Indel' or delete the line for all variants
 data <- data[data$Type=='SNP',]
@@ -28,7 +29,9 @@ xlab='Expected allele frequency (log10)'
 # Change this for the y-axis label
 ylab='P-value (log10)'
 
-data$EFold <- round(data$ERef / data$EVar)
-data <- Anaquin(seqs=paste(data$Seq, data$Pos, sep='_'), expected=as.factor(data$EFold), pval=data$Pval, measured=data$EFreq)
+data$EFold <- round(data$ExpRef / data$ExpVar)
 
-plotLOD(data, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)  
+# Create Anaquin data set
+data <- CreateDataForAnaquin(names=paste(data$ID, data$Position, sep='_'), ratio=as.factor(data$EFold), pval=data$Pval, measured=data$ExpFreq)
+
+plotLOD(data, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)

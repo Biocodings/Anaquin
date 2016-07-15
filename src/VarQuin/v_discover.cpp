@@ -224,21 +224,23 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "Pos"
+                                           % "Length"
+                                           % "Position"
                                            % "Label"
-                                           % "Pval"
                                            % "ReadR"
                                            % "ReadV"
                                            % "Depth"
-                                           % "ERef"
-                                           % "EVar"
-                                           % "EFreq"
-                                           % "MFreq"
+                                           % "ExpRef"
+                                           % "ExpVar"
+                                           % "ExpFreq"
+                                           % "ObsFreq"
+                                           % "Pval"
+                                           % "Qual"
                                            % "Type").str());
     for (const auto &i : stats.hist)
     {
@@ -277,9 +279,9 @@ static void writeQuins(const FileName &file,
                         const auto &t = x.at(key);
                         
                         o.writer->write((boost::format(format) % id
+                                                               % r.match(baseID(m->id))->l.length()
                                                                % m->l.start
                                                                % label
-                                                               % (isnan(t.query.p) ? "-" : ld2ss(t.query.p))
                                                                % t.query.readR
                                                                % t.query.readV
                                                                % t.query.depth
@@ -287,6 +289,8 @@ static void writeQuins(const FileName &file,
                                                                % r.findVCon(m->id)
                                                                % r.findAFreq(m->id)
                                                                % t.query.alleleFreq()
+                                                               % ld2ss(t.query.p)
+                                                               % x2ns(t.query.qual)
                                                                % type).str());
                         return true;
                     }
@@ -313,15 +317,17 @@ static void writeQuins(const FileName &file,
                 const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
                 
                 o.writer->write((boost::format(format) % id
+                                                       % r.match(baseID(m->id))->l.length()
                                                        % m->l.start
                                                        % "FN"
-                                                       % "NA"
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
                                                        % r.findRCon(m->id)
                                                        % r.findVCon(m->id)
                                                        % r.findAFreq(m->id)
+                                                       % "NA"
+                                                       % "NA"
                                                        % "NA"
                                                        % type).str());
             }
@@ -339,15 +345,15 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "Pos"
+                                           % "Position"
                                            % "Label"
-                                           % "Ref"
-                                           % "Var"
+                                           % "ReadR"
+                                           % "ReadV"
                                            % "Depth"
-                                           % "ERef"
-                                           % "EVar"
-                                           % "EFreq"
-                                           % "MFreq"
+                                           % "ExpRef"
+                                           % "ExpVar"
+                                           % "ExpFreq"
+                                           % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
                                            % "Type").str());
@@ -387,9 +393,6 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                     const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
                     const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
 
-                    const auto pval  = (isnan(i.query.p) ? "-" : ld2ss(i.query.p));
-                    const auto mFreq = i.query.alleleFreq();
-                    
                     o.writer->write((boost::format(format) % sID
                                                            % i.query.l.start
                                                            % label
@@ -399,8 +402,8 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % eRef
                                                            % eVar
                                                            % eFreq
-                                                           % mFreq
-                                                           % pval
+                                                           % i.query.alleleFreq()
+                                                           % ld2ss(i.query.p)
                                                            % i.query.qual
                                                            % type2str(i.query.type())).str());
                 }
@@ -696,7 +699,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarDiscover_quins.stats
+     * Generating VarDiscover_sequins.csv
      */
     
     writeQuins("VarDiscover_sequins.csv", stats, o);
@@ -708,10 +711,10 @@ void VDiscover::report(const FileName &file, const Options &o)
     writeSummary("VarDiscover_summary.stats", file, stats, o);
     
     /*
-     * Generating VarDiscover_queries.csv
+     * Generating VarDiscover_detected.csv
      */
     
-    writeQueries("VarDiscover_queries.csv", stats, o);
+    writeQueries("VarDiscover_detected.csv", stats, o);
     
     /*
      * Generating VarDiscover_ROC.R
@@ -723,12 +726,12 @@ void VDiscover::report(const FileName &file, const Options &o)
     if (__countP__ >= __countD__)
     {
         o.info("P-value for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_queries.csv", "1-data$Pval"));
+        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "1-data$Pval"));
     }
     else
     {
         o.info("Depth for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_queries.csv", "data$Depth"));
+        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth"));
     }
     
     o.writer->close();
@@ -745,8 +748,8 @@ void VDiscover::report(const FileName &file, const Options &o)
                                                       "Allele Frequency",
                                                       "Expected allele frequency (log2)",
                                                       "Measured allele frequency (log2)",
-                                                      "EFreq",
-                                                      "MFreq",
+                                                      "ExpFreq",
+                                                      "ObsFreq",
                                                       "expected",
                                                       true));
         o.writer->close();
@@ -758,7 +761,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.generate("VarDiscover_LOD.R");
     o.writer->open("VarDiscover_LOD.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.csv", PlotVLOD()));
+    o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLOD()));
     o.writer->close();
     
     /*
@@ -769,7 +772,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.report->addTitle("VarDiscover");
     o.report->addFile("VarDiscover_summary.stats");
     o.report->addFile("VarDiscover_sequins.csv");
-    o.report->addFile("VarDiscover_queries.csv");
+    o.report->addFile("VarDiscover_detected.csv");
     o.report->addFile("VarDiscover_ROC.R");
     o.report->addFile("VarDiscover_LOD.R");
     
