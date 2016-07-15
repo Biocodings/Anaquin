@@ -41,30 +41,24 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
             
             Locus l;
             bool spliced;
-            int i = 0;
+            bool added = false;
             
             while (x.nextCigar(l, spliced))
             {
-                const auto m = inters[x.cID].overlap(l);
-                
-                if (m)
+                std::vector<Interval *> mats;
+                if (inters[x.cID].overlap(l, &mats))
                 {
-                    m->map(l);
-                    
-                    if (i == 0)
+                    for (const auto &i : mats)
                     {
-                        stats.hist[x.cID]++;
+                        i->map(l);
+                        
+                        if (!added)
+                        {
+                            added = true;
+                            stats.hist[x.cID]++;
+                        }
                     }
                 }
-                else
-                {
-                    /*
-                     * It's important not to break here (see shots/example1.png). Later fragments
-                     * might align.
-                     */
-                }
-                
-                i++;
             }
         }
     });
