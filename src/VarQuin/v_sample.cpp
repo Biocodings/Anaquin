@@ -122,8 +122,8 @@ struct Subsampler
         o.info(std::to_string(stats.syn.size()) + " reference synthetic regions");
         o.info(std::to_string(stats.gen.size()) + " reference genomic regions");
         
-        const auto ss = stats.syn.stats();
         const auto gs = stats.gen.stats();
+        const auto ss = stats.syn.stats();
         
         assert(ss.mean && gs.mean);
         
@@ -382,12 +382,19 @@ struct Subsampler
          * Generating bedgraph before subsampling (only synthetic)
          */
         
-        auto pre = CoverageTool::CoverageBedGraphOptions();
+        auto pre1 = CoverageTool::CoverageBedGraphOptions();
         
-        pre.writer = o.writer;
-        pre.file   = "VarSubsample_before.bedgraph";
+        pre1.writer = o.writer;
+        pre1.file   = "VarSubsampleSyn_before.bedgraph";
         
-        CoverageTool::bedGraph(before.syn, pre);
+        CoverageTool::bedGraph(before.syn, pre1);
+
+        auto pre2 = CoverageTool::CoverageBedGraphOptions();
+        
+        pre2.writer = o.writer;
+        pre2.file   = "VarSubsampleGen_before.bedgraph";
+        
+        CoverageTool::bedGraph(before.gen, pre2);
         
         /*
          * Generating bedgraph after subsampling (only synthetic)
@@ -398,7 +405,7 @@ struct Subsampler
         post.writer = o.writer;
         post.file   = "VarSubsample_after.bedgraph";
         
-        CoverageTool::bedGraph(inters, pre);
+        CoverageTool::bedGraph(inters, post);
 #endif
         
         /*
