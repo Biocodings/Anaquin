@@ -371,24 +371,7 @@ struct Subsampler
         o.info("Coverage (before): " + std::to_string(before.synC));
         o.info("Coverage (before): " + std::to_string(before.genC));
         
-        // Subsample the alignments
-        const auto after = Subsampler::sample(file, o.work + "/" + sampled, norm, inters, o);
-        
-        o.info("Coverage (after): " + std::to_string(after.cov));
-        o.info("Coverage (after): " + std::to_string(before.genC));
-        
 #ifdef DEBUG_VSAMPLE
-        /*
-         * Generating bedgraph before subsampling (only synthetic)
-         */
-        
-        auto pre1 = CoverageTool::CoverageBedGraphOptions();
-        
-        pre1.writer = o.writer;
-        pre1.file   = "VarSubsampleSyn_before.bedgraph";
-        
-        CoverageTool::bedGraph(before.syn, pre1);
-
         auto pre2 = CoverageTool::CoverageBedGraphOptions();
         
         pre2.writer = o.writer;
@@ -396,10 +379,21 @@ struct Subsampler
         
         CoverageTool::bedGraph(before.gen, pre2);
         
-        /*
-         * Generating bedgraph after subsampling (only synthetic)
-         */
+        auto pre1 = CoverageTool::CoverageBedGraphOptions();
         
+        pre1.writer = o.writer;
+        pre1.file   = "VarSubsampleSyn_before.bedgraph";
+        
+        CoverageTool::bedGraph(before.syn, pre1);
+#endif
+
+        // Subsample the alignments
+        const auto after = Subsampler::sample(file, o.work + "/" + sampled, norm, inters, o);
+        
+        o.info("Coverage (after): " + std::to_string(after.cov));
+        o.info("Coverage (after): " + std::to_string(before.genC));
+        
+#ifdef DEBUG_VSAMPLE
         auto post = CoverageTool::CoverageBedGraphOptions();
         
         post.writer = o.writer;
