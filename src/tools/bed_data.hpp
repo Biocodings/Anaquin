@@ -228,8 +228,6 @@ namespace Anaquin
             
             return r;
         }
-        
-        
     };
     
     inline BedData bedData(const Reader &r)
