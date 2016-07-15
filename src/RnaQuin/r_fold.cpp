@@ -211,7 +211,7 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
-    o.writer->write("ID\tLength\tExpectLFold\tObserveLFold\tSD\tPval\tQval\tMean");
+    o.writer->write("ID\tLength\tExpFC\tObsFC\tSD\tPval\tQval\tMean");
     
     for (const auto &i : r.data())
     {
