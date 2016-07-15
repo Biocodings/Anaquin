@@ -58,7 +58,10 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
                 }
                 else
                 {
-                    break;
+                    /*
+                     * It's important not to break here (see shots/example1.png). Later fragments
+                     * might align.
+                     */
                 }
                 
                 i++;
@@ -77,10 +80,7 @@ void CoverageTool::bedGraph(const ID2Intervals &inters, const CoverageBedGraphOp
     {
         if (depth)
         {
-            o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
-                                                                 % i
-                                                                 % j
-                                                                 % depth).str());
+            o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id % i % j % depth).str());
         }
     });
 
