@@ -545,6 +545,12 @@ namespace Anaquin
             // Concentration at the gene level
             Concent concent(const GeneID &, Mixture m = Mix_1) const;
 
+            // Expected log-fold at the gene level
+            LogFold logFoldGene(const GeneID &) const;
+
+            // Expected log-fold at the sequin (isoform) level
+            LogFold logFoldSeq(const IsoformID &) const;
+
             GeneID s2g(const SequinID &) const;
         
             inline std::set<GeneID>  getGenesSyn() const

@@ -538,6 +538,27 @@ Counts TransRef::countGeneSeqs() const
     return gIDs.size();
 }
 
+LogFold TransRef::logFoldGene(const GeneID &gID) const
+{
+    const auto e1 = concent(gID, Mix_1);
+    const auto e2 = concent(gID, Mix_2);
+
+    return log2(e2 / e1);
+}
+
+LogFold TransRef::logFoldSeq(const IsoformID &iID) const
+{
+    const auto m = match(iID);
+    
+    // It's pre-condition that the sequin exists
+    assert(m);
+    
+    const auto e1 = m->concent(Mix_1);
+    const auto e2 = m->concent(Mix_2);
+    
+    return log2(e2 / e1);
+}
+
 Concent TransRef::concent(const GeneID &gID, Mixture m) const
 {
     for (const auto &i : _impl->gData)
