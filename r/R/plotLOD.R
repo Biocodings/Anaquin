@@ -11,7 +11,7 @@
                      title='LODR Curves',
                      band='pred',
                      chosenFDR=0.1,
-                     shouldTable=FALSE,
+                     yBreaks=c(1e-100, 1e-200, 1e-300),                     
                      multiTest=TRUE,
                      shouldPlotFitting=FALSE)
 {
@@ -210,21 +210,6 @@
     
     print('Estimation completed')
     
-    if (shouldTable)
-    {
-        legendLabels <- c('4', '3', '2', '1') # TODO: Fix this
-        
-        lodr.resPlot$ratio <- as.character(legendLabels)
-        lodr.resLess$ratio <- as.character(legendLabels) 
-        annoTable <- lodr.resLess[-c(2,4,5)]
-        
-        colnames(annoTable) <- c("Ratio", expression("LODR Estimate"))
-        cat("\n")
-        print(annoTable, quote = FALSE, rofw.names = FALSE)    
-        
-        my_table <- tableGrob(d=annoTable, rows=NULL)
-    }
-    
     # What color scheme should we use?
     #cols <- colors(length(data$ratio))
     
@@ -233,12 +218,13 @@
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
     x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
-
+    
     .plotLODR(data=x,
               lineDat=lineDat,
               shouldBand=TRUE,
               xlab=xlab,
               ylab=ylab,
+              yBreaks=yBreaks,
               title=title,
               legend=legend,
               cutoff=cutoff)
@@ -249,9 +235,7 @@ plotLOD <- function(data, ...,
                     xlab='',
                     ylab='',
                     legTitle=legTitle,
-                    #xBreaks=c(1e-3, 1e-2, 1e-1, 1e-0),
                     xBreaks=c(1e-3, 1e-2, 1e-1),                    
-                    #xLabels=c('-3', '-2', '-1', 'FP'),
                     xLabels=c('-3', '-2', '-1'),
                     yBreaks=c(1e-100, 1e-200, 1e-300),
                     yLabels=c(-100, -200, -300))
@@ -264,12 +248,13 @@ plotLOD <- function(data, ...,
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))    
     stopifnot(!is.null(data$measured))
-    
-    #data$ratio <- revalue(data$expected, c('0'='FP'))
 
+    data$ratio <- as.factor(data$ratio)
+    #data$ratio <- revalue(data$expected, c('0'='FP'))
+    
     p <- min(data[data$pval != 0,]$pval)
     data[data$pval == 0,]$pval <- p
-        
+    
     # Can we plot zero probability? Probably not.    
     data <- data[data$pval != 0,]
     
@@ -304,11 +289,11 @@ plotLOD <- function(data, ...,
     
     if (is.null(x$p_size))   { x$p_size   <- 3 }
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
-
+    
     p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) +
-                        geom_point(size=x$p_size, alpha=0.5) +
-                        labs(colour=x$legTitle)              +
-                        theme_bw()
+        geom_point(size=x$p_size, alpha=0.5) +
+        labs(colour=x$legTitle)              +
+        theme_bw()
     
     if (is.null(x$xBreaks))
     {
@@ -325,10 +310,10 @@ plotLOD <- function(data, ...,
         x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
     }
     
-    if (is.null(x$yLabels))
-    {
-        x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
-    }
+    #if (is.null(x$yLabels))
+    #{
+    #    x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
+    #}
     
     if (!is.null(x$xlab))     { p <- p + xlab(x$xlab)     }
     if (!is.null(x$ylab))     { p <- p + ylab(x$ylab)     }
@@ -394,7 +379,7 @@ plotProb <- function(data, title=NULL)
     
     # Number of reads for the variant
     vReads <- data$seqs$vRead
-
+    
     .fitLODR(data.frame(measured=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
 }
 
@@ -404,22 +389,16 @@ plotLODR <- function(data,
                      xBreaks = NULL,
                      yBreaks = NULL,
                      xLabels = NULL,
-                     band = 'pred',
                      xname = 'Average Counts',
                      yname = 'DE Test P-values',
-                     shouldTable = FALSE,
                      shouldBand  = FALSE)
 {
-    seqs <- data$seqs
-    
-    # The y-axis of the curves
-    pval <- seqs$pval
-    
-    # Measured abundance (eg: average counts)
-    measured <- seqs$measured
-    
-    # Sequin groups
-    ratio <- seqs$ratio
-    
-    .fitLODR(data.frame(measured=measured, pval=pval, ratio=abs(round(ratio))), multiTest=FALSE)
+    data <- data$seqs
+    data <- data[data$pval!=0,]
+
+    .fitLODR(data.frame(measured=data$measured,
+                        pval=data$pval,
+                        ratio=abs(round(data$ratio))),
+                        title=title,
+                        multiTest=FALSE)
 }
