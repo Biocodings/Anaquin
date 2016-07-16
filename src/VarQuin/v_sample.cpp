@@ -2,8 +2,6 @@
 #include "VarQuin/v_sample.hpp"
 #include "writers/writer_sam.hpp"
 
-#define DEBUG_VSAMPLE
-
 // Defined in main.cpp
 extern Anaquin::FileName BedRef();
 
