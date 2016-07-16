@@ -4,13 +4,31 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL, showIntercept=FALSE)
+plotScatter <- function(data, xBreaks=NULL, ...)
 {
     require(grid)
     require(ggplot2)
 
     data <- data$seqs
+
+    x <- list(...)
     
+    title <- ''
+    xlab  <- ''
+    ylab  <-
+    
+    showSD    <- FALSE
+    showLOQ   <- TRUE
+    showInter <- FALSE
+    
+    if (!is.null(x$xlab))  { xlab  <- x$xlab  }
+    if (!is.null(x$ylab))  { ylab  <- x$ylab  }    
+    if (!is.null(x$title)) { title <- x$title }
+    
+    if (!is.null(x$showSD))    { showSD  <- x$showSD      }
+    if (!is.null(x$showLOQ))   { showLOQ <- x$showLOQ     }    
+    if (!is.null(x$showInter)) { showInter <- x$showInter }
+        
     # TODO: Fix this....
     if (!is.data.frame(data$measured))
     {
@@ -18,8 +36,6 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
         data <- data[!is.infinite(data$measured),]        
     }
     
-    #data <- data[!is.infinite(data$measured),]
-
     # The variable for the x-axis
     data$x <- NULL
     
@@ -44,8 +60,11 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
     isMultiDF <- is(data$y, 'data.frame')
-    isMultiSD <- sum(data$sd) > 0
-    isMulti   <- isMultiDF | isMultiSD
+    
+    # Should we show standard deviation? Only if we're asked and information available.
+    isMultiSD <- sum(data$sd) > 0 & showSD
+    
+    isMulti <- isMultiDF | isMultiSD
     
     data$ymax <- NULL
     data$ymin <- NULL
@@ -107,8 +126,6 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
         p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
     }
     
- #   a <- expression(atop('ddd', 'sadaddd'))
-    
 #    title <- list( bquote( paste( "Histogram of " , 'dddd') )  ,
 #                   bquote( paste( "Bootstrap samples, Allianz" ) ) )
     
@@ -167,7 +184,7 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=
     
     if (!is.null(data$sd))
     {
-        p <- p + geom_errorbar(aes(ymax=ymax, ymin=ymin), size=0.3, alpha=0.7)
+        p <- p + geom_errorbar(aes(ymax=ymax, ymin=ymin), size=0.2, alpha=0.5)
     }
     
     p <- .transformPlot(p)
