@@ -13,6 +13,7 @@
                      chosenFDR=0.1,
                      yBreaks=c(1e-100, 1e-200, 1e-300),                     
                      multiTest=TRUE,
+                     legTitle=NULL,
                      shouldPlotFitting=FALSE)
 {
     require(locfit)
@@ -210,15 +211,11 @@
     
     print('Estimation completed')
     
-    # What color scheme should we use?
-    #cols <- colors(length(data$ratio))
-    
-    #data$eLogLF    <- as.factor(data$ratio)
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
     x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
-    
+
     .plotLODR(data=x,
               lineDat=lineDat,
               shouldBand=TRUE,
@@ -227,6 +224,7 @@
               yBreaks=yBreaks,
               title=title,
               legend=legend,
+              legTitle=legTitle,
               cutoff=cutoff)
 }
 
@@ -297,11 +295,13 @@ plotLOD <- function(data, ...,
     
     if (is.null(x$xBreaks))
     {
+     # TODO
         x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
     }
     
     if (is.null(x$xLabels))
     {
+        # TODO
         x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
     }
     
@@ -351,11 +351,12 @@ plotLOD <- function(data, ...,
     
     if (!is.null(x$xBreaks) & !is.null(x$xLabels))
     {
+       #TODO
         p <- p + scale_x_log10(breaks=x$xBreaks, labels=x$xLabels)
-        #p <- p + scale_x_continuous(breaks=x$xBreaks, labels=x$xLabels)        
     }
     else
     {
+        #TODO
         p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)))
         p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)), breaks=c(arrowDat$x, round(max(data$baseMean))))
     }
@@ -386,12 +387,13 @@ plotProb <- function(data, title=NULL)
 plotLODR <- function(data,
                      title = NULL,
                      chosenFDR = 0.1,
+                     legTitle = NULL,
                      xBreaks = NULL,
                      yBreaks = NULL,
                      xLabels = NULL,
-                     xname = 'Average Counts',
-                     yname = 'DE Test P-values',
-                     shouldBand  = FALSE)
+                     xlab = NULL,
+                     ylab = NULL,
+                     shouldBand = FALSE)
 {
     data <- data$seqs
     data <- data[data$pval!=0,]
@@ -400,5 +402,8 @@ plotLODR <- function(data,
                         pval=data$pval,
                         ratio=abs(round(data$ratio))),
                         title=title,
+                        xlab=xlab,
+                        ylab=ylab,
+                        legTitle=legTitle,
                         multiTest=FALSE)
 }
