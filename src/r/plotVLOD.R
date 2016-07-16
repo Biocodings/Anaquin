@@ -18,10 +18,10 @@ data <- data[data$Label!='FP',]
 data <- data[data$Type=='SNP',]
 
 # Change this for another title
-title <- 'Limit of Detection'
+title <- 'LODR Plot'
 
 # Change this for another legend title
-legTitle <- 'Allele Freq.'
+legTitle <- 'Allele Freq'
 
 # Change this for the x-axis label
 xlab='Expected allele frequency (log10)'

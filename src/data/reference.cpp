@@ -899,11 +899,6 @@ Proportion VarRef::findAFreq(const SequinID &id) const
 Fold VarRef::findAFold(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));
-    const auto r  = round(p.r->abund / p.v->abund);
-
-    if (r == 2040) { return 2048; }
-    if (r == 1019) { return 1024; }
-    
     return round(p.r->abund / p.v->abund);
 }
 
