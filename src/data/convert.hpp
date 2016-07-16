@@ -28,7 +28,7 @@ namespace Anaquin
     
     inline std::string ld2ss(long double p)
     {
-        if (isnan(p) || !isfinite(p))
+        if (isnan(p) || !std::isfinite(p))
         {
             return "NA";
         }
@@ -43,7 +43,7 @@ namespace Anaquin
 
     template <typename T> std::string x2ns(const T &x)
     {
-        if (isnan(x) || !isfinite(x))
+        if (isnan(x) || !std::isfinite(x))
         {
             return "NA";
         }
