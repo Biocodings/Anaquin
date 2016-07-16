@@ -24,7 +24,7 @@ namespace Anaquin
             Strands2,
             Qual1,
             Qual2,       // 10
-            Pvalue,
+            PValue,
             MapQual1,
             MapQual2,
             Reads1Plus,
@@ -60,7 +60,7 @@ namespace Anaquin
                     toks[8]  == "Strands2"    &&
                     toks[9]  == "Qual1"       &&
                     toks[10] == "Qual2"       &&
-                    toks[11] == "Pvalue"      &&
+                    toks[11] == "PValue"      &&
                     toks[12] == "MapQual1"    &&
                     toks[13] == "MapQual2"    &&
                     toks[14] == "Reads1Plus"  &&
@@ -162,7 +162,7 @@ namespace Anaquin
                 
                 try
                 {
-                    d.p = stold(toks[Pvalue]);
+                    d.p = stold(toks[PValue]);
                 }
                 catch (...)
                 {

@@ -25,12 +25,6 @@
     data <- data[!is.na(data$pval),]
     data <- data[!is.na(data$measured),]
     
-    #
-    # Estimate the q-value for false discovery rate.
-    #
-    #    https://github.com/Bioconductor-mirror/erccdashboard/blob/631b691a51db54cb165ff2de1f9a5e06608347bd/R/geneExprTest.R
-    #
-    
     data$qval <- if(multiTest) qvalue(data$pval)$qvalues else data$pval
     cutoff    <- max(data$pval[data$qval < chosenFDR])
     
@@ -174,12 +168,6 @@
                     t.res <- LODR(t$pval, t$measured, cutoff=cutoff, prob=prob)
                     t.res[-1]<-signif(10^t.res[-1],2)
                     
-                    #if (t.res[1]>.01)
-                    #{
-                    #   t.res[2]<-Inf
-                    #  t.res[3:4]<-NA
-                    #}
-                    
                     t.resLess <- t.res
                     t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
                     t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
@@ -213,120 +201,62 @@
     
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
-    
-    x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
 
-    .plotLODR(data=x,
-              lineDat=lineDat,
-              shouldBand=TRUE,
-              xlab=xlab,
-              ylab=ylab,
-              yBreaks=yBreaks,
-              title=title,
-              legend=legend,
-              legTitle=legTitle,
-              cutoff=cutoff)
-}
-
-plotLOD <- function(data, ...,
-                    title='Limit of Detection',
-                    xlab='',
-                    ylab='',
-                    legTitle=legTitle,
-                    xBreaks=c(1e-3, 1e-2, 1e-1),                    
-                    xLabels=c('-3', '-2', '-1'),
-                    yBreaks=c(1e-100, 1e-200, 1e-300),
-                    yLabels=c(-100, -200, -300))
-{
-    require(plyr)
-    
-    stopifnot(class(data) == 'Anaquin')
-    data <- data$seqs
-    
-    stopifnot(!is.null(data$pval))
-    stopifnot(!is.null(data$ratio))    
-    stopifnot(!is.null(data$measured))
-
-    data$ratio <- as.factor(data$ratio)
-    #data$ratio <- revalue(data$expected, c('0'='FP'))
-    
-    p <- min(data[data$pval != 0,]$pval)
-    data[data$pval == 0,]$pval <- p
-    
-    # Can we plot zero probability? Probably not.    
-    data <- data[data$pval != 0,]
-    
-    .plotLODR(data,
-              title=title,
-              xlab=xlab,
-              ylab=ylab,
-              legTitle=legTitle,
-              xBreaks=xBreaks,
-              xLabels=xLabels,
-              yBreaks=yBreaks,
-              yLabels=yLabels,
-              p_size=2.0)
+    return(list(measured=data$measured,
+                pval=data$pval,
+                ratio=as.factor(data$ratio),
+                lineDat=lineDat))
 }
 
 .plotLODR <- function(data, ...)
 {
-    require(grid)
     require(qvalue)
     require(ggplot2)
-    require(gridExtra)
-    
+
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))
     stopifnot(!is.null(data$measured))
     
     x <- list(...)
     
-    #
-    # Fill out optional graphical parameters
-    #
-    
-    if (is.null(x$p_size))   { x$p_size   <- 3 }
+    if (is.null(x$size))     { x$size     <- 3       }
+    if (is.null(x$showConf)) { x$showConf <- TRUE    }
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
     
-    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) +
-        geom_point(size=x$p_size, alpha=0.5) +
-        labs(colour=x$legTitle)              +
-        theme_bw()
+    df <- data.frame(measured=data$measured, pval=data$pval, ratio=data$ratio)
     
+    p <- ggplot(df, aes(x=measured, y=pval, colour=ratio)) +
+                      geom_point(size=x$size, alpha=0.5)   +
+                      labs(colour=x$legTitle)              +
+                      theme_bw()
+
     if (is.null(x$xBreaks))
     {
-     # TODO
-        x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
+        x$xBreaks <- 10^(0:round(log10(max(df$measured)))-1)
     }
     
     if (is.null(x$xLabels))
     {
-        # TODO
         x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
     }
     
     if (is.null(x$yBreaks))
     {
-        x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+        x$yBreaks <- c(min(df$pval), 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
     }
-    
-    #if (is.null(x$yLabels))
-    #{
-    #    x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
-    #}
     
     if (!is.null(x$xlab))     { p <- p + xlab(x$xlab)     }
     if (!is.null(x$ylab))     { p <- p + ylab(x$ylab)     }
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
     if (!is.null(x$legTitle)) { p <- p + labs(colour=x$legTitle) }
     
-    if (!is.null(x$lineDat))
+    if (!is.null(data$lineDat))
     {
-        p <- p + geom_line(data=x$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)
+        p <- p + geom_line(data=data$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)
         
-        if (x$shouldBand)
+        if (x$showConf)
         {
-            p <- p + geom_ribbon(data=x$lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
+            p <- p + geom_ribbon(data=data$lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
                                  alpha=0.3, colour=NA, show_guide=FALSE)
         }
     }
@@ -351,12 +281,10 @@ plotLOD <- function(data, ...,
     
     if (!is.null(x$xBreaks) & !is.null(x$xLabels))
     {
-       #TODO
         p <- p + scale_x_log10(breaks=x$xBreaks, labels=x$xLabels)
     }
     else
     {
-        #TODO
         p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)))
         p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)), breaks=c(arrowDat$x, round(max(data$baseMean))))
     }
@@ -370,40 +298,37 @@ plotLOD <- function(data, ...,
     print(p)
 }
 
-plotProb <- function(data, title=NULL)
-{
-    # Probability under the null hypothesis (y-axis)
-    pval <- data$seqs$pval
-    
-    # Number of reads for the reference
-    rReads <- data$seqs$rRead
-    
-    # Number of reads for the variant
-    vReads <- data$seqs$vRead
-    
-    .fitLODR(data.frame(measured=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
-}
-
 plotLODR <- function(data,
+                     fdr = 0.1,                       
                      title = NULL,
-                     chosenFDR = 0.1,
-                     legTitle = NULL,
                      xBreaks = NULL,
                      yBreaks = NULL,
                      xLabels = NULL,
+                     yLabels = NULL,
+                     legTitle = NULL,
                      xlab = NULL,
                      ylab = NULL,
-                     shouldBand = FALSE)
+                     shouldFit=TRUE)
 {
     data <- data$seqs
     data <- data[data$pval!=0,]
+    
+    if (shouldFit)
+    {
+        data <- .fitLODR(data.frame(measured=data$measured, pval=data$pval, ratio=abs(round(data$ratio))))
+    }
+    else
+    {
+        data <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(abs(round(data$ratio))))
+    }
 
-    .fitLODR(data.frame(measured=data$measured,
-                        pval=data$pval,
-                        ratio=abs(round(data$ratio))),
-                        title=title,
-                        xlab=xlab,
-                        ylab=ylab,
-                        legTitle=legTitle,
-                        multiTest=FALSE)
+    .plotLODR(data=data,
+              xlab=xlab,
+              ylab=ylab,
+              title=title,
+              legTitle=legTitle,
+              xBreaks=xBreaks,
+              xLabels=xLabels,
+              yBreaks=yBreaks,
+              yLabels=yLabels)
 }

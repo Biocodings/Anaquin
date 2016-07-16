@@ -18,6 +18,15 @@ data <- data[!is.na(data$ObsLFC),]
 data <- CreateDataForAnaquin(names=row.names(data), measured=data$Mean, ratio=data$ExpLFC, pval=data$Pval)
 
 # Choose your FDR rate
-chosenFDR <- 0.1
+fdr <- 0.1
 
-plotLODR(data, chosenFDR=chosenFDR) 
+# Label for the x-axis
+xlab <- 'Average Counts'
+
+# Label for the y-axis
+ylab <- 'P-value'
+
+# Title of the plot
+title <- 'LODR Curves'
+
+plotLODR(data, xlab=xlab, ylab=ylab, title=title, fdr=fdr)

@@ -19,15 +19,15 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     
     showSD    <- FALSE
     showLOQ   <- TRUE
-    showInter <- FALSE
-    
+
     if (!is.null(x$xlab))  { xlab  <- x$xlab  }
     if (!is.null(x$ylab))  { ylab  <- x$ylab  }    
     if (!is.null(x$title)) { title <- x$title }
     
     if (!is.null(x$showSD))    { showSD  <- x$showSD      }
     if (!is.null(x$showLOQ))   { showLOQ <- x$showLOQ     }    
-    if (!is.null(x$showInter)) { showInter <- x$showInter }
+    
+    if (is.null(x$showInter)) { x$showInter <- FALSE }
         
     # TODO: Fix this....
     if (!is.data.frame(data$measured))
@@ -99,7 +99,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     p <-p + guides(colour=FALSE)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.7, 0.7)
 
-    if (showIntercept)
+    if (x$showInter)
     {
         p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
         p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
@@ -108,22 +108,31 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     overall <- .lm2str(data)
     above   <- NULL
 
+    loq <- NULL
+
     if (showLOQ)
     {
-        # Fit piecewise segmentation
-        loq <- showLOQ(data$x, data$y)
-
-        # Print out the regression above LOQ
-        above <- .m2str(loq$model$rModel)
-
-        # We can assume the break-point is on the log2-scale. Let's convert it back.
-        label <- 2^loq$breaks$k
+        tryCatch({
+            # Fit piecewise segmentation
+            loq <- showLOQ(data$x, data$y)
+        }, error = function(cond)
+        {
+        })
         
-        x <- paste('LOQ:', signif(label, 3))
-        x <- paste(x, 'attomol/ul')
-
-        p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
+        if (!is.null(loq))
+        {
+            # Print out the regression above LOQ
+            above <- .m2str(loq$model$rModel)
+            
+            # We can assume the break-point is on the log2-scale. Let's convert it back.
+            label <- 2^loq$breaks$k
+            
+            x <- paste('LOQ:', signif(label, 3))
+            x <- paste(x, 'attomol/ul')
+            
+            p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
+            p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
+        }
     }
     
 #    title <- list( bquote( paste( "Histogram of " , 'dddd') )  ,
@@ -163,7 +172,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     
     p <- p + overall
     
-    if (showLOQ)
+    if (showLOQ & !is.null(loq))
     {
         above <- annotate("text",
                           label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),

@@ -21,7 +21,7 @@ VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, cons
                                      % "Depth"
                                      % "QualR"
                                      % "QualV"
-                                     % "Pvalue").str());
+                                     % "PValue").str());
     
     o.generate(output);
     

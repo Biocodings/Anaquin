@@ -22,7 +22,7 @@ namespace Anaquin
             Depth,
             QualR,
             QualV,
-            Pvalue,
+            PValue,
         };
 
         typedef CalledVariant Data;
@@ -49,7 +49,7 @@ namespace Anaquin
                     toks[6]  == "Depth"    &&
                     toks[7]  == "QualR"    &&
                     toks[8]  == "QualV"    &&
-                    toks[9]  == "Pvalue")
+                    toks[9]  == "PValue")
                 {
                     return true;
                 }
@@ -109,7 +109,7 @@ namespace Anaquin
                 
                 try
                 {
-                    d.p = stold(toks[Pvalue]);
+                    d.p = stold(toks[PValue]);
                 }
                 catch (...)
                 {
