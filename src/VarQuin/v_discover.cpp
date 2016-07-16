@@ -82,9 +82,6 @@ struct VDiscoverImpl : public VCFDataUser
                 stats->data[cID].tps.push_back(m);
                 stats->data[cID].tps_[key] = stats->data[cID].tps.back();
                 
-                //stats.hist.at(cID).at(key)++;
-                //stats.hist.at(m.match->id)++;
-                
                 stats->data.at(cID).af = m.query.alleleFreq();
                 
                 if (Standard::isSynthetic(cID))
