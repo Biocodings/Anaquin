@@ -60,7 +60,7 @@ namespace Anaquin
                     toks[8]  == "Strands2"    &&
                     toks[9]  == "Qual1"       &&
                     toks[10] == "Qual2"       &&
-                    toks[11] == "PValue"      &&
+                    toks[11] == "Pvalue"      &&
                     toks[12] == "MapQual1"    &&
                     toks[13] == "MapQual2"    &&
                     toks[14] == "Reads1Plus"  &&
@@ -99,8 +99,11 @@ namespace Anaquin
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
                 d.allF  = stod(toks[VarFreq]);
-                d.qualR = stod(toks[Qual1]);
-                d.qualV = stod(toks[Qual2]);
+                
+                /*
+                 * TODO: VarScan does give quality but it's not the same as quality in VCF.
+                 *       VarScan gives quality score for the reference and alternative allele.
+                 */
                 
                 const auto readR = stod(toks[Reads1]);
                 const auto readV = stod(toks[Reads2]);

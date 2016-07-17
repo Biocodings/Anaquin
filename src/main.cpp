@@ -459,7 +459,6 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarSubsample();
     extern Scripts VarDiscover();
-    extern Scripts VarFrequency();
     
     switch (tool)
     {

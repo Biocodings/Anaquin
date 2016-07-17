@@ -66,18 +66,15 @@ namespace Anaquin
         // The reference position, with the 1st base having position 1
         Locus l;
         
-        // Quality score (eg: QUAL in VCF)
-        double qual;
-        
         Sequence ref, alt;
         
         // Allelle frequency
         Proportion allF = NAN;
         
-        // Base quality of the reference (not always provided)
+        // Quality of the reference
         int qualR = NAN;
         
-        // Base quality of the variant (not always provided)
+        // Quality of the variant
         int qualV = NAN;
 
         // P-value (not always provided)

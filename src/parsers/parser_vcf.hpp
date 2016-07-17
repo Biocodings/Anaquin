@@ -134,10 +134,10 @@ namespace Anaquin
                 {
                     continue;
                 }
-                
-                d.qual = fields[Field::Qual] != "." ? stod(fields[Field::Qual]) : NAN;
-                //d.p = 1.0 - (exp(stold(fields[Field::QUAL]) / -10.0));
-                
+
+                const auto qual = fields[Field::Qual] != "." ? stod(fields[Field::Qual]) : NAN;
+                d.qualR = d.qualV = qual;
+
                 f(d, p);
             }
         }

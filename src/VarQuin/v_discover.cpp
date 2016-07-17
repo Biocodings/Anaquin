@@ -221,7 +221,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
 
     o.generate(file);
     o.writer->open(file);
@@ -237,7 +237,8 @@ static void writeQuins(const FileName &file,
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
-                                           % "Qual"
+                                           % "QualR"
+                                           % "QualV"
                                            % "Type").str());
     for (const auto &i : stats.hist)
     {
@@ -287,7 +288,8 @@ static void writeQuins(const FileName &file,
                                                                % r.findAFreq(m->id)
                                                                % t.query.alleleFreq()
                                                                % ld2ss(t.query.p)
-                                                               % x2ns(t.query.qual)
+                                                               % x2ns(t.query.qualR)
+                                                               % x2ns(t.query.qualV)
                                                                % type).str());
                         return true;
                     }
@@ -326,6 +328,7 @@ static void writeQuins(const FileName &file,
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
+                                                       % "NA"
                                                        % type).str());
             }
         }
@@ -337,7 +340,7 @@ static void writeQuins(const FileName &file,
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
     
     o.generate(file);
     o.writer->open(file);
@@ -352,7 +355,8 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
-                                           % "Qual"
+                                           % "QualR"
+                                           % "QualV"
                                            % "Type").str());
 
     for (const auto &i : stats.data)
@@ -401,7 +405,8 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % eFreq
                                                            % i.query.alleleFreq()
                                                            % ld2ss(i.query.p)
-                                                           % i.query.qual
+                                                           % i.query.qualR
+                                                           % i.query.qualV
                                                            % type2str(i.query.type())).str());
                 }
             };
@@ -750,17 +755,17 @@ void VDiscover::report(const FileName &file, const Options &o)
                                                       "expected",
                                                       true));
         o.writer->close();
+
+        /*
+         * Generating VarDiscover_LODR.R
+         */
+        
+        o.generate("VarDiscover_LODR.R");
+        o.writer->open("VarDiscover_LODR.R");
+        o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLOD()));
+        o.writer->close();
     }
-    
-    /*
-     * Generating VarDiscover_LODR.R
-     */
-    
-    o.generate("VarDiscover_LODR.R");
-    o.writer->open("VarDiscover_LODR.R");
-    o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLOD()));
-    o.writer->close();
-    
+
     /*
      * Generating VarDiscover_report.pdf
      */

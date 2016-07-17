@@ -42,9 +42,14 @@ data$name <- paste(data$ID, data$Pos, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
 data$ExpFold <- round(data$ExpRef / data$ExpVar)
-r <- unique(sort(data$ExpFold))
+
+# Give the false-positives a dummy ratio group
+if (nrow(data[data$Label=='FP',]) > 0)
+{
+    data[data$Label=='FP',]$ExpFold <- 0
+}
 
 # Create Anaquin data set
 data <- CreateDataForAnaquin(names=data$name, expected=data$ExpFold, score=score, label=data$Label)
 
-plotROC(data, title=title, legTitle=legTitle, refRats=r)
+plotROC(data, title=title, legTitle=legTitle, refRats=0)

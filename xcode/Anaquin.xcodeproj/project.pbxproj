@@ -379,7 +379,6 @@
 		EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = gtf_data.hpp; path = ../src/tools/gtf_data.hpp; sourceTree = "<group>"; };
 		EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtf_data.cpp; path = ../tests/tools/gtf_data.cpp; sourceTree = "<group>"; };
 		EFFD9A881D26BB6A00A7A80B /* sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sample.cpp; path = ../src/tools/sample.cpp; sourceTree = "<group>"; };
-		EFFD9A8A1D26BF5100A7A80B /* parser_vcf_.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf_.hpp; path = ../src/parsers/parser_vcf_.hpp; sourceTree = "<group>"; };
 		EFFDE96E1D3297BB00D8B2D9 /* convert.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = convert.hpp; path = ../src/data/convert.hpp; sourceTree = "<group>"; };
 		EFFDE96F1D3297E400D8B2D9 /* t_convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_convert.cpp; path = ../tests/data/t_convert.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -548,7 +547,6 @@
 				EF2537B21BF0A49800ABAABC /* parser_tsv.hpp */,
 				EF06A67C1D0862B7000D9B17 /* parser_variants.hpp */,
 				EF6B01CF1C60956500D82709 /* parser_varscan.hpp */,
-				EFFD9A8A1D26BF5100A7A80B /* parser_vcf_.hpp */,
 				EF3860E41AD3783A0062D246 /* parser_vcf.hpp */,
 				EFB1E0421B0098F300F093A2 /* parser.hpp */,
 			);
