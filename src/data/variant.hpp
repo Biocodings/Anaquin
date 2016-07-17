@@ -71,20 +71,23 @@ namespace Anaquin
         // Allelle frequency
         Proportion allF = NAN;
         
-        // Quality of the reference
-        int qualR = NAN;
+        // Quality score (eg: QUAL in VCF (62.74))
+        double qual = NAN;
         
-        // Quality of the variant
-        int qualV = NAN;
+        // Quality of the reference (eg: provided by VarScan)
+        double qualR = NAN;
+        
+        // Quality of the variant (eg: provided by VarScan)
+        double qualV = NAN;
 
         // P-value (not always provided)
         Probability p = NAN;
         
         // Eg: AD for VCF and REF for VarScan
-        Counts readR;
+        Counts readR = NAN;
         
         // Eg: AD for VCF and ALT for VarScan
-        Counts readV;
+        Counts readV = NAN;
         
         // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
         Counts depth = NAN;

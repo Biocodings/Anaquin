@@ -221,7 +221,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
 
     o.generate(file);
     o.writer->open(file);
@@ -237,6 +237,7 @@ static void writeQuins(const FileName &file,
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
+                                           % "Qual"
                                            % "QualR"
                                            % "QualV"
                                            % "Type").str());
@@ -288,6 +289,7 @@ static void writeQuins(const FileName &file,
                                                                % r.findAFreq(m->id)
                                                                % t.query.alleleFreq()
                                                                % ld2ss(t.query.p)
+                                                               % x2ns(t.query.qual)
                                                                % x2ns(t.query.qualR)
                                                                % x2ns(t.query.qualV)
                                                                % type).str());
@@ -329,6 +331,7 @@ static void writeQuins(const FileName &file,
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
+                                                       % "NA"
                                                        % type).str());
             }
         }
@@ -340,7 +343,7 @@ static void writeQuins(const FileName &file,
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
     
     o.generate(file);
     o.writer->open(file);
@@ -355,6 +358,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
+                                           % "Qual"
                                            % "QualR"
                                            % "QualV"
                                            % "Type").str());
@@ -405,8 +409,9 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % eFreq
                                                            % i.query.alleleFreq()
                                                            % ld2ss(i.query.p)
-                                                           % i.query.qualR
-                                                           % i.query.qualV
+                                                           % x2ns(i.query.qual)
+                                                           % x2ns(i.query.qualR)
+                                                           % x2ns(i.query.qualV)
                                                            % type2str(i.query.type())).str());
                 }
             };
