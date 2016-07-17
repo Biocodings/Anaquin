@@ -80,7 +80,6 @@ OUTPUTS
 
      VarDiscover_sequins.csv - gives detailed statistics for each sequin. Field definitions:
         ID                              Name of the sequin
-        Length                          Length of the sequin
         Position                        Position of the variant
         Label                           Whether it’s true-positive (TP), false-positive (TP), true-negative (TN) or
                                         false-negative (FN)

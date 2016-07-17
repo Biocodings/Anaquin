@@ -221,12 +221,11 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "Length"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
@@ -278,7 +277,6 @@ static void writeQuins(const FileName &file,
                         const auto &t = x.at(key);
                         
                         o.writer->write((boost::format(format) % id
-                                                               % r.match(baseID(m->id))->l.length()
                                                                % m->l.start
                                                                % label
                                                                % t.query.readR
@@ -318,7 +316,6 @@ static void writeQuins(const FileName &file,
                 const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
                 
                 o.writer->write((boost::format(format) % id
-                                                       % r.match(baseID(m->id))->l.length()
                                                        % m->l.start
                                                        % "FN"
                                                        % "NA"
