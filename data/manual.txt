@@ -1,6 +1,6 @@
 Anaquin (Tools for sequin data analysis) - www.sequin.xyz
 
-Version: 1.1.1
+Version: 0.60
 
   Please visit our website for more information. Developed by Ted Wong & Timothy Mercer, Garvan Institute of Medical Research.
 
@@ -14,9 +14,9 @@ Version: 1.1.1
 
        -o <directory> = output
             All output files will be saved in the directory. The default is "output".
-			
-	   -h help usage
-	   		Display help usage information.
+            
+       -h help usage
+            Display help usage information.
 
   Analysis tools
 
@@ -24,16 +24,16 @@ Version: 1.1.1
 
        Transcriptome Analysis (RnaQuin)
        ----------------------------------
-	   
+       
        RnaAlign
        RnaAssembly
        RnaExpression
        RnaFoldChange
-	   
+       RnaSubsample
+       
        Variant Analysis (VarQuin)
        --------------------------
-	   
+       
        VarAlign
        VarSubsample
        VarDiscover
-       VarFrequency

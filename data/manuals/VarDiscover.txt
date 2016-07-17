@@ -98,8 +98,7 @@ OUTPUTS
      VarDiscover_detected.csv - gives detailed statistics for detected variants. Field definitions:
         ID                              Name of the sequin
         Position                        Position of the variant
-        Label                           Whether it’s true-positive (TP), false-positive (TP), true-negative (TN) or
-                                        false-negative (FN)
+        Label                           Whether it’s true-positive (TP), false-positive (TP) or false-negative (FN)               
         ReadR                           Number of reads supporting the reference allele
         ReadV                           Number of reads supporting the variant allele
         Depth                           Depth coverage. For example, the DP field in VCF file
@@ -108,7 +107,8 @@ OUTPUTS
         ExpFreq                         Expected allele frequency
         ObsFreq                         Measured allele frequency
         Pval                            P-value probability 
-        Qual                            Quality score 
+        QualR                           Quality score for the reference allele
+        QualV                           Quality score for the variant allele
         Type                            Whether this is an SNP, insertion and deletion
 
     VarDiscover_ROC.R – R-script that plots a ROC curve and report AUC statistics. See Appendix B.1 for further details and
