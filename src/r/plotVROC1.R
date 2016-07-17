@@ -12,12 +12,12 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', sep='\t')
 
 # Remove false-positves that are not called within the sequin regions
-data <- data[data$ID != '-',]
+data <- data[data$ID != 'NA',]
 
 # Define your signifance
 sign <- 0.10
 
-if (all(data$Pval == '-'))
+if (all(is.na(data$Pval)))
 {
     data <- data
 } else
