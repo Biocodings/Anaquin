@@ -1,13 +1,12 @@
-Anaquin (Tools for sequin data analysis) - www.sequin.xyz
+Anaquin - a toolkit for sequin data analysis
+Developed at the Garvan Institute of Medical Research.
+Please visit our website www.sequin.xyz for more information. 
 
 Version: 0.60
 
-  Please visit our website for more information. Developed by Ted Wong & Timothy Mercer, Garvan Institute of Medical Research.
+Usage: anaquin <tool> [options]
 
-  General options
- 
-       <tool>
-            Execute a data analysis tool.
+General options
 
        -v
             Display version information.
@@ -18,22 +17,15 @@ Version: 0.60
        -h help usage
             Display help usage information.
 
-  Analysis tools
-
-       Usage: anaquin <tool> [options]
-
-       Transcriptome Analysis (RnaQuin)
-       ----------------------------------
-       
-       RnaAlign
-       RnaAssembly
-       RnaExpression
-       RnaFoldChange
-       RnaSubsample
-       
-       Variant Analysis (VarQuin)
-       --------------------------
-       
-       VarAlign
-       VarSubsample
-       VarDiscover
+       <tool>
+            Execute the following data analysis tool:
+            
+            RnaAlign      - Measure the spliced read alignments from sequins to the in silico chromosome
+            RnaAssembly   - Compare assembled transcript models to sequin annotations in the in silico chromosome
+            RnaExpression - Quantitative analysis of sequin expression
+            RnaFoldChange - Assess fold-changes in gene expression between multiple samples
+            RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
+            
+            VarAlign      - Measure the read alignment from sequins to the in silico chromosome
+            VarSubsample  - Calibrate the sequence coverage of sequins to accompanying human genome
+            VarDiscover   - Assesses the identification of variants from alignments to the in silico chromosome
