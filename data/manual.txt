@@ -14,7 +14,7 @@ General options
        -o <directory> = output
             All output files will be saved in the directory. The default is "output".
             
-       -h help usage
+       -h/--help help usage
             Display help usage information.
 
        <tool>
