@@ -2,7 +2,7 @@ Anaquin - a toolkit for sequin data analysis
 Developed at the Garvan Institute of Medical Research.
 Please visit our website www.sequin.xyz for more information. 
 
-Version: 0.60
+Version: 0.70
 
 Usage: anaquin <tool> [options]
 
