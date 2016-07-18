@@ -428,7 +428,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "v0.6" << std::endl;
+    std::cout << "v0.7" << std::endl;
 }
 
 template <typename F> bool testFile(const FileName &x, F f)
@@ -1064,11 +1064,11 @@ void parse(int argc, char ** argv)
                         
                         if (_p.sampled <= 0.0)
                         {
-                            throw InvalidValueException(val, "method. Sampling fraction must be greater than zero");
+                            throw std::runtime_error("Invalid value for -method. Sampling fraction must be greater than zero.");
                         }
                         else if (_p.sampled >= 1.0)
                         {
-                            throw InvalidValueException(val, "method. Sampling fraction must be less than one");
+                            throw std::runtime_error("Invalid value for -method. Sampling fraction must be less than one.");
                         }
                         
                         break;
@@ -1312,7 +1312,7 @@ void parse(int argc, char ** argv)
                     }
                     else
                     {
-                        throw std::runtime_error("Unknown file format: " + file + ". Anaquin supports Cuffdiff, DESeq2, edgeR and it's FoldChange format. Please note the input file requires a header.");
+                        throw std::runtime_error("Unknown file format: " + file + ". Anaquin supports Cuffdiff, DESeq2, edgeR and RnaQuin FoldChange format. Please note the input file requires a header.");
                     }
 
                     analyze_1<RFold>(OPT_U_FILES, o);

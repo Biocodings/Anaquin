@@ -88,11 +88,10 @@
 #include "resources/plotVROC2.R"
 #include "resources/plotVDensity.R"
 
-#include "resources/AVA019_v001.bed"
+#include "resources/sampled.bed"
 #include "resources/AVA009_v001.vcf"
 #include "resources/MVA011_v001.csv"
 #include "resources/MVA012_v001.csv"
-#include "resources/AVA017_v001.bed"
 
 typedef std::string Scripts;
 
@@ -364,11 +363,5 @@ Scripts VarDataVCF()
 
 Scripts VarDataBed()
 {
-    return ToString(data_VarQuin_AVA017_v001_bed);
+    return ToString(data_VarQuin_sampled_bed);
 }
-
-Scripts AVA019_Bed()
-{
-    return ToString(data_VarQuin_AVA019_v001_bed);
-}
-

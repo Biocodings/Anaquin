@@ -1,4 +1,4 @@
-RnaQuin Analysis                     Anaquin Manual                    
+Anaquin Manual                    
 
 NAME
      RnaAlign - Measure the spliced read alignments from sequins to the in silico chromosome

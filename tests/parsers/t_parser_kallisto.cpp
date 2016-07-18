@@ -15,9 +15,9 @@ TEST_CASE("ParserKallisto_Test")
     REQUIRE(x.size() == 164);
 
     REQUIRE(x[0].id    == "R1_101_1");
-    REQUIRE(x[0].abund == 517.276);
+    REQUIRE(x[0].abund == 36.83);
     REQUIRE(x[1].id    == "R1_101_2");
-    REQUIRE(x[1].abund == 109.724);
+    REQUIRE(x[1].abund == 15.6604);
     REQUIRE(x[2].id    == "R1_102_1");
-    REQUIRE(x[2].abund == 123.318);
+    REQUIRE(x[2].abund == 3.75498);
 }

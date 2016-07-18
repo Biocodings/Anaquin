@@ -224,7 +224,6 @@
 		EF4BD9AA1ADDFB92007BE6AB /* parser_cdiff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_cdiff.hpp; path = ../src/parsers/parser_cdiff.hpp; sourceTree = "<group>"; };
 		EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sam.cpp; path = ../tests/parsers/t_parser_sam.cpp; sourceTree = "<group>"; };
 		EF4E334E1CB924DC0067B16B /* pachter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = pachter.hpp; path = ../src/data/pachter.hpp; sourceTree = "<group>"; };
-		EF4E9E1C1C7B235800EE0A24 /* parser_cnvnator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_cnvnator.hpp; path = ../src/parsers/parser_cnvnator.hpp; sourceTree = "<group>"; };
 		EF4F563E1D27C8EA00A570E7 /* r_fold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_fold.cpp; path = ../tests/RnaQuin/r_fold.cpp; sourceTree = "<group>"; };
 		EF5180E41AE09A56007010F3 /* r_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_writer.hpp; path = ../src/writers/r_writer.hpp; sourceTree = "<group>"; };
 		EF5A3B6C1D16229F008F2C9F /* vcf_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = vcf_data.hpp; path = ../src/tools/vcf_data.hpp; sourceTree = "<group>"; };
@@ -520,7 +519,6 @@
 				EF3860D81AD3783A0062D246 /* parser_bed.hpp */,
 				EF3211941B1DBC1A0062BB10 /* parser_blat.hpp */,
 				EF4BD9AA1ADDFB92007BE6AB /* parser_cdiff.hpp */,
-				EF4E9E1C1C7B235800EE0A24 /* parser_cnvnator.hpp */,
 				EF3860DA1AD3783A0062D246 /* parser_csv.hpp */,
 				EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */,
 				EF3860DC1AD3783A0062D246 /* parser_cufflink.hpp */,
