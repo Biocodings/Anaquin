@@ -988,11 +988,13 @@ void parse(int argc, char ** argv)
         __showInfo__ = false;
     }
     
-    if (argc >= 3 && !strcmp(argv[2], "-h"))
+    const auto isHelp = argc >= 3 && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help"));
+
+    if (isHelp)
     {
         if (argc != 3)
         {
-            throw std::runtime_error("Too many arguments for -h. Usage: anaquin <tool> -h");
+            throw std::runtime_error("Too many arguments for help usage. Usage: anaquin <tool> -h or anaquin <tool> --help");
         }
         
         std::cout << manual(_p.tool) << std::endl;
