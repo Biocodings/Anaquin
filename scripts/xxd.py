@@ -83,11 +83,10 @@ data  = [ 'data/manual.txt',
           'src/r/plotVROC2.R',          
           'src/r/plotVDensity.R',
 
-          'data/VarQuin/AVA017_v001.bed',
+          'data/VarQuin/sampled.bed',
           'data/VarQuin/AVA009_v001.vcf',
           'data/VarQuin/MVA011_v001.csv',
           'data/VarQuin/MVA012_v001.csv',
-          'data/VarQuin/AVA019_v001.bed',
         ]
 tests = [ ]
 
