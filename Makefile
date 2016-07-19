@@ -36,9 +36,6 @@ SS = ../SS
 # Library for SAM/BAM
 HLIB = src/htslib
 
-# Include for data model 
-HDF5 = /usr/local/Cellar/hdf5/1.8.16_1/include
-
 # Library for random generator
 KLIB = /Applications
 
@@ -49,9 +46,9 @@ CC = g++
 CC_FLAGS = -std=c++11
 
 EXEC         = anaquin
-SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/LadQuin/*.cpp src/FusQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
+SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
-SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/TransQuin/*.cpp tests/MetaQuin/*.cpp tests/*.cpp)
+SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/RnaQuin/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
@@ -60,13 +57,13 @@ OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 #	ar rcs $@ $^
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lhdf5 -lz -ldl -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lz -ldl -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HDF5) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)

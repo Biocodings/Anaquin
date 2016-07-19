@@ -7,7 +7,7 @@
 #include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
-#include "parsers/parser_adiff.hpp"
+#include "parsers/parser_fold.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_DESeq2.hpp"

@@ -10,7 +10,6 @@
 
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
-#include "RnaQuin/r_viewer.hpp"
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
@@ -20,37 +19,13 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_viewer.hpp"
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_discover.hpp"
-#include "VarQuin/v_coverage.hpp"
-
-#include "MetaQuin/m_kmer.hpp"
-#include "MetaQuin/m_diff.hpp"
-#include "MetaQuin/m_abund.hpp"
-#include "MetaQuin/m_kabund.hpp"
-#include "MetaQuin/m_viewer.hpp"
-#include "MetaQuin/m_assembly.hpp"
-#include "MetaQuin/m_coverage.hpp"
-
-#include "LadQuin/l_norm.hpp"
-#include "LadQuin/l_copy.hpp"
-#include "LadQuin/l_diff.hpp"
-#include "LadQuin/l_coverage.hpp"
-
-#include "FusQuin/f_diff.hpp"
-#include "FusQuin/f_viewer.hpp"
-#include "FusQuin/f_normal.hpp"
-#include "FusQuin/f_fusion.hpp"
-#include "FusQuin/f_discover.hpp"
-#include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_gtf.hpp"
-#include "parsers/parser_blat.hpp"
-#include "parsers/parser_adiff.hpp"
+#include "parsers/parser_fold.hpp"
 #include "parsers/parser_cdiff.hpp"
-#include "parsers/parser_quast.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_varscan.hpp"
@@ -79,32 +54,10 @@ typedef std::set<Value> Range;
 #define TOOL_R_EXPRESS   268
 #define TOOL_R_CUFFLINK  269
 #define TOOL_R_FOLD      270
-#define TOOL_T_NORM      271
-#define TOOL_R_IGV       272
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
-#define TOOL_V_VSCAN     276
-#define TOOL_V_IGV       277
-#define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_R_SUBSAMPLE 281
-#define TOOL_M_KABUND    282
-#define TOOL_M_ASSEMBLY  283
-#define TOOL_M_DIFF      284
-#define TOOL_M_IGV       285
-#define TOOL_M_COVERAGE  286
-#define TOOL_L_NORM      287
-#define TOOL_L_DIFF      288
-#define TOOL_L_COVERAGE  289
-#define TOOL_F_DISCOVER  290
-#define TOOL_F_NORMAL    291
-#define TOOL_F_FUSION    292
-#define TOOL_F_IGV       293
-#define TOOL_F_COVERAGE  294
-#define TOOL_F_DIFF      295
-#define TOOL_L_COPY      296
-#define TOOL_M_ABUND     300
-#define TOOL_M_KDIFF     301
 #define TOOL_V_FLIP      305
 #define TOOL_V_SEQUENCE  310
 
@@ -187,39 +140,14 @@ static std::map<Value, Tool> _tools =
     { "RnaAssembly",    TOOL_R_ASSEMBLY  },
     { "RnaExpression",  TOOL_R_EXPRESS   },
     { "RnaFoldChange",  TOOL_R_FOLD      },
-    { "RnaNorm",        TOOL_T_NORM      },
-    { "RnaIGV",         TOOL_R_IGV       },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
 
-    { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VarIGV",         TOOL_V_IGV       },
-    { "VarCoverage",    TOOL_V_COVERAGE  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
     { "VarSequence",    TOOL_V_SEQUENCE  },
-
-    { "MetaAbund",      TOOL_M_ABUND    },
-    { "MetaKAbund",     TOOL_M_KABUND   },
-    { "MetaDiff",       TOOL_M_DIFF     },
-    { "MetaKDiff",      TOOL_M_KDIFF    },
-    { "MetaAssembly",   TOOL_M_ASSEMBLY },
-    { "MetaIGV",        TOOL_M_IGV      },
-    { "MetaCoverage",   TOOL_M_COVERAGE },
-
-    { "LadCopy",     TOOL_L_COPY     },
-    { "LadNorm",     TOOL_L_NORM     },
-    { "LadDiff",     TOOL_L_DIFF     },
-    { "LadCoverage", TOOL_L_COVERAGE },
-
-    { "FusDiscover", TOOL_F_DISCOVER },
-    { "FusNormal",   TOOL_F_NORMAL   },
-    { "FusFusion",   TOOL_F_FUSION   },
-    { "FusIGV",      TOOL_F_IGV      },
-    { "FusCoverage", TOOL_F_COVERAGE },
-    { "FusDiff",     TOOL_F_DIFF     },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -228,7 +156,6 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_R_IGV,       { OPT_U_FILES } },
     { TOOL_R_SUBSAMPLE, { OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
@@ -241,11 +168,8 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_V_FLIP,      { OPT_U_FILES } },
-    { TOOL_V_IGV,       { OPT_U_FILES } },
-    { TOOL_V_VSCAN,     { OPT_U_FILES } },
     { TOOL_V_SEQUENCE,  { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
 };
@@ -1179,8 +1103,6 @@ void parse(int argc, char ** argv)
         case TOOL_VERSION: { printVersion();                break; }
         case TOOL_TEST:    { Catch::Session().run(1, argv); break; }
 
-        case TOOL_R_IGV:
-        case TOOL_T_NORM:
         case TOOL_R_FOLD:
         case TOOL_R_ALIGN:
         case TOOL_R_EXPRESS:
@@ -1193,7 +1115,7 @@ void parse(int argc, char ** argv)
                 std::cout << "[INFO]: RNA-Seq Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_R_IGV && _p.tool != TOOL_R_SUBSAMPLE)
+            if (_p.tool != TOOL_R_SUBSAMPLE)
             {
                 switch (_p.tool)
                 {
@@ -1318,146 +1240,14 @@ void parse(int argc, char ** argv)
                     analyze_1<RFold>(OPT_U_FILES, o);
                     break;
                 }
-
-                case TOOL_R_IGV: { viewer<TViewer>(); break; }
             }
 
             break;
         }
 
-        case TOOL_F_IGV:
-        case TOOL_F_DIFF:
-        case TOOL_F_NORMAL:
-        case TOOL_F_FUSION:
-        case TOOL_F_DISCOVER:
-        case TOOL_F_COVERAGE:
-        {
-            auto parseAligner = [&](const std::string &str)
-            {
-                const static std::map<Value, FusionCaller> m =
-                {
-                    { "Star"        , FusionCaller::StarFusion   },
-                    { "StarFusion"  , FusionCaller::StarFusion   },
-                    { "TopHat"      , FusionCaller::TopHatFusion },
-                    { "TopHatFusion", FusionCaller::TopHatFusion },
-                };
-
-                return parseEnum("soft", str, m);
-            };
-            
-            std::cout << "[INFO]: Fusion Analysis" << std::endl;
-
-            switch (_p.tool)
-            {
-                case TOOL_F_NORMAL:
-                {
-                    addMix(std::bind(&Standard::addFMix,      &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_BED);
-                    break;
-                }
-
-                case TOOL_F_DIFF:
-                {
-                    addMix(std::bind(&Standard::addFMix,     &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFRef,   &s, std::placeholders::_1), OPT_R_BED);
-                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_FUS);
-                    break;
-                }
-
-                case TOOL_F_COVERAGE:
-                {
-                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED);
-                    break;
-                }
-
-                case TOOL_F_FUSION:
-                {
-                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
-                    addMix(std::bind(&Standard::addFMix,   &s, std::placeholders::_1));
-                    break;
-                }
-                    
-                case TOOL_F_DISCOVER:
-                {
-                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
-                    break;
-                }
-                    
-                default: { break; }
-            }
-            
-            if (_p.tool != TOOL_F_IGV)
-            {
-                Standard::instance().r_fus.finalize();
-            }
-
-            switch (_p.tool)
-            {
-                case TOOL_F_IGV:      { viewer<FViewer>();                 break; }
-                case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
-
-                case TOOL_F_NORMAL:
-                {
-                    FNormal::Options o;
-                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
-
-                    analyze_1<FNormal>(OPT_U_FILES, o);
-                    break;
-                }
-
-                case TOOL_F_FUSION:
-                {
-                    FFusion::Options o;
-                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
-                    
-                    analyze_1<FFusion>(OPT_U_FILES, o);
-                    break;
-                }
-                    
-                case TOOL_F_DIFF:
-                {
-                    FDiff::Options o;
-                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
-
-                    analyze_2<FDiff>();
-                    break;
-                }
-
-                case TOOL_F_DISCOVER:
-                {
-                    FDiscover::Options o;
-                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
-
-                    analyzeFuzzy<FDiscover>(o);
-                    break;
-                }
-            }
-
-            break;
-        }
-
-        case TOOL_L_NORM:
-        {
-            std::cout << "[INFO]: Ladder Analysis" << std::endl;
-
-            addMix(std::bind(&Standard::addLMix, &s, std::placeholders::_1));
-            Standard::instance().r_lad.finalize();
-
-            switch (_p.tool)
-            {
-                case TOOL_L_NORM:  { analyze_1<LNorm>(OPT_U_FILES); break; }
-                case TOOL_L_DIFF:  { analyze_2<LDiff>(); break; }
-            }
-
-            break;
-        }
-
-        case TOOL_V_IGV:
         case TOOL_V_FLIP:
-        case TOOL_V_VSCAN:
         case TOOL_V_ALIGN:
         case TOOL_V_DISCOVER:
-        case TOOL_V_COVERAGE:
         case TOOL_V_SEQUENCE:
         case TOOL_V_SUBSAMPLE:
         {
@@ -1466,15 +1256,11 @@ void parse(int argc, char ** argv)
                 std::cout << "[INFO]: Variant Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_V_IGV      &&
-                _p.tool != TOOL_V_FLIP     &&
-                _p.tool != TOOL_V_SEQUENCE &&
-                _p.tool != TOOL_V_VSCAN)
+            if (_p.tool != TOOL_V_FLIP && _p.tool != TOOL_V_SEQUENCE)
             {
                 switch (_p.tool)
                 {
                     case TOOL_V_ALIGN:
-                    case TOOL_V_COVERAGE:
                     case TOOL_V_SUBSAMPLE:
                     {
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
@@ -1519,11 +1305,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_IGV:      { viewer<VViewer>();                 break; }
-                case TOOL_V_FLIP:     { analyze_n<VFlip>();                break; }
-                case TOOL_V_VSCAN:    { analyze_1<VVScan>(OPT_U_FILES);    break; }
-                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
-                case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
+                case TOOL_V_FLIP:     { analyze_n<VFlip>();             break; }
+                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES); break; }
 
                 case TOOL_V_DISCOVER:
                 {
@@ -1599,251 +1382,6 @@ void parse(int argc, char ** argv)
                     }
 
                     analyze_1<VSample>(OPT_U_FILES, o);
-                    break;
-                }
-            }
-
-            break;
-        }
-
-        case TOOL_M_IGV:
-        case TOOL_M_DIFF:
-        case TOOL_M_KDIFF:
-        case TOOL_M_ABUND:
-        case TOOL_M_KABUND:
-        case TOOL_M_ASSEMBLY:
-        case TOOL_M_COVERAGE:
-        {
-            std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
-
-            if (_p.tool != TOOL_M_IGV)
-            {
-                switch (_p.tool)
-                {
-                    case TOOL_M_ABUND:
-                    case TOOL_M_KABUND:
-                    case TOOL_M_ASSEMBLY:
-                    case TOOL_M_COVERAGE:
-                    {
-                        applyRef(std::bind(&Standard::addMRef, &s, std::placeholders::_1));
-                        break;
-                    }
-
-                    default: { break; }
-                }
-                
-                switch (_p.tool)
-                {
-                    case TOOL_M_DIFF:
-                    case TOOL_M_KDIFF:
-                    case TOOL_M_ABUND:
-                    case TOOL_M_KABUND:
-                    case TOOL_M_ASSEMBLY:
-                    {
-                        addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
-                        break;
-                    }
-                }
-
-                Standard::instance().r_meta.finalize();
-            }
-            
-            MAligner aligner;
-            MSoftware soft;
-            
-            switch (_p.tool)
-            {
-                case TOOL_M_ASSEMBLY:
-                case TOOL_M_KABUND:
-                {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, MSoftware> m =
-                        {
-                            { "velvet",   MSoftware::Velvet   },
-                            { "raymeta",  MSoftware::RayMeta  },
-                            { "kallisto", MSoftware::Kallisto },
-                        };
-
-                        return parseEnum("soft", str, m);
-                    };
-                    
-                    soft = parse(_p.opts.at(OPT_SOFT));
-
-                    /*
-                     * Has BLAT being used for contigs alignment?
-                     */
-                    
-                    if (_p.inputs.size() == 2)
-                    {
-                        aligner = MAligner::Blat;
-                        
-                        const auto checkPSL = [&](const FileName &x)
-                        {
-                            Counts n = 0;
-                            
-                            ParserBlat::parse(Reader(x), [&](const ParserBlat::Data &,
-                                                             const ParserProgress &)
-                            {
-                                n++;
-                            });
-
-                            return n;
-                        };
-                        
-                        const auto sorted = sortInputs(_p.inputs[0], _p.inputs[1], checkPSL);
-                        
-                        _p.inputs[0] = sorted[1]; // Eg: Contigs.fasta
-                        _p.inputs[1] = sorted[0]; // Eg: align.psl
-                    }
-                    
-                    /*
-                     * Has MetaQuast being used for contigs alignment?
-                     */
-                    
-                    else if (_p.inputs.size() == 3)
-                    {
-                        aligner = MAligner::MetaQuast;
-                        
-                        const auto checkGenome = [&](const FileName &x)
-                        {
-                            Counts n = 0;
-                            
-                            ParserQuast::parseGenome(Reader(x),
-                                                     [&](const ParserQuast::GenomeData &,
-                                                         const ParserProgress &)
-                            {
-                                n++;
-                            });
-                            
-                            return n;
-                        };
-                        
-                        const auto checkContigs = [&](const FileName &x)
-                        {
-                            Counts n = 0;
-                            
-                            ParserQuast::parseAlign(Reader(x),
-                                                    [&](const ParserQuast::ContigData &,
-                                                        const ParserProgress &)
-                            {
-                                n++;
-                            });
-                            
-                            return n;
-                        };
-                        
-                        const auto sorted = sortInputs(_p.inputs[0],
-                                                       _p.inputs[1],
-                                                       _p.inputs[2],
-                                                       checkGenome,
-                                                       checkContigs);
-                        
-                        _p.inputs[0] = sorted[2]; // Eg: Contigs.fasta
-                        _p.inputs[1] = sorted[1]; // Eg: genome_info.txt
-                        _p.inputs[2] = sorted[0]; // Eg: alignments_Contigs.tsv
-                    }
-
-                    break;
-                }
-                    
-                default : { break; }
-            }
-            
-
-            switch (_p.tool)
-            {
-                case TOOL_M_IGV:      { viewer<MViewer>();                 break; }
-                case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
-                    
-                case TOOL_M_ABUND:    { analyze_1<MAbund>(OPT_U_FILES);    break; }
-                    
-                case TOOL_M_KABUND:
-                {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, MKAbund::Software> m =
-                        {
-                            { "velvet",   MKAbund::Software::Velvet  },
-                            { "raymeta",  MKAbund::Software::RayMeta },
-                            { "kallisto", MKAbund::Software::Kallsito },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-                    
-                    MKAbund::Options o;
-                    
-                    o.soft = parse(_p.opts.at(OPT_SOFT));;
-                    o.aligner = aligner;
-                    
-                    analyze_n<MKAbund>(o);
-                    break;
-                }
-
-                case TOOL_M_DIFF:
-                {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, MDiff::Software> m =
-                        {
-                            { "bwa",    MDiff::Software::BWA },
-                            { "stamp",  MDiff::Software::STAMP },
-                            { "bowtie", MDiff::Software::Bowtie },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-
-                    MDiff::Options o;
-
-                    o.soft = parse(_p.opts.at(OPT_SOFT));
-                    
-                    analyze_n<MDiff>(o);
-                    break;
-                }
-
-                case TOOL_M_KDIFF:
-                {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, MDiff::Software> m =
-                        {
-                            { "bwa",    MDiff::Software::BWA },
-                            { "stamp",  MDiff::Software::STAMP },
-                            { "bowtie", MDiff::Software::Bowtie },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-                    
-                    MDiff::Options o;
-                    
-                    o.soft = parse(_p.opts.at(OPT_SOFT));
-                    
-                    analyze_n<MDiff>(o);
-                    break;
-                }
-                    
-                case TOOL_M_ASSEMBLY:
-                {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, MSoftware> m =
-                        {
-                            { "raymeta", MSoftware::RayMeta },
-                            { "velvet",  MSoftware::Velvet  },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-
-                    MAssembly::Options o;
-                    
-                    o.aligner = aligner;
-                    o.soft = soft;
-
-                    analyze_n<MAssembly>(o);
                     break;
                 }
             }

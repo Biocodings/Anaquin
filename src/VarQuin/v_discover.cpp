@@ -9,9 +9,6 @@ extern Scripts PlotVLOD();
 // Defined in resources.cpp
 extern Scripts PlotVROC();
 
-// Defined in resources.cpp
-extern Scripts PlotGermlineROC();
-
 static Counts __countD__ = 0;
 static Counts __countP__ = 0;
 

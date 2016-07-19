@@ -68,41 +68,6 @@ namespace Anaquin
 
             VarRef r_var;
 
-            /*
-             * ---------------- Ladder analysis ----------------
-             */
-
-            void addLMix(const Reader &);
-
-            LadderRef r_lad;
-
-            /*
-             * ---------------- Fusion analysis ----------------
-             */
-        
-            // Fusions for FuseQuin
-            void addFRef(const Reader &);
-
-            // Standards for FuseQuin
-            void addFStd(const Reader &);
-
-            // Intron junctions for FuseQuin
-            void addFJunct(const Reader &);
-        
-            // Mixture for FuseQuin
-            void addFMix(const Reader &);
-
-            FusionRef r_fus;
-        
-            /*
-             * ---------------- Metagenomic analysis ----------------
-             */
-
-            void addMRef(const Reader &);
-            void addMMix(const Reader &);
-
-            MetaRef r_meta;
-        
         private:
             Standard() {}
             Standard(Standard const&) = delete;
