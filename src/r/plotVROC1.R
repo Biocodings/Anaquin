@@ -26,8 +26,8 @@ if (all(is.na(data$Pval)))
     data <- data[data$Label!='FP' | (data$Pval == '-' | data$Pval<=sign),]
 }
 
-# Change to 'Indel' or delete the line for all variants
-data <- data[data$Type=='SNP',]
+# Change to 'SNP' or 'Indel'
+#data <- data[data$Type=='SNP',]
 
 # Change this for another title
 title <- 'ROC Plot'
