@@ -29,6 +29,7 @@ Finally, to aid in the analysis of sequins, we have also developed a software to
 ## Dependencies
 
 <ul>
+<li> <a href='http://www.boost.org/users/download/'>Boost</a>
 <li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
 <li> <a href='https://github.com/philsquared/Catch'>Catch</a>
 <li> <a href='https://github.com/attractivechaos/klib'>Klib</a>
