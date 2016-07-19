@@ -111,7 +111,6 @@
 		EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADC1B0DE65D00450029 /* vcf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE086331CD315A9006A9F96 /* f_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE086311CD315A9006A9F96 /* f_fusion.cpp */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
-		EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECC1701CDA04B400D579B5 /* s_discover.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFF3BF391D2B92FD006DC51B /* r_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF3BF381D2B92FD006DC51B /* r_sample.cpp */; };
 		EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */; };
 		EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* linear.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -345,8 +344,6 @@
 		EFE086321CD315A9006A9F96 /* f_fusion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = f_fusion.hpp; path = ../src/FusQuin/f_fusion.hpp; sourceTree = "<group>"; };
 		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
-		EFECC1701CDA04B400D579B5 /* s_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = s_discover.cpp; path = ../src/StructQuin/s_discover.cpp; sourceTree = "<group>"; };
-		EFECC1711CDA04B400D579B5 /* s_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = s_discover.hpp; path = ../src/StructQuin/s_discover.hpp; sourceTree = "<group>"; };
 		EFF3BF381D2B92FD006DC51B /* r_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_sample.cpp; path = ../tests/RnaQuin/r_sample.cpp; sourceTree = "<group>"; };
 		EFF4B1D01C539FFD00DF6A0E /* stats.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = stats.hpp; path = ../src/stats/stats.hpp; sourceTree = "<group>"; };
 		EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stats.cpp; path = ../tests/stats/stats.cpp; sourceTree = "<group>"; };
@@ -437,7 +434,6 @@
 				EF7278241CACEC570012648F /* LadQuin */,
 				EF7278431CACEC9E0012648F /* Libraries */,
 				EF7278341CACEC940012648F /* MetaQuin */,
-				EFECC16F1CDA048300D579B5 /* StructQuin */,
 				EF3860D61AD378190062D246 /* Parsers */,
 				EF1DE0B81B21EC7C00DEC381 /* Stats */,
 				EFA9DE701BCB7D5A00780182 /* Tools */,
@@ -808,15 +804,6 @@
 			name = Writers;
 			sourceTree = "<group>";
 		};
-		EFECC16F1CDA048300D579B5 /* StructQuin */ = {
-			isa = PBXGroup;
-			children = (
-				EFECC1701CDA04B400D579B5 /* s_discover.cpp */,
-				EFECC1711CDA04B400D579B5 /* s_discover.hpp */,
-			);
-			name = StructQuin;
-			sourceTree = "<group>";
-		};
 		EFF4B1CD1C53895C00DF6A0E /* Stats */ = {
 			isa = PBXGroup;
 			children = (
@@ -894,7 +881,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */,
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */,
 				EF6D05F31BD3E6040048044F /* sample.cpp in Sources */,
