@@ -34,8 +34,6 @@
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
-#include "StructQuin/s_discover.hpp"
-
 #include "LadQuin/l_norm.hpp"
 #include "LadQuin/l_copy.hpp"
 #include "LadQuin/l_diff.hpp"
