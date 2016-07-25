@@ -80,7 +80,9 @@ template <typename T> void update(RExpress::Stats &stats,
             
             if (ls.contains(id))
             {
+                // This happens to Cufflink guided assembly...
                 o.warn("Duplicate: " + id);
+                
                 ls.sum(id, exp, obs);
                 stats.n_syn--;
             }
@@ -416,7 +418,7 @@ static void generateSummary(const FileName &summary,
     }
     
     // No reference coordinate annotation given here
-    const auto n_syn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
+    const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
 
     const auto format = "-------RnaExpression Output\n"
                         "       Summary for input: %1%\n"
@@ -454,7 +456,7 @@ static void generateSummary(const FileName &summary,
                         "       SST:         %30%, DF: %31%\n";
     
     o.writer->write((boost::format(format) % STRING(ms.files)      // 1
-                                           % n_syn                 // 2
+                                           % rSyn                  // 2
                                            % MixRef()              // 3
                                            % title                 // 4
                                            % STRING(ms.n_syn)      // 5
@@ -521,7 +523,7 @@ static void generateR(const FileName &output,
     {
         o.writer->write(RWriter::createMultiScatter(csv, title,
                                                     "Input Concentration (log2)",
-                                                    "Measured Expression (log2)",
+                                                    measured + " (log2)",
                                                     "InputConcent",
                                                     "Observed",
                                                     "input",
@@ -615,8 +617,8 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     writeQueries("RnaExpression_queries.csv", stats, o);
     
     /*
-     * Generating RnaExpression_express.R
+     * Generating RnaExpression_linear.R
      */
     
-    generateR("RnaExpression_express.R", "RnaExpression_sequins.csv", stats, o);
+    generateR("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
 }

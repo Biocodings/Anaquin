@@ -29,6 +29,13 @@ The scatter plot allows two variables be plotted; the x-axis is the expected abu
 }
 
 \examples{
+library("Anaquin")
+
+data("Vignette_5.4.6.1")
+data <- Vignette_5.4.6.1
+data <- CreateDataForAnaquin(names=row.names(data), input=log2(data$InputConcent), measured=log2(data$Observed))
+
+plotScatter(data)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

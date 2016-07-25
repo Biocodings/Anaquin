@@ -11,24 +11,15 @@ plotScatter <- function(data, xBreaks=NULL, ...)
 
     data <- data$seqs
 
-    x <- list(...)
+    z <- list(...)
     
-    title <- ''
-    xlab  <- ''
-    ylab  <-
-    
-    showSD    <- FALSE
-    showLOQ   <- TRUE
+    if (is.null(z$xlab))      { z$xlab      <- ''    }
+    if (is.null(z$ylab))      { z$ylab      <- ''    }    
+    if (is.null(z$title))     { z$title     <- ''    }
+    if (is.null(z$showSD))    { z$showSD    <- FALSE }
+    if (is.null(z$showLOQ))   { z$showLOQ   <- TRUE  }
+    if (is.null(z$showInter)) { z$showInter <- FALSE }
 
-    if (!is.null(x$xlab))  { xlab  <- x$xlab  }
-    if (!is.null(x$ylab))  { ylab  <- x$ylab  }    
-    if (!is.null(x$title)) { title <- x$title }
-    
-    if (!is.null(x$showSD))    { showSD  <- x$showSD      }
-    if (!is.null(x$showLOQ))   { showLOQ <- x$showLOQ     }    
-    
-    if (is.null(x$showInter)) { x$showInter <- FALSE }
-        
     # TODO: Fix this....
     if (!is.data.frame(data$measured))
     {
@@ -62,8 +53,8 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     isMultiDF <- is(data$y, 'data.frame')
     
     # Should we show standard deviation? Only if we're asked and information available.
-    isMultiSD <- sum(data$sd) > 0 & showSD
-    
+    isMultiSD <- sum(data$sd) > 0 & z$showSD
+
     isMulti <- isMultiDF | isMultiSD
     
     data$ymax <- NULL
@@ -86,11 +77,11 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     }
     
     data <- data[!is.na(data$y),]
-    
-    p <- ggplot(data=data, aes(x=x, y=y)) +
-                               xlab(xlab) +
-                               ylab(ylab) +
-                           ggtitle(title) +
+
+    p <- ggplot(data=data, aes(x=data$x, y=data$y)) +
+                               xlab(z$xlab) +
+                               ylab(z$ylab) +
+                           ggtitle(z$title) +
                      labs(colour='Ratio') +
                      geom_point(aes(colour=grp), size=2.0, alpha=0.5) +
                 geom_smooth(method='lm', formula=y~x, linetype='11', color='black', size=0.5)  +
@@ -99,7 +90,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     p <-p + guides(colour=FALSE)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.7, 0.7)
 
-    if (x$showInter)
+    if (z$showInter)
     {
         p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
         p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
@@ -108,50 +99,37 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     overall <- .lm2str(data)
     above   <- NULL
 
-    loq <- NULL
+    LOQ <- NULL
 
-    if (showLOQ)
+    if (z$showLOQ)
     {
         tryCatch({
             # Fit piecewise segmentation
-            loq <- showLOQ(data$x, data$y)
+            LOQ <- showLOQ(data$x, data$y)
         }, error = function(cond)
         {
         })
         
-        if (!is.null(loq))
+        if (!is.null(LOQ))
         {
             # Print out the regression above LOQ
-            above <- .m2str(loq$model$rModel)
+            above <- .m2str(LOQ$model$rModel)
             
             # We can assume the break-point is on the log2-scale. Let's convert it back.
-            label <- 2^loq$breaks$k
+            label <- 2^LOQ$breaks$k
             
-            x <- paste('LOQ:', signif(label, 3))
-            x <- paste(x, 'attomol/ul')
+            t <- paste('LOQ:', signif(label, 3))
+            t <- paste(t, 'attomol/ul')
             
-            p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-            p <- p + geom_label(aes(x=max(loq$breaks$k), y=min(y)), label=x, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
+            p <- p + geom_vline(xintercept=c(LOQ$breaks$k), linetype='33', size=0.6)
+            p <- p + geom_label(aes(x=max(LOQ$breaks$k), y=min(y)), label=t, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
         }
     }
-    
-#    title <- list( bquote( paste( "Histogram of " , 'dddd') )  ,
-#                   bquote( paste( "Bootstrap samples, Allianz" ) ) )
-    
-#    t1 <- grid.text(parse(text='bold(Overall)'), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1)
-#    t2 <- grid.text(parse(text='bold(Above~LOQ)'), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1)
-    
-#    t3 <- grid.text(parse(text=overall), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1.0)
-#    t4 <- grid.text(parse(text=above), gp=gpar(fontsize=11, col="grey24"), draw=TRUE, hjust=1.0)
-
-#    grid.newpage()
-#    g <- arrangeGrob(t1, t3, t2, t4, nrow=2, ncol=2, widths=c(1,1), heights=c(1,1))
-#    p <- p + annotation_custom(g, xmin=min(data$x), ymin=max(data$y)-1.5*y_off)
     
     r <- abs(max(data$y) - min(data$y))
     y_off <- 0.06 * r 
 
-    if (showLOQ)
+    if (z$showLOQ)
     {
         a <- paste(c('bold(Overall): ', overall), collapse='')
     }
@@ -172,7 +150,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     
     p <- p + overall
     
-    if (showLOQ & !is.null(loq))
+    if (z$showLOQ & !is.null(LOQ))
     {
         above <- annotate("text",
                           label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
@@ -197,30 +175,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     }
     
     p <- .transformPlot(p)
-
-    #t1 <- grid.text(parse(text=paste(c('bold(Regression)~bold((Overall)): ', overall), collapse='')), draw=TRUE)
-    #t2 <- grid.text(parse(text=paste(c('bold(Above~LOQ): ', above), collapse='')), draw=TRUE)
-
-    #grid.newpage()
-    #g <- arrangeGrob(t1, t2, nrow=2, heights=c(0.10,0.10))
-    #g <- arrangeGrob(t2, nrow=1, heights=c(0.10))    
-
-    #gb <- rectGrob(height = .98, width = .98, gp = gpar(lwd=0, col='black', fill = NA)) # border
-    #gt <- gTree(children = gList(g, gb))
-    #grid.draw(gt) TODO: Do we need it?
-    
-#    grid.arrange(p, gt, nrow=2, heights=c(2, 0.22))
-#    grid.arrange(p, gt, nrow=2, heights=c(2, 0.15))
     print(p)
-}
 
-plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)
-{
-    # TODO: Fix this
-    if (is.null(title)) { title <- 'Isoform Expression' }
-    if (is.null(xlab))  { xlab <- 'Input concentration (log2) '}
-    if (is.null(ylab))  { ylab <- 'FPKM (log2) '}
-    
-    xBreaks <- c(-3, 0, 6, 9, 12, 15)
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, xBreaks=xBreaks, showLOQ=showLOQ)
+    return (list(LOQ=LOQ$breaks$k))
 }

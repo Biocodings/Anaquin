@@ -29,25 +29,13 @@ The sensitivity plot specifies the expected abundance (eg: input concentration) 
 }
 
 \examples{
-data("Vignette_5.4.5")
-    
-# Specify the sensitivity threshold
-threshold <- 0.70
-    
-title <- 'Assembly Detection'
-xlab  <- 'Input Concentration (log2)'
-ylab  <- 'Sensitivity'
-    
-# Expected input concentration (the x-axis)
-input <- log2(Vignette_5.4.5$InputConcent)
-    
-# Measured sensitivity (the y-axis)
-sn <- Vignette_5.4.5$Sn
-    
-# Create Anaquin data for plotSensitivity
-data <- CreateDataForAnaquin(names=row.names(Vignette_5.4.5), input=input, sensitivity=Sn)
+library("Anaquin")
 
-plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=TRUE)
+data("Vignette_5.4.5")
+data <- Vignette_5.4.5
+data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), sensitivity=data$Sn)
+
+plotSensitivity(data)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

@@ -23,8 +23,8 @@
 
 <b>ADDITIONAL INFORMATION</b>
     For additional information on the use of ROC / LODR plots to assess differential gene expression, please refer to:
-        ‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control
-        ratio mixtures.’ Munro et al., Nature Communications. 2014 Sep 25;5:5125.
+    ‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control
+    ratio mixtures.’ Munro et al., Nature Communications. 2014 Sep 25;5:5125.
 
 <b>TOOL OPTIONS</b>
      Required:
