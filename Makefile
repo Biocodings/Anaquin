@@ -1,26 +1,8 @@
-# Makefile for Anaquin, a statistical library for spike-in sequins.
 #
 #    Copyright (C) 2016- Garvan Institute of Medical Research
 #
 #    Author: Ted Wong <t.wong@garvan.org.au>
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
 
 BOOST = /usr/include/boost
 
@@ -32,9 +14,6 @@ EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 
 # Statistics library
 SS = ../SS
-
-# Library for SAM/BAM
-HLIB = src/htslib
 
 # Library for random generator
 KLIB = /Applications
@@ -53,17 +32,14 @@ OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
-#anaquin.a: $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-#	ar rcs $@ $^
-
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lz -ldl -o $(EXEC)
 
 %.o: %.c
-	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	gcc -c -I src/htslib -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
