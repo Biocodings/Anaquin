@@ -49,8 +49,8 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * Generating RnaKExpress_splice.R
      */
     
-    if (stats.size() >= 2)
-    {
-        RExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_sequins.csv", o);
-    }
+//    if (stats.size() >= 2)
+//    {
+//        RExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_sequins.csv", o);
+//    }
 }

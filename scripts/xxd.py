@@ -32,7 +32,6 @@ data  = [ 'data/manual.txt',
 
           # ---------- Transcriptome ----------
 
-          'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
 

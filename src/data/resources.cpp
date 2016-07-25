@@ -32,7 +32,6 @@
 
 #include "resources/plotTROC.R"
 #include "resources/plotTLODR.R"
-#include "resources/plotTMinor.R"
 
 #include "resources/ARN020_v001.gtf"
 #include "resources/MRN027_v001.csv"
@@ -128,11 +127,6 @@ Scripts VarDiscover()
 /*
  * Transcriptome Resources
  */
-
-Scripts PlotTMinor()
-{
-    return ToString(src_r_plotTMinor_R);
-}
 
 Scripts PlotTROC()
 {

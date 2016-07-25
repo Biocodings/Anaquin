@@ -50,6 +50,6 @@ if (nrow(data[data$Label=='FP',]) > 0)
 }
 
 # Create Anaquin data set
-data <- CreateDataForAnaquin(names=data$name, expected=data$ExpFold, score=score, label=data$Label)
+data <- createAnaquinData(names=data$name, expected=data$ExpFold, score=score, label=data$Label)
 
 plotROC(data, title=title, legTitle=legTitle, refRats=0)

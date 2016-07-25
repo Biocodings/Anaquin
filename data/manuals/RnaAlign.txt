@@ -1,16 +1,16 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-     RnaAlign - Assess spliced-read alignments to the in silico chromosome.
+     RnaAlign - Assess spliced-read alignments to the in silico chromosome
 
 <b>DESCRIPTION</b>
     RnaAlign can be used to assess the alignment of sequins-derived reads to the in silico chromosome and calculates
     several useful statistics to describe alignment performance, including:
-    a) Dilution factor indicates fraction of reads that align to the in silico chromosome, relative to the accompanying genome. 
+    a) Dilution indicates fraction of reads that align to the in silico chromosome, relative to the accompanying genome. 
     b) Sensitivity indicates the fraction of annotated regions covered by alignments. 
     c) Precision indicates the accuracy of alignments.
     These statistics are calculated at a nucleotide, exon and intron level. 
-    
+
 <b>SUPPORT SOFTWARE</b>
      Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
 
@@ -30,5 +30,5 @@
         -o = output  Directory in which the output files are written to
 
 <b>OUTPUTS</b>
-     RnaAlign_summary.stats - provides statistics to describe to describe the global alignment profile.
-     RnaAlign_sequins.csv - gives detailed statistics for each individual sequin gene.
+     RnaAlign_summary.stats - provides statistics to describe to describe the global alignment profile
+     RnaAlign_sequins.csv   - gives detailed statistics for each individual sequin gene

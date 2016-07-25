@@ -1,78 +1,32 @@
-RnaQuin Analysis                     Anaquin Manual                    
+<b>ANAQUIN MANUAL</b>
 
-NAME
-     RnaSubsample - Calibrate the sequence coverage of sequins across multiple replicates
+<b>NAME</b>
+     RnaSubsample - Calibrate the sequence coverage of RNA sequins across multiple replicates.
 
-DESCRIPTION
-     RnaSubsample enables calibration of sequin coverage across multiple RNA-Seq replicates. The tool is useful to ensure
-     the sequencing depth comparable across different libraries.
+<b>DESCRIPTION</b>
+     RnaSubsample calibrates of sequin coverage across multiple RNA-Seq replicates. The tool is useful to ensure
+     the sequencing depth comparable across different libraries, even when varying amounts of RNA sequins have been spiked-in
+     to replicates or samples. RnaSubsample requires users to specify preferred dilution fraction, typically, we recommend
+     between 1% to 10%.  
 
-     For example, if we have two technical libraries, and they have the following characteristics:
-        * Library A with 2 million reads on the in silico chromosome
-        * Library B with 1 million reads on the in silico chromosome
+<b>SUPPORT SOFTWARE</b>
+     Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
 
-    Obviously library A has higher sequencing depth than library B, and would create bias in the statistical results.
-    For example, most differential analysis package models gene dispersions. The estimation might be inaccurate unless
-    the sequins are comparable across the replicates.
-
-    Users need to specify preferred dilution fraction, typically, we recommend 1% to 10%. Further details are discussed in
-    Section 5.4.3.
-
-    Firstly, this tool calculates the number of alignments on the in silico chromosome and genome. This is
-    reported as “Before subsampling” in the summary statistics. Next, it uses the specified fraction to deduce how much
-    the reads on the in silico chromosome should be subsampled and is reported as “After subsampling” in the summary
-    statistics.
-
-BIOINFORMATICS SOFTWARE
-     Any short-reads spliced aligner that generates SAM/BAM outputs. Common examples include TopHat2 and STAR.
-
-INPUTS
-     User generated SAM/BAM alignment file
-
-USAGE EXAMPLE
+<b>USAGE EXAMPLE</b>
      anaquin RnaSubsample -method 0.01 –ufiles alignment.bam
 
-TOOL OPTIONS
+<b>TOOL OPTIONS</b>
      Required:
-        -method      Dilution factor as a floating number. For example, 0.01 is 1% and 0.10 is 10% etc.
-        -ufiles      User generated SAM/BAM alignment file
+        -method      Dilution fraction as a floating number. For example, 0.01 is 1% and 0.10 is 10% etc.
+        -ufiles      User-generated SAM/BAM alignment file
 
      Optional:
         -o = output  Directory in which the output files are written to
 
-OUTPUTS
-     RnaSubsample_summary.stats - reports summary statistics for the subsampling. Field definitions:
-
-        User generated alignment  User generated alignment file in SAM/BAM format
-        Synthetic (Before)        Number of alignments mapped to the in silico chromosome before subsampling
-        Genome (Before)           Number of alignments not mapped to the in silico chromosome before subsampling      
-        Dilution (Before)         Synthetic (Before) / (Synthetic (Before) + Genome (Before))
-        User Dilution             User specified dilution (specified by -method)
-        Normalization             Calculated normalization factors applied in subsampling in silico alignments 
-        Synthetic (After)         Number of alignments mapped to the in silico chromosome after subsampling
-        Genome (After)            Number of alignments not mapped to the in silico chromosome after subsampling      
-        Dilution (After)          Synthetic (After) / (Synthetic (After) + Genome (After))
-
-EXAMPLE SUMMARY STATISTICS
-
-    -------RnaSubsample Summary Statistics
-
-           User generated alignment: RnaSubsample_summary.stats
-
-    -------User alignments (before subsampling)
-
-           Synthetic: 36552138 reads
-           Genome:    11493036 reads
-           Dilution:  0.760787
-
-           * Fraction of spike-ins specified:
-           Fraction: 0.050000
-
-           * Normalization applied in subsampling:
-           Normalization: 0.0165489
-
-    -------User alignments (after subsampling)
-
-           Synthetic: 603687 reads
-           Genome:    11493036 reads
-           Dilution:  0.049905
+<b>OUTPUTS</b>
+     <b>IMPORTANT</b> - Subsampled alignments are directly written to the console. Users are recommended to pipe outputs to
+     a new file. For example, the following command pipes the outputs to the BAM format:
+        
+     anaquin RnaSubample anaquin RnaSubsample -method 0.01 –ufiles alignment.bam | samtools view -bS - > aligned.bam
+        
+     RnaSubsample_summary.stats - reports summary statistics

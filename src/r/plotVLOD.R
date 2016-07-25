@@ -35,7 +35,7 @@ ylab='P-value (log10)'
 data$EFold <- round(data$ExpRef / data$ExpVar)
 
 # Create Anaquin data set
-data <- CreateDataForAnaquin(names=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
+data <- createAnaquinData(names=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
 
 xBreaks=c(1e-3, 1e-2, 1e-1)                    
 xLabels=c('-3', '-2', '-1')

@@ -25,6 +25,6 @@ input <- %8%
 sn <- %9%
 
 # Create Anaquin data for plotSensitivity
-data <- CreateDataForAnaquin(names=row.names(data), input=input, sensitivity=sn)
+data <- createAnaquinData(names=row.names(data), input=input, sensitivity=sn)
 
 plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)

@@ -12,7 +12,7 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Create Anaquin data set
-data <- CreateDataForAnaquin(names=row.names(data), expected=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Qval)
+data <- createAnaquinData(names=row.names(data), expected=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Qval)
 
 data$seqs <- TransDiff_(data)
 

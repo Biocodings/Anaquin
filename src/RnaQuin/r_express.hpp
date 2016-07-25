@@ -11,9 +11,6 @@
 #include "parsers/parser_cufflink.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotTMinor();
-
-// Defined in resources.cpp
 extern Anaquin::FileName MixRef();
 
 // Defined in resources.cpp
@@ -67,19 +64,6 @@ namespace Anaquin
 
         static Stats analyze(const FileName &, const Options &o);
 
-        /*
-         * Generating major plot (but only if we have the isoforms...)
-         */
-
-        template <typename Options> static void generateRSplice(const FileName &output,
-                                                                const FileName &csv,
-                                                                const Options &o)
-        {
-            o.writer->open(output);
-            o.writer->write(RWriter::createScript(csv, PlotTMinor()));
-            o.writer->close();
-        }
-
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
         {
             std::vector<RExpress::Stats> stats;
@@ -88,7 +72,7 @@ namespace Anaquin
             {
                 stats.push_back(analyze(file, o));
             }
-            
+
             return stats;
         }
 
