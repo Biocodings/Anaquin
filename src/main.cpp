@@ -394,7 +394,7 @@ static Scripts manual(Tool tool)
         case TOOL_V_DISCOVER:  { return VarDiscover();   }
     }
 
-    throw "Manual not found";
+    throw std::runtime_error("Manual not found");
 }
 
 template <typename F> std::vector<FileName> sortInputs(const FileName &x, const FileName &y, F f)
@@ -918,8 +918,15 @@ void parse(int argc, char ** argv)
         {
             throw std::runtime_error("Too many arguments for help usage. Usage: anaquin <tool> -h or anaquin <tool> --help");
         }
+
+        auto man = manual(_p.tool);
         
-        std::cout << manual(_p.tool) << std::endl;
+        boost::replace_all(man, "<b>", "\e[1m");
+        boost::replace_all(man, "</b>", "\e[0m");
+        boost::replace_all(man, "<i>", "\e[3m");
+        boost::replace_all(man, "</i>", "\e[0m");
+
+        std::cout << man << std::endl << std::endl;
         return;
     }
     

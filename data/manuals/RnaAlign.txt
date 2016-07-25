@@ -1,119 +1,34 @@
-Anaquin Manual                    
+<b>ANAQUIN MANUAL</b>
 
-NAME
-     RnaAlign - Measure the spliced read alignments from sequins to the in silico chromosome
+<b>NAME</b>
+     RnaAlign - Assess spliced-read alignments to the in silico chromosome.
 
-DESCRIPTION
-     RnaAlign calculates several useful statistics from an alignment file, including:
-
-       Dilution – Fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
-
-       Sensitivity - Fraction of annotated nucleotides, exons or introns that are detected by the alignments.
-                     For example, if 7 of 10 introns in a gene loci are detected, sensitivity equals 0.7.
-
-       Precision – The fraction of correctly detected nucleotides or introns relative to the total nucleotides or introns.
-                   This indicates the accuracy of alignments. For example, if 10 introns are identified in an experiment,
-                   but 4 are erroneous, precision equals 0.6.
-
-       These statistics are calculated at a nucleotide, exon and intron level. A further description of diagnostic
-       statistics statistics is provided in the Anaquin user guide.
-
-BIOINFORMATICS SOFTWARE
+<b>DESCRIPTION</b>
+    RnaAlign can be used to assess the alignment of sequins-derived reads to the in silico chromosome and calculates
+    several useful statistics to describe alignment performance, including:
+    a) Dilution factor indicates fraction of reads that align to the in silico chromosome, relative to the accompanying genome. 
+    b) Sensitivity indicates the fraction of annotated regions covered by alignments. 
+    c) Precision indicates the accuracy of alignments.
+    These statistics are calculated at a nucleotide, exon and intron level. 
+    
+<b>SUPPORT SOFTWARE</b>
      Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
 
-INPUTS
-     Reference transcriptome annotation file in GTF format
-     Generated alignment file in SAM/BAM format
-
-USAGE EXAMPLE
+<b>USAGE EXAMPLE</b>
      anaquin RnaAlign –rbed reference.bed –ufiles aligned.bam
 
-ADDITIONAL INFORMATION
-     The runtime is linearly proportional to the number of reads in the input file, with long run times expected for
+<b>ADDITIONAL INFORMATION</b>
+     The runtime is linearly proportional to the number of alignments in the input file, with long run times expected for
      large alignment files.
 
-TOOL OPTIONS
+<b>TOOL OPTIONS</b>
      Required:
         -rgtf        Reference transcriptome annotation file in GTF format
-        -ufiles      Generated alignment files in SAM/BAM format
+        -ufiles      User-generated alignment files in SAM/BAM format
 
      Optional:
         -o = output  Directory in which the output files are written to
 
-OUTPUTS
-     RnaAlign_summary.stats - useful statistics to describe to describe the global alignment profile. Field definitions:
-
-        Input alignment file       Input sample alignment file in SAM/BAM format
-        Reference annotation file  User generated sample alignments in SAM/BAM format
-        Synthetic                  Number of alignments mapped to the in silico chromosome
-        Genome                     Number of alignments mapped to the human genome      
-        Dilution                   Proportion of alignments mapped to the in silico chromosome
-        Reference annotation       Number of exons, introns and bases on the in silico chromosome and the genome
-        Non-spliced                Number of non-spliced reads on the in silico chromosome and the genome
-        Spliced                    Number of spliced reads for on the in silico chromosome and the genome
-        Total                      Spliced + Non-spliced
-        Sensitivity                Sensitivity of the alignments at levels: exon, intron and base (in silico chromosome and
-                                   genome)
-        Precision                  Precision of the alignments at levels: intron and base (in silico chromosome and genome)
-
-     RnaAlign_sequins.csv - gives detailed statistics for each individual sequin gene. Field definitions:
-        ID                         Name of the sequin
-        Length                     Length of the sequin
-        Reads                      Number of reads aligned
-        SnIntron                   Sensitivity at the intron level 
-        SnBase                     Sensitivity at the base level 
-
-EXAMPLE SUMMARY STATISTICS
-
-    -------RnaAlign Summary Statistics
-
-           Input alignment file: A1/accepted_hits.bam
-           Reference annotation file: combined.gtf
-
-    -------Number of alignments mapped to the synthetic chromosome and human genome
-
-           Synthetic: 36552138
-           Genome:    11493036
-           Dilution:  0.76
-
-    -------Reference annotation (Synthetic)
-
-           Synthetic: 869 exons
-           Synthetic: 754 introns
-           Synthetic: 5490967 bases
-
-    -------Reference annotation (Genome)
-
-           Genome: 570980 exons
-           Genome: 347657 introns
-           Genome: 1758049931 bases
-
-    -------Alignments (Synthetic)
-
-           Non-spliced: 20575711
-           Spliced:     15976427
-
-    -------Alignments (Genome)
-
-           Non-spliced: 8611159
-           Spliced:     1754969
-
-    -------Comparison of alignments to reference annotation (Synthetic)
-
-           *Intron level
-            Sensitivity: 0.99
-            Precision:   0.70
-
-           *Base level
-            Sensitivity: 0.99
-            Precision:   0.98
-
-    -------Comparison of alignments to reference annotation (Genome)
-
-           *Intron level
-            Sensitivity: 0.29
-            Precision:   0.90
-
-           *Base level
-            Sensitivity: 0.31
-            Precision:   0.30
+<b>OUTPUTS</b>
+     RnaAlign_summary.stats - provides statistics to describe to describe the global alignment profile.
+     RnaAlign_sequins.csv - gives detailed statistics for each individual sequin gene.
