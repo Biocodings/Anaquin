@@ -25,7 +25,7 @@
     return (data)    
 }
 
-CreateDataForAnaquin <- function(...)
+createAnaquinData <- function(...)
 {
     x <- list(...)
 

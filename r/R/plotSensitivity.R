@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, title='', xlab='', ylab='', threshold=0.70, showLOA=TRUE, showGuide=FALSE)
+.plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold=0.70, showGuide=FALSE)
 {
     require(ggplot2)
     require(reshape2)
@@ -53,15 +53,18 @@
                     ggtitle(title) +
                         theme_bw()
     p <- p + geom_point(aes(y=y, colour=grp), size=2.0, alpha=0.5)
-    
-    if (!is.na(data$f))
+
+    if (!all(is.na(data$f)))
     {
         p <- p + geom_line(aes(y=f, colour="line"), alpha=1.0)
     }
     
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
-    
+
+    # Limit of assembly
+    LOA <- NULL
+   
     if (showLOA)
     {
         t <- data[data$f >= threshold,]
@@ -72,13 +75,13 @@
         }
         else
         {
-            r <- round(min(t$input),2)
+            LOA <- round(min(t$input),2)
 
-            label <- 2^r
+            label <- 2^LOA
             label <- paste('LOA:', signif(label, 3))
             label <- paste(label, 'attomol/ul')
             
-            p <- p + geom_vline(xintercept=r, linetype='33')
+            p <- p + geom_vline(xintercept=LOA, linetype='33')
             p <- p + geom_label(aes(x=min(data$x), y=max(data$y)-0.1), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
         }
     }
@@ -90,10 +93,17 @@
     
     p <- .transformPlot(p)    
     print(p)
+    
+    return (list(LOA=LOA, fitted=data$f))
 }
 
-plotSensitivity <- function(data, title='', xlab='', ylab='', showLOA=TRUE, threshold=0.70)
+plotSensitivity <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOA=TRUE, threshold=0.70)
 {
     stopifnot(class(data) == 'Anaquin')
-    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOA=showLOA, threshold=threshold)    
+    return (.plotSigmoid(data,
+                         title=title,
+                         xlab=xlab,
+                         ylab=ylab,
+                         showLOA=showLOA,
+                         threshold=threshold))
 }
