@@ -6,7 +6,7 @@
  * Manuals
  */
 
-#include "resources/manual.txt"
+#include "resources/anaquin.txt"
 #include "resources/RnaAlign.txt"
 #include "resources/RnaSubsample.txt"
 #include "resources/RnaAssembly.txt"
@@ -44,7 +44,7 @@
  */
 
 #include "resources/plotVLOD.R"
-#include "resources/plotVROC1.R"
+#include "resources/plotVROC.R"
 
 #include "resources/sampled.bed"
 #include "resources/AVA009_v001.vcf"
@@ -62,7 +62,7 @@ Scripts ReportScript()
 
 Scripts Manual()
 {
-    return ToString(data_manual_txt);
+    return ToString(data_manuals_anaquin_txt);
 }
 
 Scripts PlotScatter()
@@ -174,7 +174,7 @@ Scripts PlotVLOD()
 
 Scripts PlotVROC()
 {
-    return ToString(src_r_plotVROC1_R);
+    return ToString(src_r_plotVROC_R);
 }
 
 Scripts VarDataMixA()

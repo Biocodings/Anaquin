@@ -8,7 +8,7 @@
 
 library(Anaquin)
 
-# Load the called variants
+# Load called variants
 data <- read.csv('%3%/%4%', sep='\t')
 
 # Remove false-positves that are not called within the sequin regions
@@ -50,6 +50,6 @@ if (nrow(data[data$Label=='FP',]) > 0)
 }
 
 # Create Anaquin data set
-data <- createAnaquinData(names=data$name, expected=data$ExpFold, score=score, label=data$Label)
+data <- createAnaquinData(names=data$name, input=data$ExpFold, score=score, label=data$Label)
 
 plotROC(data, title=title, legTitle=legTitle, refRats=0)

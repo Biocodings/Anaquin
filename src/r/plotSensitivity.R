@@ -8,7 +8,7 @@
 
 library(Anaquin)
 
-# Load the reference sequins
+# Load reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Specify the sensitivity threshold
