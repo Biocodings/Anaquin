@@ -1,1 +1,6 @@
-exportPattern("^[[:alpha:]]+")
+export(plotScatter)
+export(plotSensitivity)
+export(plotROC)
+export(plotLODR)
+export(createAnaquinData)
+export(classifyByRefRatio)

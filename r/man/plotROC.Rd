@@ -10,6 +10,7 @@ Create a receiver operating characteristic (ROC) plot. The curve is created by p
 \arguments{
   \item{data}{Anaquin dataset created by \code{CreateAnaquinData}. It needs to define information in \bold{Details}.}
   \item{title}{Label of the plot. Default to NULL.}
+  \item{legTitle}{Title of the legend. Default to NULL.}
   \item{refRats}{Reference ratio group}
 }
 \details{
@@ -22,8 +23,8 @@ Create a receiver operating characteristic (ROC) plot. The curve is created by p
     \tab \code{label}       \tab Classified labels\cr
     \tab \code{score}       \tab How the ROC points should be ranked\cr    
 
-    \tab \code{expected}       \tab Expected abundance; Input concentration (in attomole/ul).\cr
-    \tab \code{measured}       \tab Measured abundance; how the sequins are ranked, for example, p-values and read depth etc.\cr
+    \tab \code{input}       \tab Input concentration (in attomole/ul).\cr
+    \tab \code{measured}    \tab Measured abundance; how the sequins are ranked, for example, p-values and read depth etc.\cr
 }
 
 The ROC plot illustrates the performance of an experiment as the scoring threshold is varied. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.
@@ -32,7 +33,13 @@ The plot provides diagnose performance to select possibly optimal models and to 
 }
 
 \examples{
+data('Vignette_5.6.3')
+data <- Vignette_5.6.3
 
+data$label <- classifyByRefRatio(inputs=abs(data$ExpLFC), refRatio=0)
+data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
+
+plotROC(data, refRats=0)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

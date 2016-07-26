@@ -7,33 +7,32 @@
 plotROC <- function(data, refRats, ...)
 {
     require(ROCR)
+    require(knitr)
     require(ggplot2)
-
+    
     data <- data$seqs
     
     stopifnot(!is.null(refRats))
     stopifnot(!is.null(data$score))
     stopifnot(!is.null(data$label))
-    stopifnot(!is.null(data$expected))    
+    stopifnot(!is.null(data$input))    
     
     x <- list(...)
-    
-    if (is.null(x$showAUC))    { x$showAUC    <- FALSE   }
+
+    if (is.null(x$title))      { x$title      <- NULL    }
     if (is.null(x$legTitle))   { x$legTitle   <- 'Ratio' }
     if (is.null(x$showLegend)) { x$showLegend <- TRUE    }
 
     # This is the sequin groups
-    data$ratio <- abs(round(data$expected))
+    data$ratio <- abs(round(data$input))
 
     data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label, score=data$score, ratio=data$ratio)
 
-    rocDat <- NULL
-    aucDat <- NULL
+    ROCs   <- NULL
+    AUCs   <- NULL
     ratios <- sort(data$ratio)
-
-    print('ROC Diagnostics: AUC')
 
     # Query ratios (not including the references)
     uniqs <- unique(ratios)
@@ -52,7 +51,7 @@ plotROC <- function(data, refRats, ...)
     {
         refRats <- rep(refRats, length(uniqs))
     }
-    
+
     # For each query ratio...
     for (i in c(1:length(uniqs)))
     {
@@ -60,33 +59,24 @@ plotROC <- function(data, refRats, ...)
         ratio <- uniqs[[i]]
         
         # Reference ratio
-        refRat <- ifelse(is.null(refRats), NULL, refRats[[i]]);
+        refRat <- refRats[[i]];
         
-        if (is.null(refRat))
-        {
-            t <- data[!is.na(data$ratio) & data$ratio==ratio,]
-        }
-        else
-        {
-            t <- data[!is.na(data$ratio) & (data$ratio==ratio | data$ratio==refRat),]                
-        }
-        
+        t <- data[!is.na(data$ratio) & (data$ratio==ratio | data$ratio==refRat),]                
+
         # No FP or TP?
         if (length(unique(t$label)) == 1)
         {
             # No TP... Add a TP...
             if (unique(t$label) == 'FP')
             {
-                df <- data.frame(label='TP', score=0, ratio=ratio)
+                t <- rbind(t, data.frame(label='TP', score=0, ratio=ratio))
             }
             
             # No FP... Add a FP...
             else
             {
-                df <- data.frame(label='FP', score=0, ratio=ratio)                    
+                t <- rbind(t, data.frame(label='FP', score=0, ratio=ratio))
             }
-            
-            t  <- rbind(t, df)
         }
         
         t <- t[with(t, order(score)),]
@@ -96,39 +86,21 @@ plotROC <- function(data, refRats, ...)
         perf  <- performance(preds, 'tpr', 'fpr')
         auc   <- performance(preds, 'auc')
         
-        AUC <- round(unlist(auc@y.values), 4)
-        
-        if (length(uniqs) == 1)
-        {
-            print(paste(c('AUC: ', AUC), collapse=''))
-        }
-        else
-        {
-            print(paste(c(ratio, ': ', AUC), collapse=''))
-        }
-        
-        aucDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
-        aucDat <- rbind(aucDat, aucDatNew)
-        
-        FPR <- c(unlist(perf@x.values)) 
-        TPR <- c(unlist(perf@y.values))
-        
-        rocDatNew <- data.frame(FPR=FPR, TPR=TPR, ratio=ratio)
-        rocDat    <- rbind(rocDat, rocDatNew)
+        AUCs <- rbind(AUCs, data.frame(Ratio=ratio, AUC=round(unlist(auc@y.values), 4)))
+        ROCs <- rbind(ROCs, data.frame(FPR=unlist(perf@x.values), TPR=unlist(perf@y.values), ratio=ratio))
     }
 
-    rocDat$ratio = as.factor(rocDat$ratio)
-    
-    p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))           + 
-            geom_abline(intercept=0, slope=1, linetype=2) +
-            labs(colour=legTitle)                         +
+    ROCs$ratio = as.factor(ROCs$ratio)
+
+    p <- ggplot(data=ROCs, aes(x=FPR, y=TPR))               + 
+            geom_abline(intercept=0, slope=1, linetype=2)   +
+            geom_path(size=1, aes(colour=ratio), alpha=0.5) +
+            labs(colour=legTitle)                           +
             theme_bw()
 
-    p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.5)
-    
-    if (!is.null(title))
+    if (!is.null(x$title))
     {
-        p <- p + ggtitle(title)
+        p <- p + ggtitle(x$title)
     }
     
     if (!x$showLegend | length(uniqs) == 1)
@@ -136,6 +108,10 @@ plotROC <- function(data, refRats, ...)
         p <- p + guides(colour=FALSE)
     }
 
+    print(kable(AUCs))
+
     p <- .transformPlot(p)        
     print(p)
+
+    return (list(AUC=AUCs))
 }

@@ -7,89 +7,24 @@
 library('RUnit')
 library('Anaquin')
 
-test_1 <- function()
+test.PlotROC_1 <- function()
 {
-    pval1  <- c(0.000922672078074781,0.000926373270568013,0.00097552638292423,0.00161310071234674,0.00434994499087415,0.00591401130184861,0.0068573056312139,0.013657312387711,0.0136584984699299,0.0210660305746747,0.120412520621625,0.152498798487849,0.19997385231316,0.256203616260604,0.32722935840574,0.399285887510013,0.45602306870092,0.57176236439867,0.658516574175055,0.668269139193053,0.675460519446151,0.703773980557128,0.747264049533029,0.790604585527235,0.816532918753984,0.857182705070377,0.870017035085091,0.881501539186435,0.8966367775327,0.954426198244219,0.966861424582195)
-    logFC1 <- c(0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,1,1,1,0.5,1,0.5,1,1,1,1,1,1,1,1,1,1,1)
+    data('Vignette_5.6.3')
+    data <- Vignette_5.6.3
 
-    pval2  <- c(1.49938626806382e-05,0.881501539186435,0.0016858751599943,0.790604585527235,0.00813699191388004,0.703773980557128,0.109694018392147,0.32722935840574,0.675460519446151,0.8966367775327,0.747264049533029,0.399285887510013,0.954426198244219,2.2826402956853e-05,0.45602306870092,0.193704143588705,0.000301073452762137,0.00416669002222674,0.816532918753984,0.000136083495397102,0.870017035085091,0.000447610457008576,8.31059428714692e-05,8.85346151477521e-05,0.000148868463082918,0.0237648221106604,0.658516574175055,0.174554893386325,0.857182705070377,0.0121620632008378,0.966861424582195)
-    logFC2 <- c(4,1,4,1,4,1,4,1,1,1,1,1,1,4,1,4,4,4,1,4,1,4,4,4,4,4,1,4,1,4,1)
+    data$label <- classifyByRefRatio(inputs=abs(data$ExpLFC), refRatio=0)
+    data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
     
-    pval3  <- c(0.881501539186435,0.790604585527235,0.703773980557128,0.32722935840574,0.675460519446151,0.274590111281112,0.128413156961312,0.8966367775327,0.011311372935999,0.747264049533029,0.399285887510013,0.29254112986239,0.0112349463777885,0.954426198244219,0.45602306870092,0.0962420163463059,0.036937003553958,0.00993438560857695,0.83925793411937,0.816532918753984,0.0809051047098201,0.870017035085091,0.0639477295247324,0.0503606774974165,0.634501756379566,0.00767148831843224,0.658516574175055,0.0570022863415209,0.857182705070377,0.0468030821578363,0.966861424582195)
-    logFC3 <- c(1,1,1,1,1,0.667,0.667,1,0.667,1,1,0.667,0.667,1,1,0.667,0.667,0.667,0.667,1,0.667,1,0.667,0.667,0.667,0.667,1,0.667,1,0.667,1)    
-
-    pval  <- c(pval1, pval2, pval3)
-    logFC <- c(logFC1, logFC2, logFC3)
+    r <- plotROC(data, refRats=0)
     
-    logFC[logFC==1] <- 0
-    
-    r <- plotROC(TransQuin(seqs=c(1:length(pval)), pval=pval, logFC=logFC))
+    checkEquals(r$AUC[1,]$Ratio, 1)
+    checkEqualsNumeric(r$AUC[1,]$AUC, 0.7692)
+    checkEquals(r$AUC[2,]$Ratio, 2)
+    checkEqualsNumeric(r$AUC[2,]$AUC, 0.8223)
+    checkEquals(r$AUC[3,]$Ratio, 3)
+    checkEqualsNumeric(r$AUC[3,]$AUC, 0.9485)
+    checkEquals(r$AUC[4,]$Ratio, 4)
+    checkEqualsNumeric(r$AUC[4,]$AUC, 0.8608)
 }
 
-test_2 <- function()
-{
-    pvals  <- c(0.88150509946551,0.790579826554692,0.703769035448768,0.327173030430958,0.675541902369305,0.27463411000412,0.128385466840651,0.89663342888243,0.0113084185194,0.747229352440727,0.399276537215399,0.292443920793433,0.0112254429527438,0.954407036854045,0.455910328939659,0.0962627125313444,0.0368961848301403,0.00993122073795335,0.839274592316032,0.816494961078089,0.0808554362362422,0.870104248850572,0.0639398485934761,0.0503499345800991,0.634624821872723,0.00767564931491453,0.658344706952809,0.0569646760950342,0.857124116442357,0.0468269349419728,0.966861022197228)
-    labels <- c('FP','FP','FP','FP','FP','TP','TP','FP','TP','FP','FP','TP','TP','FP','FP','TP','TP','TP','TP','FP','TP','FP','TP','TP','TP','TP','FP','TP','FP','TP','FP')
-
-    r <- plotROC(TransQuin(seqs=c(1:31), pval=pvals, class=labels))
-}
-
-tTransQuin_Paper <- function()
-{
-    data <- read.csv('/Users/tedwong/Desktop/LODR_genes_TED_20.01.16_again.csv', row.names=1)
-    data <- data[!is.na(data$log2FoldChange),]
-    
-    data$expected.LFC = abs(data$expected.LFC)
-    
-    data$label <- NA
-    data[data$expected.LFC==0,]$label <- 'FP'
-    data[data$expected.LFC!=0,]$label <- 'TP'
-    
-    data <- TransQuin(seqs=row.names(data), pval=data$pvalue, label=data$label, ratio=data$expected.LFC, expected=data$expected)
-    plotROC(data, refRatio=0, shouldPseuoLog=FALSE)
-}
-
-tVarScan <- function()
-{
-    #
-    # This example demostrates rendering an ROC plot for VarScan.
-    #
-
-    snp_tp <- read.csv('tests/data/VarQuin/true_pos_snps.25000x.tab', sep='\t')
-    ind_tp <- read.csv('tests/data/VarQuin/true_pos_indels.25000x.tab', sep='\t')
-    snp_fp <- read.csv('tests/data/VarQuin/false_pos_snps.25000x.tab', sep='\t')
-    ind_fp <- read.csv('tests/data/VarQuin/false_pos_indels.25000x.tab', sep='\t')
-    
-    p <- 0.01
-    
-    # Filter the FPs based on p-value
-    snp_fp <- snp_fp[snp_fp$Pvalue <= p,] # 68
-
-    print (nrow(snp_fp))
-    
-    # Filter the FPs based on p-value
-    ind_fp <- ind_fp[ind_fp$Pvalue <= p,] # 12
-
-    snp_tp$cls <- 'TP'
-    snp_fp$cls <- 'FP'
-    ind_tp$cls <- 'TP'
-    ind_fp$cls <- 'FP'
-    
-    snp <- rbind(snp_tp, snp_fp)
-    ind <- rbind(ind_tp, ind_fp)
-    
-    #snp[snp$Pvalue==0,]$Pvalue <- min(snp[snp$Pvalue!=0,]$Pvalue)
-    
-    snp <- snp[with(snp, order(Pvalue)),]
-    
-    a <- data.frame(pos=snp$Position, pval=snp$Pvalue, cls=snp$cls)
-    
-    
-    
-    data <- VarQuin(seqs=c(1:nrow(snp)), pval=snp$Pvalue, pos=snp$Position, cls=snp$cls)
-    plotROCForVar(data)
-}
-
-#test_1()
-#test_2()
-#tVarScan()
+test.PlotROC_1()
