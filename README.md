@@ -62,5 +62,6 @@ The source code requires a C++11 compiler to build.
 <ul>
 <li> Scatter Plot</li>
 <li> LODR Curves</li>
-<li> ROC Plots</li>
+<li> ROC Plot</li>
+<li> Folding Plot</li>
 </ul>
