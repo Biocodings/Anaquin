@@ -21,9 +21,7 @@ namespace Anaquin
     {
         typedef std::map<std::string, Counts> Hist;
 
-        static SInflectStats multiInfect(const FileName                  &,
-                                         const FileName                  &,
-                                         const std::vector<FileName>     &,
+        static SInflectStats multiInfect(const std::vector<FileName>     &,
                                          const std::vector<MappingStats> &,
                                          const std::vector<LinearStats>  &);
         

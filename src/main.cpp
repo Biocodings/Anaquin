@@ -182,12 +182,6 @@ struct Parsing
 {
     std::map<Tool, FileName> rFiles;
     
-    // Reference annotation file for synthetic
-    FileName rAnnot;
-
-    // Reference annotation file for endogenous
-    FileName rGeno;
-    
     // The path that outputs are written
     std::string path = "output";
 
@@ -219,9 +213,16 @@ struct Parsing
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
 
+static FileName __mockGTFRef__;
+
+void SetGTFRef(const FileName &file)
+{
+    __mockGTFRef__ = file;
+}
+
 FileName GTFRef()
 {
-    return _p.rFiles.at(OPT_R_GTF);
+    return !__mockGTFRef__.empty() ? __mockGTFRef__ : _p.rFiles.at(OPT_R_GTF);
 }
 
 FileName MixRef()
@@ -664,8 +665,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info(date());
     o.info("Path: " + path);
 
-    o.rAnnot = _p.rAnnot;
-
     std::clock_t begin = std::clock();
 
     f(o);
@@ -1063,7 +1062,7 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:
             {
-                checkFile(_p.opts[opt] = _p.rFiles[opt] = _p.rAnnot = val);
+                checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
                 break;
             }
 

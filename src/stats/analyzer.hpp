@@ -199,8 +199,7 @@ namespace Anaquin
 
     struct AnalyzerOptions : public WriterOptions
     {
-        // Reference annotation (eg: GTF, BED)
-        FileName rAnnot;
+        // Empty Implementation
     };
 
     struct IndexOptions : public AnalyzerOptions

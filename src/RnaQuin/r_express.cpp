@@ -380,7 +380,7 @@ static void generateSummary(const FileName &summary,
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
-    const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, mStats, lStats);
+    const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
     
     // Breakpoint estimated by piecewise regression
     const auto b = ms.b.mean();

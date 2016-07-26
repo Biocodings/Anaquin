@@ -18,8 +18,6 @@ namespace Anaquin
             // Filename for the summary statistics
             FileName summary;
             
-            FileName rAnnot, rGeno;
-            
             // Number of sequins
             Counts refs;
 
