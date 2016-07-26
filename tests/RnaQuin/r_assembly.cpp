@@ -22,16 +22,16 @@ TEST_CASE("RAssembly_CompareWithItself")
     REQUIRE(r.gTrans == 0);
     REQUIRE(r.gIntrs == 0);
     REQUIRE(r.sExons == 869);
-    REQUIRE(r.sGenes == 754);
+    REQUIRE(r.sGenes == 78);
     REQUIRE(r.sTrans == 164);
-    REQUIRE(r.sIntrs == 78);
+    REQUIRE(r.sIntrs == 754);
 
-    REQUIRE(r.data.at(ChrT).eSN == 1.0);
-    REQUIRE(r.data.at(ChrT).eSP == 1.0);
-    REQUIRE(r.data.at(ChrT).bSN == 1.0);
-    REQUIRE(r.data.at(ChrT).bSP == 1.0);
-    REQUIRE(r.data.at(ChrT).tSN == 1.0);
-    REQUIRE(r.data.at(ChrT).tSP == 1.0);
-    REQUIRE(r.data.at(ChrT).iSN == Approx(1.0));
-    REQUIRE(r.data.at(ChrT).iSP == Approx(1.0));
+    REQUIRE(r.data.at(ChrIS).eSN == 1.0);
+    REQUIRE(r.data.at(ChrIS).eSP == 1.0);
+    REQUIRE(r.data.at(ChrIS).bSN == 1.0);
+    REQUIRE(r.data.at(ChrIS).bSP == 1.0);
+    REQUIRE(r.data.at(ChrIS).tSN == 1.0);
+    REQUIRE(r.data.at(ChrIS).tSP == Approx(0.905982906));
+    REQUIRE(r.data.at(ChrIS).iSN == Approx(0.9960212202));
+    REQUIRE(r.data.at(ChrIS).iSP == Approx(0.9960212202));
 }

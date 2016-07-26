@@ -20,8 +20,8 @@
 //    {
 //        Alignment align;
 //        
-//        align.cID     = ChrT;
-//        align.name    = ChrT;
+//        align.cID     = ChrIS;
+//        align.name    = ChrIS;
 //        align.i       = 0;
 //        align.mapped  = true;
 //        align.spliced = false;
@@ -31,53 +31,53 @@
 //    }
 //    
 //    const auto r  = RAlign::analyze(aligns);
-//    const auto se = r.data.at(ChrT).eInters.stats();
-//    const auto si = r.data.at(ChrT).iInters.stats();
+//    const auto se = r.data.at(ChrIS).eInters.stats();
+//    const auto si = r.data.at(ChrIS).iInters.stats();
 //    
-//    REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
+//    REQUIRE(r.data.at(ChrIS).unknowns.size() == 0);
 //    
-//    REQUIRE(r.data.at(ChrT).overB.hist.size() == 78);
-//    REQUIRE(r.data.at(ChrT).histE.size() == 78);
-//    REQUIRE(r.data.at(ChrT).histI.size() == 78);
+//    REQUIRE(r.data.at(ChrIS).overB.hist.size() == 78);
+//    REQUIRE(r.data.at(ChrIS).histE.size() == 78);
+//    REQUIRE(r.data.at(ChrIS).histI.size() == 78);
 //    
 //    REQUIRE(se.covered() == Approx(0.0000458388));
 //    REQUIRE(si.covered() == 0.0);
 //    
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingExon).i   == 1188);
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingExon).n   == 1190);
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingGene).i   == 76);
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingGene).n   == 76);
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingIntron).i == 1028);
-//    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingIntron).n == 1028);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingExon).i   == 1188);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingExon).n   == 1190);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingGene).i   == 76);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingGene).n   == 76);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingIntron).i == 1028);
+//    REQUIRE(r.countMiss(ChrIS, MissMetrics::MissingIntron).n == 1028);
 //    
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == Approx(0.0000504226));
-//    REQUIRE(r.pc(ChrT, AlignMetric::AlignBase) == 1.0);
-//    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
-//    REQUIRE(r.data.at(ChrT).overB.m.nq() == 10);
-//    REQUIRE(r.data.at(ChrT).overB.m.tp() == 10);
-//    REQUIRE(r.data.at(ChrT).overB.m.fp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fn() == 218146);
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignBase) == Approx(0.0000504226));
+//    REQUIRE(r.pc(ChrIS, AlignMetric::AlignBase) == 1.0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nr() == 218156);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nq() == 10);
+//    REQUIRE(r.data.at(ChrIS).overB.m.tp() == 10);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fn() == 218146);
 //    
-//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 1.0);
-//    REQUIRE(r.data.at(ChrT).overE.aTP   == 200);
-//    REQUIRE(r.data.at(ChrT).overE.aFP   == 0);
-//    REQUIRE(r.data.at(ChrT).overE.aNQ() == 200);
-//    REQUIRE(r.data.at(ChrT).overE.lTP   == 2);
-//    REQUIRE(r.data.at(ChrT).overE.lNR   == 1190);
-//    REQUIRE(r.data.at(ChrT).overE.lFN() == 1188);
+//    REQUIRE(r.pc(ChrIS, RAlign::Stats::AlignMetrics::AlignExon) == 1.0);
+//    REQUIRE(r.data.at(ChrIS).overE.aTP   == 200);
+//    REQUIRE(r.data.at(ChrIS).overE.aFP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overE.aNQ() == 200);
+//    REQUIRE(r.data.at(ChrIS).overE.lTP   == 2);
+//    REQUIRE(r.data.at(ChrIS).overE.lNR   == 1190);
+//    REQUIRE(r.data.at(ChrIS).overE.lFN() == 1188);
 //    
-//    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
-//    REQUIRE(r.data.at(ChrT).overI.aTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.aFP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.aNQ() == 0);
-//    REQUIRE(r.data.at(ChrT).overI.lTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
-//    REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
+//    REQUIRE(isnan(r.pc(ChrIS, AlignMetric::AlignIntron)));
+//    REQUIRE(r.data.at(ChrIS).overI.aTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.aFP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.aNQ() == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.lTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.lNR   == 1028);
+//    REQUIRE(r.data.at(ChrIS).overI.lFN() == 1028);
 //    
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon)   == Approx(0.0016806723));
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignExon)   == Approx(0.0016806723));
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignIntron) == 0);
 //    
-//    for (auto &i : r.data.at(ChrT).histE)
+//    for (auto &i : r.data.at(ChrIS).histE)
 //    {
 //        if (i.first == "R2_24")
 //        {
@@ -89,18 +89,18 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).histI)
+//    for (auto &i : r.data.at(ChrIS).histI)
 //    {
 //        REQUIRE(i.second == 0);
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneE)
+//    for (auto &i : r.data.at(ChrIS).geneE)
 //    {
 //        REQUIRE(i.second.lNR);
 //        
 //        if (i.first == "R2_24")
 //        {
-//            REQUIRE(r.sn(ChrT, "R2_24")  == Approx(0.0408163265));
+//            REQUIRE(r.sn(ChrIS, "R2_24")  == Approx(0.0408163265));
 //            REQUIRE(i.second.pc()  == Approx(1.0));
 //            REQUIRE(i.second.sn()  == Approx(0.0408163265));
 //            REQUIRE(i.second.aTP   == 200);
@@ -120,7 +120,7 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneI)
+//    for (auto &i : r.data.at(ChrIS).geneI)
 //    {
 //        if (i.second.lNR)
 //        {
@@ -142,7 +142,7 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneB)
+//    for (auto &i : r.data.at(ChrIS).geneB)
 //    {
 //        if (i.first == "R2_24")
 //        {
@@ -182,8 +182,8 @@
 //    {
 //        Alignment align;
 //        
-//        align.cID     = ChrT;
-//        align.name    = ChrT;
+//        align.cID     = ChrIS;
+//        align.name    = ChrIS;
 //        align.i       = 0;
 //        align.mapped  = true;
 //        align.spliced = false;
@@ -196,18 +196,18 @@
 //    
 //    const auto r = RAlign::analyze(aligns);
 //    
-//    REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
+//    REQUIRE(r.data.at(ChrIS).unknowns.size() == 0);
 //    
-//    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
-//    REQUIRE(r.data.at(ChrT).histE.size()   == 76);
-//    REQUIRE(r.data.at(ChrT).histI.size()   == 76);
+//    REQUIRE(r.data.at(ChrIS).overB.hist.size() == 76);
+//    REQUIRE(r.data.at(ChrIS).histE.size()   == 76);
+//    REQUIRE(r.data.at(ChrIS).histI.size()   == 76);
 //    
 //    Base sums = 0;
 //    Base mapped = 0;
 //    
-//    for (const auto &i : r.data.at(ChrT).eInters.data())
+//    for (const auto &i : r.data.at(ChrIS).eInters.data())
 //    {
-//        if (i.first != "chrT_R2_33_R2_33_1_3621204_3621284" && i.first != "chrT_R2_33_R2_33_1_3625759_3625960")
+//        if (i.first != "ChrIS_R2_33_R2_33_1_3621204_3621284" && i.first != "ChrIS_R2_33_R2_33_1_3625759_3625960")
 //        {
 //            REQUIRE(i.second.stats().covered() == 0.00);
 //        }
@@ -222,33 +222,33 @@
 //    
 //    const auto covered = static_cast<double>(mapped) / sums;
 //    
-//    const auto se = r.data.at(ChrT).eInters.stats();
-//    const auto si = r.data.at(ChrT).iInters.stats();
+//    const auto se = r.data.at(ChrIS).eInters.stats();
+//    const auto si = r.data.at(ChrIS).iInters.stats();
 //    
 //    REQUIRE(se.covered() == Approx(covered));
 //    REQUIRE(se.covered() == Approx(0.0012972368));
 //    REQUIRE(si.covered() == 0.0);
 //    
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon) == Approx(0.0016806723));
-//    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 1.0);
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
-//    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == Approx(0.0012972368));
-//    REQUIRE(r.pc(ChrT, AlignMetric::AlignBase) == Approx(1.0));
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignExon) == Approx(0.0016806723));
+//    REQUIRE(r.pc(ChrIS, AlignMetric::AlignExon) == 1.0);
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignIntron) == 0);
+//    REQUIRE(isnan(r.pc(ChrIS, AlignMetric::AlignIntron)));
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignBase) == Approx(0.0012972368));
+//    REQUIRE(r.pc(ChrIS, AlignMetric::AlignBase) == Approx(1.0));
 //
-//    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
-//    REQUIRE(r.data.at(ChrT).overB.m.tp() == mapped);
-//    REQUIRE(r.data.at(ChrT).overB.m.tp() == 283);
-//    REQUIRE(r.data.at(ChrT).overB.m.fp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fn() == 217873);
-//    REQUIRE(r.data.at(ChrT).overB.m.nq() == 283);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nr() == 218156);
+//    REQUIRE(r.data.at(ChrIS).overB.m.tp() == mapped);
+//    REQUIRE(r.data.at(ChrIS).overB.m.tp() == 283);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fn() == 217873);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nq() == 283);
 //    
-//    for (auto &i : r.data.at(ChrT).histI)
+//    for (auto &i : r.data.at(ChrIS).histI)
 //    {
 //        REQUIRE(i.second == 0);
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneE)
+//    for (auto &i : r.data.at(ChrIS).geneE)
 //    {
 //        REQUIRE(i.second.lNR);
 //        
@@ -273,7 +273,7 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneI)
+//    for (auto &i : r.data.at(ChrIS).geneI)
 //    {
 //        if (i.second.lNR)
 //        {
@@ -295,7 +295,7 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneB)
+//    for (auto &i : r.data.at(ChrIS).geneB)
 //    {
 //        if (i.first == "R2_33")
 //        {
@@ -334,8 +334,8 @@
 //    {
 //        Alignment align;
 //        
-//        align.cID     = ChrT;
-//        align.name    = ChrT;
+//        align.cID     = ChrIS;
+//        align.name    = ChrIS;
 //        align.i       = 0;
 //        align.mapped  = true;
 //        align.spliced = false;
@@ -346,58 +346,58 @@
 //    
 //    const auto r = RAlign::analyze(aligns);
 //    
-//    REQUIRE(r.data.at(ChrT).unknowns.size() == 100);
+//    REQUIRE(r.data.at(ChrIS).unknowns.size() == 100);
 //    
 //    /*
 //     * There're 76 genes, remember RnaAlign does everything at the gene level to avoid
 //     * the complications due to alternative splicing.
 //     */
 //    
-//    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
-//    REQUIRE(r.data.at(ChrT).histE.size() == 76);
-//    REQUIRE(r.data.at(ChrT).histI.size() == 76);
+//    REQUIRE(r.data.at(ChrIS).overB.hist.size() == 76);
+//    REQUIRE(r.data.at(ChrIS).histE.size() == 76);
+//    REQUIRE(r.data.at(ChrIS).histI.size() == 76);
 //    
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon) == 0);
-//    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 0);
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
-//    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignExon) == 0);
+//    REQUIRE(r.pc(ChrIS, AlignMetric::AlignExon) == 0);
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignIntron) == 0);
+//    REQUIRE(isnan(r.pc(ChrIS, AlignMetric::AlignIntron)));
 //    
-//    REQUIRE(r.data.at(ChrT).overB.m.sn() == 0);
-//    REQUIRE(isnan(r.data.at(ChrT).overB.m.pc()));
-//    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
-//    REQUIRE(r.data.at(ChrT).overB.m.nq() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.tp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fn() == 218156);
+//    REQUIRE(r.data.at(ChrIS).overB.m.sn() == 0);
+//    REQUIRE(isnan(r.data.at(ChrIS).overB.m.pc()));
+//    REQUIRE(r.data.at(ChrIS).overB.m.nr() == 218156);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nq() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.tp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fn() == 218156);
 //
-//    REQUIRE(r.data.at(ChrT).overE.aTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overE.aFP   == 100);
-//    REQUIRE(r.data.at(ChrT).overE.aNQ() == 100);
-//    REQUIRE(r.data.at(ChrT).overE.lTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overE.lNR   == 1190);
-//    REQUIRE(r.data.at(ChrT).overE.lFN() == 1190);
+//    REQUIRE(r.data.at(ChrIS).overE.aTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overE.aFP   == 100);
+//    REQUIRE(r.data.at(ChrIS).overE.aNQ() == 100);
+//    REQUIRE(r.data.at(ChrIS).overE.lTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overE.lNR   == 1190);
+//    REQUIRE(r.data.at(ChrIS).overE.lFN() == 1190);
 //    
-//    REQUIRE(r.data.at(ChrT).overI.aTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.aFP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.aNQ() == 0);
-//    REQUIRE(r.data.at(ChrT).overI.lTP   == 0);
-//    REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
-//    REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
+//    REQUIRE(r.data.at(ChrIS).overI.aTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.aFP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.aNQ() == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.lTP   == 0);
+//    REQUIRE(r.data.at(ChrIS).overI.lNR   == 1028);
+//    REQUIRE(r.data.at(ChrIS).overI.lFN() == 1028);
 //
-//    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == 0);
-//    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
-//    REQUIRE(r.data.at(ChrT).overB.m.nq() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.tp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fp() == 0);
-//    REQUIRE(r.data.at(ChrT).overB.m.fn() == 218156);
+//    REQUIRE(r.sn(ChrIS, AlignMetric::AlignBase) == 0);
+//    REQUIRE(r.pc(ChrIS, AlignMetric::AlignExon) == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nr() == 218156);
+//    REQUIRE(r.data.at(ChrIS).overB.m.nq() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.tp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fp() == 0);
+//    REQUIRE(r.data.at(ChrIS).overB.m.fn() == 218156);
 //    
-//    for (auto &i : r.data.at(ChrT).histI)
+//    for (auto &i : r.data.at(ChrIS).histI)
 //    {
 //        REQUIRE(i.second == 0);
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneE)
+//    for (auto &i : r.data.at(ChrIS).geneE)
 //    {
 //        REQUIRE(i.second.lNR);
 //        REQUIRE(isnan(i.second.pc()));
@@ -408,7 +408,7 @@
 //        REQUIRE(i.second.lTP   == 0);
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneI)
+//    for (auto &i : r.data.at(ChrIS).geneI)
 //    {
 //        if (i.second.lNR)
 //        {
@@ -430,7 +430,7 @@
 //        }
 //    }
 //    
-//    for (auto &i : r.data.at(ChrT).geneB)
+//    for (auto &i : r.data.at(ChrIS).geneB)
 //    {
 //        REQUIRE(i.second.sn() == 0);
 //        REQUIRE(isnan(i.second.pc()));
