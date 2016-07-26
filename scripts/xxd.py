@@ -13,7 +13,7 @@ os.system('rm -rf src/resources/*')
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
-data  = [ 'data/manual.txt',
+data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaAlign.txt',
           'data/manuals/RnaAssembly.txt',
           'data/manuals/RnaExpression.txt',
@@ -44,7 +44,7 @@ data  = [ 'data/manual.txt',
           # ---------- Variant ----------
 
    	      'src/r/plotVLOD.R',
-          'src/r/plotVROC1.R',
+          'src/r/plotVROC.R',
 
           'data/VarQuin/sampled.bed',
           'data/VarQuin/AVA009_v001.vcf',

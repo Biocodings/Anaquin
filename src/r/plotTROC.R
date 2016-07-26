@@ -11,10 +11,11 @@ library(Anaquin)
 # Load reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
-# Create Anaquin data set
-data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval)
+# Classify the sequins against the negative controls
+data$label <- classifyByRefRatio(inputs=abs(data$ExpLFC), refRatio=0)
 
-data$seqs <- TransDiff_(data)
+# Create Anaquin data set
+data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
 
 # Title of the ROC plot
 title <- 'ROC Plot'
