@@ -239,6 +239,18 @@ FileName BedRef()
     return _p.rFiles.at(OPT_R_BED);
 }
 
+static Scripts fixManual(const Scripts &str)
+{
+    auto x = str;
+    
+    boost::replace_all(x, "<b>", "\e[1m");
+    boost::replace_all(x, "</b>", "\e[0m");
+    boost::replace_all(x, "<i>", "\e[3m");
+    boost::replace_all(x, "</i>", "\e[0m");
+    
+    return x;
+}
+
 struct InvalidOptionException : public std::exception
 {
     InvalidOptionException(const std::string &opt) : opt(opt) {}
@@ -345,7 +357,7 @@ static std::string optToStr(int opt)
 static void printUsage()
 {
     extern Scripts Manual();
-    std::cout << Manual() << std::endl;
+    std::cout << fixManual(Manual()) << std::endl;
 }
 
 static void printVersion()
@@ -919,14 +931,7 @@ void parse(int argc, char ** argv)
             throw std::runtime_error("Too many arguments for help usage. Usage: anaquin <tool> -h or anaquin <tool> --help");
         }
 
-        auto man = manual(_p.tool);
-        
-        boost::replace_all(man, "<b>", "\e[1m");
-        boost::replace_all(man, "</b>", "\e[0m");
-        boost::replace_all(man, "<i>", "\e[3m");
-        boost::replace_all(man, "</i>", "\e[0m");
-
-        std::cout << man << std::endl << std::endl;
+        std::cout << fixManual(manual(_p.tool)) << std::endl << std::endl;
         return;
     }
     
