@@ -22,7 +22,7 @@ template <typename T> void update(RExpress::Stats &stats,
 {
     if (Standard::isSynthetic(x.cID))
     {
-        stats.n_syn++;
+        stats.countSyn++;
         const auto &r = Standard::instance().r_trans;
         
         SequinID id;
@@ -84,7 +84,7 @@ template <typename T> void update(RExpress::Stats &stats,
                 o.warn("Duplicate: " + id);
                 
                 ls.sum(id, exp, obs);
-                stats.n_syn--;
+                stats.countSyn--;
             }
             else
             {
@@ -100,7 +100,7 @@ template <typename T> void update(RExpress::Stats &stats,
     }
     else
     {
-        stats.n_gen++;
+        stats.countGen++;
 
         // We'll need the information to estimate the numbers below and above the LOQ
         stats.gData[x.id].abund = x.abund;
@@ -253,13 +253,13 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 }
                 
                 // Important, we'll need to reset counting for isoforms
-                stats.n_syn = 0;
+                stats.countSyn = 0;
                 
                 for (const auto &i : express)
                 {
                     const auto input = r.concent(i.first);
                     
-                    stats.n_syn++;
+                    stats.countSyn++;
                     stats.genes.add(i.first, input, i.second);
                     
                     if (isnan(stats.genes.limit.abund) || input < stats.genes.limit.abund)
@@ -393,12 +393,13 @@ static void generateSummary(const FileName &summary,
     // Number of genomic features below the breakpoint
     SCounts n_below;
     
-    // Counting all replicates
+    // Counting all replicates...
     for (const auto &i : stats)
     {
         Counts above = 0;
         Counts below = 0;
-        
+
+        // Counting for each genome gene/isoform...
         for (const auto &j : i.gData)
         {
             assert(!isnan(j.second.abund));
@@ -459,10 +460,10 @@ static void generateSummary(const FileName &summary,
                                            % rSyn                  // 2
                                            % MixRef()              // 3
                                            % title                 // 4
-                                           % STRING(ms.n_syn)      // 5
+                                           % STRING(ms.countSyn)      // 5
                                            % limit.abund           // 6
                                            % limit.id              // 7
-                                           % STRING(ms.n_gen)      // 8
+                                           % STRING(ms.countGen)      // 8
                                            % STRING(ms.b)          // 9
                                            % STRING(ms.bID)        // 10
                                            % STRING(ms.lInt)       // 11

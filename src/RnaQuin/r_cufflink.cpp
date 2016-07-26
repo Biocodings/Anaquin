@@ -12,7 +12,7 @@ void RCufflink::analyze(const FileName &src, const FileName &output, const RCuff
     const auto &r = Standard::instance().r_trans;
 
     Counts n_iso = 0;
-    Counts n_gen = 0;
+    Counts countGen = 0;
     
     o.generate(output);
     
@@ -27,13 +27,13 @@ void RCufflink::analyze(const FileName &src, const FileName &output, const RCuff
             }
             else if (r.findGene(x.cID, x.tID))
             {
-                n_gen++;
+                countGen++;
             }
         }
     });
 
     // Are we parsing genes.fpkm_tracking?
-    const auto isGene = n_gen > n_iso;
+    const auto isGene = countGen > n_iso;
     
     /*
      * Format: ChrID  Gene_ID  Start  End  Abund

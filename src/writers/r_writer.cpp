@@ -217,9 +217,9 @@ Scripts StatsWriter::linearSummary(const FileName &file,
     const auto llm = stats.linear(true);
 
     return (boost::format(summary) % units
-                                   % mStats.n_syn
+                                   % mStats.countSyn
                                    % mStats.synProp()
-                                   % mStats.n_gen
+                                   % mStats.countGen
                                    % mStats.genProp()
                                    % annot
                                    % mixture()           // 7
@@ -272,8 +272,8 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
         
-        r.n_syn.add((unsigned)mStats[i].n_syn);
-        r.n_gen.add((unsigned)mStats[i].n_gen);
+        r.countSyn.add((unsigned)mStats[i].countSyn);
+        r.countGen.add((unsigned)mStats[i].countGen);
         r.p_chrT.add(mStats[i].synProp());
         r.p_endo.add(mStats[i].genProp());
         

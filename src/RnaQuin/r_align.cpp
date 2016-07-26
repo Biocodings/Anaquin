@@ -409,8 +409,8 @@ static void generateSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                  // 1
                                               % GTFRef()             // 2
-                                              % stats.n_syn          // 3
-                                              % stats.n_gen          // 4
+                                              % stats.countSyn          // 3
+                                              % stats.countGen          // 4
                                               % stats.dilution()     // 5
                                               % stats.n_unmap        // 6
                                               % r.countUExonSyn()    // 7

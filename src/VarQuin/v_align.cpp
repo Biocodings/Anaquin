@@ -403,9 +403,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
                                             % src                     // 2
-                                            % stats.n_syn             // 3
+                                            % stats.countSyn             // 3
                                             % (100 * stats.synProp()) // 4
-                                            % stats.n_gen             // 5
+                                            % stats.countGen             // 5
                                             % (100 * stats.genProp()) // 6
                                             % stats.dilution()        // 7
                                             % r.countGeneSyn()        // 8

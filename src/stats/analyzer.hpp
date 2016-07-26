@@ -81,7 +81,7 @@ namespace Anaquin
     {
         inline Proportion genProp() const
         {
-            return (n_syn + n_gen) ? static_cast<Proportion>(n_gen) / (n_syn + n_gen) : NAN;
+            return (countSyn + countGen) ? static_cast<Proportion>(countGen) / (countSyn + countGen) : NAN;
         }
 
         inline Proportion synProp() const
@@ -91,14 +91,14 @@ namespace Anaquin
 
         inline Proportion dilution() const
         {
-            return (n_syn + n_gen) ? static_cast<Proportion>(n_syn) / (n_syn + n_gen) : NAN;
+            return (countSyn + countGen) ? static_cast<Proportion>(countSyn) / (countSyn + countGen) : NAN;
         }
         
         // Total mapped to the synthetic chromosome
-        Counts n_syn = 0;
+        Counts countSyn = 0;
 
         // Total mapped to the genome
-        Counts n_gen = 0;
+        Counts countGen = 0;
     };
 
     struct AlignmentStats : public MappingStats
@@ -108,8 +108,8 @@ namespace Anaquin
         template <typename T, typename F> void update(const T &t, F f)
         {
             if      (!t.mapped) { n_unmap++; }
-            else if (!f(t))     { n_syn++;  }
-            else                { n_gen++;  }
+            else if (!f(t))     { countSyn++;  }
+            else                { countGen++;  }
         }
 
         template <typename T> void update(const T &t)

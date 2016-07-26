@@ -117,12 +117,12 @@ template <typename T> void update(RFold::Stats &stats, const T &x, const RFold::
     
     if (Standard::isSynthetic(x.cID))
     {
-        stats.n_syn++;
+        stats.countSyn++;
         classifySyn(stats, x, o);
     }
     else
     {
-        stats.n_gen++;
+        stats.countGen++;
     }
 }
 
@@ -275,7 +275,7 @@ static void generateSummary(const FileName &file,
     const auto lm = stats.linear(false);
     
     // No reference coordinate annotation given here
-    const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
+    const auto countSyn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
@@ -299,12 +299,12 @@ static void generateSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src               // 1
-                                            % n_syn             // 2
+                                            % countSyn             // 2
                                             % units             // 3
                                             % MixRef()          // 4
                                             % title             // 5
-                                            % stats.n_syn       // 6
-                                            % stats.n_gen       // 7
+                                            % stats.countSyn       // 6
+                                            % stats.countGen       // 7
                                             % lm.m              // 8
                                             % lm.r              // 9
                                             % lm.R2             // 10

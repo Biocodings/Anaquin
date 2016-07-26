@@ -13,8 +13,8 @@ TEST_CASE("VAlign_Test1")
     Test::VarQuinBed();
     const auto r = VAlign::analyze("data/tests/VarQuin/test1.bam");
 
-    REQUIRE(r.n_syn  == 356332);
-    REQUIRE(r.n_gen  == 0);
+    REQUIRE(r.countSyn  == 356332);
+    REQUIRE(r.countGen  == 0);
     REQUIRE(r.n_unmap == 2015);
     
 //    REQUIRE(r.p.m.ac() == Approx(0.9463336876));

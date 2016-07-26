@@ -126,7 +126,7 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countSNP_FN_Syn() const
+            inline Counts countSNP_FcountSyn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
@@ -134,7 +134,7 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countInd_FN_Syn() const
+            inline Counts countInd_FcountSyn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
@@ -142,7 +142,7 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countVar_FN_Syn() const
+            inline Counts countVar_FcountSyn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
@@ -150,19 +150,19 @@ namespace Anaquin
                 });
             }
             
-            inline Proportion countVarSN_Syn() const
+            inline Proportion countVarScountSyn() const
             {
-                return (Proportion)countVar_TP_Syn() / (countVar_TP_Syn() + countVar_FN_Syn());
+                return (Proportion)countVar_TP_Syn() / (countVar_TP_Syn() + countVar_FcountSyn());
             }
             
-            inline Proportion countSNPSN_Syn() const
+            inline Proportion countSNPScountSyn() const
             {
-                return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FN_Syn());
+                return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FcountSyn());
             }
             
-            inline Proportion countIndSN_Syn() const
+            inline Proportion countIndScountSyn() const
             {
-                return (Proportion)countInd_TP_Syn() / (countInd_TP_Syn() + countInd_FN_Syn());
+                return (Proportion)countInd_TP_Syn() / (countInd_TP_Syn() + countInd_FcountSyn());
             }
             
             inline Proportion countVarPC_Syn() const

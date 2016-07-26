@@ -29,11 +29,11 @@ VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, cons
     {
         if (Standard::isSynthetic(x.cID))
         {
-            stats.n_syn++;
+            stats.countSyn++;
         }
         else
         {
-            stats.n_gen++;
+            stats.countGen++;
         }
 
         out.write((boost::format(format) % x.cID

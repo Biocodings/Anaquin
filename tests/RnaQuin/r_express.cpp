@@ -1,13 +1,55 @@
-//#include <catch.hpp>
-//#include "unit/test.hpp"
-//#include "TransQuin/t_express.hpp"
-//
-//using namespace Anaquin;
-//
+#include <catch.hpp>
+#include "unit/test.hpp"
+#include "RnaQuin/r_express.hpp"
+
+using namespace Anaquin;
+
+TEST_CASE("TExpress_Guided_Genes")
+{
+    Test::transA();
+ 
+    auto o = RExpress::Options();
+    
+    o.format = RExpress::Format::GTF;
+    o.metrs  = RExpress::Metrics::Gene;
+
+    auto r = RExpress::analyze("tests/data/guided.gtf", o);
+
+    REQUIRE(r.countSyn == 74);
+    REQUIRE(r.countGen == 0);
+    REQUIRE(r.dilution() == 1.0);
+
+    REQUIRE(r.gData.size() == 0);
+    REQUIRE(r.genes.size() == 74);
+    
+    REQUIRE(r.["R2_73"].abund == Approx(0.0000587338 + 0.3760520666));
+
+/*
+ struct GenData
+ {
+ // Eg: FPKM
+ double abund = NAN;
+ };
+ 
+ // Histogram distribution
+ std::map<ChrID, Hist> isosHist, geneHist;
+ 
+ LinearStats isos, genes;
+ 
+ // Data for the genome
+ std::map<GenoID, GenData> gData;
+*/
+}
+
+TEST_CASE("TExpress_Guided_Isoforms")
+{
+
+}
+
 //TEST_CASE("TExpress_AllZeros")
 //{
 //    Test::transA();
-//    
+//
 //    std::vector<ParserCufflink::Data> x;
 //    
 //    for (const auto &i : Standard::instance().r_trans.data())

@@ -36,7 +36,7 @@ namespace Anaquin
         SStrings files;
 
         // Eg: 2387648 (15.56%)
-        SCounts n_syn, n_gen;
+        SCounts countSyn, countGen;
         
         // Eg: 25738262 (67.56%)
         SProps p_chrT, p_endo;

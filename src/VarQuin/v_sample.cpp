@@ -70,8 +70,8 @@ struct Subsampler
             }
         }
         
-        stats.tot.syn  = rr.n_syn;
-        stats.tot.gen  = rr.n_gen;
+        stats.tot.syn  = rr.countSyn;
+        stats.tot.gen  = rr.countGen;
         stats.samp.syn = s_syn;
         stats.samp.gen = s_gen;
         

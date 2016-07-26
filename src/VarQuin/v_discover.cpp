@@ -127,12 +127,12 @@ struct VDiscoverImpl : public VCFDataUser
 
         if (Standard::isSynthetic(cID))
         {
-            stats->n_syn++;
+            stats->countSyn++;
             f();
         }
         else
         {
-            stats->n_gen++;
+            stats->countGen++;
             
             if (Standard::isGenomic(cID))
             {
@@ -534,16 +534,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 14
                                                 % stats.countInd_FP_Syn()    // 15
                                                 % stats.countVar_FP_Syn()    // 16
-                                                % stats.countSNP_FN_Syn()    // 17
-                                                % stats.countInd_FN_Syn()    // 18
-                                                % stats.countVar_FN_Syn()    // 19
-                                                % stats.countVarSN_Syn()     // 20
+                                                % stats.countSNP_FcountSyn()    // 17
+                                                % stats.countInd_FcountSyn()    // 18
+                                                % stats.countVar_FcountSyn()    // 19
+                                                % stats.countVarScountSyn()     // 20
                                                 % stats.countVarPC_Syn()     // 21
                                                 % (1-stats.countVarPC_Syn()) // 22
-                                                % stats.countSNPSN_Syn()     // 23
+                                                % stats.countSNPScountSyn()     // 23
                                                 % stats.countSNPPC_Syn()     // 24
                                                 % (1-stats.countSNPPC_Syn()) // 25
-                                                % stats.countIndSN_Syn()     // 26
+                                                % stats.countIndScountSyn()     // 26
                                                 % stats.countIndPC_Syn()     // 27
                                                 % (1-stats.countIndPC_Syn()) // 28
                          ).str());
@@ -636,16 +636,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 19
                                                 % stats.countInd_FP_Syn()    // 20
                                                 % stats.countVar_FP_Syn()    // 21
-                                                % stats.countSNP_FN_Syn()    // 22
-                                                % stats.countInd_FN_Syn()    // 23
-                                                % stats.countVar_FN_Syn()    // 24
-                                                % stats.countVarSN_Syn()     // 25
+                                                % stats.countSNP_FcountSyn()    // 22
+                                                % stats.countInd_FcountSyn()    // 23
+                                                % stats.countVar_FcountSyn()    // 24
+                                                % stats.countVarScountSyn()     // 25
                                                 % stats.countVarPC_Syn()     // 26
                                                 % (1-stats.countVarPC_Syn()) // 27
-                                                % stats.countSNPSN_Syn()     // 28
+                                                % stats.countSNPScountSyn()     // 28
                                                 % stats.countSNPPC_Syn()     // 29
                                                 % (1-stats.countSNPPC_Syn()) // 30
-                                                % stats.countIndSN_Syn()     // 31
+                                                % stats.countIndScountSyn()     // 31
                                                 % stats.countIndPC_Syn()     // 32
                                                 % (1-stats.countIndPC_Syn()) // 33
                                                 % ms.b                       // 34
@@ -695,7 +695,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.info("TP: " + std::to_string(stats.countVar_TP_Syn()));
     o.info("FP: " + std::to_string(stats.countVar_FP_Syn()));
-    o.info("FN: " + std::to_string(stats.countVar_FN_Syn()));
+    o.info("FN: " + std::to_string(stats.countVar_FcountSyn()));
 
     o.info("Generating statistics");
 

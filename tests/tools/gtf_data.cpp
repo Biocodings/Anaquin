@@ -107,12 +107,6 @@ TEST_CASE("GTF_Merged")
     //REQUIRE(r.il.at(ChrIS).at(Locus(2227518, 2235700)) == 3);
 }
 
-TEST_CASE("GTF_Sampled")
-{
-    const auto r = gtfData(Reader("data/tests/RnaQuin/sampled.gtf"));
-    REQUIRE(r.countGene() == 598);
-}
-
 #ifdef GENCODE_TEST
 
 /*

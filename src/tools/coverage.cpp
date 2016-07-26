@@ -21,11 +21,11 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
         
         if (Standard::isSynthetic(x.cID))
         {
-            stats.n_syn++;
+            stats.countSyn++;
         }
         else if (x.cID != "*")
         {
-            stats.n_gen++;
+            stats.countGen++;
         }
         else
         {
