@@ -57,7 +57,7 @@ namespace Anaquin
             return var2hash(id, type(), l);
         }
         
-        // Eg: chrT
+        // Eg: chrIS
         ChrID cID;
 
         // Eg: D_1_10

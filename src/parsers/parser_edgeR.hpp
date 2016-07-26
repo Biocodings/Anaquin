@@ -67,9 +67,9 @@ namespace Anaquin
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    if (s.findGene(ChrT, t.gID))
+                    if (s.findGene(ChrIS, t.gID))
                     {
-                        t.cID = ChrT;
+                        t.cID = ChrIS;
                     }
                     else
                     {

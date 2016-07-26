@@ -106,10 +106,10 @@ namespace Anaquin
                 t.logF_   = stof(toks[FLogFold]);
                 t.stats  = stof(toks[FTestStats]);
                 
-                // Eg: chrT:1082119-1190836
+                // Eg: chrIS:1082119-1190836
                 Tokens::split(toks[FLocus], ":", temp);
                 
-                // Eg: chrT
+                // Eg: chrIS
                 t.cID = temp[0];
                 
                 t.p = stold(toks[FPValue]);

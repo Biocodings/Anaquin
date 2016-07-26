@@ -272,8 +272,6 @@ SInflectStats StatsWriter::multiInfect(const std::vector<FileName>     &files,
         
         r.countSyn.add((unsigned)mStats[i].countSyn);
         r.countGen.add((unsigned)mStats[i].countGen);
-        r.p_chrT.add(mStats[i].synProp());
-        r.p_endo.add(mStats[i].genProp());
         
         r.b.add(b);
         r.lr.add(inf.lr);

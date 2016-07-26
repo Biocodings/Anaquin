@@ -55,7 +55,7 @@ void ParserCufflink::parse(const FileName &file, std::function<void (const Parse
         t.id  = tokens[T_GeneID];
         t.tID = tokens[T_TrackID];
 
-        // Eg: chrT:1082119-1190836
+        // Eg: chrIS:1082119-1190836
         Tokens::split(tokens[T_Locus], ":", temp);
         
         t.cID = temp[0];

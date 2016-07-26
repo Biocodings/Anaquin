@@ -89,9 +89,7 @@ namespace Anaquin
                 d.allF  = static_cast<Proportion>(d.readV) / (d.readR + d.readV);
 
                 /*
-                 * Eg:
-                 *
-                 *   chrT  631340  A  A  3976  0
+                 * Eg: chrIS  631340  A  A  3976  0
                  *
                  * In the example, the sixth column is the reads for the variant allele.
                  *

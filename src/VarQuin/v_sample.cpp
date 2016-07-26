@@ -401,8 +401,8 @@ struct Subsampler
 #endif
         
         /*
-         * Reproduce %6%: samtools view sampled.bam | cut -f3,6 | grep chrT | grep -v '*' | wc
-         * Reprodcue %7%: samtools view sampled.bam | cut -f3,6 | grep -v chrT | grep -v '*' | wc
+         * Reproduce %6%: samtools view sampled.bam | cut -f3,6 | grep chrIS | grep -v '*' | wc
+         * Reprodcue %7%: samtools view sampled.bam | cut -f3,6 | grep -v chrIS | grep -v '*' | wc
          */
         
         /*

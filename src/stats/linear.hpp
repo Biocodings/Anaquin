@@ -38,12 +38,6 @@ namespace Anaquin
         // Eg: 2387648 (15.56%)
         SCounts countSyn, countGen;
         
-        // Eg: 25738262 (67.56%)
-        SProps p_chrT, p_endo;
-        
-        // Eg: 56 sequins
-        //Counts n_ref;
-        
         // Eg: sequins
         Units units;
         

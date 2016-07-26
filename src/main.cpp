@@ -584,7 +584,7 @@ template <typename Reference> void addRef(Reference ref)
 
                 default:
                 {
-                    addRef(ChrT, ref, _p.opts[opt]);
+                    addRef(ChrIS, ref, _p.opts[opt]);
                     break;
                 }
             }

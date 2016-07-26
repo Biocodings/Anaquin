@@ -121,12 +121,6 @@ namespace Anaquin
         }
     };
 
-    struct FusionStats : public MappingStats
-    {
-        // Number of fusions spanning across the genome and the synthetic chromosome
-        Counts chrT_endo = 0;
-    };
-
     struct WriterOptions
     {
         enum LogLevel
