@@ -10,12 +10,6 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cufflink.hpp"
 
-// Defined in resources.cpp
-extern Anaquin::FileName MixRef();
-
-// Defined in resources.cpp
-extern Anaquin::FileName GTFRef();
-
 namespace Anaquin
 {
     struct RExpress : public Analyzer
@@ -70,14 +64,20 @@ namespace Anaquin
             
             for (const auto &file : files)
             {
-                stats.push_back(analyze(file, o));
+                const auto x = analyze(file, o);
+                
+                if (x.genes.empty() && x.isos.empty())
+                {
+                    throw std::runtime_error("Failed to find anything on the in-silico chromosome: " + file);
+                }
+                
+                stats.push_back(x);
             }
 
             return stats;
         }
 
         static std::vector<Stats> analyze(const std::vector<TestData> &, const Options &);
-
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }

@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include "data/tokens.hpp"
+#include "data/convert.hpp"
 #include "data/variant.hpp"
+#include "data/convert.hpp"
 #include "parsers/parser.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -98,15 +100,15 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.allF  = stod(toks[VarFreq]);
+                d.allF = s2d(toks[VarFreq]);
                 
                 /*
                  * TODO: VarScan does give quality but it's not the same as quality in VCF.
                  *       VarScan gives quality score for the reference and alternative allele.
                  */
                 
-                const auto readR = stod(toks[Reads1]);
-                const auto readV = stod(toks[Reads2]);
+                const auto readR = s2d(toks[Reads1]);
+                const auto readV = s2d(toks[Reads2]);
                 
                 d.readR = readR;
                 d.readV = readV;

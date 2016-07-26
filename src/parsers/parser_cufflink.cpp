@@ -1,5 +1,6 @@
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
+#include "data/convert.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 using namespace Anaquin;
@@ -69,9 +70,9 @@ void ParserCufflink::parse(const FileName &file, std::function<void (const Parse
         
         try
         {
-            t.abund = stod(tokens[T_FPKM]);
-            t.lFPKM = stod(tokens[T_FPKM_LO]);
-            t.uFPKM = stod(tokens[T_FPKM_HI]);
+            t.abund = s2d(tokens[T_FPKM]);
+            t.lFPKM = s2d(tokens[T_FPKM_LO]);
+            t.uFPKM = s2d(tokens[T_FPKM_HI]);
         }
         catch (const std::out_of_range &)
         {

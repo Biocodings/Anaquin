@@ -75,22 +75,22 @@ namespace Anaquin
     struct LOQModel
     {
         // Name of the sequin
-        std::string id;
+        SequinID id;
         
         // Pearson's correlation
-        double lr, rr;
+        double lr = NAN, rr = NAN;
         
         // Coefficient of determination before and after the break-point
-        double lR2, rR2;
+        double lR2 = NAN, rR2 = NAN;
         
         // Slope before and after the break-point
-        double lSl, rSl;
+        double lSl = NAN, rSl = NAN;
         
         // Intercept before and after the break-point
-        double lInt, rInt;
-        
+        double lInt = NAN, rInt = NAN;
+
         // The optimal breakpoint
-        double b;
+        double b = NAN;
     };
 
     /*

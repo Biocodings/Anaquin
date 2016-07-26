@@ -4,6 +4,7 @@
 #include "data/data.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
+#include "data/convert.hpp"
 #include "data/standard.hpp"
 #include "parsers/parser.hpp"
 
@@ -89,7 +90,7 @@ namespace Anaquin
                     }
 
                     // Normalized abunda (like FPKM)
-                    d.abund = stod(toks[TPM]);
+                    d.abund = s2d(toks[TPM]);
                     
                     f(d, p);
                 }

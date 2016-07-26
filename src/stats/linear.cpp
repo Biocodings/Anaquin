@@ -44,25 +44,28 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
     // The break we're looking for
     l.b = r.b;
     
-    l.lr   = r.blr();
-    l.rr   = r.brr();
-    l.lR2  = r.blR2();
-    l.rR2  = r.brR2();
-    l.lSl  = r.blSl();
-    l.rSl  = r.brSl();
-    l.lInt = r.blInt();
-    l.rInt = r.brInt();
-
-    for (auto i = 0; i < d.ids.size(); i++)
+    if (!isnan(l.b))
     {
-        if (d.x[i] == l.b)
+        l.lr   = r.blr();
+        l.rr   = r.brr();
+        l.lR2  = r.blR2();
+        l.rR2  = r.brR2();
+        l.lSl  = r.blSl();
+        l.rSl  = r.brSl();
+        l.lInt = r.blInt();
+        l.rInt = r.brInt();
+        
+        for (auto i = 0; i < d.ids.size(); i++)
         {
-            l.id = d.ids[i];
-            break;
+            if (d.x[i] == l.b)
+            {
+                l.id = d.ids[i];
+                break;
+            }
         }
+        
+        assert(!l.id.empty());
     }
-
-    assert(!l.id.empty());
     
     return l;
 }

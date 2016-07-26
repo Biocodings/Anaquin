@@ -4,6 +4,7 @@
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
+#include "data/convert.hpp"
 #include "parsers/parser.hpp"
 
 namespace Anaquin
@@ -115,18 +116,18 @@ namespace Anaquin
                         
                         if (toks.size() == 1)
                         {
-                            d.readR = stod(toks[0]);
-                            d.readV = stod(toks[0]);
+                            d.readR = s2d(toks[0]);
+                            d.readV = s2d(toks[0]);
                         }
                         else
                         {
-                            d.readR = stod(toks[0]);
-                            d.readV = stod(toks[1]);
+                            d.readR = s2d(toks[0]);
+                            d.readV = s2d(toks[1]);
                         }
                     }
                     else if (formats[j] == "DP")
                     {
-                        d.depth = stod(t[j]);
+                        d.depth = s2d(t[j]);
                     }
                 }
 
@@ -135,7 +136,7 @@ namespace Anaquin
                     continue;
                 }
 
-                d.qual = fields[Field::Qual] != "." ? stod(fields[Field::Qual]) : NAN;
+                d.qual = fields[Field::Qual] != "." ? s2d(fields[Field::Qual]) : NAN;
 
                 f(d, p);
             }

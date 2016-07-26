@@ -10,7 +10,19 @@ namespace Anaquin
 {
     inline double s2d(const std::string &x)
     {
-        return (x == "NA" || x == "-") ? NAN : stod(x);
+        if (x == "NA" || x == "-")
+        {
+            return NAN;
+        }
+        
+        try
+        {
+            return stod(x);
+        }
+        catch(...)
+        {
+            throw std::runtime_error("Failed to parse \"" + x + "\". This is not a number.");
+        }
     }
 
     inline long double ss2ld(const std::string &s)

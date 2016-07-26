@@ -10,7 +10,7 @@ TEST_CASE("RSample_Negative")
     
     const auto r = Test::test("RnaSubsample -method -0.5 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid value for -method. Sampling fraction must be greater than zero.\n");
+    REQUIRE(r.error == "[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -20,7 +20,7 @@ TEST_CASE("RSample_Zero")
     
     const auto r = Test::test("RnaSubsample -method 0.00 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid value for -method. Sampling fraction must be greater than zero.\n");
+    REQUIRE(r.error == "[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -30,7 +30,7 @@ TEST_CASE("RSample_One")
     
     const auto r = Test::test("RnaSubsample -method 1.00 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid value for -method. Sampling fraction must be less than one.\n");
+    REQUIRE(r.error == "[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n");
     REQUIRE(r.status == 1);
 }
 
@@ -40,6 +40,6 @@ TEST_CASE("RSample_Ten")
     
     const auto r = Test::test("RnaSubsample -method 10 -ufiles tests/data/sampled.bam");
     
-    REQUIRE(r.error == "Invalid value for -method. Sampling fraction must be less than one.\n");
+    REQUIRE(r.error == "[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n");
     REQUIRE(r.status == 1);
 }

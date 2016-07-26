@@ -3,6 +3,7 @@
 
 #include "data/dtest.hpp"
 #include "data/tokens.hpp"
+#include "data/convert.hpp"
 #include "data/standard.hpp"
 #include "stats/analyzer.hpp"
 
@@ -96,16 +97,16 @@ namespace Anaquin
                         t.status = DiffTest::Status::Tested;
 
                         // Normalized average counts
-                        t.mean = stod(toks[Field::BaseMean]);
+                        t.mean = s2d(toks[Field::BaseMean]);
                         
                         // Measured log-fold change
-                        t.logF_ = stod(toks[Field::Log2Fold]);
+                        t.logF_ = s2d(toks[Field::Log2Fold]);
 
                         t.samp1 = NAN;
                         t.samp2 = NAN;
 
                         // Standard error for the log-fold change
-                        t.logFSE = stod(toks[Field::Log2FoldSE]);
+                        t.logFSE = s2d(toks[Field::Log2FoldSE]);
                         
                         t.p = stold(toks[Field::PValue]);
                         

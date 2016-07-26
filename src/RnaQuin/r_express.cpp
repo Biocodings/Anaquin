@@ -7,6 +7,9 @@
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
+extern FileName MixRef();
+
 typedef RExpress::Metrics Metrics;
 
 static bool shouldAggregate(const RExpress::Options &o)
@@ -120,11 +123,6 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
     assert(!stats.geneHist.empty());
     
     f(stats);
-    
-    if (stats.genes.empty() && stats.isos.empty())
-    {
-        throw std::runtime_error("Failed to find anything for the synthetic chromosome");
-    }
     
     return stats;
 }

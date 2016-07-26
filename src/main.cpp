@@ -518,7 +518,7 @@ FileName refFile()
 
 static void printError(const std::string &msg)
 {
-    std::cerr << msg << std::endl;
+    std::cerr << "[ERRO]: " << msg << std::endl;
 }
 
 template <typename Mixture> void addMix(Mixture mix)
@@ -1446,6 +1446,10 @@ int parse_options(int argc, char ** argv)
     catch (const InvalidFileError &ex)
     {
         printError((boost::format("%1%%2%") % "Invalid command. File is invalid: " % ex.file).str());
+    }
+    catch (const std::runtime_error &ex)
+    {
+        printError(ex.what());
     }
     catch (const std::exception &ex)
     {

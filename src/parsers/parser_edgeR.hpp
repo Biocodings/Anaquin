@@ -3,6 +3,7 @@
 
 #include "data/dtest.hpp"
 #include "data/tokens.hpp"
+#include "data/convert.hpp"
 
 namespace Anaquin
 {
@@ -84,7 +85,7 @@ namespace Anaquin
                         t.status = DiffTest::Status::Tested;
 
                         // Measured log-fold change
-                        t.logF_ = stod(toks[Field::LogFC]);
+                        t.logF_ = s2d(toks[Field::LogFC]);
                         
                         t.samp1 = NAN;
                         t.samp2 = NAN;

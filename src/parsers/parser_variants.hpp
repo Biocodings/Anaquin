@@ -1,9 +1,9 @@
 #ifndef PARSER_VARIANT_HPP
 #define PARSER_VARIANT_HPP
 
-#include <iostream>
 #include "data/tokens.hpp"
 #include "data/variant.hpp"
+#include "data/convert.hpp"
 #include "parsers/parser.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -80,11 +80,10 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.qualR = stod(toks[QualR]);
-                d.qualV = stod(toks[QualV]);
-                
-                d.readR = stod(toks[ReadR]);
-                d.readV = stod(toks[ReadV]);
+                d.qualR = s2d(toks[QualR]);
+                d.qualV = s2d(toks[QualV]);
+                d.readR = s2d(toks[ReadR]);
+                d.readV = s2d(toks[ReadV]);
                 d.depth = d.readR + d.readV;
 
                 d.allF  = static_cast<Proportion>(d.readV) / (d.readR + d.readV);

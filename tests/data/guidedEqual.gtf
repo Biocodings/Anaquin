@@ -1,0 +1,8 @@
+chrIS	Cufflinks	transcript	2298170	2304689	1	+	.	gene_id "R2_73"; transcript_id "R2_73_1"; FPKM "0.05"; frac "0.000038"; conf_lo "0.000000"; conf_hi "0.619251"; cov "0.000054";
+chrIS	Cufflinks	transcript	2298187	2354936	1000	+	.	gene_id "R2_73"; transcript_id "R2_73_2"; FPKM "0.05"; frac "0.999962"; conf_lo "0.007584"; conf_hi "0.744520"; cov "0.344846";
+chrIS	Cufflinks	transcript	2456891	2505699	1000	+	.	gene_id "R2_71"; transcript_id "R2_71_1"; FPKM "0.05"; frac "1.000000"; conf_lo "0.000000"; conf_hi "0.970464"; cov "0.114431";
+chrIS	Cufflinks	transcript	2456898	2504943	1	+	.	gene_id "R2_71"; transcript_id "R2_71_2"; FPKM "0.05"; frac "0.000000"; conf_lo "0.000000"; conf_hi "1.349964"; cov "0.000000";
+chrIS	Cufflinks	transcript	2379320	2386699	1	-	.	gene_id "R2_72"; transcript_id "R2_72_1"; FPKM "0.05"; frac "0.000000"; conf_lo "0.000000"; conf_hi "0.332203"; cov "0.000000";
+chrIS	Cufflinks	transcript	2379320	2386699	1000	-	.	gene_id "R2_72"; transcript_id "R2_72_2"; FPKM "0.05"; frac "0.505182"; conf_lo "0.000000"; conf_hi "0.707537"; cov "0.185260";
+chrIS	Cufflinks	transcript	2379820	2386699	1	-	.	gene_id "R2_72"; transcript_id "R2_72_4"; FPKM "0.05"; frac "0.000221"; conf_lo "0.000000"; conf_hi "0.382575"; cov "0.000103";
+chrIS	Cufflinks	transcript	2379820	2386699	939	-	.	gene_id "R2_72"; transcript_id "R2_72_3"; FPKM "0.05"; frac "0.494597"; conf_lo "0.000000"; conf_hi "0.649970"; cov "0.174007";

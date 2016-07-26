@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
+#include "data/convert.hpp"
 #include "stats/analyzer.hpp"
 
 extern bool __hack__;
@@ -146,7 +147,7 @@ namespace Anaquin
                             }
                             else if (nameVal[0] == "FPKM")
                             {
-                                x.fpkm = stod(nameVal[1]);
+                                x.fpkm = s2d(nameVal[1]);
                             }
                         }
                     }
