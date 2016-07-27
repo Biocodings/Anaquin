@@ -69,18 +69,15 @@
         uc <- 10^(kpred$fit + qnorm(prob) * kpred$se.fit)
         lc <- 10^(kpred$fit - qnorm(prob) * kpred$se.fit)
     }
-    else if (algo == 'loess')
-    {
-        
-    }
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
     #PPPP <- .smoothCurve1234(model, x, ratio)
     
 
-        
-    d <- data.frame(ratio=ratio, knots=knots, pred=kpred$fit, uc=uc, lc=lc)
+    knots    <- 10^knots    
+    p <- 10^kpred$fit
+    d <- data.frame(ratio=ratio, knots=knots, pred=p, uc=uc, lc=lc)
 
        
      
@@ -132,8 +129,11 @@
             ABCD <- .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval)
 
             model <- rbind(model, ABCD[['TEMP']])
+
+            a <- ABCD[['TEMP']]
+            b <- .smoothCurve(ABCD, t$measured, ratio)
             
-            lines <- rbind(lines, .smoothCurve(ABCD, t$measured, ratio))
+            lines <- rbind(lines, a)
         }, error = function(e)
         {
             print(e)
@@ -178,8 +178,8 @@
     
     if (!is.null(data$lines))
     {
-        p <- p + geom_line(data=data$lines, aes(x=x.new, y=fitLine, colour=ratio), show.legend=FALSE)
-        p <- p + geom_ribbon(data=data$lines, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper,
+        p <- p + geom_line(data=data$lines, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
+        p <- p + geom_ribbon(data=data$lines, aes(x=knots, y=pred, ymin=lc, ymax=uc,
                              fill=ratio), alpha=0.3, colour=NA, show.legend=FALSE)
     }
     
