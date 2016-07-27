@@ -4,22 +4,33 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.fitCurve <- function(x, y, algo='locfit', showFitting=TRUE)
+.fitCurve <- function(x, y, algo='locfit', showFitting=TRUE, prob=0.90)
 {
     if (showFitting)
     {
         #plot(log10(x), log10(y))
     }
 
-    fit <- locfit(y~lp(x), maxk=300)
+    r <- locfit(y~lp(x), maxk=300)
 
     if (showFitting)
     {
-        plot(fit, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
+        plot(r, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
         #plot(fit,band=band,get.data=TRUE,xlim=range(log10(mn)))
     }
+
+    #
+    # Reference: http://www.r-bloggers.com/thats-smooth
+    #
     
-    return (fit)
+    x.new <- seq(min(x), max(x), length.out=100)
+    X <- preplot(r, band='pred', newdata=x.new)
+    x.new <- 10^x.new
+    
+    uc <- 10^(X$fit + qnorm(prob) * X$se.fit)
+    lc <- 10^(X$fit - qnorm(prob) * X$se.fit)
+
+    return (list(fitted=r, uc=uc, lc=lc))
 }
 
 .fitLODR <- function(data, ...)
@@ -48,9 +59,9 @@
         cutoff <- log10(cutoff)
         
         # Fit a local regression on the log10 scale
-        fit <- .fitCurve(log10(mn), log10(pval))
+        r <- .fitCurve(log10(mn), log10(pval))
 
-        X <- preplot(fit, band=band, newdata=log10(mn))
+        X <- preplot(r$fitted, band=band, newdata=log10(mn))
 
         find.mn <- function(mn, fit, cutoff, prob)
         {
@@ -85,7 +96,7 @@
             t.lodr
         }    
         
-        lodr <- segmented.search(fit)
+        lodr <- segmented.search(r$fitted)
 
         return (c(lodr$objective, lodr$minimum))
     }
@@ -107,17 +118,16 @@
         {
                 print(paste('Estmating LODR for', ratio))
                 
-                # Performs a local regression
-                fit <- .fitCurve(log10(t$measured),log10(t$pval))
+                r <- .fitCurve(log10(t$measured),log10(t$pval))
                 
                 x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
-                X <- preplot(fit, band=band, newdata=x.new)
+                X <- preplot(r$fitted, band=band, newdata=x.new)
                 
                 x.new    <- 10^x.new
                 fitLine  <- 10^(X$fit)
-                fitUpper <- 10^(X$fit + qnorm(prob) * X$se.fit)  # Upper confidence interval
-                fitLower <- 10^(X$fit - qnorm(prob) * X$se.fit)  # Lower confidence interval
-                
+                fitUpper <- r$uc
+                fitLower <- r$lc
+
                 fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio)
                 lineDat <- rbind(lineDat, fitData)
             }, error = function(e)
