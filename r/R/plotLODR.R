@@ -4,33 +4,44 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.getLine <- function(model, y, ratio, band='pred')
+.smoothCurve <- function(model, y, ratio, algo='locfit', band='pred')
 {
-    x.new <- seq(min(log10(y)), max(log10(y)), length.out=100)
-    X <- preplot(model$fitted, band=band, newdata=x.new)
-    
-    x.new    <- 10^x.new
-    fitLine  <- 10^(X$fit)
-    fitUpper <- model$uc
-    fitLower <- model$lc
+    if (algo == 'locfit')
+    {
+        x.new <- seq(min(log10(y)), max(log10(y)), length.out=100)
+
+        x <- predict(model$fitted, newdata=x.new)
+        
+        x.new    <- 10^x.new
+        fitLine  <- 10^(x)
+        fitUpper <- model$uc
+        fitLower <- model$lc
+    }
+    else if (algo == 'loess')
+    {
+        
+    }
 
     return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
 }
 
-.fitCurve <- function(x, y, algo='locfit', showFitting=TRUE, prob=0.90)
+.getLODR <- function()
 {
-    if (showFitting)
+    
+}
+
+.fitCurve <- function(x, y, algo='locfit', showFitting=FALSE, prob=0.90)
+{
+    if (algo == 'locfit')
     {
-        #plot(log10(x), log10(y))
+        model <- locfit(y~lp(x), maxk=300)
+    }
+    else if (algo == 'loess')
+    {
+        
     }
 
-    model <- locfit(y~lp(x), maxk=300)
-
-    if (showFitting)
-    {
-        plot(model, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
-        #plot(fit,band=band,get.data=TRUE,xlim=range(log10(mn)))
-    }
+    if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
     #
     # Reference: http://www.r-bloggers.com/thats-smooth
@@ -82,7 +93,7 @@
             # Fitted curve for the ratio
             model <- .fitCurve(log10(t$measured),log10(t$pval))
             
-            lineDat <- rbind(lineDat, .getLine(model, t$measured, ratio))
+            lineDat <- rbind(lineDat, .smoothCurve(model, t$measured, ratio))
         }, error = function(e)
         {
             print(e)
@@ -143,12 +154,12 @@
     
     if (!is.null(data$lineDat))
     {
-        p <- p + geom_line(data=data$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)
+        p <- p + geom_line(data=data$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show.legend=FALSE)
         
         if (x$showConf)
         {
             p <- p + geom_ribbon(data=data$lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
-                                 alpha=0.3, colour=NA, show_guide=FALSE)
+                                 alpha=0.3, colour=NA, show.legend=FALSE)
         }
     }
     
