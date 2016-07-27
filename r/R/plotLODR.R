@@ -31,10 +31,7 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    knots  <- 10^knots    
-    p <- 10^kpred$fit
-
-    return (data.frame(ratio=ratio, knots=knots, pred=p, uc=uc, lc=lc))
+    return (data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc))
 }
 
 .fitLODR <- function(data, ...)
