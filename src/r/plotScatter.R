@@ -15,13 +15,13 @@ title <- '%5%'
 xlab  <- '%6%'
 ylab  <- '%7%'
 
-# Expected input concentration (the x-axis)
+# Expected input concentration (x-axis)
 input <- %8%
 
-# Measured expression (the y-axis)
+# Measured expression (y-axis)
 measured <- %9%
 
 # Create Anaquin data for plotScatter
-data <- createAnaquinData(names=row.names(data), %10%=input, measured=measured)
+anaquin <- createAnaquinData(names=row.names(data), %10%=input, measured=measured)
 
-plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)  
+plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)

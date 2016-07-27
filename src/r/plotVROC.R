@@ -29,10 +29,7 @@ if (all(is.na(data$Pval)))
 # Change to 'SNP' or 'Indel'
 #data <- data[data$Type=='SNP',]
 
-# Change this for another title
 title <- 'ROC Plot'
-
-# Change this for another legend title
 legTitle <- 'Allele Freq.'
 
 # How to rank the ROC points
@@ -49,7 +46,7 @@ if (nrow(data[data$Label=='FP',]) > 0)
     data[data$Label=='FP',]$ExpFold <- 0
 }
 
-# Create Anaquin data set
-data <- createAnaquinData(names=data$name, input=data$ExpFold, score=score, label=data$Label)
+# Create Anaquin data for plotROC
+anaquin <- createAnaquinData(names=data$name, input=data$ExpFold, score=score, label=data$Label)
 
-plotROC(data, title=title, legTitle=legTitle, refRats=0)
+plotROC(anaquin, title=title, legTitle=legTitle, refRats=0)

@@ -20,26 +20,19 @@ data <- data[data$Label!='FP',]
 # Change to 'Indel' or delete the line for all variants
 data <- data[data$Type=='SNP',]
 
-# Change this for another title
-title <- 'LODR Plot'
-
-# Change this for another legend title
+xlab     <- 'Expected allele frequency (log10)'
+ylab     <- 'P-value (log10)'
+title    <- 'LODR Plot'
 legTitle <- 'Allele Freq'
-
-# Change this for the x-axis label
-xlab='Expected allele frequency (log10)'
-
-# Change this for the y-axis label
-ylab='P-value (log10)'
 
 data$EFold <- round(data$ExpRef / data$ExpVar)
 
-# Create Anaquin data set
-data <- createAnaquinData(names=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
+xBreaks <- c(1e-3, 1e-2, 1e-1)                    
+xLabels <- c('-3', '-2', '-1')
+yBreaks <- c(1, 1e-100, 1e-200, 1e-300)
+yLabels <- c(1, -100, -200, -300)
 
-xBreaks=c(1e-3, 1e-2, 1e-1)                    
-xLabels=c('-3', '-2', '-1')
-yBreaks=c(1, 1e-100, 1e-200, 1e-300)
-yLabels=c(1, -100, -200, -300)
+# Create Anaquin data set for plotLODR
+anaquin <- createAnaquinData(names=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
 
-plotLODR(data, shouldFit=FALSE, xBreaks = xBreaks, xLabels=xLabels, yBreaks=yBreaks, yLabels=yLabels, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)
+plotLODR(anaquin, shouldFit=FALSE, xBreaks = xBreaks, xLabels=xLabels, yBreaks=yBreaks, yLabels=yLabels, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)

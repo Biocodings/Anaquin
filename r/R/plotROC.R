@@ -95,7 +95,7 @@ plotROC <- function(data, refRats, ...)
     p <- ggplot(data=ROCs, aes(x=FPR, y=TPR))               + 
             geom_abline(intercept=0, slope=1, linetype=2)   +
             geom_path(size=1, aes(colour=ratio), alpha=0.5) +
-            labs(colour=legTitle)                           +
+            labs(colour=x$legTitle)                         +
             theme_bw()
 
     if (!is.null(x$title))

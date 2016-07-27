@@ -11,20 +11,20 @@ library(Anaquin)
 # Load reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
-# Specify the sensitivity threshold
+# Specify sensitivity threshold
 threshold <- 0.70
 
 title <- '%5%'
 xlab  <- '%6%'
 ylab  <- '%7%'
 
-# Expected input concentration (the x-axis)
+# Expected input concentration (x-axis)
 input <- %8%
 
-# Measured sensitivity (the y-axis)
+# Measured sensitivity (y-axis)
 sn <- %9%
 
 # Create Anaquin data for plotSensitivity
-data <- createAnaquinData(names=row.names(data), input=input, sensitivity=sn)
+anaquin <- createAnaquinData(names=row.names(data), input=input, sensitivity=sn)
 
-plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)
+plotSensitivity(anaquin, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)
