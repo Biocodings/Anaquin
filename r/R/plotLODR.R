@@ -78,16 +78,6 @@
     
     lineDat <- NULL;
     
-    lodr.resPlot <- NULL; set.seed(1)
-    lodr.resLess <- NULL; set.seed(1)
-    
-    #
-    # ---------------------------- Fitting Local Regression ----------------------------
-    #
-    # Fit a local regression for each ratio. We'll also estimate the confidence interval for each
-    # model. Refer to the ERCC paper for more details.
-    #
-    
     prob <- 0.90
     
     # We'll render for each ratio
@@ -147,9 +137,6 @@
                     t.resLess <- t.res
                     t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
                     t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
-                    
-                    lodr.resPlot <- rbind(lodr.resPlot, c(round(abs(as.numeric(ratio)), 3), t.res))
-                    lodr.resLess <- rbind(lodr.resLess, c(round(abs(as.numeric(ratio)), 3), t.resLess))
                 }, error = function(e)
                 {
                     print(e)                
@@ -158,25 +145,7 @@
         }
     }
     
-    colnames(lodr.resLess)[1:3] <- c("|log2(Fold)|","MinError","Estimate")
-    colnames(lodr.resPlot)[1:3] <- c("ratio","MinError","Estimate")
-    colnames(lodr.resLess)[1:3] <- c("ratio","MinError","Estimate")
-    
-    lodr.resPlot <- as.data.frame(lodr.resPlot)
-    lodr.resLess <- as.data.frame(lodr.resLess)
-    
-    #
-    # Construct data for vertical lines for the LODR estimates
-    #
-    
-    arrowDat <- data.frame(ratio = lodr.resPlot$ratio, x = lodr.resPlot[,3], y = cutoff, xend = lodr.resPlot[,3], yend = 0)
-    arrowDat$x[grep("<", lodr.resLess[,3])] <- Inf
-    arrowDat <- arrowDat[which(is.finite(arrowDat$x)), ]
-    
-    print('Estimation completed')
-    
-    lineDat$ratio  <- as.factor(lineDat$ratio)
-    arrowDat$ratio <- as.factor(arrowDat$ratio)
+    lineDat$ratio <- as.factor(lineDat$ratio)
 
     return(list(measured=data$measured,
                 pval=data$pval,
