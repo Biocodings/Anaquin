@@ -4,6 +4,26 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+.smoothCurve1234 <- function(model, y, ratio, algo='locfit', band='pred')
+{
+    if (algo == 'locfit')
+    {
+        x.new <- seq(min(y), max(y), length.out=100)
+        x <- predict(model$fitted, newdata=x.new)
+        
+        x.new    <- 10^x.new
+        fitLine  <- 10^(x)
+        fitUpper <- model$uc
+        fitLower <- model$lc
+    }
+    else if (algo == 'loess')
+    {
+        
+    }
+    
+    return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
+}
+
 .smoothCurve <- function(model, y, ratio, algo='locfit', band='pred')
 {
     if (algo == 'locfit')
@@ -30,7 +50,7 @@
     
 }
 
-.fitCurve <- function(x, y, prob, algo='locfit', showFitting=FALSE)
+.fitCurve <- function(ratio, x, y, prob, algo='locfit', showFitting=FALSE)
 {
     if (algo == 'locfit')
     {
@@ -55,10 +75,19 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
+    PPPP <- .smoothCurve1234(model, x, ratio)
+    
+    
+    
     d <- data.frame(knots=knots, uc=uc, lc=lc)
+    
+    
     l <- list(fitted=model, uc=uc, lc=lc)
     l[['TEMP']] <- d
+
+    #    return (data.frame(x.new, fitLine,  ratio=ratio))
     
+        
     return (l)
 }
 
@@ -97,7 +126,7 @@
             print(paste('Estmating LODR for', ratio))
 
             # Fitted curve for the group
-            ABCD <- .fitCurve(log10(t$measured), log10(t$pval), prob=pval)
+            ABCD <- .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval)
 
             model <- rbind(model, ABCD[['TEMP']])
             
@@ -114,6 +143,7 @@
     return(list(measured=data$measured,
                 pval=data$pval,
                 ratio=as.factor(data$ratio),
+                model=model,
                 lines=lines))
 }
 
