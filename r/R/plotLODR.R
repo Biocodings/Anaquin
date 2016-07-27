@@ -85,16 +85,13 @@
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     cutoff <- max(data$pval[data$qval < x$FDR])
     
-    LODR <- function(pval, mn, cutoff, prob)
+    LODR <- function(model, pval, mn, cutoff, prob)
     {
         cutoff <- log10(cutoff)
         
-        # Fit a local regression on the log10 scale
-        r <- .fitCurve(log10(mn), log10(pval))
+        X <- preplot(model$fitted, band=band, newdata=log10(mn))
 
-        X <- preplot(r$fitted, band=band, newdata=log10(mn))
-
-        lodr <- .segmented.search(r$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
+        lodr <- .segmented.search(model$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
 
         return (c(lodr$objective, lodr$minimum))
     }
@@ -112,33 +109,36 @@
         t <- t[t$measured != 0,]
         t <- t[t$pval != 0,]
         
+        # Fitted curve for the ratio
+        model <- NULL
+        
         tryCatch (
         {
-                print(paste('Estmating LODR for', ratio))
-                
-                r <- .fitCurve(log10(t$measured),log10(t$pval))
-                
-                x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
-                X <- preplot(r$fitted, band=band, newdata=x.new)
-                
-                x.new    <- 10^x.new
-                fitLine  <- 10^(X$fit)
-                fitUpper <- r$uc
-                fitLower <- r$lc
-
-                fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio)
-                lineDat <- rbind(lineDat, fitData)
-            }, error = function(e)
-            {
-                print(e)
-                print(paste('Failed to fit a local regression for: ', ratio))
-            })
+            print(paste('Estmating LODR for', ratio))
+            
+            model <- .fitCurve(log10(t$measured),log10(t$pval))
+            
+            x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
+            X <- preplot(model$fitted, band=band, newdata=x.new)
+            
+            x.new    <- 10^x.new
+            fitLine  <- 10^(X$fit)
+            fitUpper <- model$uc
+            fitLower <- model$lc
+            
+            fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio)
+            lineDat <- rbind(lineDat, fitData)
+        }, error = function(e)
+        {
+            print(e)
+            print(paste('Failed to fit a local regression for: ', ratio))
+        })
         
         if (ratio != 0)
         {
             tryCatch (
             {
-                t.res <- LODR(t$pval, t$measured, cutoff=cutoff, prob=prob)
+                t.res <- LODR(model, t$pval, t$measured, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
                 
                 t.resLess <- t.res
