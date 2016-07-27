@@ -107,10 +107,6 @@
                     plot(fit, band=band, get.data=TRUE, main=paste('Local regression for LFC:', ratio))
                 }
                 
-                #
-                # Generate new data points and use those data points for the prediction band
-                #
-                
                 x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
                 X <- preplot(fit, band=band, newdata=x.new)
                 
