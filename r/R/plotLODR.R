@@ -4,6 +4,24 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+.fitCurve <- function(x, y, algo='locfit', showFitting=TRUE)
+{
+    if (showFitting)
+    {
+        #plot(log10(x), log10(y))
+    }
+
+    fit <- locfit(y~lp(x), maxk=300)
+
+    if (showFitting)
+    {
+        plot(fit, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
+        #plot(fit,band=band,get.data=TRUE,xlim=range(log10(mn)))
+    }
+    
+    return (fit)
+}
+
 .fitLODR <- function(data, ...)
 {
     require(locfit)
@@ -11,7 +29,6 @@
     
     x <- list(...)
 
-    shouldPlotFitting <- FALSE
     band='pred'
 
     stopifnot(!is.null(data$pval))
@@ -28,16 +45,13 @@
     
     LODR <- function(pval, mn, cutoff, prob)
     {
-        # Eg: 0.02590173 to -1.586671
         cutoff <- log10(cutoff)
         
         # Fit a local regression on the log10 scale
-        fit <- locfit(log10(pval)~lp(log10(mn)), maxk=300)
-        
+        fit <- .fitCurve(log10(mn), log10(pval))
+
         X <- preplot(fit, band=band, newdata=log10(mn))
-        
-        #plot(fit,band=band,get.data=TRUE,xlim=range(log10(mn)))
-        
+
         find.mn <- function(mn, fit, cutoff, prob)
         {
             X <- preplot(fit, newdata=mn, band=band)
@@ -78,7 +92,7 @@
     
     lineDat <- NULL;
     
-    prob <- 0.90
+    prob <- 1- x$FDR
     
     # We'll render for each ratio
     ratios <- sort(data$ratio)
@@ -90,22 +104,11 @@
         t <- t[t$pval != 0,]
         
         tryCatch (
-            {
+        {
                 print(paste('Estmating LODR for', ratio))
                 
-                if (shouldPlotFitting)
-                {
-                    plot(log10(t$measured), log10(t$pval))
-                }
-                
                 # Performs a local regression
-                fit <- locfit(log10(t$pval)~lp(log10(t$measured)), maxk=300)
-                
-                # Plot how the points are fitted
-                if (shouldPlotFitting)
-                {
-                    plot(fit, band=band, get.data=TRUE, main=paste('Local regression for LFC:', ratio))
-                }
+                fit <- .fitCurve(log10(t$measured),log10(t$pval))
                 
                 x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
                 X <- preplot(fit, band=band, newdata=x.new)
