@@ -31,23 +31,10 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    #PPPP <- .smoothCurve1234(model, x, ratio)
-    
-
-    knots    <- 10^knots    
+    knots  <- 10^knots    
     p <- 10^kpred$fit
-    d <- data.frame(ratio=ratio, knots=knots, pred=p, uc=uc, lc=lc)
 
-       
-     
-    
-    l <- list(fitted=model, uc=uc, lc=lc)
-    l[['TEMP']] <- d
-
-    #    return (data.frame(x.new, fitLine,  ratio=ratio))
-    
-        
-    return (l)
+    return (data.frame(ratio=ratio, knots=knots, pred=p, uc=uc, lc=lc))
 }
 
 .fitLODR <- function(data, ...)
@@ -83,15 +70,7 @@
         tryCatch (
         {
             print(paste('Estmating LODR for', ratio))
-
-            # Fitted curve for the group
-            ABCD <- .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval)
-
-            model <- rbind(model, ABCD[['TEMP']])
-
-            a <- ABCD[['TEMP']]
-
-            lines <- rbind(lines, a)
+            lines <- rbind(lines, .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval))
         }, error = function(e)
         {
             print(e)
