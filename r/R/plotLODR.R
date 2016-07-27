@@ -4,6 +4,17 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+LODR <- function(model, pval, mn, cutoff, prob, band)
+{
+    cutoff <- log10(cutoff)
+    
+    X <- preplot(model$fitted, band=band, newdata=log10(mn))
+    
+    lodr <- .segmented.search(model$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
+    
+    return (c(lodr$objective, lodr$minimum))
+}
+
 .find.mn <- function(mn, fit, cutoff, prob)
 {
     X <- preplot(fit, newdata=mn, band='pred')
@@ -85,17 +96,6 @@
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     cutoff <- max(data$pval[data$qval < x$FDR])
     
-    LODR <- function(model, pval, mn, cutoff, prob)
-    {
-        cutoff <- log10(cutoff)
-        
-        X <- preplot(model$fitted, band=band, newdata=log10(mn))
-
-        lodr <- .segmented.search(model$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
-
-        return (c(lodr$objective, lodr$minimum))
-    }
-    
     lineDat <- NULL;
     
     prob <- 1- x$FDR
@@ -138,7 +138,7 @@
         {
             tryCatch (
             {
-                t.res <- LODR(model, t$pval, t$measured, cutoff=cutoff, prob=prob)
+                t.res <- LODR(model, t$pval, t$measured, cutoff=cutoff, prob=prob, band=band)
                 t.res[-1]<-signif(10^t.res[-1],2)
                 
                 t.resLess <- t.res
