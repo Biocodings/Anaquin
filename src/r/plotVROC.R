@@ -6,7 +6,7 @@
 #    %2%
 #
 
-library(Anaquin)
+library('Anaquin')
 
 # Load called variants
 data <- read.csv('%3%/%4%', sep='\t')

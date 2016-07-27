@@ -27,7 +27,6 @@
     xrange <- maxX - minX
     yrange <- maxY - minY
 
-    #p <- p + coord_fixed(ratio=1/1.176585)
     p <- p + coord_fixed(ratio=xrange/yrange)
  
     #ggsave('/Users/tedwong/Desktop/ABCD.pdf')

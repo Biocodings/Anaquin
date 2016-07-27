@@ -6,7 +6,7 @@
 #    %2%
 #
 
-library(Anaquin)
+library('Anaquin')
 
 # Load reference sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
