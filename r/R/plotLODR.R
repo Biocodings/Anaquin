@@ -80,7 +80,7 @@
     
 
         
-    d <- data.frame(knots=knots, pred=kpred$fit, uc=uc, lc=lc)
+    d <- data.frame(ratio=ratio, knots=knots, pred=kpred$fit, uc=uc, lc=lc)
 
        
      
