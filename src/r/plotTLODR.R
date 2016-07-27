@@ -36,4 +36,4 @@ qval <- data$Qval
 # Create Anaquin data for plotLODR
 anaquin <- createAnaquinData(names=row.names(data), measured=measured, ratio=ratio, pval=pval, qval=qval)
 
-plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=FDR)
+plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=FDR, legTitle='LFC')

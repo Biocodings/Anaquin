@@ -30,11 +30,20 @@
     
 }
 
-.fitCurve <- function(x, y, algo='locfit', showFitting=FALSE, prob=0.90)
+.fitCurve <- function(x, y, prob, algo='locfit', showFitting=FALSE)
 {
     if (algo == 'locfit')
     {
-        model <- locfit(y~lp(x), maxk=300)
+        model <- locfit(y~lp(x))
+
+        x <- predict(model, band='pred', newdata=seq(min(x), max(x), length.out=100))
+
+        #
+        # http://www.r-bloggers.com/thats-smooth. Assuming normality for the confidence intervals.
+        #
+
+        uc <- 10^(x$fit + qnorm(prob) * x$se.fit)
+        lc <- 10^(x$fit - qnorm(prob) * x$se.fit)
     }
     else if (algo == 'loess')
     {
@@ -42,17 +51,6 @@
     }
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
-
-    #
-    # Reference: http://www.r-bloggers.com/thats-smooth
-    #
-    
-    x.new <- seq(min(x), max(x), length.out=100)
-    X <- preplot(model, band='pred', newdata=x.new)
-    x.new <- 10^x.new
-    
-    uc <- 10^(X$fit + qnorm(prob) * X$se.fit)
-    lc <- 10^(X$fit - qnorm(prob) * X$se.fit)
 
     return (list(fitted=model, uc=uc, lc=lc))
 }
@@ -75,12 +73,12 @@
     if (is.null(data$qval)) { data$qval <- qvalue(data$pval)$qvalues }
     
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
-    cutoff <- max(data$pval[data$qval < x$FDR])
+    pval <- max(data$pval[data$qval < x$FDR])
 
     # We'll render for each ratio
     ratios <- sort(data$ratio)
 
-    lineDat <- NULL;
+    lines <- NULL;
 
     for (ratio in unique(ratios))
     {
@@ -90,10 +88,10 @@
         {
             print(paste('Estmating LODR for', ratio))
 
-            # Fitted curve for the ratio
-            model <- .fitCurve(log10(t$measured),log10(t$pval))
-            
-            lineDat <- rbind(lineDat, .smoothCurve(model, t$measured, ratio))
+            # Fitted curve for the group
+            model <- .fitCurve(log10(t$measured), log10(t$pval), prob=pval)
+
+            lines <- rbind(lines, .smoothCurve(model, t$measured, ratio))
         }, error = function(e)
         {
             print(e)
@@ -101,12 +99,12 @@
         })
     }
     
-    lineDat$ratio <- as.factor(lineDat$ratio)
+    lines$ratio <- as.factor(lines$ratio)
 
     return(list(measured=data$measured,
                 pval=data$pval,
                 ratio=as.factor(data$ratio),
-                lineDat=lineDat))
+                lines=lines))
 }
 
 .plotLODR <- function(data, ...)
@@ -121,9 +119,8 @@
     x <- list(...)
     
     if (is.null(x$size))     { x$size     <- 3       }
-    if (is.null(x$showConf)) { x$showConf <- TRUE    }
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
-    
+
     df <- data.frame(measured=data$measured, pval=data$pval, ratio=data$ratio)
     
     p <- ggplot(df, aes(x=measured, y=pval, colour=ratio)) +
@@ -136,15 +133,11 @@
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
     if (!is.null(x$legTitle)) { p <- p + labs(colour=x$legTitle) }
     
-    if (!is.null(data$lineDat))
+    if (!is.null(data$lines))
     {
-        p <- p + geom_line(data=data$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show.legend=FALSE)
-        
-        if (x$showConf)
-        {
-            p <- p + geom_ribbon(data=data$lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
-                                 alpha=0.3, colour=NA, show.legend=FALSE)
-        }
+        p <- p + geom_line(data=data$lines, aes(x=x.new, y=fitLine, colour=ratio), show.legend=FALSE)
+        p <- p + geom_ribbon(data=data$lines, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper,
+                             fill=ratio), alpha=0.3, colour=NA, show.legend=FALSE)
     }
     
     if (!is.null(x$arrowDat))
