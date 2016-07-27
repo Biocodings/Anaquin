@@ -17,48 +17,6 @@
     return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
 }
 
-LODR <- function(model, pval, mn, cutoff, prob, band)
-{
-    cutoff <- log10(cutoff)
-    
-    X <- preplot(model$fitted, band=band, newdata=log10(mn))
-    
-    lodr <- .segmented.search(model$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
-    
-    return (c(lodr$objective, lodr$minimum))
-}
-
-.find.mn <- function(mn, fit, cutoff, prob)
-{
-    X <- preplot(fit, newdata=mn, band='pred')
-    (X$fit+qnorm(prob)*X$se.fit-cutoff)^2
-}
-
-# Search in sections to get first crossing
-.segmented.search <- function(fit, mn, band, cutoff, prob, rng.mn)
-{
-    X <- preplot(fit, newdata=min(log10(mn)), band=band)
-    
-    if ((X$fit + qnorm(prob) * X$se.fit) < cutoff)
-    {
-        t.lodr <- list(minimum=min(log10(mn)), objective=0)
-    }
-    else
-    {
-        ppp<-.2
-        t.lodr <- optimize(.find.mn, c(rng.mn[1], sum(rng.mn*c(1-ppp,ppp))), fit=fit, cutoff=cutoff, prob=prob)
-        
-        while (t.lodr$objective > .0001 & ppp<=1)
-        {
-            t.lodr<-optimize(.find.mn, c(sum(rng.mn*c(1-ppp+.2,ppp-.2)), sum(rng.mn*c(1-ppp,ppp))),
-                             fit=fit, cutoff=cutoff, prob=prob)
-            ppp<-ppp+.2
-        }
-    }
-    
-    t.lodr
-}    
-
 .fitCurve <- function(x, y, algo='locfit', showFitting=TRUE, prob=0.90)
 {
     if (showFitting)
@@ -94,8 +52,6 @@ LODR <- function(model, pval, mn, cutoff, prob, band)
     require(qvalue)
     
     x <- list(...)
-
-    band='pred'
 
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))
