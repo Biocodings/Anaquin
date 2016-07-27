@@ -4,47 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.smoothCurve1234 <- function(model, y, ratio, algo='locfit', band='pred')
-{
-    if (algo == 'locfit')
-    {
-        x.new <- seq(min(y), max(y), length.out=100)
-        x <- predict(model$fitted, newdata=x.new)
-        
-        x.new    <- 10^x.new
-        fitLine  <- 10^(x)
-        fitUpper <- model$uc
-        fitLower <- model$lc
-    }
-    else if (algo == 'loess')
-    {
-        
-    }
-    
-    return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
-}
-
-.smoothCurve <- function(model, y, ratio, algo='locfit', band='pred')
-{
-    if (algo == 'locfit')
-    {
-        x.new <- seq(min(log10(y)), max(log10(y)), length.out=100)
-
-        x <- predict(model$fitted, newdata=x.new)
-        
-        x.new    <- 10^x.new
-        fitLine  <- 10^(x)
-        fitUpper <- model$uc
-        fitLower <- model$lc
-    }
-    else if (algo == 'loess')
-    {
-        
-    }
-
-    return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
-}
-
 .getLODR <- function()
 {
     
@@ -131,8 +90,7 @@
             model <- rbind(model, ABCD[['TEMP']])
 
             a <- ABCD[['TEMP']]
-            b <- .smoothCurve(ABCD, t$measured, ratio)
-            
+
             lines <- rbind(lines, a)
         }, error = function(e)
         {
