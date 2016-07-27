@@ -4,20 +4,16 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.fitLODR <- function(data,
-                     legend='LFC Fold',
-                     xlab='Average Counts',
-                     ylab='P-value',
-                     title='LODR Curves',
-                     band='pred',
-                     chosenFDR=0.1,
-                     multiTest=TRUE,
-                     legTitle=NULL,
-                     shouldPlotFitting=FALSE)
+.fitLODR <- function(data, ...)
 {
     require(locfit)
     require(qvalue)
     
+    x <- list(...)
+
+    shouldPlotFitting <- FALSE
+    band='pred'
+
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))
     stopifnot(!is.null(data$measured))
@@ -25,10 +21,10 @@
     data <- data[!is.na(data$pval),]
     data <- data[!is.na(data$measured),]
     
-    data$qval <- if(multiTest) qvalue(data$pval)$qvalues else data$pval
-    cutoff    <- max(data$pval[data$qval < chosenFDR])
+    if (is.null(data$qval)) { data$qval <- qvalue(data$pval)$qvalues }
     
-    print(paste('FDR threshold:', cutoff))
+    # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
+    cutoff <- max(data$pval[data$qval < x$FDR])
     
     LODR <- function(pval, mn, cutoff, prob)
     {
@@ -117,11 +113,6 @@
         t <- data[data$ratio == ratio,]
         t <- t[t$measured != 0,]
         t <- t[t$pval != 0,]
-        
-        #
-        # 1. Fit a local regression, where each point is approximated by a quadratic function bounded
-        #    by a fixed width.
-        #
         
         tryCatch (
             {
@@ -299,37 +290,39 @@
     print(p)
 }
 
-plotLODR <- function(data,
-                     fdr = 0.1,                       
-                     title = NULL,
-                     xBreaks = NULL,
-                     yBreaks = NULL,
-                     xLabels = NULL,
-                     yLabels = NULL,
-                     legTitle = NULL,
-                     xlab = NULL,
-                     ylab = NULL,
-                     shouldFit=TRUE)
+plotLODR <- function(data, ...)
 {
     data <- data$seqs
     data <- data[data$pval!=0,]
     
+    # Should we attempt for curve fitting? (not every distribution can be fitted)
+    shouldFit <- TRUE
+
+    x <- list(...)
+    
+    if (!is.null(x$shouldFit)) { shouldFit <- x$shouldFit }
+    
+    # Sequin ratio groups
+    ratio <- as.factor(abs(round(data$ratio)))
+    
+    # Measured variable (eg: average counts)
+    measured <- data$measured
+    
+    # Measured p-value probability
+    pval <- data$pval
+
     if (shouldFit)
     {
-        data <- .fitLODR(data.frame(measured=data$measured, pval=data$pval, ratio=abs(round(data$ratio))))
+        data <- .fitLODR(data.frame(measured=data$measured,
+                                    pval=data$pval,
+                                    ratio=abs(round(data$ratio))), ...)
     }
     else
     {
-        data <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(abs(round(data$ratio))))
+        data <- data.frame(measured=data$measured,
+                           pval=data$pval,
+                           ratio=as.factor(abs(round(data$ratio))))
     }
 
-    .plotLODR(data=data,
-              xlab=xlab,
-              ylab=ylab,
-              title=title,
-              legTitle=legTitle,
-              xBreaks=xBreaks,
-              xLabels=xLabels,
-              yBreaks=yBreaks,
-              yLabels=yLabels)
+    .plotLODR(data=data, ...)
 }
