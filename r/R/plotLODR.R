@@ -4,6 +4,37 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+.find.mn <- function(mn, fit, cutoff, prob)
+{
+    X <- preplot(fit, newdata=mn, band='pred')
+    (X$fit+qnorm(prob)*X$se.fit-cutoff)^2
+}
+
+# Search in sections to get first crossing
+.segmented.search <- function(fit, mn, band, cutoff, prob, rng.mn)
+{
+    X <- preplot(fit, newdata=min(log10(mn)), band=band)
+    
+    if ((X$fit + qnorm(prob) * X$se.fit) < cutoff)
+    {
+        t.lodr <- list(minimum=min(log10(mn)), objective=0)
+    }
+    else
+    {
+        ppp<-.2
+        t.lodr <- optimize(.find.mn, c(rng.mn[1], sum(rng.mn*c(1-ppp,ppp))), fit=fit, cutoff=cutoff, prob=prob)
+        
+        while (t.lodr$objective > .0001 & ppp<=1)
+        {
+            t.lodr<-optimize(.find.mn, c(sum(rng.mn*c(1-ppp+.2,ppp-.2)), sum(rng.mn*c(1-ppp,ppp))),
+                             fit=fit, cutoff=cutoff, prob=prob)
+            ppp<-ppp+.2
+        }
+    }
+    
+    t.lodr
+}    
+
 .fitCurve <- function(x, y, algo='locfit', showFitting=TRUE, prob=0.90)
 {
     if (showFitting)
@@ -63,40 +94,7 @@
 
         X <- preplot(r$fitted, band=band, newdata=log10(mn))
 
-        find.mn <- function(mn, fit, cutoff, prob)
-        {
-            X <- preplot(fit, newdata=mn, band=band)
-            (X$fit+qnorm(prob)*X$se.fit-cutoff)^2
-        }
-        
-        rng.mn <- range(log10(mn))
-        
-        # Search in sections to get first crossing
-        segmented.search <- function(fit)
-        {
-            X <- preplot(fit, newdata=min(log10(mn)), band=band)
-            
-            if ((X$fit + qnorm(prob) * X$se.fit) < cutoff)
-            {
-                t.lodr <- list(minimum=min(log10(mn)), objective=0)
-            }
-            else
-            {
-                ppp<-.2
-                t.lodr <- optimize(find.mn, c(rng.mn[1], sum(rng.mn*c(1-ppp,ppp))), fit=fit, cutoff=cutoff, prob=prob)
-                
-                while (t.lodr$objective > .0001 & ppp<=1)
-                {
-                    t.lodr<-optimize(find.mn, c(sum(rng.mn*c(1-ppp+.2,ppp-.2)), sum(rng.mn*c(1-ppp,ppp))),
-                                     fit=fit, cutoff=cutoff, prob=prob)
-                    ppp<-ppp+.2
-                }
-            }
-            
-            t.lodr
-        }    
-        
-        lodr <- segmented.search(r$fitted)
+        lodr <- .segmented.search(r$fitted, mn, band, cutoff, prob, rng.mn=range(log10(mn)))
 
         return (c(lodr$objective, lodr$minimum))
     }
@@ -139,18 +137,18 @@
         if (ratio != 0)
         {
             tryCatch (
-                {
-                    t.res <- LODR(t$pval, t$measured, cutoff=cutoff, prob=prob)
-                    t.res[-1]<-signif(10^t.res[-1],2)
-                    
-                    t.resLess <- t.res
-                    t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
-                    t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
-                }, error = function(e)
-                {
-                    print(e)                
-                    print(paste('Failed to estimate LODR'))
-                })
+            {
+                t.res <- LODR(t$pval, t$measured, cutoff=cutoff, prob=prob)
+                t.res[-1]<-signif(10^t.res[-1],2)
+                
+                t.resLess <- t.res
+                t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
+                t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
+            }, error = function(e)
+            {
+                print(e)                
+                print(paste('Failed to estimate LODR'))
+            })
         }
     }
     
