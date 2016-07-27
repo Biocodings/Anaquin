@@ -72,23 +72,8 @@
         }    
         
         lodr <- segmented.search(fit)
-        
-        # Bootstrap to estimate uncertainty
-        lodr.boot<-NULL
-        
-        for (ii in 1:2)
-        {
-            y.boot    <- X$fit + sample(residuals(fit), length(mn))
-            fit.boot  <- locfit(y.boot~lp(log10(mn)), maxk=300)
-            lodr.boot <- c(lodr.boot, segmented.search(fit.boot)$minimum)
-            
-            if (ii %% 100 == 0)
-            {
-                cat ("...")
-            }
-        }
-        
-        return (c(lodr$objective, lodr$minimum, quantile(lodr.boot,c(.05,.95))))
+
+        return (c(lodr$objective, lodr$minimum))
     }
     
     lineDat <- NULL;
