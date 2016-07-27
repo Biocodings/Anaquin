@@ -138,8 +138,7 @@
         p <- p + scale_y_log10()        
     }
     
-    p <- .transformPlot(p)
-    print(p)
+    print(.transformPlot(p))
 }
 
 plotLODR <- function(data, ...)
