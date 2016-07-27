@@ -15,7 +15,7 @@ data <- read.csv('%3%/%4%', row.name=1, sep='\t')
 data <- data[!is.na(data$ObsLFC),]
 
 # Choose your FDR rate
-fdr <- 0.1
+FDR <- 0.1
 
 xlab  <- 'Average Counts'
 ylab  <- 'P-value'
@@ -30,7 +30,10 @@ ratio <- data$ExpLFC
 # Measured p-value
 pval <- data$Pval
 
-# Create Anaquin data for plotLODR
-anaquin <- createAnaquinData(names=row.names(data), measured=measured, ratio=ratio, pval=pval)
+# Measured q-value
+qval <- data$Qval
 
-plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, fdr=fdr)
+# Create Anaquin data for plotLODR
+anaquin <- createAnaquinData(names=row.names(data), measured=measured, ratio=ratio, pval=pval, qval=qval)
+
+plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=FDR)

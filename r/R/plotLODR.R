@@ -131,22 +131,6 @@
                       labs(colour=x$legTitle)              +
                       theme_bw()
 
-    if (is.null(x$xBreaks))
-    {
-        x$xBreaks <- 10^(0:round(log10(max(df$measured)))-1)
-    }
-    
-    if (is.null(x$xLabels))
-    {
-        x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
-    }
-    
-    if (is.null(x$yBreaks))
-    {
-        #x$yBreaks <- c(min(df$pval), 1e-300, 1e-200, 1e-100, 1e-10, 1)
-        x$yBreaks <- c(min(df$pval), 1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
-    }
-    
     if (!is.null(x$xlab))     { p <- p + xlab(x$xlab)     }
     if (!is.null(x$ylab))     { p <- p + ylab(x$ylab)     }
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
@@ -171,29 +155,22 @@
             p <- p + geom_hline(yintercept=x$cutoff, linetype=2, size=2)
     }
     
-    if (!is.null(x$xMin) & !is.null(x$xMax))
+    if (!is.null(x$xBreaks))
     {
-        p <- p + xlim(x$xMin, x$xMax)
-    }
-    
-    if (!is.null(x$yMin) & !is.null(x$yMax))
-    {
-        p <- p + ylim(x$yMin, x$yMax)
-    }
-    
-    if (!is.null(x$xBreaks) & !is.null(x$xLabels))
-    {
-        p <- p + scale_x_log10(breaks=x$xBreaks, labels=x$xLabels)
+        p <- p + scale_x_log10(breaks=x$xBreaks)
     }
     else
     {
-        p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)))
-        p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)), breaks=c(arrowDat$x, round(max(data$baseMean))))
+        p <- p + scale_x_log10()
     }
-    
+
     if (!is.null(x$yBreaks))
     {
         p <- p + scale_y_log10(breaks=x$yBreaks)
+    }
+    else
+    {
+        p <- p + scale_y_log10()        
     }
     
     p <- .transformPlot(p)
