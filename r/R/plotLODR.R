@@ -59,14 +59,15 @@
         # Points where the curve is approximated
         knots <- seq(min(x), max(x), length.out=100)
         
-        x <- predict(model, band='pred', newdata=knots)
+        # Predictions for the knots
+        kpred <- predict(model, band='pred', newdata=knots)
 
         #
         # http://www.r-bloggers.com/thats-smooth. Assuming normality for the confidence intervals.
         #
 
-        uc <- 10^(x$fit + qnorm(prob) * x$se.fit)
-        lc <- 10^(x$fit - qnorm(prob) * x$se.fit)
+        uc <- 10^(kpred$fit + qnorm(prob) * kpred$se.fit)
+        lc <- 10^(kpred$fit - qnorm(prob) * kpred$se.fit)
     }
     else if (algo == 'loess')
     {
@@ -75,12 +76,14 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    PPPP <- .smoothCurve1234(model, x, ratio)
+    #PPPP <- .smoothCurve1234(model, x, ratio)
     
-    
-    
-    d <- data.frame(knots=knots, uc=uc, lc=lc)
-    
+
+        
+    d <- data.frame(knots=knots, pred=kpred$fit, uc=uc, lc=lc)
+
+       
+     
     
     l <- list(fitted=model, uc=uc, lc=lc)
     l[['TEMP']] <- d
