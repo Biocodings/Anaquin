@@ -11,12 +11,12 @@
                      title='LODR Curves',
                      band='pred',
                      chosenFDR=0.1,
-                     yBreaks=c(1e-100, 1e-200, 1e-300),                     
                      multiTest=TRUE,
                      legTitle=NULL,
                      shouldPlotFitting=FALSE)
 {
     require(locfit)
+    require(qvalue)
     
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))
@@ -242,7 +242,8 @@
     
     if (is.null(x$yBreaks))
     {
-        x$yBreaks <- c(min(df$pval), 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+        #x$yBreaks <- c(min(df$pval), 1e-300, 1e-200, 1e-100, 1e-10, 1)
+        x$yBreaks <- c(min(df$pval), 1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
     }
     
     if (!is.null(x$xlab))     { p <- p + xlab(x$xlab)     }

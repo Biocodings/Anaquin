@@ -12,6 +12,9 @@ test.PlotLODR_1 <- function()
     data('Vignette_5.6.3')
     data <- Vignette_5.6.3
 
+    anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean, ratio=abs(data$ExpLFC), pval=data$Pval)
+    
+    r <- plotLODR(anaquin)
 }
 
 test.PlotLODR_1()
