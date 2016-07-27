@@ -36,7 +36,10 @@
     {
         model <- locfit(y~lp(x))
 
-        x <- predict(model, band='pred', newdata=seq(min(x), max(x), length.out=100))
+        # Points where the curve is approximated
+        knots <- seq(min(x), max(x), length.out=100)
+        
+        x <- predict(model, band='pred', newdata=knots)
 
         #
         # http://www.r-bloggers.com/thats-smooth. Assuming normality for the confidence intervals.
@@ -52,7 +55,11 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    return (list(fitted=model, uc=uc, lc=lc))
+    d <- data.frame(knots=knots, uc=uc, lc=lc)
+    l <- list(fitted=model, uc=uc, lc=lc)
+    l[['TEMP']] <- d
+    
+    return (l)
 }
 
 .fitLODR <- function(data, ...)
@@ -79,6 +86,7 @@
     ratios <- sort(data$ratio)
 
     lines <- NULL;
+    model <- NULL
 
     for (ratio in unique(ratios))
     {
@@ -89,9 +97,11 @@
             print(paste('Estmating LODR for', ratio))
 
             # Fitted curve for the group
-            model <- .fitCurve(log10(t$measured), log10(t$pval), prob=pval)
+            ABCD <- .fitCurve(log10(t$measured), log10(t$pval), prob=pval)
 
-            lines <- rbind(lines, .smoothCurve(model, t$measured, ratio))
+            model <- rbind(model, ABCD[['TEMP']])
+            
+            lines <- rbind(lines, .smoothCurve(ABCD, t$measured, ratio))
         }, error = function(e)
         {
             print(e)
