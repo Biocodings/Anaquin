@@ -65,14 +65,12 @@
     
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     cutoff <- max(data$pval[data$qval < x$FDR])
-    
-    lineDat <- NULL;
-    
-    prob <- 1- x$FDR
-    
+
     # We'll render for each ratio
     ratios <- sort(data$ratio)
-    
+
+    lineDat <- NULL;
+
     for (ratio in unique(ratios))
     {
         t <- data[data$ratio == ratio,]
