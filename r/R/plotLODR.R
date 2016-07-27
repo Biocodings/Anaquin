@@ -54,12 +54,9 @@
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     pval <- max(data$pval[data$qval < x$FDR])
 
-    # We'll render for each ratio
-    ratios <- sort(data$ratio)
-
     model <- NULL
 
-    for (ratio in unique(ratios))
+    for (ratio in unique(sort(data$ratio)))
     {
         t <- data[data$ratio == ratio,]
 
@@ -98,11 +95,10 @@
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
 
     df <- data.frame(measured=data$measured, pval=data$pval, ratio=data$ratio)
-    
-    p <- ggplot(df, aes(x=measured, y=pval, colour=ratio)) +
-                      geom_point(size=x$size, alpha=0.5)   +
-                      labs(colour=x$legTitle)              +
-                      theme_bw()
+    p  <- ggplot(df, aes(x=measured, y=pval, colour=ratio))   +
+                         geom_point(size=x$size, alpha=0.5)   +
+                         labs(colour=x$legTitle)              +
+                         theme_bw()
 
     if (!is.null(x$xlab))     { p <- p + xlab(x$xlab)     }
     if (!is.null(x$ylab))     { p <- p + ylab(x$ylab)     }
