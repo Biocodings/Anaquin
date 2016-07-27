@@ -57,7 +57,6 @@
     # We'll render for each ratio
     ratios <- sort(data$ratio)
 
-    lines <- NULL;
     model <- NULL
 
     for (ratio in unique(ratios))
@@ -67,7 +66,7 @@
         tryCatch (
         {
             print(paste('Estmating LODR for', ratio))
-            lines <- rbind(lines, .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval))
+            model <- rbind(model, .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval))
         }, error = function(e)
         {
             print(e)
@@ -75,13 +74,13 @@
         })
     }
     
-    lines$ratio <- as.factor(lines$ratio)
+    model$ratio <- as.factor(model$ratio)
 
     return(list(measured=data$measured,
                 pval=data$pval,
                 ratio=as.factor(data$ratio),
                 model=model,
-                lines=lines))
+                model=model))
 }
 
 .plotLODR <- function(data, ...)
@@ -110,10 +109,10 @@
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
     if (!is.null(x$legTitle)) { p <- p + labs(colour=x$legTitle) }
     
-    if (!is.null(data$lines))
+    if (!is.null(data$model))
     {
-        p <- p + geom_line(data=data$lines, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
-        p <- p + geom_ribbon(data=data$lines, aes(x=knots, y=pred, ymin=lc, ymax=uc,
+        p <- p + geom_line(data=data$model, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
+        p <- p + geom_ribbon(data=data$model, aes(x=knots, y=pred, ymin=lc, ymax=uc,
                              fill=ratio), alpha=0.3, colour=NA, show.legend=FALSE)
     }
     
