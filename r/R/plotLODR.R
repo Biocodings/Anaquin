@@ -4,6 +4,19 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+.getLine <- function(model, y, ratio, band='pred')
+{
+    x.new <- seq(min(log10(y)), max(log10(y)), length.out=100)
+    X <- preplot(model$fitted, band=band, newdata=x.new)
+    
+    x.new    <- 10^x.new
+    fitLine  <- 10^(X$fit)
+    fitUpper <- model$uc
+    fitLower <- model$lc
+
+    return (data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio))
+}
+
 LODR <- function(model, pval, mn, cutoff, prob, band)
 {
     cutoff <- log10(cutoff)
@@ -53,11 +66,11 @@ LODR <- function(model, pval, mn, cutoff, prob, band)
         #plot(log10(x), log10(y))
     }
 
-    r <- locfit(y~lp(x), maxk=300)
+    model <- locfit(y~lp(x), maxk=300)
 
     if (showFitting)
     {
-        plot(r, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
+        plot(model, band='pred', get.data=TRUE, main=paste('Local regression for LFC'))
         #plot(fit,band=band,get.data=TRUE,xlim=range(log10(mn)))
     }
 
@@ -66,13 +79,13 @@ LODR <- function(model, pval, mn, cutoff, prob, band)
     #
     
     x.new <- seq(min(x), max(x), length.out=100)
-    X <- preplot(r, band='pred', newdata=x.new)
+    X <- preplot(model, band='pred', newdata=x.new)
     x.new <- 10^x.new
     
     uc <- 10^(X$fit + qnorm(prob) * X$se.fit)
     lc <- 10^(X$fit - qnorm(prob) * X$se.fit)
 
-    return (list(fitted=r, uc=uc, lc=lc))
+    return (list(fitted=model, uc=uc, lc=lc))
 }
 
 .fitLODR <- function(data, ...)
@@ -89,6 +102,7 @@ LODR <- function(model, pval, mn, cutoff, prob, band)
     stopifnot(!is.null(data$measured))
     
     data <- data[!is.na(data$pval),]
+    data <- data[data$pval != 0,]    
     data <- data[!is.na(data$measured),]
     
     if (is.null(data$qval)) { data$qval <- qvalue(data$pval)$qvalues }
@@ -106,50 +120,20 @@ LODR <- function(model, pval, mn, cutoff, prob, band)
     for (ratio in unique(ratios))
     {
         t <- data[data$ratio == ratio,]
-        t <- t[t$measured != 0,]
-        t <- t[t$pval != 0,]
-        
-        # Fitted curve for the ratio
-        model <- NULL
-        
+
         tryCatch (
         {
             print(paste('Estmating LODR for', ratio))
-            
+
+            # Fitted curve for the ratio
             model <- .fitCurve(log10(t$measured),log10(t$pval))
             
-            x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
-            X <- preplot(model$fitted, band=band, newdata=x.new)
-            
-            x.new    <- 10^x.new
-            fitLine  <- 10^(X$fit)
-            fitUpper <- model$uc
-            fitLower <- model$lc
-            
-            fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio=ratio)
-            lineDat <- rbind(lineDat, fitData)
+            lineDat <- rbind(lineDat, .getLine(model, t$measured, ratio))
         }, error = function(e)
         {
             print(e)
-            print(paste('Failed to fit a local regression for: ', ratio))
+            print(paste('Failed to curve fit for: ', ratio))
         })
-        
-        if (ratio != 0)
-        {
-            tryCatch (
-            {
-                t.res <- LODR(model, t$pval, t$measured, cutoff=cutoff, prob=prob, band=band)
-                t.res[-1]<-signif(10^t.res[-1],2)
-                
-                t.resLess <- t.res
-                t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
-                t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
-            }, error = function(e)
-            {
-                print(e)                
-                print(paste('Failed to estimate LODR'))
-            })
-        }
     }
     
     lineDat$ratio <- as.factor(lineDat$ratio)
