@@ -8,21 +8,17 @@ Create a Limit-of-Detection Ratio (LODR) plot between measured abundance (x-axis
 \method{plotLODR}{Anaquin}(data, ...)
 }
 \arguments{
-  \item{data}{Anaquin dataset created by \code{CreateAnaquinData}. It needs to define information in \bold{Details}.}
+  \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
   \item{title}{Label of the plot. Default to NULL.}
   \item{xlab}{Label for the x-axis. Default to NULL.}
   \item{ylab}{Label for the y-axis. Default to NULL.}
   \item{FDR}{Chosen false-discovery-rate. Default to 0.1.}
-  \item{xBreaks}{Breakpoints on the x-axis}
-  \item{xLabels}{Labels on the x-axis}
-  \item{yBreaks}{Breakpoints on the y-axis}
-  \item{yLabels}{Labels on the y-axis}
   \item{legTitle}{Title for the legend. Default to ‘Ratio’.}
   \item{shouldFit}{Curve fitting? Default to TRUE.}
 }
 \details{
 
-\code{plotLODR} requires the following inputs from \code{CreateAnaquinData}.
+\code{plotLODR} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
     \tab \code{names}       \tab Sequin names\cr
@@ -36,7 +32,13 @@ The curves are estimated by local regression estimations, and are colored by the
 }
 
 \examples{
+data('Vignette_5.6.3')
+data <- Vignette_5.6.3
 
+# Create Anaquin data for plotLODR
+anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean, ratio=abs(data$ExpLFC), pval=data$Pval)
+
+plotLODR(anaquin)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

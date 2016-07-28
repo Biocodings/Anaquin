@@ -8,14 +8,14 @@ Create a receiver operating characteristic (ROC) plot. The curve is created by p
 \method{plotROC}{Anaquin}(data, refRats, ...)
 }
 \arguments{
-  \item{data}{Anaquin dataset created by \code{CreateAnaquinData}. It needs to define information in \bold{Details}.}
+  \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
   \item{title}{Label of the plot. Default to NULL.}
   \item{legTitle}{Title of the legend. Default to NULL.}
   \item{refRats}{Reference ratio group}
 }
 \details{
 
-\code{plotROC} requires the following inputs from \code{CreateAnaquinData}.
+\code{plotROC} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
     \tab \code{names}       \tab Sequin names\cr

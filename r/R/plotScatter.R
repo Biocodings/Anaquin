@@ -20,7 +20,6 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     if (is.null(z$showLOQ))   { z$showLOQ   <- TRUE  }
     if (is.null(z$showInter)) { z$showInter <- FALSE }
 
-    # TODO: Fix this....
     if (!is.data.frame(data$measured))
     {
         data <- data[!is.na(data$measured),]

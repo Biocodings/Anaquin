@@ -1,7 +1,7 @@
 \docType{data}
 \name{Vignette_5.6.3}
 \alias{Vignette_5.6.3}
-\title{Quantify RnaQuin Bioconductor differential expression}
+\title{Quantify DESeq2 differential expression (RnaQuin)}
 \format{A data frame:
 \itemize{
   \item Length: Length of the sequin

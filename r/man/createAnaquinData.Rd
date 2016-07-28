@@ -9,7 +9,7 @@ Create an Anaquin dataset. The resulting R-object is required for every Anaquin 
 }
 \arguments{
   \item{names}{Sequin names}
-  \item{title}{Context specific inputs}
+  \item{...}{Context specific inputs}
 }
 \details{
 The function creates an R-object which every other Anaquin R-function requires. The object encapsulates the information required for analysis, thus the inputs are context specific. It is important to review the documentation for details. Users are encouraged to try our command-line Anaquin for auto-generating usable R-script.
@@ -17,12 +17,12 @@ The function creates an R-object which every other Anaquin R-function requires. 
 
 \examples{
 #
-# Example 1: Create Anaquin dataset for PlotAssembly
+# Example: Create Anaquin dataset for PlotAssembly
 #
 
 data("Vignette_5.4.5")
 data <- Vignette_5.4.5
-CreateDataForAnaquin(names=row.names(data), input=data$input, sensitivity=data$Sn)
+createAnaquinData(names=row.names(data), input=data$input, sensitivity=data$Sn)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

@@ -1,7 +1,7 @@
 \docType{data}
 \name{Vignette_5.4.5}
 \alias{Vignette_5.4.5}
-\title{Quantify RnaQuin assembly sensitivity}
+\title{Quantify assembly sensitivity (RnaQuin)}
 \format{A data frame:
 \itemize{
   \item Length: Length of the sequin

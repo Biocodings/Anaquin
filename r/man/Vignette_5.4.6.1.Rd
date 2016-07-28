@@ -1,7 +1,7 @@
 \docType{data}
 \name{Vignette_5.4.6.1}
 \alias{Vignette_5.4.6.1}
-\title{Quantify RnaQuin gene expression}
+\title{Quantify Cufflink gene expression (RnaQuin)}
 \format{A data frame:
 \itemize{
   \item Length: Length of the sequin

@@ -4,12 +4,33 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.getLODR <- function()
+.getLODR <- function(ratio, model, x, y, pval)
 {
+    knots <- seq(min(x), max(x), length.out=5000)
+
+    preds <- predict(model, band='pred', newdata=knots)
+    preds <- 10^preds$fit
     
+    # Does the curve intersect the y-axis?
+    if (min(preds) > pval)
+    {
+        return (Inf)
+    }
+    
+    # Difference between predictions and p-value cutoff (y-axis)
+    diff <- abs(preds - pval)
+
+    #
+    # LODR is simply the point that is closest to the intersection. This is not exact solution
+    # but LODR itself is a rough estimate. It's not possible for root solving because local
+    # regression is non-parametric. The ERCC package uses a complicated estimation algorithm,
+    # but there is really no need for that.
+    #
+
+    return (10^knots[which.min(diff)])
 }
 
-.fitCurve <- function(ratio, x, y, prob, algo='locfit', showFitting=FALSE)
+.fitCurve <- function(ratio, x, y, pval, algo='locfit', showFitting=FALSE)
 {
     if (algo == 'locfit')
     {
@@ -21,17 +42,14 @@
         # Predictions for the knots
         kpred <- predict(model, band='pred', newdata=knots)
 
-        #
-        # http://www.r-bloggers.com/thats-smooth. Assuming normality for the confidence intervals.
-        #
-
-        uc <- 10^(kpred$fit + qnorm(prob) * kpred$se.fit)
-        lc <- 10^(kpred$fit - qnorm(prob) * kpred$se.fit)
+        uc <- 10^(kpred$fit + qnorm(pval) * kpred$se.fit)
+        lc <- 10^(kpred$fit - qnorm(pval) * kpred$se.fit)
     }
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    return (data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc))
+    return (list(LODR=.getLODR(ratio, model, x, y, pval),
+                 data=data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc)))
 }
 
 .fitLODR <- function(data, ...)
@@ -49,13 +67,17 @@
     data <- data[data$pval != 0,]    
     data <- data[!is.na(data$measured),]
     
-    if (is.null(data$qval)) { data$qval <- qvalue(data$pval)$qvalues }
-    
+    if (is.null(x$FDR))     { x$FDR <- 0.05 }
+    if (is.null(data$qval)) { data$qval <- qvalue(data$pval, fdr.level=x$FDR)$qvalues }
+
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     pval <- max(data$pval[data$qval < x$FDR])
 
-    model <- NULL
+    print(paste(c('Threshold: ', pval), collapse=''))
 
+    curve <- NULL
+    limit <- NULL
+    
     for (ratio in unique(sort(data$ratio)))
     {
         t <- data[data$ratio == ratio,]
@@ -63,7 +85,11 @@
         tryCatch (
         {
             print(paste('Estmating LODR for', ratio))
-            model <- rbind(model, .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), prob=pval))
+            
+            r <- .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), pval=pval)
+            
+            curve <- rbind(curve, r$data)
+            limit <- rbind(limit, data.frame(ratio=ratio, LODR=r$LODR))
         }, error = function(e)
         {
             print(e)
@@ -71,17 +97,18 @@
         })
     }
     
-    model$ratio <- as.factor(model$ratio)
+    curve$ratio <- as.factor(curve$ratio)
 
     return(list(measured=data$measured,
                 pval=data$pval,
                 ratio=as.factor(data$ratio),
-                model=model,
-                model=model))
+                curve=curve,
+                limit=limit))
 }
 
 .plotLODR <- function(data, ...)
 {
+    require(knitr)
     require(qvalue)
     require(ggplot2)
 
@@ -105,21 +132,13 @@
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
     if (!is.null(x$legTitle)) { p <- p + labs(colour=x$legTitle) }
     
-    if (!is.null(data$model))
+    if (!is.null(data$curve))
     {
-        p <- p + geom_line(data=data$model, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
-        p <- p + geom_ribbon(data=data$model, aes(x=knots, y=pred, ymin=lc, ymax=uc,
+        p <- p + geom_line(data=data$curve, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
+        p <- p + geom_ribbon(data=data$curve, aes(x=knots, y=pred, ymin=lc, ymax=uc,
                              fill=ratio), alpha=0.3, colour=NA, show.legend=FALSE)
     }
-    
-    if (!is.null(x$arrowDat))
-    {
-        p <- p + geom_segment(data=x$arrowDat, aes(x=x, y=y, xend=xend, yend=yend, colour=ratio), 
-                              lineend="round", arrow=grid::arrow(length = grid::unit(0.5, 'cm')), size=2, alpha=0.6) +
-            labs(colour='Log-Fold') +
-            p <- p + geom_hline(yintercept=x$cutoff, linetype=2, size=2)
-    }
-    
+
     if (!is.null(x$xBreaks))
     {
         p <- p + scale_x_log10(breaks=x$xBreaks)
@@ -136,6 +155,18 @@
     else
     {
         p <- p + scale_y_log10()        
+    }
+    
+    if (!is.null(data$limit))
+    {
+        limit <- data$limit[is.finite(data$limit$LODR),]
+        print(kable(limit))
+        
+
+        limit <- cbind(limit, y=c(0))
+        limit <- cbind(limit, yend=c(1))        
+        
+        p <- p + geom_segment(data=limit, aes(x=LODR, y=y, xend=LODR, yend=yend, color=as.factor(limit$ratio)), linetype='33', size=0.6)
     }
     
     print(.transformPlot(p))

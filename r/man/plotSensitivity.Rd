@@ -8,7 +8,7 @@ Create sensitivity plot where the x-axis is the logarithm of input concentration
 \method{plotSensitivity}{Anaquin}(data, ...)
 }
 \arguments{
-  \item{data}{Anaquin dataset created by \code{CreateAnaquinData}. It needs to define information in \bold{Details}.}
+  \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
   \item{title}{Label of the plot.}
   \item{xlab}{Label for the x-axis}
   \item{ylab}{Label for the y-axis}
@@ -17,7 +17,7 @@ Create sensitivity plot where the x-axis is the logarithm of input concentration
 }
 \details{
 
-\code{plotAssembly} requires the following inputs from \code{CreateAnaquinData}.
+\code{plotAssembly} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
     \tab \code{names}       \tab Sequin names\cr
