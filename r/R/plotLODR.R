@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.getLODR <- function(ratio, model, x, y, pval)
+.getLODR <- function(ratio, model, x, pval)
 {
     knots <- seq(min(x), max(x), length.out=5000)
 
@@ -48,7 +48,7 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    return (list(LODR=.getLODR(ratio, model, x, y, pval),
+    return (list(LODR=.getLODR(ratio, model, x, pval),
                  data=data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc)))
 }
 
@@ -89,7 +89,7 @@
             r <- .fitCurve(ratio=ratio, log10(t$measured), log10(t$pval), pval=pval)
             
             curve <- rbind(curve, r$data)
-            limit <- rbind(limit, data.frame(ratio=ratio, LODR=r$LODR))
+            limit <- rbind(limit, data.frame(Ratio=ratio, LODR=r$LODR))
         }, error = function(e)
         {
             print(e)
@@ -161,12 +161,11 @@
     {
         limit <- data$limit[is.finite(data$limit$LODR),]
         print(kable(limit))
-        
 
         limit <- cbind(limit, y=c(0))
         limit <- cbind(limit, yend=c(1))        
         
-        p <- p + geom_segment(data=limit, aes(x=LODR, y=y, xend=LODR, yend=yend, color=as.factor(limit$ratio)), linetype='33', size=0.6)
+        p <- p + geom_segment(data=limit, aes(x=LODR, y=y, xend=LODR, yend=yend, color=as.factor(limit$Ratio)), linetype='33', size=0.6)
     }
     
     print(.transformPlot(p))
