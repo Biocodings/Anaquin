@@ -26,7 +26,7 @@ if (all(is.na(data$Pval)))
     data <- data[data$Label!='FP' | (data$Pval == '-' | data$Pval<=sign),]
 }
 
-# Change to 'SNP' or 'Indel'
+# Uncomment the line to filter for SNPs (similar for 'Insertion' and 'Deletion')
 #data <- data[data$Type=='SNP',]
 
 title <- 'ROC Plot'
