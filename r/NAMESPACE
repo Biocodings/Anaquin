@@ -1,3 +1,7 @@
+import(ggplot2)
+import(ROCR)
+import(knitr)
+import(qvalue)
 export(plotScatter)
 export(plotSensitivity)
 export(plotROC)
