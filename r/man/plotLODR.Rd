@@ -36,7 +36,8 @@ data('Vignette_5.6.3')
 data <- Vignette_5.6.3
 
 # Create Anaquin data for plotLODR
-anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean, ratio=abs(data$ExpLFC), pval=data$Pval)
+anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean,
+                             ratio=abs(data$ExpLFC), pval=data$Pval)
 
 plotLODR(anaquin)
 }

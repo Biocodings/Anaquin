@@ -6,9 +6,6 @@
 
 .plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold=0.70, showGuide=FALSE)
 {
-    require(ggplot2)
-    require(reshape2)
-
     data <- data$seqs
 
     stopifnot(!is.null(data$input))
@@ -47,16 +44,16 @@
         showLOA <<- FALSE
     })
 
-    p <- ggplot(data=data, aes(x)) +
+    p <- ggplot(data=data, aes_string('x')) +
                         xlab(xlab) +
                         ylab(ylab) +
                     ggtitle(title) +
                         theme_bw()
-    p <- p + geom_point(aes(y=y, colour=grp), size=2.0, alpha=0.5)
+    p <- p + geom_point(aes_string(y='y', colour='grp'), size=2.0, alpha=0.5)
 
     if (!all(is.na(data$f)))
     {
-        p <- p + geom_line(aes(y=f, colour="line"), alpha=1.0)
+        p <- p + geom_line(aes_string(y='f', colour='"line"'), alpha=1.0)
     }
     
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))

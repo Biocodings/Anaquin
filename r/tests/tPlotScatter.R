@@ -12,7 +12,7 @@ test.PlotScatter_1 <- function()
     data("Vignette_5.4.6.1")
     
     data <- Vignette_5.4.6.1
-    data <- CreateDataForAnaquin(names=row.names(data), input=log2(data$InputConcent), measured=log2(data$Observed))
+    data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), measured=log2(data$Observed))
     
     r <- plotScatter(data)
     

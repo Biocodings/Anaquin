@@ -6,10 +6,6 @@
 
 plotROC <- function(data, refRats, ...)
 {
-    require(ROCR)
-    require(knitr)
-    require(ggplot2)
-    
     data <- data$seqs
     
     stopifnot(!is.null(refRats))
@@ -92,10 +88,10 @@ plotROC <- function(data, refRats, ...)
 
     ROCs$ratio = as.factor(ROCs$ratio)
 
-    p <- ggplot(data=ROCs, aes(x=FPR, y=TPR))               + 
-            geom_abline(intercept=0, slope=1, linetype=2)   +
-            geom_path(size=1, aes(colour=ratio), alpha=0.5) +
-            labs(colour=x$legTitle)                         +
+    p <- ggplot(data=ROCs, aes_string(x='FPR', y='TPR'))             + 
+            geom_abline(intercept=0, slope=1, linetype=2)            +
+            geom_path(size=1, aes_string(colour='ratio'), alpha=0.5) +
+            labs(colour=x$legTitle)                                  +
             theme_bw()
 
     if (!is.null(x$title))

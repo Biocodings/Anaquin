@@ -24,8 +24,6 @@
 
 showLOQ <- function(x, y, showDetails=FALSE)
 {
-    require(ggplot2)
-
     #
     # For x=1,2,3,...,n, we would only fit b=3,4,...,n-2. Therefore the length of the frame is n-4.
     #
@@ -113,7 +111,7 @@ showLOQ <- function(x, y, showDetails=FALSE)
     
     if (showDetails)
     {
-        p <- ggplot(data = r, aes(x = k, y = sums))
+        p <- ggplot(data = r, aes_string(x='k', y='sums'))
         p <- p + xlab('Break point')
         p <- p + ylab('Total sum of squares')
         p <- p + geom_line()

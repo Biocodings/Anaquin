@@ -9,7 +9,8 @@ Description: The 'Anaquin' package makes parts of sequins accessible from R. The
 License: Creative Commons license 
 VignetteBuilder: knitr
 URL: www.sequin.xyz
-Imports: ggplot2, ROCR, knitr, qvalue
+Depends: R (>= 2.10.0)
+Imports: ggplot2, ROCR, knitr, qvalue, locfit
 Suggests: RUnit
 BugReports: https://github.com/student-t/Anaquin/issues
 LazyData: true

@@ -36,9 +36,9 @@ The plot provides diagnose performance to select possibly optimal models and to 
 data('Vignette_5.6.3')
 data <- Vignette_5.6.3
 
-data$label <- classifyByRefRatio(inputs=abs(data$ExpLFC), refRatio=0)
-data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
-
+data$label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
+data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC,
+                          score=1-data$Pval, qval=data$Pval, label=data$label)
 plotROC(data, refRats=0)
 }
 

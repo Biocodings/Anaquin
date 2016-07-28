@@ -4,11 +4,8 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, xBreaks=NULL, ...)
+plotScatter <- function(data, ...)
 {
-    require(grid)
-    require(ggplot2)
-
     data <- data$seqs
 
     z <- list(...)
@@ -77,12 +74,12 @@ plotScatter <- function(data, xBreaks=NULL, ...)
     
     data <- data[!is.na(data$y),]
 
-    p <- ggplot(data=data, aes(x=data$x, y=data$y)) +
+    p <- ggplot(data=data, aes_string(x='data$x', y='data$y')) +
                                xlab(z$xlab) +
                                ylab(z$ylab) +
                            ggtitle(z$title) +
                      labs(colour='Ratio') +
-                     geom_point(aes(colour=grp), size=2.0, alpha=0.5) +
+                     geom_point(aes_string(colour='grp'), size=2.0, alpha=0.5) +
                 geom_smooth(method='lm', formula=y~x, linetype='11', color='black', size=0.5)  +
                 theme_bw()
 
@@ -121,7 +118,7 @@ plotScatter <- function(data, xBreaks=NULL, ...)
             t <- paste(t, 'attomol/ul')
             
             p <- p + geom_vline(xintercept=c(LOQ$breaks$k), linetype='33', size=0.6)
-            p <- p + geom_label(aes(x=max(LOQ$breaks$k), y=min(y)), label=t, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
+            p <- p + geom_label(aes_string(x='max(LOQ$breaks$k)', y='min(y)'), label=t, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)
         }
     }
     
@@ -163,14 +160,14 @@ plotScatter <- function(data, xBreaks=NULL, ...)
         p <- p + above
     }
 
-    if (!is.null(xBreaks))
+    if (!is.null(z$xBreaks))
     {
-        p <- p + scale_x_continuous(breaks=xBreaks)
+        p <- p + scale_x_continuous(breaks=z$xBreaks)
     }
     
     if (!is.null(data$sd))
     {
-        p <- p + geom_errorbar(aes(ymax=ymax, ymin=ymin), size=0.2, alpha=0.5)
+        p <- p + geom_errorbar(aes_string(ymax='ymax', ymin='ymin'), size=0.2, alpha=0.5)
     }
     
     p <- .transformPlot(p)

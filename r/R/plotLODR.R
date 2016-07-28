@@ -54,9 +54,6 @@
 
 .fitLODR <- function(data, ...)
 {
-    require(locfit)
-    require(qvalue)
-    
     x <- list(...)
 
     stopifnot(!is.null(data$pval))
@@ -108,10 +105,6 @@
 
 .plotLODR <- function(data, ...)
 {
-    require(knitr)
-    require(qvalue)
-    require(ggplot2)
-
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))
     stopifnot(!is.null(data$measured))
@@ -122,7 +115,7 @@
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
 
     df <- data.frame(measured=data$measured, pval=data$pval, ratio=data$ratio)
-    p  <- ggplot(df, aes(x=measured, y=pval, colour=ratio))   +
+    p  <- ggplot(df, aes_string(x='measured', y='pval', colour='ratio'))   +
                          geom_point(size=x$size, alpha=0.5)   +
                          labs(colour=x$legTitle)              +
                          theme_bw()
@@ -134,9 +127,9 @@
     
     if (!is.null(data$curve))
     {
-        p <- p + geom_line(data=data$curve, aes(x=knots, y=pred, colour=ratio), show.legend=FALSE)
-        p <- p + geom_ribbon(data=data$curve, aes(x=knots, y=pred, ymin=lc, ymax=uc,
-                             fill=ratio), alpha=0.3, colour=NA, show.legend=FALSE)
+        p <- p + geom_line(data=data$curve, aes_string(x='knots', y='pred', colour='ratio'), show.legend=FALSE)
+        p <- p + geom_ribbon(data=data$curve, aes_string(x='knots', y='pred', ymin='lc', ymax='uc',
+                             fill='ratio'), alpha=0.3, colour=NA, show.legend=FALSE)
     }
 
     if (!is.null(x$xBreaks))
@@ -165,7 +158,7 @@
         limit <- cbind(limit, y=c(0))
         limit <- cbind(limit, yend=c(1))        
         
-        p <- p + geom_segment(data=limit, aes(x=LODR, y=y, xend=LODR, yend=yend, color=as.factor(limit$Ratio)), linetype='33', size=0.6)
+        p <- p + geom_segment(data=limit, aes_string(x='LODR', y='y', xend='LODR', yend='yend', color='as.factor(limit$Ratio)'), linetype='33', size=0.6)
     }
     
     print(.transformPlot(p))

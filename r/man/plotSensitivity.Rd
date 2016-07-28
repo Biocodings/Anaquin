@@ -33,7 +33,9 @@ library("Anaquin")
 
 data("Vignette_5.4.5")
 data <- Vignette_5.4.5
-data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), sensitivity=data$Sn)
+data <- createAnaquinData(names=row.names(data),
+                          input=log2(data$InputConcent),
+                          sensitivity=data$Sn)
 
 plotSensitivity(data)
 }
