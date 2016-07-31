@@ -1,3 +1,4 @@
+#include "tools/errors.hpp"
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "parsers/parser_sam.hpp"
@@ -47,10 +48,10 @@ static RAlign::Stats init()
 
     stats.eInters = r.meInters();
 
-    assert(stats.eInters.size());
-    assert(stats.iInters.size());
-    assert(stats.eInters.size() == stats.iInters.size());
-
+    ASSERT(stats.eInters.size(), "stats.eInters.size()");
+    ASSERT(stats.iInters.size(), "stats.iInters.size()");
+    ASSERT(stats.eInters.size() == stats.iInters.size(), "stats.eInters.size() == stats.iInters.size()");
+    
     for (const auto &i : stats.eInters)
     {
         const auto &cID = i.first;
@@ -70,10 +71,10 @@ static RAlign::Stats init()
         MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
         stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
         
-        assert(stats.data[cID].eLvl.nr());
+        ASSERT(stats.data[cID].eLvl.nr(), "stats.data[cID].eLvl.nr()");
     }
 
-    assert(!stats.data.empty());
+    ASSERT(!stats.data.empty(), "!stats.data.empty()");
     return stats;
 }
 
@@ -317,7 +318,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     {
         x.aLvl.m.tp()++;
 
-        assert(!gID.empty());
+        ASSERT(!gID.empty(), "!gID.empty()");
         x.g2r[gID]++;
     }
     else
@@ -482,7 +483,8 @@ static void writeIQuins(const FileName &file,
         for (const auto &j : stats.iInters.at(cID).data())
         {
             auto is = j.second.stats();
-            assert(is.nonZeros == 0 || is.nonZeros == is.length);
+            
+            ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
             
             const auto pos = (toString(j.second.l().start) + "-" + toString(j.second.l().end));
             
@@ -563,7 +565,7 @@ static void writeQuins(const FileName &file,
                 // Statistics for the intron within the gene
                 const auto is = j.second.stats();
                 
-                assert(is.nonZeros == 0 || is.nonZeros == is.length);
+                ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
                 
                 if (!is.nonZeros)
                 {

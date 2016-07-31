@@ -4,9 +4,9 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "data/errors.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
+#include "tools/errors.hpp"
 #include "data/standard.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_csv.hpp"
