@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include "tools/script.hpp"
 #include "writers/writer.hpp"
 
 namespace Anaquin
@@ -37,7 +38,7 @@ namespace Anaquin
 
             inline void write(const std::string &l, bool newLine = true) override
             {
-                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << l;
+                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << ScriptTool::clean(l);
 
                 if (newLine)
                 {
