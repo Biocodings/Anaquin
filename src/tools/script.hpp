@@ -18,15 +18,12 @@ namespace Anaquin
                 auto curr = str.at(i);
                 auto next = i != str.size()-1 ? str.at(i+1) : 0;
 
-                if (isprint(curr))
+                if (curr == '$' && !isprint(next))
                 {
-                    if (curr == '$' && !isprint(next))
-                    {
-                        continue;
-                    }
-                    
-                    ss << curr;
+                    continue;
                 }
+                
+                ss << curr;
             }
             
             return ss.str();
