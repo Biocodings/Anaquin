@@ -7,7 +7,7 @@ using namespace Anaquin;
 RSample::Stats RSample::stats(const FileName &file, const Options &o)
 {
     A_ASSERT(!isnan(o.p), "Sampling probability must not be NAN");
-    A_ASSERT(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1).");
+    A_ASSERT(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1)");
 
     RSample::Stats stats;
     
