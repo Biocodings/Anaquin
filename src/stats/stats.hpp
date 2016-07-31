@@ -56,7 +56,7 @@ namespace Anaquin
     
     struct SReals : public SSamples<double>
     {
-        inline double mean() const { return SS::mean(SSamples<double>::_data); }
+        inline double getMean() const { return SS::getMean(SSamples<double>::_data); }
         
         virtual operator std::string() const
         {
@@ -68,7 +68,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::mean(data) % SS::sd(data)).str();
+                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::getMean(data) % SS::getSD(data)).str();
             }
             else
             {
@@ -110,7 +110,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1% \u00B1 %2%") % SS::mean(data) % SS::sd(data)).str();
+                return (boost::format("%1% \u00B1 %2%") % SS::getMean(data) % SS::getSD(data)).str();
             }
             else
             {

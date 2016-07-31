@@ -87,7 +87,7 @@ LinearModel LinearStats::linear(bool shouldLog) const
 
         lm.F     = m.f;
         lm.p     = m.p;
-        lm.r     = SS::cor(d.x, d.y);
+        lm.r     = SS::getCorrelation(d.x, d.y);
         lm.c     = m.coeffs[0].est;
         lm.m     = m.coeffs[1].est;
         lm.R2    = m.r2;

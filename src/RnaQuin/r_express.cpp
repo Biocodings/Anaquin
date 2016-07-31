@@ -383,7 +383,7 @@ static void generateSummary(const FileName &summary,
     const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
     
     // Breakpoint estimated by piecewise regression
-    const auto b = ms.b.mean();
+    const auto b = ms.b.getMean();
     
     // Number of genomic features above the breakpoint
     SCounts n_above;
