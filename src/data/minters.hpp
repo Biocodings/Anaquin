@@ -8,6 +8,7 @@
 #include "data/data.hpp"
 #include "data/itree.hpp"
 #include "data/locus.hpp"
+#include "tools/errors.hpp"
 
 namespace Anaquin
 {
@@ -33,9 +34,10 @@ namespace Anaquin
                            const TransID    &tID) :
                         _id(id), _tID(tID), _gID(gID), _l(l) {}
 
-        std::set<Locus> zeros() const;
+            // Return loci where no alignment
+            std::set<Locus> zeros() const;
         
-        Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr);
+            Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr);
         
             template <typename F> Stats stats(F f) const
             {
@@ -114,7 +116,7 @@ namespace Anaquin
              * Merge the new interval with the first existing overlapping interval. New interval is
              * added if no overlapping found.
              */
-        
+            
             inline void merge(const T &i)
             {
                 for (auto &j : _inters)
@@ -140,12 +142,11 @@ namespace Anaquin
                     loci.push_back(LOCUS_TO_TINTERVAL(i.second));
                 }
                 
-                if (loci.empty())
-                {
-                    throw "No interval was built. loci.empty().";
-                }
+                A_ASSERT(!loci.empty(), "No interval was built. Zero interval.");
             
                 _tree = std::shared_ptr<IntervalTree<T *>>(new IntervalTree<T *> { loci });
+
+                A_ASSERT(_tree, "Failed to build interval treee");
             }
         
             inline T * find(const typename T::IntervalID &id)
@@ -160,6 +161,12 @@ namespace Anaquin
 
             inline T * exact(const Locus &l, std::vector<T *> *r = nullptr) const
             {
+                // This could happen for chrM (no intron)
+                if (!_tree)
+                {
+                    return nullptr;
+                }
+                
                 auto v = _tree->findContains(l.start, l.end);
 
                 T *t = nullptr;
@@ -182,6 +189,12 @@ namespace Anaquin
         
             inline T * contains(const Locus &l, std::vector<T *> *r = nullptr) const
             {
+                // This could happen for chrM (no intron)
+                if (!_tree)
+                {
+                    return nullptr;
+                }
+
                 auto v = _tree->findContains(l.start, l.end);
 
                 if (r)
@@ -199,6 +212,12 @@ namespace Anaquin
         
             inline T * overlap(const Locus &l, std::vector<T *> *r = nullptr) const
             {
+                // This could happen for chrM (no intron)
+                if (!_tree)
+                {
+                    return nullptr;
+                }
+
                 auto v = _tree->findOverlapping(l.start, l.end);
             
                 if (r)

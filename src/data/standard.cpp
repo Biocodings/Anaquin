@@ -150,14 +150,14 @@ void Standard::addTRef(const Reader &r)
 
 void Standard::addTMix(const Reader &r)
 {
-    ASSERT(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
+    A_ASSERT(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
 
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addTDMix(const Reader &r)
 {
-    ASSERT(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
+    A_ASSERT(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
     readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);

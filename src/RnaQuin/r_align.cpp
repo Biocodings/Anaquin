@@ -48,9 +48,9 @@ static RAlign::Stats init()
 
     stats.eInters = r.meInters();
 
-    ASSERT(stats.eInters.size(), "stats.eInters.size()");
-    ASSERT(stats.iInters.size(), "stats.iInters.size()");
-    ASSERT(stats.eInters.size() == stats.iInters.size(), "stats.eInters.size() == stats.iInters.size()");
+    A_ASSERT(stats.eInters.size(), "stats.eInters.size()");
+    A_ASSERT(stats.iInters.size(), "stats.iInters.size()");
+    A_ASSERT(stats.eInters.size() == stats.iInters.size(), "stats.eInters.size() == stats.iInters.size()");
     
     for (const auto &i : stats.eInters)
     {
@@ -71,10 +71,10 @@ static RAlign::Stats init()
         MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
         stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
         
-        ASSERT(stats.data[cID].eLvl.nr(), "stats.data[cID].eLvl.nr()");
+        A_ASSERT(stats.data[cID].eLvl.nr(), "stats.data[cID].eLvl.nr()");
     }
 
-    ASSERT(!stats.data.empty(), "!stats.data.empty()");
+    A_ASSERT(!stats.data.empty(), "!stats.data.empty()");
     return stats;
 }
 
@@ -318,7 +318,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     {
         x.aLvl.m.tp()++;
 
-        ASSERT(!gID.empty(), "!gID.empty()");
+        A_ASSERT(!gID.empty(), "!gID.empty()");
         x.g2r[gID]++;
     }
     else
@@ -565,7 +565,7 @@ static void writeQuins(const FileName &file,
                 // Statistics for the intron within the gene
                 const auto is = j.second.stats();
                 
-                ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
+                A_ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
                 
                 if (!is.nonZeros)
                 {
