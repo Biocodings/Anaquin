@@ -30,7 +30,7 @@ namespace Anaquin
             virtual void syncReadSampled(const Alignment &) = 0;
         };
 
-        static Stats subsample(const FileName &, Proportion, const AnalyzerOptions &, User *user = nullptr);
+        static Stats subsample(const FileName &, Proportion, const AnalyzerOptions &, bool toConsole, User *user = nullptr);
     };
     
     class Random

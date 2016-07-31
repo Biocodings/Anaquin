@@ -4,6 +4,29 @@
 
 using namespace Anaquin;
 
+TEST_CASE("RSample_OverSubsampled")
+{
+    Test::clear();
+    
+    RSample::Options o;
+
+    // Over subsampling
+    o.p = 0.99;
+    
+    // It's a unit test...
+    o.toConsole = false;
+    
+    const auto r = RSample::stats("tests/data/sampled.bam", o);
+    
+    REQUIRE(r.before.syn == 32323);
+    REQUIRE(r.before.gen == 424185);
+    REQUIRE(r.before.dilut() == Approx(0.0708048928));
+    
+    REQUIRE(r.after.syn == 32323);
+    REQUIRE(r.after.gen == 424185);
+    REQUIRE(r.after.dilut() == Approx(0.0708048928));
+}
+
 TEST_CASE("RSample_Negative")
 {
     Test::clear();

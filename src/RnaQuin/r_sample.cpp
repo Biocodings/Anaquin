@@ -6,11 +6,13 @@ using namespace Anaquin;
 
 RSample::Stats RSample::stats(const FileName &file, const Options &o)
 {
+    A_ASSERT(!isnan(o.p), "Sampling probability must not be NAN");
+    A_ASSERT(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1).");
+
     RSample::Stats stats;
     
     o.info(file);
 
-    assert(o.p > 0 && o.p < 1.0);
     o.info("Spike-in proportion: " + std::to_string(o.p));
 
     /*
@@ -64,7 +66,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Normalization: " + std::to_string(stats.norm));
     
     // Perform subsampling
-    const auto r = Sampler::subsample(file, stats.norm, o);
+    const auto r = Sampler::subsample(file, stats.norm, o, o.toConsole);
 
     stats.after = r.after;
 

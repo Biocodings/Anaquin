@@ -12,8 +12,10 @@ namespace Anaquin
         {
             Options() {}
             
+            bool toConsole = true;
+            
             // Fraction required for the spike-in
-            Proportion p;
+            Proportion p = NAN;
         };
 
         struct Stats : public MappingStats

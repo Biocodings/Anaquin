@@ -394,7 +394,7 @@ static Scripts summary()
            "        Precision:   %22$.2f\n\n"
            "       *Base level\n"
            "        Sensitivity: %23$.2f\n"
-           "        Precision:   %24$.2f\n\n";
+           "        Precision:   %24$.2f\n";
 }
 
 static void generateSummary(const FileName &file,

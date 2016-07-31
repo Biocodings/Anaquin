@@ -4,6 +4,8 @@
 
 using namespace Anaquin;
 
+#ifdef LONG_TESTS
+
 // Defined in main.cpp
 extern void SetGTFRef(const FileName &);
 
@@ -35,3 +37,5 @@ TEST_CASE("RAssembly_CompareWithItself")
     REQUIRE(r.data.at(ChrIS).iSN == Approx(0.9960212202));
     REQUIRE(r.data.at(ChrIS).iSP == Approx(0.9960212202));
 }
+
+#endif

@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, User *user)
+Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, bool toConsole, User *user)
 {
     Sampler::Stats stats;
 
@@ -53,8 +53,11 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
                 o.logInfo("Sampled " + x.name);
             }
 
-            // Print the SAM line
-            w.write(x);
+            if (toConsole)
+            {
+                // Print the SAM line
+                w.write(x);
+            }
         }
     }, true);
     
