@@ -1,3 +1,4 @@
+#include "tools/errors.hpp"
 #include "tools/sample.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "writers/writer_sam.hpp"
@@ -57,7 +58,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     const auto nTotal = stats.before.gen / (1.0 - o.p);
     o.logInfo("New Total: " + std::to_string(nTotal));
     
-    assert(nTotal > stats.before.gen);
+    A_ASSERT(nTotal >= stats.before.gen, "New total is less than genomic before");
     
     const auto nSyn = nTotal - stats.before.gen;
     o.logInfo("New Synthetic: " + std::to_string(nSyn));

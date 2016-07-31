@@ -55,8 +55,16 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
 
             if (toConsole)
             {
-                // Print the SAM line
-                w.write(x);
+                /*
+                 * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to give '*'
+                 * to QNAME, but not an empty string....
+                 */
+                
+                if (!x.name.empty())
+                {
+                    // Print SAM line
+                    w.write(x);
+                }
             }
         }
     }, true);
