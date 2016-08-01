@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.getLODR <- function(ratio, model, x, pval)
+.getLODR <- function(ratio, model, x, y, pval)
 {
     knots <- seq(min(x), max(x), length.out=5000)
 
@@ -12,7 +12,7 @@
     preds <- 10^preds$fit
     
     # Does the curve intersect the y-axis?
-    if (min(preds) > pval)
+    if (min(preds) > pval | ratio == 0)
     {
         return (Inf)
     }
@@ -48,7 +48,7 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    return (list(LODR=.getLODR(ratio, model, x, pval),
+    return (list(LODR=.getLODR(ratio, model, x, y, pval),
                  data=data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc)))
 }
 
