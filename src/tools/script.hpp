@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ctype.h>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include "data/path.hpp"
 #include <boost/format.hpp>
