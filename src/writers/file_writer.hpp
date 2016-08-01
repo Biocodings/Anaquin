@@ -38,7 +38,7 @@ namespace Anaquin
 
             inline void write(const std::string &l, bool newLine = true) override
             {
-                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << ScriptTool::clean(l);
+                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << Script::trim(l);
 
                 if (newLine)
                 {

@@ -1,7 +1,7 @@
 #ifndef PDF_WRITER_HPP
 #define PDF_WRITER_HPP
 
-#include "data/script.hpp"
+#include "tools/script.hpp"
 
 extern Anaquin::Scripts ReportScript();
 

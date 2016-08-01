@@ -7,7 +7,7 @@
 #ifndef V_REPORT_HPP
 #define V_REPORT_HPP
 
-#include "data/script.hpp"
+#include "tools/script.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
