@@ -146,6 +146,10 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
             align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
         }
         
+        #define bam_is_primary(b) (((b)->core.flag&0x900) == 0)
+        
+        align.isPrim = bam_is_primary(t);
+
         if (hasCID)
         {
             align.cID = std::string(h->target_name[t->core.tid]);

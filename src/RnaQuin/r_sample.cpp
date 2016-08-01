@@ -29,13 +29,17 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
             o.logInfo(std::to_string(info.p.i));
         }
         
-        if (Standard::isSynthetic(x.cID))
+        // Don't count for multiple alignments
+        if (x.isPrim)
         {
-            stats.before.syn++;
-        }
-        else
-        {
-            stats.before.gen++;
+            if (Standard::isSynthetic(x.cID))
+            {
+                stats.before.syn++;
+            }
+            else
+            {
+                stats.before.gen++;
+            }
         }
     });
 

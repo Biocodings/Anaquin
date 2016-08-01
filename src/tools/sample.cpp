@@ -23,15 +23,18 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         
         const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
 
-        if (Standard::isSynthetic(x.cID))
+        if (x.isPrim)
         {
-            stats.before.syn++;
+            if (Standard::isSynthetic(x.cID))
+            {
+                stats.before.syn++;
+            }
+            else
+            {
+                stats.before.gen++;
+            }
         }
-        else
-        {
-            stats.before.gen++;
-        }
-        
+
         // This is the key, randomly write the reads with certain probability
         if (shouldWrite || r.select(x.name))
         {
@@ -47,7 +50,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
                 }
             }
             
-            if (Standard::isSynthetic(x.cID))
+            if (x.isPrim && Standard::isSynthetic(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);
@@ -56,8 +59,8 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
             if (toConsole)
             {
                 /*
-                 * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to give '*'
-                 * to QNAME, but not an empty string....
+                 * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to
+                 * give '*' to QNAME, but not an empty string....
                  */
                 
                 if (!x.name.empty())

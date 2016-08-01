@@ -14,6 +14,7 @@ extern FileName GTFRef();
 #ifdef ANAQUIN_DEBUG
 static std::ofstream __iWriter__;
 static std::ofstream __bWriter__;
+static std::ofstream __rWriter__;
 #endif
 
 static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
@@ -85,8 +86,9 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     auto stats = init();
 
 #ifdef ANAQUIN_DEBUG
-    __bWriter__.open(o.work + "/RnaAlign_qbase.stats");
-    __iWriter__.open(o.work + "/RnaAlign_qintrs.stats");
+    __bWriter__.open(o.work + "/RnaAlign_qbase.txt");
+    __iWriter__.open(o.work + "/RnaAlign_qintrs.txt");
+    __rWriter__.open(o.work + "/RnaAlign_reads.txt");
 #endif
 
     // Parsing input files
@@ -339,8 +341,16 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             {
                 o.wait(std::to_string(info.p.i));
             }
-            
-            stats.update(x);
+
+            // Don't count for multiple alignments
+            if (!x.mapped || x.isPrim)
+            {
+#ifdef ANAQUIN_DEBUG
+                if (x.mapped && x.cID != ChrIS)
+                    __rWriter__ << x.name << "\n";
+#endif
+                stats.update(x);
+            }
 
             if (!x.mapped)
             {
@@ -366,7 +376,7 @@ static Scripts summary()
            "-------Number of alignments mapped to the synthetic chromosome and genome\n\n"
            "       Synthetic: %3%\n"
            "       Genome:    %4%\n"
-           "       Dilution:  %5$.2f\n\n"
+           "       Dilution:  %5$.3f\n\n"
            "-------Reference annotation (Synthetic)\n\n"
            "       Synthetic: %7% exons\n"
            "       Synthetic: %8% introns\n"
@@ -410,8 +420,8 @@ static void generateSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                  // 1
                                               % GTFRef()             // 2
-                                              % stats.countSyn          // 3
-                                              % stats.countGen          // 4
+                                              % stats.countSyn       // 3
+                                              % stats.countGen       // 4
                                               % stats.dilution()     // 5
                                               % stats.n_unmap        // 6
                                               % r.countUExonSyn()    // 7
@@ -484,7 +494,7 @@ static void writeIQuins(const FileName &file,
         {
             auto is = j.second.stats();
             
-            ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
+            A_ASSERT(is.nonZeros == 0 || is.nonZeros == is.length, "is.nonZeros == 0 || is.nonZeros == is.length");
             
             const auto pos = (toString(j.second.l().start) + "-" + toString(j.second.l().end));
             

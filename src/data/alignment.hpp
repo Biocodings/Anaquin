@@ -33,6 +33,8 @@ namespace Anaquin
         // Cigar string
         std::string cigar;
 
+        bool isPrim;
+        
         // Bitwise FLAG
         int flag;
 
