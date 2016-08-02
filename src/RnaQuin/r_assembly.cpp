@@ -178,7 +178,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                     return f.tID == i.first;
                 });
                 
-                o.logInfo("Analyzing: " + i.first);
+                o.info("Analyzing: " + i.first);
                 
                 // Compare only the sequin against the reference
                 CUFFCOMPARE(tmp, qry);
@@ -187,6 +187,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
             }
         }
 
+        o.info("Analyzing synthetic");        
+        
         // Compare everything about the chromosome against the reference
         CUFFCOMPARE(ref, qry);
 
@@ -199,7 +201,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      * Comparing for the synthetic
      */
 
-    o.logInfo("Generating for the synthetic");
+    o.info("Generating for the synthetic");
     compareGTF(ChrIS, createGTFSyn(GTFRef()), createGTFSyn(file));
     copyStats(ChrIS);
     
@@ -209,7 +211,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     if (stats.data.size() > 1)
     {
-        o.logInfo("Generating for the genome");
+        o.info("Generating for the genome");
         compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
         copyStats(Geno);
     }
