@@ -218,11 +218,6 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
         x.aLvl.normal++;
     }
 
-    if (info.clip || info.ins || info.del)
-    {
-        return;
-    }
-    
     // This'll be set to false whenever there is a mismatch
     bool isTP = true;
     
@@ -650,18 +645,17 @@ void RAlign::report(const FileName &file, const Options &o)
     writeQuins("RnaAlign_sequins.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_rintrs.stats
+     * Generating RnaAlign_rintrs.txt
      */
     
-    o.analyze("RnaAlign_rintrs.stats");
-    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
+    o.analyze("RnaAlign_rintrs.txt");
+    writeIQuins("RnaAlign_rintrs.txt", file, stats, o);
 
     /*
-     * Generating RnaAlign_rbase.stats
+     * Generating RnaAlign_rbase.txt
      */
     
-    o.analyze("RnaAlign_rbase.stats");
-    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
+    writeBQuins("RnaAlign_rbase.txt", file, stats, o);
     
     /*
      * Generating RnaAlign_report.pdf
