@@ -20,14 +20,14 @@ static std::ofstream __rWriter__;
 static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
 {
 #ifdef ANAQUIN_DEBUG
-    __iWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << gID << "\t" << label << "\n";
+    __iWriter__ << cID << "\t" << l.start << "-" << l.end << "\t" << gID << "\t" << label << "\n";
 #endif
 }
 
 static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 {
 #ifdef ANAQUIN_DEBUG
-    __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
+    __bWriter__ << cID << "\t" << l.start << "-" << l.end << "\t" << label << "\n";
 #endif
 }
 
