@@ -1,5 +1,5 @@
-#ifndef PATH_HPP
-#define PATH_HPP
+#ifndef FILE_HPP
+#define FILE_HPP
 
 #include <mutex>
 #include <cstdio>
@@ -9,21 +9,12 @@
 
 namespace Anaquin
 {
-    inline FileName path2file(const FileName &file)
+    inline bool isEmpty(const FileName& file)
     {
-        auto tmp = file;
-        
-        // Remove directory if present.
-        const size_t last_slash_idx = tmp.find_last_of("\\/");
-        
-        if (std::string::npos != last_slash_idx)
-        {
-            tmp.erase(0, last_slash_idx + 1);
-        }
-
-        return tmp;
+        std::ifstream ss(file);
+        return ss.peek() == std::ifstream::traits_type::eof();
     }
-    
+
     inline std::string random(size_t len)
     {
         auto randchar = []() -> char
