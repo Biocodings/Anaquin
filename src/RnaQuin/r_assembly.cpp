@@ -1,6 +1,6 @@
 #include <thread>
 #include <fstream>
-#include "data/path.hpp"
+#include "data/file.hpp"
 #include "data/compare.hpp"
 #include "tools/gtf_data.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -288,7 +288,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      * Comparing for the genome
      */
     
-//    if (stats.data.size() > 1) // TODO: FIX ME
+    if (!isEmpty(__QForGen__))
     {
         o.analyze("genome");
         compareGTF(Geno, __RForGen__, __QForGen__);
