@@ -2,6 +2,7 @@
 #define PARSER_GTF2_HPP
 
 #include <map>
+#include <cstring>
 #include "data/data.hpp"
 #include "data/locus.hpp"
 #include "data/reader.hpp"
@@ -115,9 +116,9 @@ namespace Anaquin
                                 {
                                     switch (buf[0])
                                     {
-                                        case '+': { x.str = Strand::Forward;  break; }
-                                        case '-': { x.str = Strand::Backward; break; }
-                                        case '.': { x.str = Strand::Unknown;  break; }
+                                        case '+': { x.str = Forward;  break; }
+                                        case '-': { x.str = Backward; break; }
+                                        case '.': { x.str = Unknown;  break; }
                                         default:  { A_THROW("Invalid strand: " + std::string(buf)); }
                                     }
                                     
