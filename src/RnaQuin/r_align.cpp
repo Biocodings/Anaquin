@@ -648,7 +648,6 @@ void RAlign::report(const FileName &file, const Options &o)
      * Generating RnaAlign_rintrs.txt
      */
     
-    o.analyze("RnaAlign_rintrs.txt");
     writeIQuins("RnaAlign_rintrs.txt", file, stats, o);
 
     /*

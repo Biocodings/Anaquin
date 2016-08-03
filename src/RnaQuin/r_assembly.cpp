@@ -3,7 +3,6 @@
 #include "data/file.hpp"
 #include "data/compare.hpp"
 #include "tools/gtf_data.hpp"
-#include "parsers/parser_gtf.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 using namespace Anaquin;
@@ -115,30 +114,6 @@ static void readQueryGTF(const FileName &file)
 static void readRefGTF(const FileName &file)
 {
     __RData__ = gtfData(Reader(file));
-}
-
-template <typename F> FileName createGTF(const FileName &file, F f)
-{
-    Line line;
-
-    const auto tmp = tmpFile();
-    std::ofstream out(tmp);
-
-    auto x = [&](const FileName &file, std::ofstream &out)
-    {
-        ParserGTF::parse(file, [&](const ParserGTF::Data &i, const std::string &l, const ParserProgress &)
-        {
-            if (f(i.cID))
-            {
-                out << l << std::endl;
-            }
-        });
-    };
-    
-    x(file, out);
-    out.close();
-    
-    return tmp;
 }
 
 static RAssembly::Stats init(const RAssembly::Options &o)
