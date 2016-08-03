@@ -1,4 +1,5 @@
 chrT	Cufflinks	transcript	2226972	2294540	460	-	.	gene_id "R2_76"; transcript_id "R2_76_2"; FPKM "1.8431724202"; frac "0.231528"; conf_lo "0.912152"; conf_hi "2.774193"; cov "5.375119";
+# This is just a testing string
 chrT	Cufflinks	exon	2226972	2227517	460	-	.	gene_id "R2_76"; transcript_id "R2_76_2"; exon_number "1"; FPKM "1.8431724202"; frac "0.231528"; conf_lo "0.912152"; conf_hi "2.774193"; cov "5.375119";
 chrT	Cufflinks	exon	2235701	2235729	460	-	.	gene_id "R2_76"; transcript_id "R2_76_2"; exon_number "2"; FPKM "1.8431724202"; frac "0.231528"; conf_lo "0.912152"; conf_hi "2.774193"; cov "5.375119";
 chrT	Cufflinks	exon	2238021	2238070	460	-	.	gene_id "R2_76"; transcript_id "R2_76_2"; exon_number "3"; FPKM "1.8431724202"; frac "0.231528"; conf_lo "0.912152"; conf_hi "2.774193"; cov "5.375119";
