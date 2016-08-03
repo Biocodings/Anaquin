@@ -79,20 +79,25 @@ namespace Anaquin
         // Genes to Data
         std::map<GeneID, GeneData> g2d;
         
-        // Transcripts to unique exons
+        // TODO: Forward and reverse?
+        // Transcripts to non-unique exons
         std::map<TransID, std::set<ExonData>> t2e;
-        std::map<TransID, std::set<ExonData>> t2ue;
         
+        // TODO: Forward and reverse?
+        // Transcripts to unique exons
+        std::map<TransID, std::set<ExonData>> t2ue;
+
+        // TODO: Forward and reverse?
         // Transcripts to unique introns
         std::map<TransID, std::set<IntronData>> t2ui;
         
         // Transcripts to genes
         std::map<TransID, GeneID> t2g;
         
-        // Unique exons
+        // Unique exons (forwards + backwards)
         Counts uexons = 0;
 
-        // Unique introns
+        // Unique introns (forwards + backwards)
         Counts uintrs = 0;
         
         std::set<GeneID> gIDs;
@@ -517,11 +522,14 @@ namespace Anaquin
 
                     c2d[x.cID].t2e[ed.tID].insert(ed);
 
+                    const auto str = x.str == Strand::Forward ? "F" : "B";
+
                     // The key represents a unique exon
-                    const auto key = (boost::format("%1%_%2%_%3%-%4%") % x.cID
-                                                                       % x.str
-                                                                       % x.l.start
-                                                                       % x.l.end).str();
+                    const auto key = (boost::format("%1%_%2%_%3%_%4%-%5%") % x.cID
+                                                                           % x.str
+                                                                           % str
+                                                                           % x.l.start
+                                                                           % x.l.end).str();
                     
                     if (!m_exons.count(key))
                     {
@@ -531,6 +539,7 @@ namespace Anaquin
                             //debug << x.cID << "\t" << x.l.start-1 << "\t" << x.l.end << x.gID << x.tID << std::endl;
                         }
 #endif
+                        
                         m_exons[key] = x.l;
                         c2d[x.cID].uexons++;
                         c2d[x.cID].t2ue[ed.tID].insert(ed);
@@ -538,7 +547,7 @@ namespace Anaquin
                     
                     break;
                 }
-                    
+
                 // Eg: CDS
                 default: { break; }
             }
@@ -574,10 +583,15 @@ namespace Anaquin
                     id.gID = x.gID;
                     id.tID = x.tID;
                     id.str = x.str;
-                    
+
+try // TODO: FIX THIS!!!!
+{
                     // Intron spans between exons
                     id.l = Locus(x.l.end+1, y.l.start-1);
-
+} catch (...)
+{
+    continue;
+}
                     #define MIN_INTRON_LEN 4
                     
                     const auto key = (boost::format("%1%_%2%-%3%") % x.cID
@@ -588,13 +602,6 @@ namespace Anaquin
                     {
                         if (!m_intrs.count(key))
                         {
-#ifdef ANAQUIN_DEBUG
-                            if (!Standard::isSynthetic(x.cID))
-                            {
-                                debug << x.cID << "\t" << id.l.start-1 << "\t" << id.l.end /*<< x.gID << x.tID */<< std::endl;
-                            }
-#endif
-                            
                             c2d[x.cID].uintrs++;
                             m_intrs[key] = id.l;
                             c2d[x.cID].t2ui[id.tID].insert(id);

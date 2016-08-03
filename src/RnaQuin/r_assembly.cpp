@@ -1,3 +1,4 @@
+#include <thread>
 #include <fstream>
 #include "data/path.hpp"
 #include "data/compare.hpp"
@@ -10,41 +11,112 @@ using namespace Anaquin;
 // Defined for cuffcompare
 Compare __cmp__;
 
+static FileName __QForSyn__;
+static FileName __QForGen__;
+static FileName __RForSyn__;
+static FileName __RForGen__;
+
+static GTFData __RData__;
+static RAssembly::Stats *__Stats__;
+
 // Defined in resources.cpp
 extern FileName GTFRef();
 
 // Defined for Cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
 
-template <typename F> inline FileName grepGTF(const FileName &file, F f)
+static std::string exec(const char* cmd)
 {
-    assert(!file.empty());
+    char buffer[128];
+    std::string result = "";
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+        if (fgets(buffer, 128, pipe.get()) != NULL)
+            result += buffer;
+    }
+    
+    return result;
+}
 
-    Line line;
-    
+static FileName grepGTF(const FileName &file, const std::string &key, bool shouldGeneTrans = true)
+{
     const auto tmp = tmpFile();
-    std::ofstream out(tmp);
+
+    std::string cmd;
     
-    auto parse = [&](const FileName &file, std::ofstream &out)
+    if (shouldGeneTrans)
     {
-        ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &l, const ParserProgress &)
-        {
-            if (f(x) && (x.type != RNAFeature::Gene) && (x.type != RNAFeature::Transcript))
-            //if (f(x))
-            {
-                out << l << std::endl;
-            }
-        });
-    };
+        cmd = "grep " + key + " " + file + " > " + tmp;
+    }
+    else
+    {
+        cmd = "grep " + key + " " + file + " | grep -v gene_type | grep -v transcript_type > " + tmp;
+    }
     
-    parse(file, out);
+    const auto msg = exec(cmd.c_str());
     
-    out.close();
+    if (!msg.empty())
+    {
+        A_THROW("Failed to execute: " + msg);
+    }
+
+    return tmp;
+}
+
+static FileName grepVGTF(const FileName &file, const std::string &key)
+{
+    const auto tmp = tmpFile();
+    const auto cmd = "grep -v " + key + " " + file + " > " + tmp;
+    const auto msg = exec(cmd.c_str());
+    
+    if (!msg.empty())
+    {
+        A_THROW("Failed to execute: " + msg);
+    }
     
     return tmp;
 }
 
-// Create a tempatory file for a condition (synthetic or genome)
+static FileName createQGTFSyn(const FileName &file)
+{
+    return (__QForSyn__ = grepGTF(file, ChrIS));
+}
+
+static FileName createQGTFGen(const FileName &file)
+{
+    return (__QForGen__ = grepVGTF(file, ChrIS));
+}
+
+static FileName createRGTFSyn(const FileName &file)
+{
+    return (__RForSyn__ = grepGTF(file, ChrIS, false));
+}
+
+static FileName createRGTFGen(const FileName &file)
+{
+    return (__RForGen__ = grepVGTF(file, ChrIS));
+}
+
+static void readQueryGTF(const FileName &file)
+{
+    const auto gs = gtfData(Reader(file));
+    
+    __Stats__->sExons = gs.countUExonSyn();
+    __Stats__->sIntrs = gs.countUIntrSyn();
+    __Stats__->sTrans = gs.countTransSyn();
+    __Stats__->sGenes = gs.countGeneSyn();
+    __Stats__->gExons = gs.countUExonGen();
+    __Stats__->gIntrs = gs.countUIntrGen();
+    __Stats__->gTrans = gs.countTransGen();
+    __Stats__->gGenes = gs.countGeneGen();
+}
+
+static void readRefGTF(const FileName &file)
+{
+    __RData__ = gtfData(Reader(file));
+}
+
 template <typename F> FileName createGTF(const FileName &file, F f)
 {
     Line line;
@@ -69,22 +141,6 @@ template <typename F> FileName createGTF(const FileName &file, F f)
     return tmp;
 }
 
-static FileName createGTFSyn(const FileName &file)
-{
-    return createGTF(file, [&](const ChrID &cID)
-    {
-        return Standard::isSynthetic(cID);
-    });
-}
-
-static FileName createGTFGen(const FileName &file)
-{
-    return createGTF(file, [&](const ChrID &cID)
-    {
-        return !Standard::isSynthetic(cID);
-    });
-}
-
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
@@ -104,6 +160,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_trans;
 
     auto stats = init(o);
+    __Stats__ = &stats;
 
     /*
      * Filtering transcripts
@@ -169,14 +226,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : hist)
             {
-                /*
-                 * Generate a new GTF solely for the sequin, which will be the reference.
-                 */
-                
-                const auto tmp = grepGTF(ref, [&](const ParserGTF::Data &f)
-                {
-                    return f.tID == i.first;
-                });
+                // Generate a new reference GTF solely for the sequins
+                const auto tmp = grepGTF(ref, i.first);
                 
                 o.info("Analyzing: " + i.first);
                 
@@ -195,14 +246,44 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         o.logInfo("Compare complated");
     };
 
+    std::thread t1(readQueryGTF, file);
+    std::thread t2(readRefGTF, GTFRef());
+
+    /*
+     * Create a new synthetic-only GTF file, which we'll use to estimate sequin sensitivity
+     */
+
     o.info("Analyzing transcripts");
+    o.info("Creating temporary transcripts");
+    
+    std::thread t3(createQGTFSyn, file);
+    std::thread t4(createQGTFGen, file);
+    std::thread t5(createRGTFSyn, GTFRef());
+    std::thread t6(createRGTFGen, GTFRef());
+
+    t3.join();
+    t4.join();
+    t5.join();
+    t6.join();
+    
+    o.logInfo(__QForSyn__);
+    o.logInfo(__QForGen__);
+    o.logInfo(__RForSyn__);
+    o.logInfo(__RForGen__);
+    
+    A_ASSERT(!__QForSyn__.empty(), "Error in __QForSyn__");
+    A_ASSERT(!__QForGen__.empty(), "Error in __QForGen__");
+    A_ASSERT(!__RForSyn__.empty(), "Error in __RForSyn__");
+    A_ASSERT(!__RForGen__.empty(), "Error in __RForGen__");
+    
+    o.info("Temporary transcripts generated");
 
     /*
      * Comparing for the synthetic
      */
 
     o.info("Generating for the synthetic");
-    compareGTF(ChrIS, createGTFSyn(GTFRef()), createGTFSyn(file));
+    compareGTF(ChrIS, __RForSyn__, __QForSyn__);
     copyStats(ChrIS);
     
     /*
@@ -212,24 +293,16 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     if (stats.data.size() > 1)
     {
         o.info("Generating for the genome");
-        compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
+        compareGTF(Geno, __RForGen__, __QForGen__);
         copyStats(Geno);
     }
-
-    /*
-     * Counting exons, introns and transcripts (reuse the gtfData() function)
-     */
     
-    const auto gs = gtfData(Reader(file));
+    o.info("Waiting for worker threads to complete");
 
-    stats.sExons = gs.countUExonSyn();
-    stats.sIntrs = gs.countUIntrSyn();
-    stats.sTrans = gs.countTransSyn();
-    stats.sGenes = gs.countGeneSyn();
-    stats.gExons = gs.countUExonGen();
-    stats.gIntrs = gs.countUIntrGen();
-    stats.gTrans = gs.countTransGen();
-    stats.gGenes = gs.countGeneGen();
+    t1.join();
+    t2.join();
+    
+    A_ASSERT(stats.sExons, "stats.sExons");
 
     return stats;
 }
@@ -260,7 +333,7 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = __RData__;
 
     const auto hasGen = stats.data.size() > 1;
     
