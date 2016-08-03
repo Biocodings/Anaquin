@@ -1,7 +1,6 @@
 #ifndef PARSER_GTF_HPP
 #define PARSER_GTF_HPP
 
-#include <assert.h>
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "data/convert.hpp"
@@ -15,21 +14,6 @@ namespace Anaquin
     {
         struct Data
         {
-            inline bool overlap(const Locus &l) const
-            {
-                return this->l.overlap(l);
-            }
-            
-            operator Locus() const { return l; }
-            
-            void operator=(const Data &f)
-            {
-                l    = f.l;
-                type = f.type;
-                tID  = f.tID;
-                gID  = f.gID;
-            }
-            
             ChrID cID;
             
             // Forward or reverse strand?

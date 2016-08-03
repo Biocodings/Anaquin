@@ -2,7 +2,7 @@
 #define WRITER_SAM_HPP
 
 #include <htslib/sam.h>
-#include "data/path.hpp"
+#include "data/file.hpp"
 #include "tools/samtools.hpp"
 #include "writers/writer.hpp"
 

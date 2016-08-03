@@ -7,7 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include "data/path.hpp"
+#include "data/file.hpp"
 #include <boost/format.hpp>
 
 // Defined in resources.cpp
