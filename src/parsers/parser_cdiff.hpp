@@ -79,6 +79,7 @@ namespace Anaquin
                 { "OK",     DiffTest::Status::Tested    },
                 { "HIDATA", DiffTest::Status::NotTested },
                 { "NOTEST", DiffTest::Status::NotTested },
+                { "FAIL"  , DiffTest::Status::NotTested },
             };
 
             Reader i(file);
@@ -99,7 +100,7 @@ namespace Anaquin
                 }
                 
                 Tokens::split(line, "\t", toks);
-                
+
                 t.gID    = toks[FGeneID];
                 t.iID    = toks[FTestID];
                 t.status = tok2Status.at(toks[FStatus]);
