@@ -58,7 +58,7 @@ namespace Anaquin
                     if (tokens.size() >= 6)
                     {
                         // Defines the strand, either '+' or '-'
-                        d.strand = tokens[5] == "+" ? Forward : Backward;
+                        d.strand = tokens[5] == "+" ? Strand::Forward : Strand::Backward;
                     }
                     
                     if (tokens.size() >= 4)
