@@ -12,5 +12,5 @@ TEST_CASE("ScriptTool_1")
 
     const auto r = Script::trim(str);
 
-    REQUIRE(r.size() == 754);
+    REQUIRE(r.size() == 781);
 }
