@@ -229,7 +229,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                 // Generate a new reference GTF solely for the sequins
                 const auto tmp = grepGTF(ref, i.first);
                 
-                o.info("Analyzing: " + i.first);
+                o.analyze(i.first);
                 
                 // Compare only the sequin against the reference
                 CUFFCOMPARE(tmp, qry);
@@ -238,8 +238,6 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
             }
         }
 
-        o.info("Analyzing synthetic");        
-        
         // Compare everything about the chromosome against the reference
         CUFFCOMPARE(ref, qry);
 
@@ -292,7 +290,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
 //    if (stats.data.size() > 1) // TODO: FIX ME
     {
-        o.info("Generating for the genome");
+        o.analyze("genome");
         compareGTF(Geno, __RForGen__, __QForGen__);
         copyStats(Geno);
     }
