@@ -342,6 +342,12 @@ static const struct option long_options[] =
     {0, 0, 0, 0 }
 };
 
+// Used by modules without std::iostream defined
+void printWarning(const std::string &msg)
+{
+    std::cout << "[Warn]: " << msg << std::endl;
+}
+
 static std::string optToStr(int opt)
 {
     for (const auto &o : long_options)
@@ -592,17 +598,6 @@ template <typename Reference> void addRef(Reference ref)
     }
 }
 
-static void saveRef()
-{
-    for (const auto &i : _p.opts)
-    {
-        if (CHECK_REF(i.first) && !i.second.empty())
-        {
-            //system(("cp " + i.second + " " + __output__).c_str());
-        }
-    }
-}
-
 // Apply a reference source given where it comes from
 template <typename Reference> void applyRef(Reference ref, Option opt)
 {
@@ -678,33 +673,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     {
         o.report->create(o.work);
     }
-
-    // Always save the reference files
-    saveRef();
-}
-
-template <typename Report> void report_1(typename Report::Options o = typename Report::Options())
-{
-    if (_p.inputs.size() != 1)
-    {
-        throw NotSingleInputError();
-    }
-    
-    o.mix = mixture();
-    o.index = _p.opts[OPT_R_IND];
-    
-    return startAnalysis<Report>([&](const typename Report::Options &o)
-    {
-        Report::generate(_p.inputs[0], o);
-    }, o);
-}
-
-template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())
-{
-    // Where the session files are generated
-    o.path = _p.path;
-
-    Viewer::generate(_p.opts.at(OPT_U_FILES), o);
 }
 
 /*
@@ -719,31 +687,10 @@ template <typename Analyzer, typename Files> void analyze(const Files &files, ty
     }, o);
 }
 
-// Analyze for a single sample with fuzzy matching
-template <typename Analyzer> void analyzeFuzzy(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    o.fuzzy = _p.fuzzy;
-    return analyze<Analyzer>(_p.inputs[0], o);
-}
-
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyze<Analyzer>(_p.opts.at(x), o);
-}
-
-// Analyze for two samples
-template < typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        if (_p.inputs.size() != 2)
-        {
-            throw NotDoubleInputError();
-        }
-
-        Analyzer::report(_p.inputs[0], _p.inputs[1], o);
-    }, o);
 }
 
 // Analyze for n samples
@@ -753,33 +700,6 @@ template < typename Analyzer> void analyze_n(typename Analyzer::Options o = type
     {
         Analyzer::report(_p.inputs, o);
     }, o);
-}
-
-/*
- * Functions for parsing string to enums
- */
-
-template <typename T> T parseEnum(const std::string &key, const std::string &str, const std::map<Value, T> &m)
-{
-    for (const auto &i : m)
-    {
-        if (strcasecmp(i.first.c_str(), str.c_str()) == 0)
-        {
-            return i.second;
-        }
-    }
-
-    throw InvalidValueException(str, key);
-};
-
-template <typename T> T parseCSoft(const Value &str, const std::string &key)
-{
-    const static std::map<Value, T> m =
-    {
-        { "HTSeqCount", T::HTSeqCount },
-    };
-
-    return parseEnum(key, str, m);
 }
 
 static void checkInputs(int argc, char ** argv)
