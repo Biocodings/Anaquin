@@ -18,12 +18,12 @@ TEST_CASE("RSample_OverSubsampled")
     
     const auto r = RSample::stats("tests/data/sampled.bam", o);
     
-    REQUIRE(r.before.syn == 32323);
-    REQUIRE(r.before.gen == 424185);
+    REQUIRE(r.before.syn == 32252);
+    REQUIRE(r.before.gen == 423204);
     REQUIRE(r.before.dilut() == Approx(0.0708048928));
     
-    REQUIRE(r.after.syn == 32323);
-    REQUIRE(r.after.gen == 424185);
+    REQUIRE(r.after.syn == 32252);
+    REQUIRE(r.after.gen == 423204);
     REQUIRE(r.after.dilut() == Approx(0.0708048928));
 }
 
