@@ -247,7 +247,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     };
 
     std::thread t1(readQueryGTF, file);
-    //std::thread t2(readRefGTF, GTFRef());
+    std::thread t2(readRefGTF, GTFRef());
 
     /*
      * Create a new synthetic-only GTF file, which we'll use to estimate sequin sensitivity
@@ -290,7 +290,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      * Comparing for the genome
      */
     
-    if (stats.data.size() > 1) // TODO: FIX ME
+//    if (stats.data.size() > 1) // TODO: FIX ME
     {
         o.info("Generating for the genome");
         compareGTF(Geno, __RForGen__, __QForGen__);
@@ -300,7 +300,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     o.info("Waiting for worker threads to complete");
 
     t1.join();
-    //t2.join();
+    t2.join();
     
     A_ASSERT(stats.sExons, "stats.sExons");
 
@@ -333,10 +333,10 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
-    //const auto &r = __RData__;
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = __RData__;
+//    const auto &r = Standard::instance().r_trans;
     
-    const auto hasGen = stats.data.size() > 1;
+    const auto hasGen = true; //stats.data.size() > 1;
     
     const auto sData = stats.data.at(ChrIS);
     const auto gData = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
