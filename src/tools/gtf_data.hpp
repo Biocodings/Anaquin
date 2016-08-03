@@ -10,6 +10,9 @@
 static std::ofstream debug;
 #endif
 
+// Defined in main.cpp
+extern void printWarning(const std::string &);
+
 namespace Anaquin
 {
     struct ExonData
@@ -79,11 +82,9 @@ namespace Anaquin
         // Genes to Data
         std::map<GeneID, GeneData> g2d;
         
-        // TODO: Forward and reverse?
         // Transcripts to non-unique exons
         std::map<TransID, std::set<ExonData>> t2e;
         
-        // TODO: Forward and reverse?
         // Transcripts to unique exons
         std::map<TransID, std::set<ExonData>> t2ue;
 
@@ -571,27 +572,44 @@ namespace Anaquin
                 std::copy(j.second.begin(), j.second.end(), std::back_inserter(sorted));
                 
                 /*
+                 * -------------------------------------- Cufflinks Bug --------------------------------------
+                 *
+                 * It's possible for Cufflink guided assembly to give a transcript for both forward and backward
+                 * strand. An example is in "cufflink_bug.png" in the source distribution. This is clearly invalid,
+                 * and thus we'll ignore the transcript.
+                 */
+                
+                bool shouldSkip = false;
+
+                for (auto k = 1; k < sorted.size() && !shouldSkip; k++)
+                {
+                    const auto &x = sorted[k-1];
+                    const auto &y = sorted[k];
+
+                    if (x.str != y.str)
+                    {
+                        printWarning(j.first + " gives transcription in both forward and backward strand. Ignored.");
+                        shouldSkip = true;
+                    }
+                }
+
+                /*
                  * Generating introns, only possible once the exons are sorted.
                  */
-
-                for (auto j = 1; j < sorted.size(); j++)
+                
+                for (auto j = 1; j < sorted.size() && !shouldSkip; j++)
                 {
                     const auto &x = sorted[j-1];
                     const auto &y = sorted[j];
-                    
+
                     id.cID = x.cID;
                     id.gID = x.gID;
                     id.tID = x.tID;
                     id.str = x.str;
 
-try // TODO: FIX THIS!!!!
-{
                     // Intron spans between exons
                     id.l = Locus(x.l.end+1, y.l.start-1);
-} catch (...)
-{
-    continue;
-}
+
                     #define MIN_INTRON_LEN 4
                     
                     const auto key = (boost::format("%1%_%2%-%3%") % x.cID
