@@ -1148,11 +1148,11 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_R_ASSEMBLY:
-                    {
-                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        break;
-                    }
+//                    case TOOL_R_ASSEMBLY:
+//                    {
+//                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+//                        break;
+//                    }
 
                     default:
                     {
