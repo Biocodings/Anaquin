@@ -649,10 +649,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.logger->open("anaquin.log");
 #endif
     
-    /*
-     * TODO: Check if a file exists at path
-     */
-
     system(("mkdir -p " + path).c_str());
     
     o.work   = path;
