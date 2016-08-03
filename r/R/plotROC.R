@@ -22,6 +22,7 @@ plotROC <- function(data, refRats, ...)
     # This is the sequin groups
     data$ratio <- abs(round(data$input))
 
+    data <- data[!is.na(data$score),]
     data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label, score=data$score, ratio=data$ratio)
