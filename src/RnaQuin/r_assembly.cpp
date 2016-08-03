@@ -18,6 +18,8 @@ static FileName __RForGen__;
 static GTFData __RData__;
 static RAssembly::Stats *__Stats__;
 
+static bool __hasGen__;
+
 // Defined in resources.cpp
 extern FileName GTFRef();
 
@@ -263,7 +265,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      * Comparing for the genome
      */
     
-    if (!isEmpty(__QForGen__))
+    if ((__hasGen__ = !isEmpty(__QForGen__)))
     {
         o.analyze("genome");
         compareGTF(Geno, __RForGen__, __QForGen__);
@@ -307,12 +309,10 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = __RData__;
-//    const auto &r = Standard::instance().r_trans;
-    
-    const auto hasGen = true; //stats.data.size() > 1;
-    
-    const auto sData = stats.data.at(ChrIS);
-    const auto gData = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
+
+    const auto hasGen = __hasGen__;
+    const auto sData  = stats.data.at(ChrIS);
+    const auto gData  = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
 
     #define C(x) (std::to_string(x))
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
