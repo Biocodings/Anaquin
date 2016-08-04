@@ -66,8 +66,8 @@ plotScatter <- function(data, ...)
     {
         data$ymax <- data$y + data$sd
         data$ymin <- data$y - data$sd
-        data[is.na(data$ymax),]$ymax <- data[is.na(data$ymax),]$y
-        data[is.na(data$ymin),]$ymin <- data[is.na(data$ymin),]$y        
+        data <- data[!is.na(data$ymax),]
+        data <- data[!is.na(data$ymin),]        
     }
     else
     {
@@ -110,17 +110,24 @@ plotScatter <- function(data, ...)
         
         if (!is.null(LOQ))
         {
-            # Print out the regression above LOQ
-            above <- .m2str(LOQ$model$rModel)
-            
-            # We can assume the break-point is on the log2-scale. Let's convert it back.
-            label <- 2^LOQ$breaks$k
-            
-            t <- paste('LOQ:', signif(label, 3))
-            t <- paste(t, 'attomol/ul')
-            
-            p <- p + geom_vline(xintercept=c(LOQ$breaks$k), linetype='33', size=0.6)
-            p <- p + geom_label(aes_string(x='max(LOQ$breaks$k)', y='min(y)'), label=t, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)                
+            if (LOQ$model$rr > cor(data$x, data$y))
+            {
+                # Print out the regression above LOQ
+                above <- .m2str(LOQ$model$rModel)
+                
+                # We can assume the break-point is on the log2-scale. Let's convert it back.
+                label <- 2^LOQ$breaks$k
+                
+                t <- paste('LOQ:', signif(label, 3))
+                t <- paste(t, 'attomol/ul')
+                
+                p <- p + geom_vline(xintercept=c(LOQ$breaks$k), linetype='33', size=0.6)
+                p <- p + geom_label(aes_string(x='max(LOQ$breaks$k)', y='min(y)'), label=t, colour='black', show.legend=FALSE, hjust=0.1, vjust=0.7)                
+            }
+            else
+            {
+                LOQ <- NULL
+            }
         }
     }
     
