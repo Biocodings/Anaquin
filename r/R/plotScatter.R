@@ -58,14 +58,16 @@ plotScatter <- function(data, ...)
 
     if (isMultiDF)
     {
-        data$sd <- apply(data$y[,-1], 1, sd, na.rm=TRUE)
-        data$y  <- rowMeans(data$y)
+        data$sd <- apply(data$y, 1, sd, na.rm=TRUE)
+        data$y  <- rowMeans(data$y, na.rm=TRUE)
     }
     
     if (isMulti)
     {
         data$ymax <- data$y + data$sd
-        data$ymin <- data$y - data$sd        
+        data$ymin <- data$y - data$sd
+        data[is.na(data$ymax),]$ymax <- data[is.na(data$ymax),]$y
+        data[is.na(data$ymin),]$ymin <- data[is.na(data$ymin),]$y        
     }
     else
     {
@@ -73,7 +75,7 @@ plotScatter <- function(data, ...)
     }
     
     data <- data[!is.na(data$y),]
-
+    
     p <- ggplot(data=data, aes_string(x='data$x', y='data$y')) +
                                xlab(z$xlab) +
                                ylab(z$ylab) +
@@ -176,7 +178,7 @@ plotScatter <- function(data, ...)
     {
         p <- p + geom_errorbar(aes_string(ymax='ymax', ymin='ymin'), size=0.2, alpha=0.5)
     }
-    
+
     p <- .transformPlot(p)
     print(p)
 
