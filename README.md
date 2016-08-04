@@ -46,7 +46,7 @@ The source code requires a C++11 compiler to build.
 <li>Metagenomics</li>
 </ul>
 
-## Features
+## Summary
 
 <ul>
 <li> Statistical analysis</li>
