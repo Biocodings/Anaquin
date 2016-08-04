@@ -141,12 +141,11 @@ showLOQ <- function(x, y, showDetails=FALSE)
     b <- b1
 
     #
-    # Always prefer minimum SST if possible. Switch to upper R2 if: 
+    # Always prefer minimum SST if possible. Switch if: 
     #
-    #   - Solution for minimum SST is too small
-    #   - Solution for upper R2 exists
+    #   - No reasonable solution to minimum SST
     #
-    
+
     if (b1q < 0.30 & nrow(b2) > 0)
     {
         b <- b2        
