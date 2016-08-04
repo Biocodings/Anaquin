@@ -56,7 +56,8 @@ Scripts RWriter::createFold(const FileName    &file,
                             const std::string &ylab,
                             const std::string &expected,
                             const std::string &measured,
-                            bool shouldLog)
+                            bool shouldLog,
+                            const std::string &extra)
 {
     const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
     const auto obs = shouldLog ? ("log2(data$" + measured + ")") : ("data$" + measured);
@@ -70,29 +71,8 @@ Scripts RWriter::createFold(const FileName    &file,
                                       % ylab
                                       % exp
                                       % obs
-                                      % "TRUE").str();
-}
-
-Scripts RWriter::createScatterNoLog(const FileName    &file,
-                                    const std::string &title,
-                                    const std::string &xlab,
-                                    const std::string &ylab,
-                                    const std::string &expected,
-                                    const std::string &measured,
-                                    const std::string &xname,
-                                    bool showLOQ)
-{
-    return (boost::format(PlotScatter()) % date()
-                                          % __full_command__
-                                          % __output__
-                                          % file
-                                          % title
-                                          % xlab
-                                          % ylab
-                                          % ("data$" + expected)
-                                          % ("data$" + measured)
-                                          % xname
-                                          % (showLOQ ? "TRUE" : "FALSE")).str();
+                                      % "TRUE"
+                                      % extra).str();
 }
 
 Scripts RWriter::createMultiScatter(const FileName    &file,
@@ -121,14 +101,15 @@ Scripts RWriter::createMultiScatter(const FileName    &file,
                                          % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
-Scripts RWriter::createScatterNeedLog(const FileName    &file,
-                                      const std::string &title,
-                                      const std::string &xlab,
-                                      const std::string &ylab,
-                                      const std::string &expected,
-                                      const std::string &measured,
-                                      const std::string &xname,
-                                      bool showLOQ)
+Scripts RWriter::createScatter(const FileName    &file,
+                               const std::string &title,
+                               const std::string &xlab,
+                               const std::string &ylab,
+                               const std::string &expected,
+                               const std::string &measured,
+                               const std::string &xname,
+                               bool showLOQ,
+                               const std::string &extra)
 {
     return (boost::format(PlotScatter()) % date()
                                          % __full_command__
@@ -140,7 +121,8 @@ Scripts RWriter::createScatterNeedLog(const FileName    &file,
                                          % ("log2(data$" + expected + ")")
                                          % ("log2(data$" + measured + ")")
                                          % xname
-                                         % (showLOQ ? "TRUE" : "FALSE")).str();
+                                         % (showLOQ ? "TRUE" : "FALSE")
+                                         % extra).str();
 }
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &script)

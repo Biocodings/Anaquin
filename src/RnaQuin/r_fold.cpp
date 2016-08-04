@@ -355,6 +355,8 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_fold.R
      */
     
+    const auto extra = o.format == Format::DESeq2 ? ", sd=data$SD" : "";
+    
     o.generate("RnaFoldChange_fold.R");
     o.writer->open("RnaFoldChange_fold.R");
     o.writer->write(RWriter::createFold("RnaFoldChange_sequins.csv",
@@ -362,7 +364,9 @@ void RFold::report(const FileName &file, const Options &o)
                                         "Expected fold change (log2)",
                                         "Measured fold change (log2)",
                                         "ExpLFC",
-                                        "ObsLFC", false));
+                                        "ObsLFC",
+                                        false,
+                                        extra));
     o.writer->close();
 
     /*

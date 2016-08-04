@@ -99,26 +99,19 @@ namespace Anaquin
                                   const std::string &,
                                   const std::string &,
                                   const std::string &,
-                                  bool shouldLog);
+                                  bool shouldLog,
+                                  const std::string &extra = "");
         
-        static Scripts createScatterNeedLog(const FileName  &,
-                                            const std::string &,
-                                            const std::string &,
-                                            const std::string &,
-                                            const std::string &,
-                                            const std::string &,
-                                            const std::string &,                                            
-                                            bool showLOQ);
+        static Scripts createScatter(const FileName  &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     bool showLOQ,
+                                     const std::string &extra = "");
 
-        static Scripts createScatterNoLog(const FileName    &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          bool showLOQ);
-        
         static Scripts createScript(const FileName &, const Scripts &);
         static Scripts createScript(const FileName &, const Scripts &, const std::string &);
     };
