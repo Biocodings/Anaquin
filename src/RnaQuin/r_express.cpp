@@ -1,4 +1,4 @@
-#include <stdexcept>
+#include <cmath>
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -419,6 +419,8 @@ static void generateSummary(const FileName &summary,
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
 
+    const auto hasLOQ = !isnan(ms.b.getMean());
+
     const auto format = "-------RnaExpression Output\n"
                         "       Summary for input: %1%\n"
                         "       *Arithmetic average and standard deviation are shown\n\n"
@@ -431,7 +433,7 @@ static void generateSummary(const FileName &summary,
                         "       Genome: %8%\n\n"
                         "-------Limit of Quantification (LOQ)\n\n"
                         "       *Estimated by piecewise segmented regression\n\n"
-                        "       Break LOQ: %9% attomol/ul (%10%)\n\n"
+                        "       Break LOQ:   %9% attomol/ul (%10%)\n\n"
                         "       *Below LOQ\n"
                         "       Intercept:   %11%\n"
                         "       Slope:       %12%\n"
@@ -454,37 +456,37 @@ static void generateSummary(const FileName &summary,
                         "       SSE:         %28%, DF: %29%\n"
                         "       SST:         %30%, DF: %31%\n";
     
-    o.writer->write((boost::format(format) % STRING(ms.files)      // 1
-                                           % rSyn                  // 2
-                                           % MixRef()              // 3
-                                           % title                 // 4
-                                           % STRING(ms.countSyn)      // 5
-                                           % limit.abund           // 6
-                                           % limit.id              // 7
-                                           % STRING(ms.countGen)      // 8
-                                           % STRING(ms.b)          // 9
-                                           % STRING(ms.bID)        // 10
-                                           % STRING(ms.lInt)       // 11
-                                           % STRING(ms.lSl)        // 12
-                                           % STRING(ms.lr)         // 13
-                                           % STRING(ms.lR2)        // 14
-                                           % STRING(n_below)       // 15
-                                           % STRING(ms.rInt)       // 16
-                                           % STRING(ms.rSl)        // 17
-                                           % STRING(ms.rr)         // 18
-                                           % STRING(ms.rR2)        // 19
-                                           % STRING(n_above)       // 20
-                                           % STRING(ms.wLog.sl)    // 21
-                                           % STRING(ms.wLog.r)     // 22
-                                           % STRING(ms.wLog.R2)    // 23
-                                           % STRING(ms.wLog.F)     // 24
-                                           % STRING(ms.wLog.p)     // 25
-                                           % STRING(ms.wLog.SSM)   // 26
-                                           % STRING(ms.wLog.SSM_D) // 27
-                                           % STRING(ms.wLog.SSE)   // 28
-                                           % STRING(ms.wLog.SSE_D) // 29
-                                           % STRING(ms.wLog.SST)   // 30
-                                           % STRING(ms.wLog.SST_D) // 31
+    o.writer->write((boost::format(format) % STRING(ms.files)                  // 1
+                                           % rSyn                              // 2
+                                           % MixRef()                          // 3
+                                           % title                             // 4
+                                           % STRING(ms.countSyn)               // 5
+                                           % limit.abund                       // 6
+                                           % limit.id                          // 7
+                                           % STRING(ms.countGen)               // 8
+                                           % (hasLOQ ? STRING(ms.b)    : "-")  // 9
+                                           % (hasLOQ ? STRING(ms.bID)  : "-")  // 10
+                                           % (hasLOQ ? STRING(ms.lInt) : "-")  // 11
+                                           % (hasLOQ ? STRING(ms.lSl)  : "-")  // 12
+                                           % (hasLOQ ? STRING(ms.lr)   : "-")  // 13
+                                           % (hasLOQ ? STRING(ms.lR2)  : "-")  // 14
+                                           % (hasLOQ ? STRING(n_below) : "-")  // 15
+                                           % (hasLOQ ? STRING(ms.rInt) : "-")  // 16
+                                           % (hasLOQ ? STRING(ms.rSl)  : "-")  // 17
+                                           % (hasLOQ ? STRING(ms.rr)   : "-")  // 18
+                                           % (hasLOQ ? STRING(ms.rR2)  : "-")  // 19
+                                           % (hasLOQ ? STRING(n_above) : "-")  // 20
+                                           % STRING(ms.wLog.sl)                // 21
+                                           % STRING(ms.wLog.r)                 // 22
+                                           % STRING(ms.wLog.R2)                // 23
+                                           % STRING(ms.wLog.F)                 // 24
+                                           % STRING(ms.wLog.p)                 // 25
+                                           % STRING(ms.wLog.SSM)               // 26
+                                           % STRING(ms.wLog.SSM_D)             // 27
+                                           % STRING(ms.wLog.SSE)               // 28
+                                           % STRING(ms.wLog.SSE_D)             // 29
+                                           % STRING(ms.wLog.SST)               // 30
+                                           % STRING(ms.wLog.SST_D)             // 31
                      ).str());
     o.writer->close();
 }

@@ -1,6 +1,7 @@
+#include <iostream>
 #include "stats/linear.hpp"
 #include <ss/regression/segmented.hpp>
-#include <iostream>
+
 using namespace Anaquin;
 
 LinearStats::Data LinearStats::data(bool shouldLog) const
@@ -37,23 +38,50 @@ LinearStats::Data LinearStats::data(bool shouldLog) const
 LOQModel LinearStats::limitQuant(bool shouldLog) const
 {
     const auto d = data(shouldLog);
-    const auto r = SS::segmentPieceWise(d.x, d.y);
+    
+    // Segmented by minimum overall SSE
+    const auto r1 = SS::segmentSSE(d.x, d.y);
+
+    // Segmentated by maximum LOQ correlation
+    const auto r2 = SS::segmentPearson(d.x, d.y);
+
+    // The final breakpoint
+    auto r = &r1;
+    
+    /*
+     * Switch to another algorithm:
+     *
+     *    - Breakpoint is too large (>= 50th percentile)
+     */
+
+    if (r1.index >= 0.5 * r1.sums.size())
+    {
+        r = &r2;
+    }
 
     LOQModel l;
+
+    // Overall correlation
+    const auto cor = SS::getCorrelation(d.x, d.y);
+    
+    if (cor >= r->brr())
+    {
+        return l;
+    }
     
     // The break we're looking for
-    l.b = r.b;
+    l.b = r->b;
     
     if (!isnan(l.b))
     {
-        l.lr   = r.blr();
-        l.rr   = r.brr();
-        l.lR2  = r.blR2();
-        l.rR2  = r.brR2();
-        l.lSl  = r.blSl();
-        l.rSl  = r.brSl();
-        l.lInt = r.blInt();
-        l.rInt = r.brInt();
+        l.lr   = r->blr();
+        l.rr   = r->brr();
+        l.lR2  = r->blR2();
+        l.rR2  = r->brR2();
+        l.lSl  = r->blSl();
+        l.rSl  = r->brSl();
+        l.lInt = r->blInt();
+        l.rInt = r->brInt();
         
         for (auto i = 0; i < d.ids.size(); i++)
         {
