@@ -42,7 +42,7 @@ The source code requires a C++11 compiler to build.
 
 <ul>
 <li>RNA-Seq</li>
-<li>Genome Variation</li>
+<li>Genomic variation</li>
 <li>Metagenomics</li>
 </ul>
 
