@@ -51,7 +51,7 @@ The source code requires a C++11 compiler to build.
 <ul>
 <li> Statistical analysis</li>
 <li> Tool modules</li>
-<li> Genome comparisons</li>
+<li> Genome comparison</li>
 <li> Data visualization</li>
 <li> Bioconductor</li>
 </ul>
