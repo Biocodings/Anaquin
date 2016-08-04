@@ -48,8 +48,14 @@
 
     if (showFitting) { plot(model, band='pred', get.data=TRUE) }
 
-    return (list(LODR=.getLODR(ratio, model, x, y, pval),
-                 data=data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc)))
+    data <- data.frame(ratio=ratio, knots=10^knots, pred=10^kpred$fit, uc=uc, lc=lc)
+
+    if (any(!is.finite(data$lc)) | any(!is.finite(data$uc)))
+    {
+        data <- data.frame()
+    }
+
+    return (list(LODR=.getLODR(ratio, model, x, y, pval), data=data))
 }
 
 .fitLODR <- function(data, ...)
@@ -67,6 +73,8 @@
     if (is.null(x$FDR))     { x$FDR <- 0.05 }
     if (is.null(data$qval)) { data$qval <- qvalue(data$pval, fdr.level=x$FDR)$qvalues }
 
+    data <- data[!is.na(data$qval),]
+    
     # What's the maximum p-value that gives the FDR? This will be the cutoff on the y-axis.
     pval <- max(data$pval[data$qval < x$FDR])
 
@@ -113,6 +121,7 @@
     
     if (is.null(x$size))     { x$size     <- 3       }
     if (is.null(x$legTitle)) { x$legTitle <- 'Ratio' }
+    if (is.null(x$showConf)) { x$showConf <- FALSE   }
 
     df <- data.frame(measured=data$measured, pval=data$pval, ratio=data$ratio)
     p  <- ggplot(df, aes_string(x='measured', y='pval', colour='ratio'))   +
@@ -124,10 +133,11 @@
     if (!is.null(x$ylab))     { p <- p + ylab(x$ylab)     }
     if (!is.null(x$title))    { p <- p + ggtitle(x$title) }
     if (!is.null(x$legTitle)) { p <- p + labs(colour=x$legTitle) }
-    
-    if (!is.null(data$curve))
+
+    p <- p + geom_line(data=data$curve, aes_string(x='knots', y='pred', colour='ratio'), show.legend=FALSE)
+
+    if (x$showConf & !is.null(data$curve))
     {
-        p <- p + geom_line(data=data$curve, aes_string(x='knots', y='pred', colour='ratio'), show.legend=FALSE)
         p <- p + geom_ribbon(data=data$curve, aes_string(x='knots', y='pred', ymin='lc', ymax='uc',
                              fill='ratio'), alpha=0.3, colour=NA, show.legend=FALSE)
     }
@@ -187,9 +197,19 @@ plotLODR <- function(data, ...)
 
     if (shouldFit)
     {
-        data <- .fitLODR(data.frame(measured=data$measured,
-                                    pval=data$pval,
-                                    ratio=abs(round(data$ratio))), ...)
+        if (!is.null(data$qval))
+        {
+            data <- .fitLODR(data.frame(measured=data$measured,
+                                        pval=data$pval,
+                                        qval=data$qval,
+                                        ratio=abs(round(data$ratio))), ...)
+        }
+        else
+        {
+            data <- .fitLODR(data.frame(measured=data$measured,
+                                        pval=data$pval,
+                                        ratio=abs(round(data$ratio))), ...)
+        }
     }
     else
     {

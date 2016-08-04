@@ -15,6 +15,7 @@ Create a Limit-of-Detection Ratio (LODR) plot between measured abundance (x-axis
   \item{FDR}{Chosen false-discovery-rate. Default to 0.1.}
   \item{legTitle}{Title for the legend. Default to ‘Ratio’.}
   \item{shouldFit}{Curve fitting? Default to TRUE.}
+  \item{showConf}{Show confidence interval? Default to FALSE.}
 }
 \details{
 

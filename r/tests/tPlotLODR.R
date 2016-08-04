@@ -14,7 +14,7 @@ test.PlotLODR_1 <- function()
 
     anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean, ratio=abs(data$ExpLFC), pval=data$Pval)
     
-    r <- plotLODR(anaquin)
+    r <- plotLODR(anaquin, showConf=TRUE)
 }
 
 test.PlotLODR_1()
