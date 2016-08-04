@@ -149,8 +149,11 @@ showLOQ <- function(x, y, showDetails=FALSE)
     
     if (b1q < 0.30 & nrow(b2) > 0)
     {
-        # This is potentially a better breakpoint
         b <- b2        
+    }
+    else if (b1q > 0.70 & nrow(b2) > 0)
+    {
+        b <- b2
     }
 
     # Fit the model again
