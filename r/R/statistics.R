@@ -166,13 +166,5 @@ showLOQ <- function(x, y, showDetails=FALSE)
     stopifnot(all.equal(summary(fit$lModel)$coefficients[2,1], b$lSlope))    
     stopifnot(all.equal(summary(fit$rModel)$coefficients[2,1], b$rSlope))    
     
-    data <- data.frame(x=x, y=y)
-
-    #p <- ggplot(data=data, aes(x=x, y=y)) +
-    #            geom_point() +
-    #            geom_vline(xintercept=c(b$k), linetype="dotted") +
-    #            theme_bw()
-    #print(p)
-
     return (list('model'=fit, 'breaks'=b, 'details'=r))
 }
