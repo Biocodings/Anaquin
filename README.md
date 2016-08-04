@@ -54,7 +54,7 @@ The source code requires a C++11 compiler to build.
 <li> Tool modules</li>
 <li> Genome comparisons</li>
 <li> Data visualization</li>
-<li> R-integration</li>
+<li> Bioconductor</li>
 </ul>
 
 ## Visualizations
