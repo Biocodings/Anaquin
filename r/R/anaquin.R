@@ -48,14 +48,29 @@ createAnaquinData <- function(...)
 #
 #    Eg: R1_1_1 to R1_1
 #
-.isoformsToGenes <- function(ids)
+isoformsToGenes <- function(names)
 {
-    ids <- strsplit(ids, '_')
+    names <- strsplit(names, '_')
     
     f <- function(x)
     {
         paste(x[1:length(x)-1], collapse='_')
     }
     
-    unlist(lapply(ids, f))
+    unlist(lapply(names, f))
+}
+
+
+.m2str <- function(m)
+{
+    eq <- substitute(italic(y) == a + b * italic(x)*','~~italic(r)^2~'='~r2, 
+                     list(a  = format(coef(m)[1], digits = 2), 
+                          b  = format(coef(m)[2], digits = 2), 
+                          r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));
+}
+
+.lm2str <- function(data)
+{
+    return (.m2str(lm(y~x, data)))
 }

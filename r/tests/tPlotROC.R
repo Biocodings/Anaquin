@@ -9,13 +9,13 @@ library('Anaquin')
 
 test.PlotROC_1 <- function()
 {
-    data('Vignette_5.6.3')
-    data <- Vignette_5.6.3
+    data('seqDESeq2')
+    data <- seqDESeq2
 
     data$label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
     data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
     
-    r <- plotROC(data, refRats=0)
+    r <- plotROC(data, refRats=0, unitTest=TRUE)
     
     checkEquals(r$AUC[1,]$Ratio, 1)
     checkEqualsNumeric(r$AUC[1,]$AUC, 0.7692)

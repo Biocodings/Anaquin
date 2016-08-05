@@ -9,14 +9,27 @@ library('Anaquin')
 
 test.PlotScatter_1 <- function()
 {
-    data("Vignette_5.4.6.1")
+    data(seqCufflinks)
     
-    data <- Vignette_5.4.6.1
-    data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), measured=log2(data$Observed))
+    data <- seqCufflinks
+    data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), measured=log2(data$Observed1))
     
-    r <- plotScatter(data)
+    r <- plotScatter(data, unitTest=TRUE)
     
-    checkEqualsNumeric(r$LOQ, 1.917068888)
+    checkEqualsNumeric(r$model$breaks, 1.917068888)
+}
+
+test.PlotScatter_2 <- function()
+{
+    data(seqCufflinks)
+    
+    data <- seqCufflinks
+    data <- createAnaquinData(names=row.names(data), input=log2(data$InputConcent), measured=log2(data[,c(2:4)]))
+    
+    r <- plotScatter(data, unitTest=TRUE)
+    
+    checkEqualsNumeric(r$model$breaks, 1.917068888)
 }
 
 test.PlotScatter_1()
+test.PlotScatter_2()

@@ -11,14 +11,15 @@ plotROC <- function(data, refRats, ...)
     stopifnot(!is.null(refRats))
     stopifnot(!is.null(data$score))
     stopifnot(!is.null(data$label))
-    stopifnot(!is.null(data$input))    
+    stopifnot(!is.null(data$input))
     
     x <- list(...)
 
     if (is.null(x$title))      { x$title      <- NULL    }
     if (is.null(x$legTitle))   { x$legTitle   <- 'Ratio' }
     if (is.null(x$showLegend)) { x$showLegend <- TRUE    }
-
+    if (is.null(x$unitTest))   { x$unitTest   <- FALSE   }
+    
     # This is the sequin groups
     data$ratio <- abs(round(data$input))
 
@@ -110,5 +111,8 @@ plotROC <- function(data, refRats, ...)
     p <- .transformPlot(p)        
     print(p)
 
-    return (list(AUC=AUCs))
+    if (x$unitTest)
+    {
+        return (list(AUC=AUCs))
+    }
 }

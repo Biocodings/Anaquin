@@ -5,7 +5,7 @@
 Create a scatter plot between expected abundance (eg: input concentration) against measured abundance (eg: FPKM).
 }
 \usage{
-\method{plotScatter}{Anaquin}(data, ...)
+plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
@@ -14,6 +14,7 @@ Create a scatter plot between expected abundance (eg: input concentration) again
   \item{ylab}{Label for the y-axis}
   \item{showSD}{Show standard deviation bars vertically? Default to FALSE.}
   \item{showLOQ}{Show limit-of-quantification? Default to TRUE.}
+  \item{showAxis}{Show x-axis and y-axis? Default to TRUE.}  
 }
 \details{
 
@@ -30,14 +31,14 @@ The scatter plot allows two variables be plotted; the x-axis is the expected abu
 
 \examples{
 library("Anaquin")
+data(seqCufflinks)
 
-data("Vignette_5.4.6.1")
-data <- Vignette_5.4.6.1
-data <- createAnaquinData(names=row.names(data),
-                          input=log2(data$InputConcent),
-                          measured=log2(data$Observed))
+title <- 'Gene Expression'
+xlab  <- 'Input Concentration (log2)'
+ylab  <- 'FPKM (log2)'
 
-plotScatter(data)
+anaquin <- createAnaquinData(names=row.names(seqCufflinks), input=log2(seqCufflinks$InputConcent), measured=log2(seqCufflinks[,2:4]))
+plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=TRUE)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

@@ -5,13 +5,13 @@
 Create a receiver operating characteristic (ROC) plot. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.
 }
 \usage{
-\method{plotROC}{Anaquin}(data, refRats, ...)
+plotROC(data, title, legTitle, refRats)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
   \item{title}{Label of the plot. Default to NULL.}
   \item{legTitle}{Title of the legend. Default to NULL.}
-  \item{refRats}{Reference ratio group}
+  \item{refRats}{Reference ratio groups}
 }
 \details{
 
@@ -33,13 +33,13 @@ The plot provides diagnose performance to select possibly optimal models and to 
 }
 
 \examples{
-data('Vignette_5.6.3')
-data <- Vignette_5.6.3
+library('Anaquin')
+data('seqDESeq2')
 
-data$label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
-data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC,
-                          score=1-data$Pval, qval=data$Pval, label=data$label)
-plotROC(data, refRats=0)
+title <- 'ROC Plot'
+
+anaquin <- createAnaquinData(names=row.names(seqDESeq2), input=seqDESeq2$ExpLFC, measured=seqDESeq2$ObsLFC, score=1-seqDESeq2$Pval, label=seqDESeq2$Label)
+plotROC(anaquin, title=title, refRats=0)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

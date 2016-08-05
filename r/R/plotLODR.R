@@ -174,17 +174,12 @@
     print(.transformPlot(p))
 }
 
-plotLODR <- function(data, ...)
+plotLODR <- function(data, title, xlab, ylab, FDR, legTitle, showConf)
 {
     data <- data$seqs
     data <- data[data$pval!=0,]
     
-    # Should we attempt for curve fitting? (not every distribution can be fitted)
-    shouldFit <- TRUE
-
     x <- list(...)
-    
-    if (!is.null(x$shouldFit)) { shouldFit <- x$shouldFit }
     
     # Sequin ratio groups
     ratio <- as.factor(abs(round(data$ratio)))
@@ -195,27 +190,30 @@ plotLODR <- function(data, ...)
     # Measured p-value probability
     pval <- data$pval
 
-    if (shouldFit)
+    if (!is.null(data$qval))
     {
-        if (!is.null(data$qval))
-        {
-            data <- .fitLODR(data.frame(measured=data$measured,
-                                        pval=data$pval,
-                                        qval=data$qval,
-                                        ratio=abs(round(data$ratio))), ...)
-        }
-        else
-        {
-            data <- .fitLODR(data.frame(measured=data$measured,
-                                        pval=data$pval,
-                                        ratio=abs(round(data$ratio))), ...)
-        }
+        data <- .fitLODR(data.frame(measured=data$measured,
+                                    title=x$title,
+                                    xlab=x$xlab,
+                                    ylab=x$ylab,
+                                    FDR=x$FDR,
+                                    legTitle=x$legTitle,
+                                    showConf=x$showConf,
+                                    pval=data$pval,
+                                    qval=data$qval,
+                                    ratio=abs(round(data$ratio))), ...)
     }
     else
     {
-        data <- data.frame(measured=data$measured,
-                           pval=data$pval,
-                           ratio=as.factor(abs(round(data$ratio))))
+        data <- .fitLODR(data.frame(measured=data$measured,
+                                    title=x$title,
+                                    xlab=x$xlab,
+                                    ylab=x$ylab,
+                                    FDR=x$FDR,
+                                    legTitle=x$legTitle,
+                                    showConf=x$showConf,
+                                    pval=data$pval,
+                                    ratio=abs(round(data$ratio))), ...)
     }
 
     .plotLODR(data=data, ...)

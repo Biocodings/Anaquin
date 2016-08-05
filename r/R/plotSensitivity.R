@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold=0.70, showGuide=FALSE)
+.plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold=0.70, unitTest=FALSE)
 {
     data <- data$seqs
 
@@ -83,24 +83,25 @@
         }
     }
 
-    if (!showGuide)
-    {
-        p <- p + guides(colour=FALSE)
-    }
-    
     p <- .transformPlot(p)    
     print(p)
-    
-    return (list(LOA=LOA, fitted=data$f))
+
+    if (!is.null(unitTest) && unitTest)
+    {
+        return (list(LOA=LOA, fitted=data$f))
+    }
 }
 
-plotSensitivity <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOA=TRUE, threshold=0.70)
+plotSensitivity <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOA=TRUE, threshold=0.70, ...)
 {
     stopifnot(class(data) == 'Anaquin')
+    x <- list(...)
+    
     return (.plotSigmoid(data,
                          title=title,
                          xlab=xlab,
                          ylab=ylab,
                          showLOA=showLOA,
-                         threshold=threshold))
+                         threshold=threshold,
+                         unitTest=x$unitTest))
 }

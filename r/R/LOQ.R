@@ -4,25 +4,11 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.m2str <- function(m)
-{
-    eq <- substitute(italic(y) == a + b * italic(x)*','~~italic(r)^2~'='~r2, 
-                     list(a  = format(coef(m)[1], digits = 2), 
-                          b  = format(coef(m)[2], digits = 2), 
-                          r2 = format(summary(m)$r.squared, digits = 3)))
-    as.character(as.expression(eq));
-}
-
-.lm2str <- function(data)
-{
-    return (.m2str(lm(y~x, data)))
-}
-
 #
 # Limit-of-quantification (LOQ) is defined as the level of concentration where accurate interpreation starts becoming questionable.
 #
 
-showLOQ <- function(x, y, showDetails=FALSE)
+estimateLOQ <- function(x, y, showDetails=FALSE)
 {
     #
     # For x=1,2,3,...,n, we would only fit b=3,4,...,n-2. Therefore the length of the frame is n-4.

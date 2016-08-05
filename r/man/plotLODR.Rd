@@ -5,7 +5,7 @@
 Create a Limit-of-Detection Ratio (LODR) plot between measured abundance (x-axis) and p-value probability (y-axis).
 }
 \usage{
-\method{plotLODR}{Anaquin}(data, ...)
+plotLODR(data, title, xlab, ylab, FDR, legTitle, showConf)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
@@ -14,7 +14,6 @@ Create a Limit-of-Detection Ratio (LODR) plot between measured abundance (x-axis
   \item{ylab}{Label for the y-axis. Default to NULL.}
   \item{FDR}{Chosen false-discovery-rate. Default to 0.1.}
   \item{legTitle}{Title for the legend. Default to ‘Ratio’.}
-  \item{shouldFit}{Curve fitting? Default to TRUE.}
   \item{showConf}{Show confidence interval? Default to FALSE.}
 }
 \details{
@@ -22,10 +21,10 @@ Create a Limit-of-Detection Ratio (LODR) plot between measured abundance (x-axis
 \code{plotLODR} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
-    \tab \code{names}       \tab Sequin names\cr
-    \tab \code{measured}    \tab Measured abundance (eg: average counts, DP field in a VCF file etc)\cr
+    \tab \code{names}    \tab Sequin names\cr
+    \tab \code{measured} \tab Measured abundance (eg: average counts, DP field in a VCF file etc)\cr
     \tab \code{ratio}    \tab Expected ratio; eg: expected log-fold ratio or expected allele frequency etc\cr
-    \tab \code{pval}    \tab P-value probability\cr
+    \tab \code{pval}     \tab P-value probability\cr
 }
 
 The LOD plot indicates the confidence in measuring synthetic features (eg: isoforms, SNPs, Indels, etc.) are detected relative to their abundance (eg: allele frequencies, read counts, etc.). The x-axis is the abundance, relative to the confidence (p-value) in the y-axis.
@@ -33,14 +32,15 @@ The curves are estimated by local regression estimations, and are colored by the
 }
 
 \examples{
-data('Vignette_5.6.3')
-data <- Vignette_5.6.3
+library('Anaquin')
+data('seqDESeq2')
 
-# Create Anaquin data for plotLODR
-anaquin <- createAnaquinData(names=row.names(data), measured=data$Mean,
-                             ratio=abs(data$ExpLFC), pval=data$Pval)
+xlab  <- 'Average Counts'
+ylab  <- 'P-value'
+title <- 'LODR Curves'
 
-plotLODR(anaquin)
+anaquin <- createAnaquinData(names=row.names(seqDESeq2), measured=seqDESeq2$Mean, ratio=seqDESeq2$ExpLFC, pval=seqDESeq2$Pval, qval=seqDESeq2$Qval)
+plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=0.1)
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}

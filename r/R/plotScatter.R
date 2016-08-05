@@ -10,12 +10,13 @@ plotScatter <- function(data, ...)
 
     z <- list(...)
     
-    if (is.null(z$xlab))      { z$xlab      <- ''    }
-    if (is.null(z$ylab))      { z$ylab      <- ''    }    
-    if (is.null(z$title))     { z$title     <- ''    }
-    if (is.null(z$showSD))    { z$showSD    <- FALSE }
-    if (is.null(z$showLOQ))   { z$showLOQ   <- TRUE  }
-    if (is.null(z$showInter)) { z$showInter <- FALSE }
+    if (is.null(z$xlab))     { z$xlab      <- ''    }
+    if (is.null(z$ylab))     { z$ylab      <- ''    }    
+    if (is.null(z$title))    { z$title     <- ''    }
+    if (is.null(z$showSD))   { z$showSD    <- FALSE }
+    if (is.null(z$showLOQ))  { z$showLOQ   <- TRUE  }
+    if (is.null(z$showAxis)) { z$showAxis  <- FALSE }
+    if (is.null(z$unitTest)) { z$unitTest  <- FALSE }
 
     if (!is.data.frame(data$measured))
     {
@@ -88,7 +89,7 @@ plotScatter <- function(data, ...)
     p <-p + guides(colour=FALSE)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.7, 0.7)
 
-    if (z$showInter)
+    if (z$showAxis)
     {
         p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
         p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
@@ -102,8 +103,7 @@ plotScatter <- function(data, ...)
     if (z$showLOQ)
     {
         tryCatch({
-            # Fit piecewise segmentation
-            LOQ <- showLOQ(data$x, data$y)
+            LOQ <- estimateLOQ(data$x, data$y)
         }, error = function(cond)
         {
         })
@@ -181,6 +181,9 @@ plotScatter <- function(data, ...)
 
     p <- .transformPlot(p)
     print(p)
-
-    return (list(LOQ=LOQ$breaks$k))
+    
+    if (z$unitTest)
+    {
+        return (LOQ)
+    }
 }
