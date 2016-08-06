@@ -25,11 +25,11 @@ We have an active Slack channel, [sequins.slack.com](sequins.slack.com), where y
 
 # Overview
 
-In this document, we show how to conduct statistical analysis that models the performance of synthetic sequin controls in next-generation-sequencing (NGS) experiment. The controls can be used for RNA-Seq analysis, e.g., normalization, gene expression, differential analysis, and other applications. We call the sequins **RnaQuin** for *RNA-Seq sequins*, and the statistical framework **Anaquin**.
+In this document, we show how to conduct statistical analysis that models the performance of sequin controls in next-generation-sequencing (NGS) experiment. The controls can be used for RNA-Seq analysis, e.g., normalization, gene expression, differential analysis, and other applications. We call the sequins **RnaQuin** for *RNA-Seq sequins*, and the statistical framework **Anaquin**.
 
-This vignette is written for R-usage. However, Anaquin is a framework covering the entire RNA-Seq workflow; reads alignment, transcriptome assembly, gene expression and differential analysis, etc. Consequently, the R-package (and it's documentation) is a subset of the overall Anaquin framework. We also distribute a workflow guide with this vigentte on how Anaquin can be used in a bioinformatics pipeleine. The documentation cane be found on Bioconductor and on our website.
+This vignette is written for R-usage. However, Anaquin is a framework covering the entire RNA-Seq workflow; reads alignment, transcriptome assembly, gene expression and differential analysis, etc. Consequently, the R-package (and it's documentation) is a subset of the overall Anaquin framework. We also distribute a workflow guide with this vigentte on how Anaquin can be used in a bioinformatics pipeleine. The guide should be distributed with this vignette and is also available on our website.
 
-It is important to note Anaquin is both command-line tool and R-package. Our detailed guide has details on how the command-line tool can be used with the R-package.
+It is important to note Anaquin is both command-line tool and R-package. Our workflow guide has details on how the command-line tool can be used with the R-package.
 
 # Sequins
 
@@ -39,10 +39,10 @@ To address this problem, we have developed a suite of synthetic nucleic-acid seq
 
 Why do we need sequins?
 
-  - Quantification of accuracy; linear model between input concentration and measured variables
-  - Derive normalization factor; sequins serve as negative controls
+  - Quantification of accuracy
+  - Derive normalization factor
   - Construct receiver operating characteristic (ROC) that tabulates sensitivity
-  - Determine empharical limit of quantification; below which measurement becomes increasingly stochastic  
+  - Determine empharical limit of quantification; below which measurement becomes stochastic  
 
 # Mixture
 
@@ -58,9 +58,9 @@ data(mixtureA)
 head(mixtureA)
 ```
 
-Each row represents a sequin. *Column ID* gives the sequin names, *Length* is the length of the sequin in nucleotide bases, 'MXA' gives the concentration level in attom/ul.
+Each row represents a sequin. *Column ID* gives the sequin names, *Length* is the length of the sequins in nucleotide bases, 'MXA' gives the concentration level in attoml/ul.
 
-Imagine we have two RNA-Seq experiments; a well-designed experiment and a poorly-designed experiment We would like to quantify their expression accuracy.
+Imagine we have two RNA-Seq experiments; a well-designed experiment and a poorly-designed experiment We would like to quantify their isoform expression.
 
 Let's simulate the experiments:
 
@@ -70,14 +70,14 @@ sim1 <- 1.0 + 1.2*log2(mixtureA$MXA) + rnorm(nrow(mixtureA),0,1)
 sim2 <- c(1.0 + rnorm(100,1,3), 1.0 + 1.2*log2(tail(mixtureA,64)$MXA) + rnorm(64,0,1))
 ```
 
-Sequins are expected to correlate linearly with the measured expression. Indeed, the measured variable is strongly correlated with the concentration:
+In the first experiment, sequins are expected to correlate linearly with the measured FPKM. Indeed, the variables are strongly correlated:
 
 ```{r, message=FALSE, results='hide', fig.align='center'}
 data1 <- createAnaquinData(names=row.names(mixtureA), input=log2(mixtureA$MXA), measured=sim1)
 plotScatter(data1, title='Isoform expression (Good)', xlab='Input concentration (log2)', ylab='Measured FPKM (log2)')
 ```
 
-In our second experiment, the weakly expressed isoforms exhibt stochastic behavior and are clearly not linear with the concentration. Furthermore, there is a limit of quantification (LOQ); below which accuracy of the experiement becomes questionable.
+In our second experiment, the weakly expressed isoforms exhibt stochastic behavior and are clearly not linear with the input concentration. Furthermore, there is a limit of quantification (LOQ); below which accuracy of the experiement becomes questionable.
 
 ```{r, message=FALSE, results='hide', fig.align='center'}
 data2 <- createAnaquinData(names=row.names(mixtureA), input=log2(mixtureA$MXA), measured=sim2)
@@ -86,7 +86,7 @@ plotScatter(data2, title='Simulated experiment (Bad)', xlab='Input concentration
 
 # Quantifying transcriptome assembly
 
-To estimate the RNA-Seq assembly transcript, we need to run a transcriptome assember, i.e., a software that can assemble transcripts and estimates their abundances. Our workflow guide has the details.
+To quantify RNA-Seq transcriptome assembly, we need to run a transcriptome assember; i.e., a software that can assembles transcripts and estimates their abundances. Our workflow guide has the details.
 
 Here, we use a data set estimated by Cuffcompare. Load the data set:
 
@@ -95,7 +95,7 @@ data('seqCuffcompare')
 head(seqCuffcompare)
 ```
 
-The first column gives the input concentration for each sequin in attomol/ul. The second column is the measured sensitivity by Cufflinks. Run the following R-code to generate an assembly plot.
+The first column gives the input concentration for each sequin in attomol/ul. The second column is the measured sensitivity. Run the following R-code to generate a sensitivity plot.
 
 ```{r, message=FALSE, results='hide', fig.align='center'}
 title <- 'Assembly Plot'
@@ -105,7 +105,7 @@ anaquin <- createAnaquinData(names=row.names(seqCuffcompare), input=log2(seqCuff
 plotSensitivity(anaquin, title=title, xlab=xlab, ylab=ylab, showLOA=TRUE)
 ```
 
-The fitted logistic curve revels clear relationship between input concentration and sensitivity. Unsurprisingly, Cufflinks is more sensitive to highly expressed isoforms. The limit-of-assembly (LOA) is defined as the intersection of the curve to sensitivity of 0.70.
+The fitted logistic curve revels clear relationship between input concentration and sensitivity. Unsurprisingly, the assembler is more sensitive to highly expressed isoforms. The limit-of-assembly (LOA) is defined as the intersection of the curve to sensitivity of 0.70.
 
 # Quantifying gene expression
 
@@ -118,7 +118,7 @@ data('seqCufflinks')
 head(seqCufflinks)
 ```
 
-The first column gives the input concentration for each sequin in attomol/ul. The other columns are the FPKM values for each replicate (three replicates in total). The following code will quantify the the first replicate:
+The first column gives input concentration for each sequin in attomol/ul. The other columns are the FPKM values for each replicate (three replicates in total). The following code will quantify the first replicate:
 
 ```{r, message=FALSE, fig.align='center'}
 title <- 'Gene Expression'
@@ -142,7 +142,7 @@ plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=TRUE)
 
 # Differential analysis
 
-In this section, we show how to quantify differential expression analysis between expected fold-change to measured fold-change. We apply our method to a data set comparing K562 to GM12878 [1]. Load the dataset:
+In this section, we show how to quantify differential expression analysis between expected fold-change and measured fold-change. We apply our method to a data set comparing K562 to GM12878 [1]. Load the dataset:
 
 ```{r}
 data('seqDESeq2')
@@ -163,13 +163,15 @@ plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showAxis=TRUE, showLOQ=F
 
 Outliers are obvious throughout the reference scale. Overall, DESeq2 is able to account for 78% of the variation.
 
-We can also construct a ROC plot. Check [1] for how the true-positives and false-positives are defined.
+We can also construct a ROC plot. *[1]* for how the true-positives and false-positives are defined.
 
 ```{r, fig.align='center'}
 title <- 'ROC Plot'
 anaquin <- createAnaquinData(names=row.names(seqDESeq2), ratio=seqDESeq2$ExpLFC, measured=seqDESeq2$ObsLFC, score=1-seqDESeq2$Pval, label=seqDESeq2$Label)
 plotROC(anaquin, title=title, refRats=0)
 ```
+
+AUC statistics for LFC 3 and 4 are higher than LFC 1 and 2. Overall, all LFC ratios can be correctly classified relative to LFC 0.
 
 Furthermore, we can plot limit of detection ratio (LODR) curves:
 
@@ -178,5 +180,7 @@ xlab  <- 'Average Counts'
 ylab  <- 'P-value'
 title <- 'LODR Curves'
 anaquin <- createAnaquinData(names=row.names(seqDESeq2), measured=seqDESeq2$Mean, ratio=seqDESeq2$ExpLFC, pval=seqDESeq2$Pval, qval=seqDESeq2$Qval)
-plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=0.1, showConf=TRUE)
+plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=0.1)
 ```
+
+Unsurprisingly, p-value is inverse quadratically related with average counts. All the LFC ratios systematicly outperform LFC 0. The function also estimates the emphricial detection limits, *[1]* has the details.

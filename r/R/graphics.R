@@ -29,8 +29,5 @@
 
     p <- p + coord_fixed(ratio=xrange/yrange)
  
-    #ggsave('/Users/tedwong/Desktop/ABCD.pdf')
-    #ggsave('/Users/tedwong/Desktop/ABCD.png')    
-    
     return (p)    
 }

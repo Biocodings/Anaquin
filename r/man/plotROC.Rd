@@ -2,16 +2,16 @@
 \alias{plotROC}
 \title{Create ROC plot }
 \description{
-Create a receiver operating characteristic (ROC) plot. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.
+Create a receiver operating characteristic (ROC) plot. The curve models true positive rate (TPR) against false positive rate (FPR) at various threshold settings.
 }
 \usage{
 plotROC(data, refRats, title, legTitle, ...)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
-  \item{title}{Label of the plot. Default to NULL.}
-  \item{legTitle}{Title of the legend. Default to NULL.}
-  \item{refRats}{Reference ratio groups. Default to 'Ratio'.}
+  \item{refRats}{Reference ratio groups}
+  \item{title}{Label of the plot. Default to \code{NULL}.}
+  \item{legTitle}{Title of the legend. Default to \code{Ratio}.}
   \item{...}{Reserved for internal testing}
 }
 \details{
@@ -19,10 +19,10 @@ plotROC(data, refRats, title, legTitle, ...)
 \code{plotROC} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
-    \tab \code{names}       \tab Sequin names\cr
-    \tab \code{label}       \tab Classified labels\cr
-    \tab \code{score}       \tab How the ROC points should be ranked\cr    
-    \tab \code{ratio}       \tab Expected ratio; eg: expected log-fold ratio\cr
+    \tab \code{names} \tab Sequin names\cr
+    \tab \code{label} \tab Classified labels ('TP' or 'FP')\cr
+    \tab \code{score} \tab How the ROC points should be ranked\cr    
+    \tab \code{ratio} \tab Expected ratio; eg: expected log-fold ratio\cr
 }
 
 The ROC plot illustrates the performance of an experiment as the scoring threshold is varied. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.

@@ -12,9 +12,9 @@ plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis, ...)
   \item{title}{Label of the plot.}
   \item{xlab}{Label for the x-axis}
   \item{ylab}{Label for the y-axis}
-  \item{showSD}{Show standard deviation bars vertically? Default to FALSE.}
-  \item{showLOQ}{Show limit-of-quantification? Default to TRUE.}
-  \item{showAxis}{Show x-axis and y-axis? Default to TRUE.}
+  \item{showSD}{Show standard deviation bars vertically? Default to \code{FALSE}.}
+  \item{showLOQ}{Show limit-of-quantification? Default to \code{TRUE}.}
+  \item{showAxis}{Show x-axis and y-axis? Default to \code{TRUE}.}
   \item{...}{Reserved for internal testing}  
 }
 \details{
@@ -22,8 +22,8 @@ plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis, ...)
 \code{plotScatter} requires the following inputs from \code{createAnaquinData}.
 
 \tabular{rlll}{
-    \tab \code{names}       \tab Sequin names (eg: R1_1_1)\cr
-    \tab \code{input/expected}       \tab Expected abundance. It must be either input or expected. input is preferred if the the x-axis is input concentration, while expected would be more comprehensible if the axis is not input concentration (eg: expected allele frequency).\cr
+    \tab \code{names}   \tab Sequin names (eg: R1_1_1)\cr
+    \tab \code{input}   \tab Expected abundance. (eg: input concentration)\cr
     \tab \code{measured} \tab Measured abundance (eg: FPKM, read counts)\cr
 }
 

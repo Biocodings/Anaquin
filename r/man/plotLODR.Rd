@@ -9,12 +9,12 @@ plotLODR(data, FDR, title, xlab, ylab, legTitle, showConf, ...)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
-  \item{FDR}{Chosen false-discovery-rate. Default to 0.1.}
-  \item{title}{Label of the plot. Default to NULL.}
-  \item{xlab}{Label for the x-axis. Default to NULL.}
-  \item{ylab}{Label for the y-axis. Default to NULL.}
-  \item{legTitle}{Title for the legend. Default to 'Ratio'.}
-  \item{showConf}{Show confidence interval? Default to FALSE.}
+  \item{FDR}{Chosen false-discovery-rate. Default to \code{0.1}.}
+  \item{title}{Label of the plot. Default to \code{NULL}.}
+  \item{xlab}{Label for the x-axis. Default to \code{NULL}.}
+  \item{ylab}{Label for the y-axis. Default to \code{NULL}.}
+  \item{legTitle}{Title for the legend. Default to \code{'Ratio'}.}
+  \item{showConf}{Show confidence interval? Default to \code{FALSE}.}
   \item{...}{Reserved for internal testing}
 }
 \details{
