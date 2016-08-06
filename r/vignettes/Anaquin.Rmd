@@ -7,24 +7,10 @@ vignette: >
   %\VignetteIndexEntry{Anaquin - Vignette}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
-  
-references:
-- id: fenner2012a
-  title: One-click science marketing
-  author:
-  - family: Fenner
-    given: Martin
-  container-title: Nature Materials
-  volume: 11
-  URL: 'http://dx.doi.org/10.1038/nmat3283'
-  DOI: 10.1038/nmat3283
-  issue: 4
-  publisher: Nature Publishing Group
-  page: 261-263
-  type: article-journal
-  issued:
-    year: 2012
-    month: 3  
+type: article-journal
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
 ---
 
 # Citation
@@ -33,7 +19,7 @@ references:
 
 # Need help?
 
-Visit our website to learn more about our project: [www.sequin.xyz](www.sequin.xyz).
+Visit our website to learn more about sequins in quantifying your experiment: [www.sequin.xyz](www.sequin.xyz).
 
 We have an active Slack channel, [sequins.slack.com](sequins.slack.com), where you can chat directly with our team. Please email us at anaquin@garvan.org.au for an invitation. You can also post your questions on [www.biostars.org](www.biostars.org) and [www.seqanswers.com](www.seqanswers.com), we will answer your questions as we actively monitor the sites. 
 
@@ -181,7 +167,7 @@ We can also construct a ROC plot. Check [1] for how the true-positives and false
 
 ```{r, fig.align='center'}
 title <- 'ROC Plot'
-anaquin <- createAnaquinData(names=row.names(seqDESeq2), input=seqDESeq2$ExpLFC, measured=seqDESeq2$ObsLFC, score=1-seqDESeq2$Pval, label=seqDESeq2$Label)
+anaquin <- createAnaquinData(names=row.names(seqDESeq2), ratio=seqDESeq2$ExpLFC, measured=seqDESeq2$ObsLFC, score=1-seqDESeq2$Pval, label=seqDESeq2$Label)
 plotROC(anaquin, title=title, refRats=0)
 ```
 

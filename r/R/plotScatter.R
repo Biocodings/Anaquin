@@ -4,19 +4,13 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, ...)
+plotScatter <- function(data, title=NULL, xlab=NULL, ylab=NULL, showSD=FALSE, showLOQ=TRUE, showAxis=FALSE, ...)
 {
     data <- data$seqs
 
     z <- list(...)
     
-    if (is.null(z$xlab))     { z$xlab      <- ''    }
-    if (is.null(z$ylab))     { z$ylab      <- ''    }    
-    if (is.null(z$title))    { z$title     <- ''    }
-    if (is.null(z$showSD))   { z$showSD    <- FALSE }
-    if (is.null(z$showLOQ))  { z$showLOQ   <- TRUE  }
-    if (is.null(z$showAxis)) { z$showAxis  <- FALSE }
-    if (is.null(z$unitTest)) { z$unitTest  <- FALSE }
+    if (is.null(z$unitTest)) { z$unitTest <- FALSE }
 
     if (!is.data.frame(data$measured))
     {
@@ -50,7 +44,7 @@ plotScatter <- function(data, ...)
     isMultiDF <- is(data$y, 'data.frame')
     
     # Should we show standard deviation? Only if we're asked and information available.
-    isMultiSD <- sum(data$sd) > 0 & z$showSD
+    isMultiSD <- sum(data$sd) > 0 & showSD
 
     isMulti <- isMultiDF | isMultiSD
     
@@ -78,9 +72,9 @@ plotScatter <- function(data, ...)
     data <- data[!is.na(data$y),]
     
     p <- ggplot(data=data, aes_string(x='data$x', y='data$y')) +
-                               xlab(z$xlab) +
-                               ylab(z$ylab) +
-                           ggtitle(z$title) +
+                               xlab(xlab) +
+                               ylab(ylab) +
+                           ggtitle(title) +
                      labs(colour='Ratio') +
                      geom_point(aes_string(colour='grp'), size=2.0, alpha=0.5) +
                 geom_smooth(method='lm', formula=y~x, linetype='11', color='black', size=0.5)  +
@@ -89,7 +83,7 @@ plotScatter <- function(data, ...)
     p <-p + guides(colour=FALSE)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.7, 0.7)
 
-    if (z$showAxis)
+    if (showAxis)
     {
         p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
         p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
@@ -100,7 +94,7 @@ plotScatter <- function(data, ...)
 
     LOQ <- NULL
 
-    if (z$showLOQ)
+    if (showLOQ)
     {
         tryCatch({
             LOQ <- estimateLOQ(data$x, data$y)
@@ -134,7 +128,7 @@ plotScatter <- function(data, ...)
     r <- abs(max(data$y) - min(data$y))
     y_off <- 0.06 * r 
 
-    if (z$showLOQ)
+    if (showLOQ)
     {
         a <- paste(c('bold(Overall): ', overall), collapse='')
     }
@@ -155,7 +149,7 @@ plotScatter <- function(data, ...)
     
     p <- p + overall
     
-    if (z$showLOQ & !is.null(LOQ))
+    if (showLOQ & !is.null(LOQ))
     {
         above <- annotate("text",
                           label=paste(c('bold(Above)~bold(LOQ): ', above), collapse=''),
@@ -169,11 +163,6 @@ plotScatter <- function(data, ...)
         p <- p + above
     }
 
-    if (!is.null(z$xBreaks))
-    {
-        p <- p + scale_x_continuous(breaks=z$xBreaks)
-    }
-    
     if (!is.null(data$sd))
     {
         p <- p + geom_errorbar(aes_string(ymax='ymax', ymin='ymin'), size=0.2, alpha=0.5)

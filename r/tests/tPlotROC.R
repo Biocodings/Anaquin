@@ -13,7 +13,7 @@ test.PlotROC_1 <- function()
     data <- seqDESeq2
 
     data$label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
-    data <- createAnaquinData(names=row.names(data), input=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
+    data <- createAnaquinData(names=row.names(data), ratio=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, qval=data$Pval, label=data$label)
     
     r <- plotROC(data, refRats=0, unitTest=TRUE)
     

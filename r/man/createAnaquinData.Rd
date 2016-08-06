@@ -27,7 +27,11 @@ title <- 'Assembly Plot'
 xlab  <- 'Input Concentration (log2)'
 ylab  <- 'Sensitivity'
 
-anaquin <- createAnaquinData(names=row.names(seqCuffcompare), input=log2(seqCuffcompare$InputConcent), sensitivity=seqCuffcompare$Sn)
+names <- row.names(seqCuffcompare)
+input <- log2(seqCuffcompare$InputConcent)
+sn <- seqCuffcompare$Sn
+
+anaquin <- createAnaquinData(names=names, input=input, sensitivity=sn)
 plotSensitivity(anaquin, title=title, xlab=xlab, ylab=ylab, showLOA=TRUE)
 
 #
@@ -40,7 +44,11 @@ title <- 'Gene Expression'
 xlab  <- 'Input Concentration (log2)'
 ylab  <- 'FPKM (log2)'
 
-anaquin <- createAnaquinData(names=row.names(seqCufflinks), input=log2(seqCufflinks$InputConcent), measured=log2(seqCufflinks[,2:4]))
+names <- row.names(seqCufflinks)
+input <- log2(seqCufflinks$InputConcent)
+measured <- log2(seqCufflinks[,2:4])
+
+anaquin <- createAnaquinData(names=names, input=input, measured=measured)
 plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=TRUE)
 
 #
@@ -51,7 +59,13 @@ data('seqDESeq2')
 
 title <- 'ROC Plot'
 
-anaquin <- createAnaquinData(names=row.names(seqDESeq2), input=seqDESeq2$ExpLFC, measured=seqDESeq2$ObsLFC, score=1-seqDESeq2$Pval, label=seqDESeq2$Label)
+names <- row.names(seqDESeq2)
+ratio <- seqDESeq2$ExpLFC
+measured <- seqDESeq2$ObsLFC
+score <- 1-seqDESeq2$Pval
+label <- seqDESeq2$Label
+
+anaquin <- createAnaquinData(names=names, ratio=ratio, measured=measured, score=score, label=label)
 plotROC(anaquin, title=title, refRats=0)
 
 #
@@ -64,7 +78,13 @@ xlab  <- 'Average Counts'
 ylab  <- 'P-value'
 title <- 'LODR Curves'
 
-anaquin <- createAnaquinData(names=row.names(seqDESeq2), measured=seqDESeq2$Mean, ratio=seqDESeq2$ExpLFC, pval=seqDESeq2$Pval, qval=seqDESeq2$Qval)
+names <- row.names(seqDESeq2)
+measured <- seqDESeq2$Mean
+ratio <- seqDESeq2$ExpLFC
+pval <- seqDESeq2$Pval
+qval <- seqDESeq2$Qval
+
+anaquin <- createAnaquinData(names=names, measured=measured, ratio=ratio, pval=pval, qval=qval)
 plotLODR(anaquin, xlab=xlab, ylab=ylab, title=title, FDR=0.1)
 }
 

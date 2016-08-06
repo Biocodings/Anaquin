@@ -6,7 +6,7 @@ Date: 2016-08-03
 Author: Ted Wong
 Maintainer: Ted Wong <t.wong@garvan.org.au>
 Description: The 'Anaquin' package makes parts of sequins accessible from R. The sequins project aims to provide a comprehensive software framework for quantitative control in bioinformatics. The goal is to provide a standard open source library for quantitative analysis, modeling and visualization of spike-in controls.
-License: MIT 
+License: Artistic-2.0
 VignetteBuilder: knitr
 URL: www.sequin.xyz
 Depends: R (>= 2.10.0)

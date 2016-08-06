@@ -4,24 +4,20 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotROC <- function(data, refRats, ...)
+plotROC <- function(data, refRats, title=NULL, legTitle='Ratio', ...)
 {
     data <- data$seqs
     
-    stopifnot(!is.null(refRats))
     stopifnot(!is.null(data$score))
     stopifnot(!is.null(data$label))
-    stopifnot(!is.null(data$input))
+    stopifnot(!is.null(data$ratio))
     
     x <- list(...)
-
-    if (is.null(x$title))      { x$title      <- NULL    }
-    if (is.null(x$legTitle))   { x$legTitle   <- 'Ratio' }
-    if (is.null(x$showLegend)) { x$showLegend <- TRUE    }
-    if (is.null(x$unitTest))   { x$unitTest   <- FALSE   }
+    
+    if (is.null(x$unitTest)) { x$unitTest <- FALSE }
     
     # This is the sequin groups
-    data$ratio <- abs(round(data$input))
+    data$ratio <- abs(round(data$ratio))
 
     data <- data[!is.na(data$score),]
     data <- data[data$label=='TP' | data$label=='FP',]
@@ -93,19 +89,14 @@ plotROC <- function(data, refRats, ...)
     p <- ggplot(data=ROCs, aes_string(x='FPR', y='TPR'))             + 
             geom_abline(intercept=0, slope=1, linetype=2)            +
             geom_path(size=1, aes_string(colour='ratio'), alpha=0.5) +
-            labs(colour=x$legTitle)                                  +
+            labs(colour=legTitle)                                  +
             theme_bw()
 
-    if (!is.null(x$title))
+    if (!is.null(title))
     {
-        p <- p + ggtitle(x$title)
+        p <- p + ggtitle(title)
     }
     
-    if (!x$showLegend | length(uniqs) == 1)
-    {
-        p <- p + guides(colour=FALSE)
-    }
-
     print(kable(AUCs))
 
     p <- .transformPlot(p)        

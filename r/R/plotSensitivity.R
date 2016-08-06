@@ -4,13 +4,17 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold=0.70, unitTest=FALSE)
+.plotSigmoid <- function(data, title, xlab, ylab, showLOA, threshold, ...)
 {
     data <- data$seqs
 
     stopifnot(!is.null(data$input))
-    stopifnot(!is.null(data$sensitivity))    
+    stopifnot(!is.null(data$sensitivity))
     
+    z <- list(...)
+    
+    if (is.null(z$unitTest)) { z$unitTest <- FALSE }
+
     data$f   <- NA
     data$x   <- data$input
     data$y   <- data$sensitivity
@@ -86,7 +90,7 @@
     p <- .transformPlot(p)    
     print(p)
 
-    if (!is.null(unitTest) && unitTest)
+    if (z$unitTest)
     {
         return (list(LOA=LOA, fitted=data$f))
     }
@@ -95,13 +99,12 @@
 plotSensitivity <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOA=TRUE, threshold=0.70, ...)
 {
     stopifnot(class(data) == 'Anaquin')
-    x <- list(...)
-    
+
     return (.plotSigmoid(data,
                          title=title,
                          xlab=xlab,
                          ylab=ylab,
                          showLOA=showLOA,
                          threshold=threshold,
-                         unitTest=x$unitTest))
+                         ...))
 }

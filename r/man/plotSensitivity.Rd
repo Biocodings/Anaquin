@@ -14,7 +14,7 @@ plotSensitivity(data, title, xlab, ylab, showLOA, threshold, ...)
   \item{ylab}{Label for the y-axis}
   \item{showLOA}{Show limit of assembly?}
   \item{threshold}{Threshold required for limit-of-assembly (LOA)}
-  \item{...}{Reserved for future expansions}
+  \item{...}{Reserved for internal testing}
 }
 \details{
 
@@ -37,7 +37,11 @@ title <- 'Assembly Plot'
 xlab  <- 'Input Concentration (log2)'
 ylab  <- 'Sensitivity'
 
-anaquin <- createAnaquinData(names=row.names(seqCuffcompare), input=log2(seqCuffcompare$InputConcent), sensitivity=seqCuffcompare$Sn)
+names <- row.names(seqCuffcompare)
+input <- log2(seqCuffcompare$InputConcent)
+sensitivity <- seqCuffcompare$Sn
+
+anaquin <- createAnaquinData(names=names, input=input, sensitivity=sensitivity)
 plotSensitivity(anaquin, title=title, xlab=xlab, ylab=ylab, showLOA=TRUE)
 }
 

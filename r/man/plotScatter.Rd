@@ -5,7 +5,7 @@
 Create a scatter plot between expected abundance (eg: input concentration) against measured abundance (eg: FPKM).
 }
 \usage{
-plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis)
+plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis, ...)
 }
 \arguments{
   \item{data}{Anaquin dataset created by \code{createAnaquinData}. It needs to define information in \bold{Details}.}
@@ -14,7 +14,8 @@ plotScatter(data, title, xlab, ylab, showSD, showLOQ, showAxis)
   \item{ylab}{Label for the y-axis}
   \item{showSD}{Show standard deviation bars vertically? Default to FALSE.}
   \item{showLOQ}{Show limit-of-quantification? Default to TRUE.}
-  \item{showAxis}{Show x-axis and y-axis? Default to TRUE.}  
+  \item{showAxis}{Show x-axis and y-axis? Default to TRUE.}
+  \item{...}{Reserved for internal testing}  
 }
 \details{
 
@@ -37,7 +38,16 @@ title <- 'Gene Expression'
 xlab  <- 'Input Concentration (log2)'
 ylab  <- 'FPKM (log2)'
 
-anaquin <- createAnaquinData(names=row.names(seqCufflinks), input=log2(seqCufflinks$InputConcent), measured=log2(seqCufflinks[,2:4]))
+# Sequin names
+names <- row.names(seqCufflinks)
+
+# Input concentration
+input <- log2(seqCufflinks$InputConcent)
+
+# Measured FPKM
+measured <- log2(seqCufflinks[,2:4])
+
+anaquin <- createAnaquinData(names=names, input=input, measured=measured)
 plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=TRUE)
 }
 
