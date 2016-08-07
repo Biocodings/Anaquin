@@ -12,6 +12,12 @@ The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&r
 
 The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute.
 
+## Bioinformatics
+
+<ul>
+<li>RNA-Seq</li>
+</ul>
+
 ## Overview
 
 <img src='http://www.anaquin.org/wp-content/uploads/2015/07/About_Intro_F1_3.svg'>
@@ -38,14 +44,6 @@ Finally, to aid in the analysis of sequins, we have also developed a software to
 
 The source code requires a C++11 compiler to build.
 
-## Bioinformatics
-
-<ul>
-<li>RNA-Seq</li>
-<li>Genomic variation</li>
-<li>Metagenomics</li>
-</ul>
-
 ## Summary
 
 <ul>
@@ -54,13 +52,4 @@ The source code requires a C++11 compiler to build.
 <li> Genome comparison</li>
 <li> Data visualization</li>
 <li> Bioconductor</li>
-</ul>
-
-## Visualizations
-
-<ul>
-<li> Scatter Plot</li>
-<li> LODR Curves</li>
-<li> ROC Plot</li>
-<li> Folding Plot</li>
 </ul>
