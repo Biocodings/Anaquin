@@ -14,6 +14,11 @@ The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&r
 
 The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute.
 
+## Citation
+
+* Spliced synthetic genes as internal controls in RNA sequencing experiments. *Nature Methods* (2016).
+* Representing genetic variation with synthetic DNA standards. *Nature Methods* (2016).
+
 ## Bioinformatics
 
 <ul>
