@@ -1,6 +1,6 @@
-# Anaquin
+# Sequins
 
-Anaquin is a C++/R bioinformatics framework for sequins, providing qualitative and quantitative controls for next-generation sequencing experiments. The following sequins are supported:
+**Anaquin** is a C++/R bioinformatics framework for sequins, providing qualitative and quantitative controls for next-generation sequencing experiments. The following sequins are supported:
 
 <ul>
 <li>RnaQuin
