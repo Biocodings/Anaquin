@@ -13,10 +13,10 @@
 
 using namespace Anaquin;
 
-void VFlip::analyze(const FileName &f1,
-                    const FileName &f2,
+void VFlip::analyze(const FileName &seq1,
+                    const FileName &seq2,
                     const FileName &align,
-                    const Options &o)
+                    const Options  &o)
 {    
     std::set<ReadName> names;
 
@@ -71,11 +71,11 @@ void VFlip::analyze(const FileName &f1,
         fg.close();
     };
 
-    o.info("Generating first mates");
-    f(f1, o.work + "/VarForward_sequins_1.fq", o.work + "/VarForward_genome_1.fq");
+    o.info("Generating VarFlip_sequins_1.fq & VarFlip_genome_1.fq");
+    f(seq1, o.work + "/VarFlip_sequins_1.fq", o.work + "/VarFlip_genome_1.fq");
 
-    o.info("Generating second mates");
-    f(f2, o.work + "/VarForward_sequins_2.fq", o.work + "/VarForward_genome_2.fq");
+    o.info("Generating VarFlip_sequins_2.fq & VarFlip_genome_2.fq");
+    f(seq2, o.work + "/VarFlip_sequins_2.fq", o.work + "/VarFlip_genome_2.fq");
 }
 
 void VFlip::report(const std::vector<FileName> &files, const Options &o)

@@ -252,6 +252,8 @@ static Scripts fixManual(const Scripts &str)
     return x;
 }
 
+typedef std::string ErrorMsg;
+
 struct InvalidOptionException : public std::exception
 {
     InvalidOptionException(const std::string &opt) : opt(opt) {}
@@ -264,16 +266,6 @@ struct InvalidValueException : public std::exception
     InvalidValueException(const std::string &opt, const std::string &val) : opt(opt), val(val) {}
 
     const std::string opt, val;
-};
-
-struct NotSingleInputError : public std::exception
-{
-    // Empty Implementation
-};
-
-struct NotDoubleInputError : public std::exception
-{
-    // Empty Implementation
 };
 
 struct NoValueError: public InvalidValueException
@@ -300,7 +292,7 @@ struct MissingOptionError : public std::exception
 
 struct TooManyOptionsError : public std::runtime_error
 {
-    TooManyOptionsError(const std::string &msg) : std::runtime_error(msg) {}
+    TooManyOptionsError(const ErrorMsg &msg) : std::runtime_error(msg) {}
 };
 
 /*
@@ -1238,8 +1230,17 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_FLIP:     { analyze_n<VFlip>();             break; }
-                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES); break; }
+                case TOOL_V_ALIGN: { analyze_1<VAlign>(OPT_U_FILES); break; }
+                case TOOL_V_FLIP:
+                {
+                    if (_p.inputs.size() != 3)
+                    {
+                        throw TooManyOptionsError("Too many options specified. Usage: anaquin VarFlip -ufiles <seq1.fq> -ufiles <seq2.fq> -ufiles aligned.bam ");
+                    }
+
+                    analyze_n<VFlip>();
+                    break;
+                }
 
                 case TOOL_V_DISCOVER:
                 {
@@ -1339,14 +1340,6 @@ int parse_options(int argc, char ** argv)
     {
         parse(argc, argv);
         return 0;
-    }
-    catch (const NotSingleInputError &ex)
-    {
-        printError("Invalid command. An input file is required.");
-    }
-    catch (const NotDoubleInputError &ex)
-    {
-        printError("Invalid command. Two input files are required.");
     }
     catch (const NoValueError &ex)
     {
