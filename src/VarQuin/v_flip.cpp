@@ -119,9 +119,9 @@ static void writeSummary(const FileName &file,
                          "       Flipped reverse genome reads: %6%\n"
                          "                                     %7%\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %8% (%9%)\n"
-                         "       Forward:  %10% (%11%)\n"
-                         "       Reverse:  %12% (%13%)\n"
+                         "       Unmapped: %8% (%9%%)\n"
+                         "       Forward:  %10% (%11%%)\n"
+                         "       Reverse:  %12% (%13%%)\n"
                          "       Dilution: %14$.2f\n";
 
     o.generate(file);
