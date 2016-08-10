@@ -142,10 +142,10 @@ void VFlip::report(const std::vector<FileName> &files, const Options &o)
     const auto stats = analyze(seq1, seq2, align, o);
     
     /*
-     * Generating VFlip_summary.stats
+     * Generating VarFlip_summary.stats
      */
     
-    writeSummary("VFlip_summary.stats",
+    writeSummary("VarFlip_summary.stats",
                  seq1,
                  seq2,
                  align,
