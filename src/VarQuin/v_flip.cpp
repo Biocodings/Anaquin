@@ -109,25 +109,27 @@ static void writeSummary(const FileName &file,
                          "       Flipped reverse genome reads: %6%\n"
                          "                                     %7%\n\n"
                          "-------Alignments\n\n"
-                         "       Forward:  %8% (%9%)\n"
-                         "       Reverse:  %10% (%11%)\n"
-                         "       Dilution: %12$.2f\n";
-    
+                         "       Unmapped: %8% (%9%)\n"
+                         "       Forward:  %10% (%11%)\n"
+                         "       Reverse:  %12% (%13%)\n"
+                         "       Dilution: %14$.2f\n";
+
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % seq1            // 1
-                                            % seq2            // 2
-                                            % align           // 3
-                                            % forw1           // 4
-                                            % forw2           // 5
-                                            % frev1           // 6
-                                            % frev2           // 7
-                                            % stats.countNA   // 8
-                                            % stats.propNA()  // 9
-                                            % stats.countGen  // 10
-                                            % stats.propGen() // 11
-                                            % stats.countSyn  // 12
-                                            % stats.propSyn() // 13
+    o.writer->write((boost::format(summary) % seq1             // 1
+                                            % seq2             // 2
+                                            % align            // 3
+                                            % forw1            // 4
+                                            % forw2            // 5
+                                            % frev1            // 6
+                                            % frev2            // 7
+                                            % stats.countNA    // 8
+                                            % stats.propNA()   // 9
+                                            % stats.countGen   // 10
+                                            % stats.propGen()  // 11
+                                            % stats.countSyn   // 12
+                                            % stats.propSyn()  // 13
+                                            % stats.dilution() // 14
                      ).str());
 }
     
