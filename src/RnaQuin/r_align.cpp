@@ -418,7 +418,7 @@ static void generateSummary(const FileName &file,
                                               % stats.countSyn       // 3
                                               % stats.countGen       // 4
                                               % stats.dilution()     // 5
-                                              % stats.n_unmap        // 6
+                                              % stats.countNA        // 6
                                               % r.countUExonSyn()    // 7
                                               % r.countUIntrSyn()    // 8
                                               % r.countLenSyn()      // 9

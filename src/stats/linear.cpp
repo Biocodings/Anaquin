@@ -61,6 +61,7 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
 
     LOQModel l;
 
+    // Not always a solution...
     if (isnan(l.b))
     {
         return l;

@@ -403,10 +403,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
                                             % src                     // 2
-                                            % stats.countSyn             // 3
-                                            % (100 * stats.synProp()) // 4
-                                            % stats.countGen             // 5
-                                            % (100 * stats.genProp()) // 6
+                                            % stats.countSyn          // 3
+                                            % (100 * stats.propSyn()) // 4
+                                            % stats.countGen          // 5
+                                            % (100 * stats.propGen()) // 6
                                             % stats.dilution()        // 7
                                             % r.countGeneSyn()        // 8
                                             % r.countBaseSyn()        // 9
@@ -415,9 +415,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.sa.tp()           // 12
                                             % stats.sa.fp()           // 13
                                             % stats.sa.pc()           // 14
-                                            % stats.sb.tp()                   // 15
-                                            % stats.sb.fn()                   // 16
-                                            % stats.sb.fp()                   // 17
+                                            % stats.sb.tp()           // 15
+                                            % stats.sb.fn()           // 16
+                                            % stats.sb.fp()           // 17
                                             % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 18
                                             % stats.sb.sn()                   // 19
                                             % stats.sb.pc()                   // 20

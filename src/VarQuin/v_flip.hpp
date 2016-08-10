@@ -14,11 +14,13 @@ namespace Anaquin
     struct VFlip
     {
         typedef AnalyzerOptions Options;
+        typedef MappingStats    Stats;
         
-        static void analyze(const FileName &,
-                            const FileName &,
-                            const FileName &,
-                            const Options &o = Options());
+        static Stats analyze(const FileName &,
+                             const FileName &,
+                             const FileName &,
+                             const Options &o = Options());
+
         static void report (const std::vector<FileName> &, const Options &o = Options());
     };
 }

@@ -13,11 +13,18 @@
 
 using namespace Anaquin;
 
-void VFlip::analyze(const FileName &seq1,
-                    const FileName &seq2,
-                    const FileName &align,
-                    const Options  &o)
-{    
+static const FileName revGenome_1  = "VarFlip_sequins_1.fq";
+static const FileName revGenome_2  = "VarFlip_sequins_2.fq";
+static const FileName forwGenome_1 = "VarFlip_genome_1.fq";
+static const FileName forwGenome_2 = "VarFlip_genome_2.fq";
+
+VFlip::Stats VFlip::analyze(const FileName &seq1,
+                            const FileName &seq2,
+                            const FileName &align,
+                            const Options  &o)
+{
+    Stats stats;
+    
     std::set<ReadName> names;
 
     ParserSAM::parse(align, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
@@ -39,12 +46,12 @@ void VFlip::analyze(const FileName &seq1,
         }
     });
     
-    auto f = [&](const FileName &f, const FileName &syn, const FileName &gen)
+    auto f = [&](const FileName &f, const FileName &forw, const FileName &rev)
     {
         std::ofstream fs, fg;
  
-        fs.open(syn, std::ios_base::app);
-        fg.open(gen, std::ios_base::app);
+        fs.open(rev,  std::ios_base::app);
+        fg.open(forw, std::ios_base::app);
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
@@ -71,14 +78,79 @@ void VFlip::analyze(const FileName &seq1,
         fg.close();
     };
 
-    o.info("Generating VarFlip_sequins_1.fq & VarFlip_genome_1.fq");
-    f(seq1, o.work + "/VarFlip_sequins_1.fq", o.work + "/VarFlip_genome_1.fq");
+    o.info("Generating " + forwGenome_1 + " & " + revGenome_1);
+    f(seq1, o.work + "/" + forwGenome_1, o.work + "/" + revGenome_1);
 
-    o.info("Generating VarFlip_sequins_2.fq & VarFlip_genome_2.fq");
-    f(seq2, o.work + "/VarFlip_sequins_2.fq", o.work + "/VarFlip_genome_2.fq");
+    o.info("Generating " + forwGenome_2 + " & " + revGenome_2);
+    f(seq2, o.work + "/" + forwGenome_2, o.work + "/" + revGenome_2);
+
+    return stats;
 }
 
+static void writeSummary(const FileName &file,
+                         const FileName &seq1,
+                         const FileName &seq2,
+                         const FileName &align,
+                         const FileName &forw1,
+                         const FileName &forw2,
+                         const FileName &frev1,
+                         const FileName &frev2,
+                         const VFlip::Stats &stats,
+                         const VFlip::Options &o)
+{
+    const auto summary = "-------VarFlip Output Results\n\n"
+                         "-------VarFlip Inputs\n\n"
+                         "       Input sequence files: %1%\n"
+                         "                             %2%\n"
+                         "       Alignment file:       %3%\n\n"
+                         "-------VarFlip Outputs\n\n"
+                         "       Forward genome reads: %4%\n"
+                         "                             %5%\n\n"
+                         "       Flipped reverse genome reads: %6%\n"
+                         "                                     %7%\n\n"
+                         "-------Alignments\n\n"
+                         "       Forward:  %8% (%9%)\n"
+                         "       Reverse:  %10% (%11%)\n"
+                         "       Dilution: %12$.2f\n";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % seq1            // 1
+                                            % seq2            // 2
+                                            % align           // 3
+                                            % forw1           // 4
+                                            % forw2           // 5
+                                            % frev1           // 6
+                                            % frev2           // 7
+                                            % stats.countNA   // 8
+                                            % stats.propNA()  // 9
+                                            % stats.countGen  // 10
+                                            % stats.propGen() // 11
+                                            % stats.countSyn  // 12
+                                            % stats.propSyn() // 13
+                     ).str());
+}
+    
 void VFlip::report(const std::vector<FileName> &files, const Options &o)
 {
-    analyze(files[0], files[1], files[2], o);
+    const auto seq1  = files[0];
+    const auto seq2  = files[1];
+    const auto align = files[2];
+    
+    const auto stats = analyze(seq1, seq2, align, o);
+    
+    /*
+     * Generating VFlip_summary.stats
+     */
+    
+    writeSummary("VFlip_summary.stats",
+                 seq1,
+                 seq2,
+                 align,
+                 forwGenome_1,
+                 forwGenome_2,
+                 revGenome_1,
+                 revGenome_2,
+                 stats,
+                 o);
 }

@@ -29,7 +29,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
         }
         else
         {
-            stats.n_unmap++;
+            stats.countNA++;
         }
         
         if (x.mapped && inters.count(x.cID))

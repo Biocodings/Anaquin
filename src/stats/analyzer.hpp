@@ -79,37 +79,43 @@ namespace Anaquin
     
     struct MappingStats
     {
-        inline Proportion genProp() const
+        inline Counts total() const
         {
-            return (countSyn + countGen) ? static_cast<Proportion>(countGen) / (countSyn + countGen) : NAN;
+            return countSyn + countGen + countNA;
         }
 
-        inline Proportion synProp() const
+        inline Proportion propNA() const
         {
-            return dilution();
+            return total() ? static_cast<Proportion>(countNA) / total() : NAN;
+        }
+        
+        inline Proportion propGen() const
+        {
+            return total() ? static_cast<Proportion>(countGen) / total() : NAN;
+        }
+
+        inline Proportion propSyn() const
+        {
+            return total() ? static_cast<Proportion>(countSyn) / total() : NAN;
         }
 
         inline Proportion dilution() const
         {
             return (countSyn + countGen) ? static_cast<Proportion>(countSyn) / (countSyn + countGen) : NAN;
         }
-        
-        // Total mapped to the synthetic chromosome
-        Counts countSyn = 0;
 
-        // Total mapped to the genome
+        Counts countNA  = 0;
         Counts countGen = 0;
+        Counts countSyn = 0;
     };
 
     struct AlignmentStats : public MappingStats
     {
-        Counts n_unmap = 0;
-
         template <typename T, typename F> void update(const T &t, F f)
         {
-            if      (!t.mapped) { n_unmap++; }
-            else if (!f(t))     { countSyn++;  }
-            else                { countGen++;  }
+            if      (!t.mapped) { countNA++;  }
+            else if (!f(t))     { countSyn++; }
+            else                { countGen++; }
         }
 
         template <typename T> void update(const T &t)
@@ -119,6 +125,8 @@ namespace Anaquin
                 return !Standard::isSynthetic(t.cID);
             });
         }
+        
+        Counts countNA = 0;
     };
 
     struct WriterOptions

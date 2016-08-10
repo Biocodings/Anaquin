@@ -200,9 +200,9 @@ Scripts StatsWriter::linearSummary(const FileName &file,
 
     return (boost::format(summary) % units
                                    % mStats.countSyn
-                                   % mStats.synProp()
+                                   % mStats.propSyn()
                                    % mStats.countGen
-                                   % mStats.genProp()
+                                   % mStats.propGen()
                                    % annot
                                    % mixture()           // 7
                                    % hist.size()         // 8
