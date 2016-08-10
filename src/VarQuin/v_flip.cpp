@@ -34,8 +34,14 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             o.wait(std::to_string(info.p.i));
         }
 
-        if (Standard::isSynthetic(x.cID))
+        if (!x.mapped)
         {
+            stats.countNA++;
+        }
+        else if (Standard::isSynthetic(x.cID))
+        {
+            stats.countSyn++;
+            
             /*
              * Eg: @GV_IDEL_011863_R-1400/1
              * Eg: @GV_IDEL_011863_R-1400/2
@@ -44,8 +50,12 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             names.insert("@" + x.name + "/1");
             names.insert("@" + x.name + "/2");
         }
+        else
+        {
+            stats.countGen++;
+        }
     });
-    
+
     auto f = [&](const FileName &f, const FileName &forw, const FileName &rev)
     {
         std::ofstream fs, fg;
