@@ -277,41 +277,6 @@ namespace Anaquin
     };
 
     typedef std::map<ChrID, MergedIntervals<>> MC2Intervals;
-
-    struct MergedID2Intervals : std::map<MergedInterval::IntervalID, MergedIntervals<>>
-    {
-        inline void add(const MergedInterval::IntervalID &id, const MergedIntervals<> &i)
-        {
-            (*this)[id] = i;
-        }
-        
-        inline Counts countInters() const
-        {
-            Counts n = 0;
-            
-            for (const auto &i : *this)
-            {
-                n += i.second.size();
-            }
-            
-            return n;
-        }
-        
-        inline MergedInterval::Stats stats() const
-        {
-            MergedInterval::Stats stats;
-            
-            for (const auto &i : *this)
-            {
-                const auto s = i.second.stats();
-                
-                stats.length   += s.length;
-                stats.nonZeros += s.nonZeros;
-            }
-            
-            return stats;
-        }
-    };
 }
 
 #endif
