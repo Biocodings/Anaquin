@@ -118,6 +118,7 @@
 
 /* Begin PBXFileReference section */
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0092F01D618D7B00573D44 /* reader_bam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = reader_bam.hpp; path = ../src/readers/reader_bam.hpp; sourceTree = "<group>"; };
 		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF06A6791D08464A000D9B17 /* v_vscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_vscan.cpp; path = ../src/VarQuin/v_vscan.cpp; sourceTree = "<group>"; };
 		EF06A67A1D08464A000D9B17 /* v_vscan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_vscan.hpp; path = ../src/VarQuin/v_vscan.hpp; sourceTree = "<group>"; };
@@ -340,6 +341,7 @@
 			children = (
 				EF4270A31B214F8400C9ED4E /* Data */,
 				EF7278431CACEC9E0012648F /* Libraries */,
+				EF0092EE1D618D7300573D44 /* Readers */,
 				EF3860D61AD378190062D246 /* Parsers */,
 				EF1DE0B81B21EC7C00DEC381 /* Stats */,
 				EFA9DE701BCB7D5A00780182 /* Tools */,
@@ -349,6 +351,14 @@
 				EF2290351AC0E58000CE76BF /* main.cpp */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		EF0092EE1D618D7300573D44 /* Readers */ = {
+			isa = PBXGroup;
+			children = (
+				EF0092F01D618D7B00573D44 /* reader_bam.hpp */,
+			);
+			name = Readers;
 			sourceTree = "<group>";
 		};
 		EF0C67861C5F1D460033168D /* VarQuin */ = {

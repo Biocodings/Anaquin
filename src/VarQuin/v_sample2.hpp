@@ -49,13 +49,13 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Options() {}
-
+            
             Method meth = Method::Mean;
             
             // Defined only if meth==Prop
-            Proportion p;            
+            Proportion p;
         };
-
+        
         static Stats stats(const FileName &file, const Options &o = Options());
         static void report(const FileName &file, const Options &o = Options());
     };
