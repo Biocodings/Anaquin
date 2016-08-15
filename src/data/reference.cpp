@@ -563,13 +563,13 @@ Counts VarRef::countGeneGen() const
 void VarRef::validate()
 {
     // Coordinate annotation?
-    const auto shouldCoord = !_impl->bData[ChrIS].g2d.empty();
+    const auto shouldCoord = !_impl->bData["chr1"].g2d.empty(); // TODO: Need to loop through all chromosomes
     
     if (shouldCoord)
     {
         std::set<SequinID> ids;
         
-        for (const auto &i : _impl->bData[ChrIS].g2d)
+        for (const auto &i : _impl->bData["chr1"].g2d)
         {
             ids.insert(i.first);
         }

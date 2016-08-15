@@ -12,7 +12,6 @@ using namespace Anaquin;
 typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
 static ReaderBam::Stats sample(const FileName &file,
-                               const std::map<ChrID, std::set<Locus>> &c2l,
                                const NormFactors &norms,
                                const VSample2::Options &o)
 {
@@ -42,9 +41,10 @@ static ReaderBam::Stats sample(const FileName &file,
     writer.openTerm();
     
     // Statistics within the sampling region (ReaderBam gives everything)
-    auto sampled = ReaderBam::reg2Inters(c2l);
-
-    const auto r = ReaderBam::stats(file, c2l, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    const auto sampled = Standard::instance().r_var.dInters();
+    
+    const auto &rr = Standard::instance().r_var;
+    const auto r = ReaderBam::stats(file, rr.dInters(), [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -92,10 +92,12 @@ VSample2::Stats VSample2::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    // Intervals required for subsampling
-    std::map<ChrID, std::set<Locus>> c2v;
+    const auto &r = Standard::instance().r_var;
+    const auto refs = r.dInters();
     
-    const auto bStats = ReaderBam::stats(file, c2v, [&](const ParserSAM::Data &, const ParserSAM::Info &info)
+    A_ASSERT(!refs.empty(), "Empty reference sampling regions");
+
+    const auto bStats = ReaderBam::stats(file, refs, [&](const ParserSAM::Data &, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -111,16 +113,18 @@ VSample2::Stats VSample2::stats(const FileName &file, const Options &o)
     NormFactors norms;
     
     // For each chromosome...
-    for (auto &chr : c2v)
+    for (auto &i : refs)
     {
         // For each region...
-        for (auto &reg : chr.second)
+        for (auto &j : i.second.data())
         {
+            const auto &l = j.second.l();
+            
             // Genomic statistics within the region
-            const auto gStats = bStats.gen.at(chr.first).find(reg.key())->stats();
+            const auto gStats = bStats.gen.at(i.first).find(l.key())->stats();
             
             // Synthetic statistics within the region
-            const auto sStats = bStats.gen.at(chr.first).find(reg.key())->stats();
+            const auto sStats = bStats.syn.at(i.first).find(l.key())->stats();
             
             o.info("Calculating coverage for the synthetic and genome");
             
@@ -150,8 +154,8 @@ VSample2::Stats VSample2::stats(const FileName &file, const Options &o)
 
                 case VSample2::Method::Prop:
                 {
-                    synC = stats.samp.syn;
-                    genC = stats.samp.gen;
+//                    synC = stats.samp.syn;
+//                    genC = stats.samp.gen;
                     break;
                 }
 
@@ -166,20 +170,17 @@ VSample2::Stats VSample2::stats(const FileName &file, const Options &o)
             
             if (norm == 1.0)
             {
-                o.warn((boost::format("Normalization factor is 1 for %1%:%2%-%3%") % chr.first
-                                                                                   % reg.start
-                                                                                   % reg.end).str());
+                o.warn((boost::format("Normalization factor is 1 for %1%:%2%-%3%") % i.first
+                                                                                   % l.start
+                                                                                   % l.end).str());
             }
-            
-            norms[chr.first][reg] = norm;
+
+            norms[i.first][l] = norm;
         }
     }
     
-    /*
-     * Now, we have the normalization factors. We can proceed with subsampling
-     */
-    
-    sample(file, c2v, norms, o);
+    // Now, we have the normalization factors. We can proceed with subsampling.
+    sample(file, norms, o);
     
     return stats;
 }

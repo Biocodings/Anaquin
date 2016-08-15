@@ -17,42 +17,27 @@ namespace Anaquin
             ID2Intervals syn;
         };
 
-        static ID2Intervals reg2Inters(const std::map<ChrID, std::set<Locus>> &c2l)
-        {
-            ID2Intervals r;
-
-            for (const auto &chr : c2l)
-            {
-                Intervals<> x;
-                
-                for (const auto &inter : chr.second)
-                {
-                    x.add(Interval(std::to_string(inter.start) + "_" + std::to_string(inter.end), inter));
-                }
-                
-                r.add(chr.first, x);
-            }
-            
-            return r;
-        }
-
         template <typename F> static ReaderBam::Stats stats(const FileName &file,
-                                                            const std::map<ChrID, std::set<Locus>> &c2l,
+                                                            const C2Intervals &c2l,
                                                             F f)
         {
             ReaderBam::Stats stats;
 
-            for (const auto &chr : c2l)
+            // For each chromosome...
+            for (const auto &i : c2l)
             {
                 Intervals<> x;
                 
-                for (const auto &inter : chr.second)
+                for (const auto &inter : i.second.data())
                 {
-                    x.add(Interval(std::to_string(inter.start) + "_" + std::to_string(inter.end), inter));
+                    const auto &l = inter.second.l();
+                    x.add(Interval(l.key(), l));
                 }
 
-                stats.gen[chr.first] = x;
-                stats.syn[chr.first] = x;
+                stats.gen[i.first] = x;
+                stats.syn[i.first] = x;
+                stats.gen[i.first].build();
+                stats.syn[i.first].build();
             }
 
             ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
@@ -77,9 +62,9 @@ namespace Anaquin
                 
                 if (x.mapped && stats.gen.count(x.cID))
                 {
-                    auto inters  = Standard::isSynthetic(x.cID) ? stats.syn : stats.gen;
-                    auto matched = inters[x.cID].overlap(x.l);
-                    
+                    auto inters  = Standard::isSynthetic(x.cID) ? &stats.syn : &stats.gen;
+                    auto matched = (*inters)[x.cID].overlap(x.l);
+
                     if (matched)
                     {
                         matched->map(x.l);

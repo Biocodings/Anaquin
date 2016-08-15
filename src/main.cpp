@@ -21,6 +21,7 @@
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
 
 #include "parsers/parser_gtf.hpp"
@@ -1271,7 +1272,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_SUBSAMPLE:
                 {
-                    VSample::Options o;
+                    VSample2::Options o;
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];
@@ -1286,20 +1287,20 @@ void parse(int argc, char ** argv)
                     
                     if (meth == "mean")
                     {
-                        o.meth = VSample::Method::Mean;
+                        o.meth = VSample2::Method::Mean;
                     }
                     else if (meth == "median")
                     {
-                        o.meth = VSample::Method::Median;
+                        o.meth = VSample2::Method::Median;
                     }
                     else if (meth == "reads")
                     {
-                        o.meth = VSample::Method::Reads;
+                        o.meth = VSample2::Method::Reads;
                     }
                     else if (isFloat())
                     {
                         o.p = stod(meth);
-                        o.meth = VSample::Method::Prop;
+                        o.meth = VSample2::Method::Prop;
                         
                         if (o.p <= 0.0)
                         {
@@ -1315,7 +1316,7 @@ void parse(int argc, char ** argv)
                         throw std::runtime_error("Unknown method: " + meth);
                     }
 
-                    analyze_1<VSample>(OPT_U_FILES, o);
+                    analyze_1<VSample2>(OPT_U_FILES, o);
                     break;
                 }
             }
