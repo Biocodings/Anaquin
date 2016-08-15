@@ -21,7 +21,7 @@ input <- %8%
 # Measured expression (y-axis)
 measured <- %9%
 
-# Create Anaquin data for plotScatter
-anaquin <- createAnaquinData(names=row.names(data), %10%=input, measured=measured%12%)
+# Create Anaquin data for PlotLinear
+anaquin <- AnaquinData(analysis='PlotLinear', names=row.names(data), input=input, measured=measured%12%)
 
-plotScatter(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%) 
+plotLinear(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)

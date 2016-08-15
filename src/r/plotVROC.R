@@ -46,7 +46,7 @@ if (nrow(data[data$Label=='FP',]) > 0)
     data[data$Label=='FP',]$ExpFold <- 0
 }
 
-# Create Anaquin data for plotROC
-anaquin <- createAnaquinData(names=data$name, input=data$ExpFold, score=score, label=data$Label)
+# Create Anaquin data for PlotROC
+anaquin <- AnaquinData(analysis='PlotROC', names=data$name, input=data$ExpFold, score=score, label=data$Label)
 
 plotROC(anaquin, title=title, legTitle=legTitle, refRats=0)

@@ -16,7 +16,7 @@ data$label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
 
 title <- 'ROC Plot'
 
-# Create Anaquin data set for plotROC
-anaquin <- createAnaquinData(names=row.names(data), ratio=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, label=data$label)
+# Create Anaquin data for PlotROC
+anaquin <- AnaquinData(analysis='PlotROC', ratio=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, label=data$label)
 
 plotROC(anaquin, title=title, refRats=0)
