@@ -119,6 +119,7 @@
 /* Begin PBXFileReference section */
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0092F01D618D7B00573D44 /* reader_bam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = reader_bam.hpp; path = ../src/readers/reader_bam.hpp; sourceTree = "<group>"; };
+		EF0092F21D61BCD100573D44 /* random.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = random.hpp; path = ../src/tools/random.hpp; sourceTree = "<group>"; };
 		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF06A6791D08464A000D9B17 /* v_vscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_vscan.cpp; path = ../src/VarQuin/v_vscan.cpp; sourceTree = "<group>"; };
 		EF06A67A1D08464A000D9B17 /* v_vscan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_vscan.hpp; path = ../src/VarQuin/v_vscan.hpp; sourceTree = "<group>"; };
@@ -551,6 +552,7 @@
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
 				EF6AE1231D4DCF9F005AF569 /* errors.hpp */,
 				EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */,
+				EF0092F21D61BCD100573D44 /* random.hpp */,
 				EFFD9A881D26BB6A00A7A80B /* sample.cpp */,
 				EF2E58731CDCE452009A35D4 /* sample.hpp */,
 				EF9ED39D1D07DC9E00CE7F2B /* samtools.hpp */,

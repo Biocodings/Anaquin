@@ -8,7 +8,7 @@ TEST_CASE("Anaquin_Version")
     const auto r = Test::test("-v");
     
     REQUIRE(r.status == 0);
-    REQUIRE(r.output == "v0.99.0\n");
+    REQUIRE(r.output == "v0.99.8\n");
 }
 
 TEST_CASE("Anaquin_RnaAlign_HelpShort")

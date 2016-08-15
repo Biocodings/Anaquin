@@ -1,6 +1,7 @@
 #ifndef LOCUS_HPP
 #define LOCUS_HPP
 
+#include <string>
 #include <vector>
 #include <assert.h>
 #include <algorithm>
@@ -22,6 +23,11 @@ namespace Anaquin
             {
                 throw std::runtime_error("Locus: end < start");
             }
+        }
+
+        inline std::string key() const
+        {
+            return std::to_string(start) + "_" + std::to_string(end);
         }
 
         /*
