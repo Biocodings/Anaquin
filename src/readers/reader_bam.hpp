@@ -10,10 +10,10 @@ namespace Anaquin
     {
         struct Stats : public AlignmentStats
         {
-            // Intervals for genomic reads
+            // Statistics for genomic reads
             ID2Intervals gen;
 
-            // Intervals for synthetic reads
+            // Statistics for synthetic reads
             ID2Intervals syn;
         };
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import numpy
 
 if __name__ == '__main__':
     with open(sys.argv[1]) as f:
