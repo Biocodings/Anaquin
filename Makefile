@@ -39,7 +39,7 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I tests -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
