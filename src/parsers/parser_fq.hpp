@@ -23,9 +23,9 @@ namespace Anaquin
             
             while (r.nextLine(x.name))
             {
-                if (!r.nextLine(x.seq))  { throw "Error. Is this a valid FASTQ file?"; }
-                if (!r.nextLine(x.opt))  { throw "Error. Is this a valid FASTQ file?"; }
-                if (!r.nextLine(x.qual)) { throw "Error. Is this a valid FASTQ file?"; }
+                if (!r.nextLine(x.seq))  { A_THROW("Error. Is this a valid FASTQ file?"); }
+                if (!r.nextLine(x.opt))  { A_THROW("Error. Is this a valid FASTQ file?"); }
+                if (!r.nextLine(x.qual)) { A_THROW("Error. Is this a valid FASTQ file?"); }
 
                 Tokens::split(x.name, " ", toks);
                 x.name = toks[0];

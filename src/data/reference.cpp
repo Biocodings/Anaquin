@@ -182,14 +182,17 @@ Concent TransRef::concent(const GeneID &gID, Mixture m) const
             
             if (!r)
             {
-                throw "Failed to find gene [" + gID + "] for mixture";
+                A_THROW("Failed to find gene [" + gID + "] for mixture");
             }
             
             return r;
         }
     }
     
-    throw "Failed to find gene [" + gID + "] for mixture";
+    A_THROW("Failed to find gene [" + gID + "] for mixture");
+
+    // Never executed
+    return Concent();
 }
 
 GeneID TransRef::s2g(const SequinID &sID) const

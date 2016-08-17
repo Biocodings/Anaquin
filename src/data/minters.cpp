@@ -134,7 +134,7 @@ Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
                 }
                 else
                 {
-                    throw "Invalid phase";
+                    throw std::runtime_error("Invalid phase");
                 }
                 
                 ++it;

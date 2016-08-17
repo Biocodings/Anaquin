@@ -15,7 +15,7 @@ namespace Anaquin
         {
             if (!m.count(i))
             {
-                throw "Unknown DNA base: " + std::to_string(i);
+                throw std::runtime_error("Unknown DNA base: " + std::to_string(i));
             }
             
             i = m[i];

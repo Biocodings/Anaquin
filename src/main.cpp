@@ -525,7 +525,7 @@ FileName refFile()
         }
     }
     
-    throw "No reference file found";
+    throw std::runtime_error("No reference file found");
 }
 
 static void printError(const std::string &msg)

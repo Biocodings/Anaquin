@@ -225,7 +225,7 @@ namespace Anaquin
                 
                 if (loci.empty())
                 {
-                    throw "No interval was built. loci.empty().";
+                    throw std::runtime_error("No interval was built. loci.empty().");
                 }
             
                 _tree = std::shared_ptr<IntervalTree<T *>>(new IntervalTree<T *> { loci });
