@@ -25,6 +25,6 @@ input <- %8%
 sn <- %9%
 
 # Create Anaquin data for PlotLogistic
-anaquin <- AnaquinData(analysis='PlotLogistic', names=row.names(data), input=input, measured=sn)
+anaquin <- AnaquinData(analysis='PlotLogistic', seqs=row.names(data), input=input, measured=sn)
 
 plotLogistic(anaquin, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)

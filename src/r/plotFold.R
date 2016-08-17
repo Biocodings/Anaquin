@@ -22,6 +22,6 @@ expected <- %8%
 measured <- %9%
 
 # Create Anaquin data for PlotLinear
-anaquin <- AnaquinData(analysis='PlotLinear', names=row.names(data), input=expected, measured=measured%11%)
+anaquin <- AnaquinData(analysis='PlotLinear', seqs=row.names(data), input=expected, measured=measured%11%)
 
 plotLinear(anaquin, title=title, xlab=xlab, ylab=ylab, showAxis=%10%, showLOQ=FALSE)
