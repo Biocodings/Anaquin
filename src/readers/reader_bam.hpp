@@ -10,11 +10,7 @@ namespace Anaquin
     {
         struct Stats : public AlignmentStats
         {
-            // Statistics for genomic reads
-            ID2Intervals gen;
-
-            // Statistics for synthetic reads
-            ID2Intervals syn;
+            ID2Intervals inters;
         };
 
         template <typename F> static ReaderBam::Stats stats(const FileName &file,
@@ -34,10 +30,8 @@ namespace Anaquin
                     x.add(Interval(l.key(), l));
                 }
 
-                stats.gen[i.first] = x;
-                stats.syn[i.first] = x;
-                stats.gen[i.first].build();
-                stats.syn[i.first].build();
+                stats.inters[i.first] = x;
+                stats.inters[i.first].build();
             }
 
             ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
@@ -60,10 +54,9 @@ namespace Anaquin
                     stats.countNA++;
                 }
                 
-                if (x.mapped && stats.gen.count(x.cID))
+                if (x.mapped && stats.inters.count(x.cID))
                 {
-                    auto inters  = Standard::isSynthetic(x.cID) ? &stats.syn : &stats.gen;
-                    auto matched = (*inters)[x.cID].overlap(x.l);
+                    auto matched = stats.inters[x.cID].overlap(x.l);
 
                     if (matched)
                     {

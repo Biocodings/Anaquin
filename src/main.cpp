@@ -1316,7 +1316,7 @@ void parse(int argc, char ** argv)
                         throw std::runtime_error("Unknown method: " + meth);
                     }
 
-                    analyze_1<VSample2>(OPT_U_FILES, o);
+                    analyze_n<VSample2>(o);
                     break;
                 }
             }

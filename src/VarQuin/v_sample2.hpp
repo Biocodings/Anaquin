@@ -6,12 +6,6 @@
 
 namespace Anaquin
 {
-//    struct SynGenAligns
-//    {
-//        Counts syn = 0;
-//        Counts gen = 0;
-//    };
-
     struct VSample2
     {
         enum class Method
@@ -22,28 +16,39 @@ namespace Anaquin
             Prop,
         };
         
+        struct SampledInfo
+        {
+            // Alignment coverage for the genome
+            Coverage gen;
+            
+            // Alignment coverage before subsampling
+            Coverage before;
+            
+            // Alignment coverage after subsampling
+            Coverage after;
+            
+            // Normalization factor
+            Proportion norm;
+        };
+        
         struct Stats
         {
-            // Intervals for synthetic
-            ID2Intervals syn;
+            // Total number of subsampling regions
+            Counts count = 0;
             
-            // Intervals for genome
-            ID2Intervals gen;
+            // Average subsampling length
+            Base averLen;
             
-            // Raw coverage
-            CoverageTool::Stats cov;
+            // Total subsampling length
+            Base totLen;
             
-            // Calculated coverage for synthetic
-            Coverage synC;
+            // Number of regions without alignment (genomic)
+            Counts noGAlign = 0;
             
-            // Calculated coverage for the query (eg: chr21)
-            Coverage genC;
+            // Number of regions without alignment (synthetic)
+            Counts noSAlign = 0;
             
-//            // Total alignments (not just sampling regions)
-//            SynGenAligns tot;
-//            
-//            // Alignments within sampling regions
-//            SynGenAligns samp;
+            std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
         };
 
         struct Options : public AnalyzerOptions
@@ -56,8 +61,12 @@ namespace Anaquin
             Proportion p;
         };
         
-        static Stats stats(const FileName &file, const Options &o = Options());
-        static void report(const FileName &file, const Options &o = Options());
+        static Stats analyze(const FileName &gen,
+                             const FileName &seqs,
+                             const Options &o = Options());
+
+        static void report(const std::vector<FileName> &,
+                           const Options &o = Options());
     };
 }
 
