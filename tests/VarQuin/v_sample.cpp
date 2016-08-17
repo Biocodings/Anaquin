@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "unit/test.hpp"
+#include "test.hpp"
 #include "VarQuin/v_sample.hpp"
 
 using namespace Anaquin;

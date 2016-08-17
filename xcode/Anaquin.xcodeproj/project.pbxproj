@@ -43,7 +43,6 @@
 		EF745EEB1C1E8B1B0072CEBB /* t_parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */; };
 		EF8F262A1D12B70200E9A441 /* v_flip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF8F26281D12B70200E9A441 /* v_flip.cpp */; };
 		EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D6BB1C616B5D00697051 /* t_standard.cpp */; };
-		EF9ED3971D07BEC900CE7F2B /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ED3961D07BEC900CE7F2B /* v_discover.cpp */; };
 		EF9ED39C1D07D10700CE7F2B /* v_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ED39B1D07D10700CE7F2B /* v_sample.cpp */; };
 		EF9ED39F1D07EBE700CE7F2B /* samtools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ED39E1D07EBE700CE7F2B /* samtools.cpp */; };
 		EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F70ED1B9C397900B8BD7B /* reference.cpp */; };
@@ -202,7 +201,6 @@
 		EF8F262B1D12B87D00E9A441 /* parser_fq.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_fq.hpp; path = ../src/parsers/parser_fq.hpp; sourceTree = "<group>"; };
 		EF94CB061CC4D2D600EDDDA7 /* data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = data.hpp; path = ../src/data/data.hpp; sourceTree = "<group>"; };
 		EF98D6BB1C616B5D00697051 /* t_standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard.cpp; path = ../tests/data/t_standard.cpp; sourceTree = "<group>"; };
-		EF9ED3961D07BEC900CE7F2B /* v_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_discover.cpp; path = ../tests/VarQuin/v_discover.cpp; sourceTree = "<group>"; };
 		EF9ED39B1D07D10700CE7F2B /* v_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_sample.cpp; path = ../src/VarQuin/v_sample.cpp; sourceTree = "<group>"; };
 		EF9ED39D1D07DC9E00CE7F2B /* samtools.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = samtools.hpp; path = ../src/tools/samtools.hpp; sourceTree = "<group>"; };
 		EF9ED39E1D07EBE700CE7F2B /* samtools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = samtools.cpp; path = ../tests/tools/samtools.cpp; sourceTree = "<group>"; };
@@ -538,7 +536,6 @@
 			isa = PBXGroup;
 			children = (
 				EFA672F61D0691D2005C3DA6 /* v_align.cpp */,
-				EF9ED3961D07BEC900CE7F2B /* v_discover.cpp */,
 				EF4085AC1D268B600077CAAF /* v_sample.cpp */,
 			);
 			name = VarQuin;
@@ -742,7 +739,6 @@
 				EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */,
 				EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */,
 				EFFC645A1D17C43200827474 /* t_biology.cpp in Sources */,
-				EF9ED3971D07BEC900CE7F2B /* v_discover.cpp in Sources */,
 				EFFD3B591D0F6D42002FEC35 /* gtf_data.cpp in Sources */,
 				EF0C67931C5F25070033168D /* v_align.cpp in Sources */,
 				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
@@ -915,6 +911,7 @@
 					"~/Sources/SS",
 					/Applications,
 					/Applications/boost_1_61_0,
+					"~/Sources/QA/tests",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -952,6 +949,7 @@
 					"~/Sources/SS",
 					/Applications,
 					/Applications/boost_1_61_0,
+					"~/Sources/QA/tests",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

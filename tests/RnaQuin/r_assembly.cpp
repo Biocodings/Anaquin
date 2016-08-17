@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "unit/test.hpp"
+#include "test.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 using namespace Anaquin;

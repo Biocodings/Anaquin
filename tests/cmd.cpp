@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "unit/test.hpp"
+#include "test.hpp"
 
 using namespace Anaquin;
 
