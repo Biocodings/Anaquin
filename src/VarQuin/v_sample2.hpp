@@ -31,6 +31,12 @@ namespace Anaquin
             Proportion norm;
         };
         
+        struct GenomeSequins
+        {
+            Counts countGen = 0;
+            Counts countSyn = 0;
+        };
+        
         struct Stats
         {
             // Total number of subsampling regions
@@ -47,6 +53,15 @@ namespace Anaquin
             
             // Number of regions without alignment (synthetic)
             Counts noSAlign = 0;
+            
+            Coverage afterGen,  afterSyn;
+            Coverage beforeGen, beforeSyn;
+            
+            // Summary statistics for normalization
+            double normAver, normSD;
+            
+            GenomeSequins totBefore,  totAfter;
+            GenomeSequins sampBefore, sampAfter;
             
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
         };

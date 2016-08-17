@@ -1,4 +1,5 @@
 #include "tools/random.hpp"
+#include <ss/maths/maths.hpp>
 #include "VarQuin/v_sample2.hpp"
 #include "writers/writer_sam.hpp"
 #include "readers/reader_bam.hpp"
@@ -12,6 +13,7 @@ typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
 static ReaderBam::Stats sample(const FileName &file,
                                const NormFactors &norms,
+                               VSample2::Stats &stats,
                                const VSample2::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -62,11 +64,17 @@ static ReaderBam::Stats sample(const FileName &file,
                     shouldSampled = true;
                 }
             }
+            else
+            {
+                shouldSampled = true;
+            }
         }
         
         if (shouldSampled)
         {
-            writer.write(x);
+            stats.totAfter.countSyn++;
+            
+            //writer.write(x);
             return true;
         }
 
@@ -110,22 +118,32 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     A_ASSERT(!refs.empty(), "Empty reference sampling regions");
     
     // Checking genomic alignments before subsampling
-    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &, const ParserSAM::Info &info)
+    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
         
+        if (x.mapped)
+        {
+            stats.totBefore.countGen++;
+        }
+        
         return true;
     });
     
     // Checking synthetic alignments before subsampling
-    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &, const ParserSAM::Info &info)
+    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
+        }
+        
+        if (x.mapped)
+        {
+            stats.totBefore.countSyn++;
         }
         
         return true;
@@ -133,6 +151,13 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     
     // Normalization for each region
     NormFactors norms;
+
+    // Required for summary statistics
+    std::vector<double> allNorms;
+
+    std::vector<double> allAfterSynC;
+    std::vector<double> allBeforeGenC;
+    std::vector<double> allBeforeSynC;
     
     // For each chromosome...
     for (auto &i : refs)
@@ -159,8 +184,10 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             
             const auto synC = stats2cov(o.meth, ss);
             const auto genC = stats2cov(o.meth, gs);
-            
             const auto norm = std::min(genC / synC, 1.0);
+            
+            allBeforeGenC.push_back(genC);
+            allBeforeSynC.push_back(synC);
             
             if (norm == 1.0)
             {
@@ -183,13 +210,12 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
             
             stats.totLen += l.length();
+            allNorms.push_back(norm);
         }
     }
     
     // Now, we have the normalization factors. We can proceed with subsampling.
-    const auto ss = sample(seq, norms, o);
-    
-    auto n = 0;
+    const auto after = sample(seq, norms, stats, o);
     
     // For each chromosome...
     for (auto &i : refs)
@@ -197,14 +223,40 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
         // For each region...
         for (auto &j : i.second.data())
         {
-            n++;
+            stats.count++;
             const auto &l = j.second.l();
-            stats.c2v[i.first][l].after = stats2cov(o.meth, j.second.stats());
+            
+            // Coverage after subsampling
+            const auto cov = stats2cov(o.meth, j.second.stats());
+
+            stats.c2v[i.first][l].after = cov;
+            
+            // Required for generating summary statistics
+            allAfterSynC.push_back(cov);
         }
     }
     
+    stats.beforeGen = SS::getMean(allBeforeGenC);
+    stats.beforeSyn = SS::getMean(allBeforeSynC);
+    stats.afterGen  = stats.beforeGen;
+    stats.afterSyn  = SS::getMean(allAfterSynC);
+    
+    stats.normSD   = SS::getSD(allNorms);
+    stats.normAver = SS::getMean(allNorms);
+    
+    stats.totAfter.countGen = stats.totBefore.countGen;
+    
+    stats.sampAfter.countGen  = gStats.countGen;
+    stats.sampBefore.countGen =  gStats.countGen;
+    
+    // Remember, the synthetic reads have been mapped to the forward genome
+    stats.sampBefore.countSyn = sStats.countGen;
+
+    // Remember, the synthetic reads have been mapped to the forward genome
+    stats.sampAfter.countSyn = after.countGen;
+
     // Average sampling length
-    stats.averLen = static_cast<Base>(stats.totLen / (double) n);
+    stats.averLen = static_cast<Base>(stats.totLen / (double) stats.count);
     
     return stats;
 }
@@ -213,25 +265,32 @@ static void generateCSV(const FileName &file, const VSample2::Stats &stats, cons
 {
     o.generate(file);
 
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%");
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ChrID"
-                                           % "Position"
                                            % "Start"
                                            % "End"
-                                           % "Ref"
-                                           % "Alt"
                                            % "Genome"
                                            % "Before"
                                            % "After"
-                                           % "Norm"
-                                           % "Type").str());
+                                           % "Norm").str());
 
+    // For each chromosome...
     for (const auto &i : stats.c2v)
     {
-        
+        // For each variant...
+        for (const auto &j : i.second)
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % j.first.start
+                                                   % j.first.end
+                                                   % j.second.gen
+                                                   % j.second.before
+                                                   % j.second.after
+                                                   % j.second.norm).str());            
+        }
     }
     
     o.writer->close();
@@ -264,8 +323,8 @@ static void generateSummary(const FileName &file,
                          "       Variant regions: %4% regions\n\n"
                          "       Method: %5%\n\n"
                          "-------Total alignments (before subsampling)\n\n"
-                         "       Synthetic: %6%\n"
-                         "       Genome:    %7%\n\n"
+                         "       Genome:    %6%\n"
+                         "       Synthetic: %7%\n\n"
                          "-------Total alignments (after subsampling)\n\n"
                          "       Genome:    %8%\n"
                          "       Synthetic: %9%\n\n"
@@ -285,25 +344,25 @@ static void generateSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()    // 1
-                                            % gen         // 2
-                                            % seq         // 3
-                                            % stats.count // 4
-                                            % meth2Str()  // 5
-                                            % "????"      // 6
-                                            % "????"      // 7
-                                            % "????"      // 8
-                                            % "????"      // 9
-                                            % "????"      // 10
-                                            % "????"      // 11
-                                            % "????"      // 12
-                                            % "????"      // 13
-                                            % "????"      // 14
-                                            % "????"      // 15
-                                            % "????"      // 16
-                                            % "????"      // 17
-                                            % "????"      // 18
-                                            % "????"      // 19
+    o.writer->write((boost::format(summary) % BedRef()                  // 1
+                                            % gen                       // 2
+                                            % seq                       // 3
+                                            % stats.count               // 4
+                                            % meth2Str()                // 5
+                                            % stats.totBefore.countGen  // 6
+                                            % stats.totBefore.countSyn  // 7
+                                            % stats.totAfter.countGen   // 8
+                                            % stats.totAfter.countSyn   // 9
+                                            % stats.sampBefore.countGen // 10
+                                            % stats.sampBefore.countSyn // 11
+                                            % stats.sampAfter.countGen  // 12
+                                            % stats.sampAfter.countSyn  // 13
+                                            % stats.normAver            // 14
+                                            % stats.normSD              // 15
+                                            % stats.beforeGen           // 16
+                                            % stats.beforeSyn           // 17
+                                            % stats.afterGen            // 18
+                                            % stats.afterSyn            // 19
                      ).str());
     o.writer->close();
 }
