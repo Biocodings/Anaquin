@@ -83,15 +83,16 @@ namespace Anaquin
                                          const std::string &,
                                          bool showLOQ);
         
-        static Scripts createMultiScatter(const FileName  &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          const std::string &,
-                                          bool showLOQ,
-                                          bool shouldLog);
+        static Scripts createMultiLinear(const FileName  &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         bool showLOQ,
+                                         bool shouldLog,
+                                         const std::string &extra = "");
 
         static Scripts createFold(const FileName    &,
                                   const std::string &,
@@ -102,15 +103,15 @@ namespace Anaquin
                                   bool shouldLog,
                                   const std::string &extra = "");
         
-        static Scripts createScatter(const FileName  &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     bool showLOQ,
-                                     const std::string &extra = "");
+        static Scripts createLinear(const FileName  &,
+                                    const std::string &,
+                                    const std::string &,
+                                    const std::string &,
+                                    const std::string &,
+                                    const std::string &,
+                                    const std::string &,
+                                    bool showLOQ,
+                                    const std::string &extra = "");
 
         static Scripts createScript(const FileName &, const Scripts &);
         static Scripts createScript(const FileName &, const Scripts &, const std::string &);

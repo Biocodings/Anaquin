@@ -75,15 +75,16 @@ Scripts RWriter::createFold(const FileName    &file,
                                       % extra).str();
 }
 
-Scripts RWriter::createMultiScatter(const FileName    &file,
-                                    const std::string &title,
-                                    const std::string &xlab,
-                                    const std::string &ylab,
-                                    const std::string &expected,
-                                    const std::string &measured,
-                                    const std::string &xname,
-                                    bool showLOQ,
-                                    bool shouldLog)
+Scripts RWriter::createMultiLinear(const FileName    &file,
+                                   const std::string &title,
+                                   const std::string &xlab,
+                                   const std::string &ylab,
+                                   const std::string &expected,
+                                   const std::string &measured,
+                                   const std::string &xname,
+                                   bool showLOQ,
+                                   bool shouldLog,
+                                   const std::string &extra)
 {
     const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
     const auto obs = shouldLog ? ("log2(data[,3:ncol(data)])") : ("data[,3:ncol(data)]");
@@ -98,18 +99,19 @@ Scripts RWriter::createMultiScatter(const FileName    &file,
                                          % exp
                                          % obs
                                          % xname
-                                         % (showLOQ ? "TRUE" : "FALSE")).str();
+                                         % (showLOQ ? "TRUE" : "FALSE")
+                                         % extra).str();
 }
 
-Scripts RWriter::createScatter(const FileName    &file,
-                               const std::string &title,
-                               const std::string &xlab,
-                               const std::string &ylab,
-                               const std::string &expected,
-                               const std::string &measured,
-                               const std::string &xname,
-                               bool showLOQ,
-                               const std::string &extra)
+Scripts RWriter::createLinear(const FileName    &file,
+                              const std::string &title,
+                              const std::string &xlab,
+                              const std::string &ylab,
+                              const std::string &expected,
+                              const std::string &measured,
+                              const std::string &xname,
+                              bool showLOQ,
+                              const std::string &extra)
 {
     return (boost::format(PlotScatter()) % date()
                                          % __full_command__

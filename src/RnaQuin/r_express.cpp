@@ -512,25 +512,26 @@ static void generateR(const FileName &output,
 
     if (stats.size() == 1)
     {
-        o.writer->write(RWriter::createScatter(csv,
-                                               title,
-                                               "Input Concentration (log2)",
-                                                measured + " (log2)",
-                                               "InputConcent",
-                                               "Observed",
-                                               "input",
-                                                true));
+        o.writer->write(RWriter::createLinear(csv,
+                                              title,
+                                              "Input Concentration (log2)",
+                                              measured + " (log2)",
+                                              "InputConcent",
+                                              "Observed",
+                                              "input",
+                                              true));
     }
     else
     {
-        o.writer->write(RWriter::createMultiScatter(csv, title,
-                                                    "Input Concentration (log2)",
-                                                    measured + " (log2)",
-                                                    "InputConcent",
-                                                    "Observed",
-                                                    "input",
-                                                    true,
-                                                    true));
+        o.writer->write(RWriter::createMultiLinear(csv,
+                                                   title,
+                                                   "Input Concentration (log2)",
+                                                   measured + " (log2)",
+                                                   "InputConcent",
+                                                   "Observed",
+                                                   "input",
+                                                   true,
+                                                   true));
     }
     
     o.writer->close();
