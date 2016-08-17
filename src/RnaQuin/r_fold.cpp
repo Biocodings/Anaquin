@@ -355,7 +355,8 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_fold.R
      */
     
-    const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
+    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
+    const auto extra = o.format == Format::DESeq2 ? "" : "";
     
     o.generate("RnaFoldChange_fold.R");
     o.writer->open("RnaFoldChange_fold.R");
