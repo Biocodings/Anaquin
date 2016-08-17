@@ -17,7 +17,7 @@ static ReaderBam::Stats sample(const FileName &file,
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
     
     /*
-     * Initalize independnet random generators for each of the sampling region
+     * Initalize independnet random generators for every sampling region
      */
     
     Selection select;
@@ -66,7 +66,7 @@ static ReaderBam::Stats sample(const FileName &file,
         
         if (shouldSampled)
         {
-            //writer.write(x);
+            writer.write(x);
             return true;
         }
 
