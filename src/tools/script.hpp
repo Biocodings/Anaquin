@@ -71,24 +71,43 @@ namespace Anaquin
         {
             std::stringstream ss;
             
-            for (auto i = 0; i < str.size(); i++)
+            auto seenLastClose = false;
+            
+            for (auto iter = str.rbegin(); iter != str.rend(); iter++)
             {
-                auto curr = str.at(i);
-                auto next = i != str.size()-1 ? str.at(i+1) : 0;
-
-                if (curr == '$' && !isprint(next))
+                if (*iter == ')')
                 {
-                    continue;
+                    seenLastClose = true;
                 }
-                else if (curr == '\x02')
+                
+                if (!seenLastClose)
                 {
                     continue;
                 }
                 
-                ss << curr;
+                ss << *iter;
             }
-            
-            return ss.str();
+
+//            for (auto i = 0; i < str.size(); i++)
+//            {
+//                auto curr = str.at(i);
+//                auto next = i != str.size()-1 ? str.at(i+1) : 0;
+//
+//                if (curr == '$' && !isprint(next))
+//                {
+//                    continue;
+//                }
+//                else if (curr == '\x02')
+//                {
+//                    continue;
+//                }
+//                
+//                ss << curr;
+//            }
+        
+            auto tmp = ss.str();
+            std::reverse(tmp.begin(), tmp.end());
+            return tmp;
         }        
     };
 }

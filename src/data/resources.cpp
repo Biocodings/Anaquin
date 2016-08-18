@@ -23,8 +23,8 @@
 #include "resources/reports.py"
 
 #include "resources/plotFold.R"
-#include "resources/plotScatter.R"
-#include "resources/plotSensitivity.R"
+#include "resources/plotLinear.R"
+#include "resources/plotLogistic.R"
 
 /*
  * Transcriptome Resources
@@ -65,9 +65,9 @@ Scripts Manual()
     return ToString(data_manuals_anaquin_txt);
 }
 
-Scripts PlotScatter()
+Scripts PlotLinear()
 {
-    return ToString(src_r_plotScatter_R);
+    return ToString(src_r_plotLinear_R);
 }
 
 Scripts PlotFold()
@@ -75,9 +75,9 @@ Scripts PlotFold()
     return ToString(src_r_plotFold_R);
 }
 
-Scripts PlotSensitivity()
+Scripts PlotLogistic()
 {
-    return ToString(src_r_plotSensitivity_R);
+    return ToString(src_r_plotLogistic_R);
 }
 
 /*

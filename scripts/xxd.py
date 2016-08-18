@@ -27,8 +27,8 @@ data  = [ 'data/manuals/anaquin.txt',
           'scripts/reports.py',
 
           'src/r/plotFold.R',
-          'src/r/plotScatter.R',
-    	  'src/r/plotSensitivity.R',
+          'src/r/plotLinear.R',
+    	  'src/r/plotLogistic.R',
 
           # ---------- Transcriptome ----------
 

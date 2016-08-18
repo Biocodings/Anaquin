@@ -7,13 +7,13 @@ using namespace Anaquin;
 extern Path __output__;
 
 // Defined in resources.cpp
-extern Scripts PlotScatter();
+extern Scripts PlotLinear();
 
 // Defined in resources.cpp
 extern Scripts PlotFold();
 
 // Defined in resources.cpp
-extern Scripts PlotSensitivity();
+extern Scripts PlotLogistic();
 
 // Defined in main.cpp
 extern FileName mixture();
@@ -38,7 +38,7 @@ Scripts RWriter::createSensitivity(const FileName    &file,
                                    const std::string &measured,
                                    bool showLOQ)
 {
-    return (boost::format(PlotSensitivity()) % date()
+    return (boost::format(PlotLogistic()) % date()
                                              % __full_command__
                                              % __output__
                                              % file
@@ -89,7 +89,7 @@ Scripts RWriter::createMultiLinear(const FileName    &file,
     const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
     const auto obs = shouldLog ? ("log2(data[,3:ncol(data)])") : ("data[,3:ncol(data)]");
     
-    return (boost::format(PlotScatter()) % date()
+    return (boost::format(PlotLinear()) % date()
                                          % __full_command__
                                          % __output__
                                          % file
@@ -113,7 +113,7 @@ Scripts RWriter::createLinear(const FileName    &file,
                               bool showLOQ,
                               const std::string &extra)
 {
-    return (boost::format(PlotScatter()) % date()
+    return (boost::format(PlotLinear()) % date()
                                          % __full_command__
                                          % __output__
                                          % file
