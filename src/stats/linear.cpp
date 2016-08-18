@@ -42,7 +42,7 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
     // Segmented by minimum overall SSE
     const auto r1 = SS::segmentSSE(d.x, d.y);
 
-    // Segmentated by maximum LOQ correlation
+    // Segmentated by maximum correlation
     const auto r2 = SS::segmentPearson(d.x, d.y);
 
     // The final breakpoint
