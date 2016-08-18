@@ -1,5 +1,5 @@
 #include "tools/random.hpp"
-#include <ss/maths/maths.hpp>
+#include <ss/maths/stats.hpp>
 #include "VarQuin/v_sample2.hpp"
 #include "writers/writer_sam.hpp"
 #include "readers/reader_bam.hpp"

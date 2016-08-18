@@ -110,8 +110,8 @@ TEST_CASE("Interval_Test_1")
     REQUIRE(r2.nonZeros == 5);
     REQUIRE(r2.sums     == 15);
     REQUIRE(r2.p25      == 0);
-    REQUIRE(r2.p50      == 0);
-    REQUIRE(r2.p75      == 2);
+    REQUIRE(r2.p50      == 0.5);
+    REQUIRE(r2.p75      == 3.5);
 }
 
 TEST_CASE("Interval_Test_2")

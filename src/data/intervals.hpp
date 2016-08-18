@@ -6,6 +6,7 @@
 #include "data/data.hpp"
 #include "data/itree.hpp"
 #include "data/locus.hpp"
+#include <ss/maths/stats.hpp>
 
 namespace Anaquin
 {
@@ -90,6 +91,9 @@ namespace Anaquin
             template <typename F> Stats stats(F f) const
             {
                 Stats stats;
+                
+                // Required for estimating percentile
+                std::vector<double> x;
 
                 bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
                 {
@@ -109,32 +113,21 @@ namespace Anaquin
                     stats.length    += n;
                     stats.hist[cov] += n;
                     
+                    for (auto i = 0; i < n; i++)
+                    {
+                        x.push_back(cov);
+                    }
+                    
                     if (!cov) { stats.zeros    += n; }
                     else      { stats.nonZeros += n; }
                 });
             
-                auto percent = [&](Counts n)
-                {
-                    Counts i = 0;
+                std::sort(x.begin(), x.end());
                 
-                    for (const auto &p : stats.hist)
-                    {
-                        i += p.second;
-                    
-                        // Have we reached our percentile?
-                        if (i >= n)
-                        {
-                            return p.first;
-                        }
-                    }
-                
-                    return stats.max;
-                };
-            
                 stats.mean = stats.sums / stats.length;
-                stats.p25  = percent(0.25 * stats.sums);
-                stats.p50  = percent(0.50 * stats.sums);
-                stats.p75  = percent(0.75 * stats.sums);
+                stats.p25  = SS::quantile(x, 0.25);
+                stats.p50  = SS::quantile(x, 0.50);
+                stats.p75  = SS::quantile(x, 0.75);
             
                 return stats;
             }

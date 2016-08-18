@@ -1,12 +1,12 @@
 #ifndef STATS_HPP
 #define STATS_HPP
 
-#include <vector>
+//#include <vector>
 #include <iomanip>
 #include <sstream>
 #include "data/data.hpp"
 #include <boost/format.hpp>
-#include <ss/maths/maths.hpp>
+#include <ss/maths/stats.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
