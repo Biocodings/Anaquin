@@ -57,20 +57,25 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         fs.open(rev,  std::ios_base::app);
         fg.open(forw, std::ios_base::app);
 
-        std::string name;
+        std::string n1, n2;
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
-            name = x.name;
+            n1 = x.name;
             
-            if (name.length() >= 2 &&
-                ((name[name.length()-1] == '1' && name[name.length()-2] == '/') ||
-                 (name[name.length()-1] == '2' && name[name.length()-2] == '/')))
+            if (n1.length() >= 2 &&
+                ((n1[n1.length()-1] == '1' && n1[n1.length()-2] == '/') ||
+                 (n1[n1.length()-1] == '2' && n1[n1.length()-2] == '/')))
             {
-                name = name.substr(0, name.size()-2);
+                n1 = n1.substr(0, n1.size()-2);
+            }
+            
+            if (n1[0] == '@')
+            {
+                n2 = n1.substr(1, n1.size()-1);
             }
 
-            if (names.count(name))
+            if (names.count(n1) || names.count(n2))
             {
                 // DNA complement of the sequence
                 complement(x.seq);
