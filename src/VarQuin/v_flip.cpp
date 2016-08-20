@@ -42,14 +42,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         else if (Standard::isSynthetic(x.cID))
         {
             stats.countSyn++;
-            
-            /*
-             * Eg: @GV_IDEL_011863_R-1400/1
-             * Eg: @GV_IDEL_011863_R-1400/2
-             */
-            
-            names.insert("@" + x.name + "/1");
-            names.insert("@" + x.name + "/2");
+            names.insert(x.name);
         }
         else
         {
