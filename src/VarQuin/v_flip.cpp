@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
+#include <thread>
 #include <fstream>
 #include <algorithm>
 #include "data/biology.hpp"
@@ -62,10 +63,21 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
  
         fs.open(rev,  std::ios_base::app);
         fg.open(forw, std::ios_base::app);
+
+        std::string name;
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
-            if (names.count(x.name))
+            name = x.name;
+            
+            if (name.length() >= 2 &&
+                ((name[name.length()-1] == '1' && name[name.length()-2] == '/') ||
+                 (name[name.length()-1] == '2' && name[name.length()-2] == '/')))
+            {
+                name = name.substr(0, name.size()-2);
+            }
+
+            if (names.count(name))
             {
                 // DNA complement of the sequence
                 complement(x.seq);
@@ -89,10 +101,13 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
     };
 
     o.info("Generating " + forwGenome_1 + " & " + revGenome_1);
-    f(seq1, o.work + "/" + forwGenome_1, o.work + "/" + revGenome_1);
-
     o.info("Generating " + forwGenome_2 + " & " + revGenome_2);
-    f(seq2, o.work + "/" + forwGenome_2, o.work + "/" + revGenome_2);
+
+    std::thread t1(f, seq1, o.work + "/" + forwGenome_1, o.work + "/" + revGenome_1);
+    std::thread t2(f, seq2, o.work + "/" + forwGenome_2, o.work + "/" + revGenome_2);
+    
+    t1.join();
+    t2.join();
 
     return stats;
 }
