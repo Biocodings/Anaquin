@@ -638,11 +638,11 @@ void RAlign::report(const FileName &file, const Options &o)
     generateSummary("RnaAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_sequins.stats
+     * Generating RnaAlign_sequins.csv
      */
     
-    o.generate("RnaAlign_sequins.stats");
-    writeQuins("RnaAlign_sequins.stats", file, stats, o);
+    o.generate("RnaAlign_sequins.csv");
+    writeQuins("RnaAlign_sequins.csv", file, stats, o);
 
     /*
      * Generating RnaAlign_rintrs.txt
