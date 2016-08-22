@@ -34,7 +34,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         {
             o.wait(std::to_string(info.p.i));
         }
-
+        
         if (!x.mapped)
         {
             stats.countNA++;
@@ -54,15 +54,15 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
     {
         std::ofstream fs, fg;
  
-        fs.open(rev,  std::ios_base::app);
-        fg.open(forw, std::ios_base::app);
+        fs.open(rev,  std::ios_base::trunc);
+        fg.open(forw, std::ios_base::trunc);
 
         std::string n1, n2;
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
             n1 = x.name;
-            
+
             if (n1.length() >= 2 &&
                 ((n1[n1.length()-1] == '1' && n1[n1.length()-2] == '/') ||
                  (n1[n1.length()-1] == '2' && n1[n1.length()-2] == '/')))
