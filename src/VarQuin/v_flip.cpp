@@ -30,8 +30,8 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
                             const Options  &o)
 {
     Stats stats;
-    
-    std::set<ReadName> names;
+
+    std::set<ReadName> lowCon, highCon;
 
     ParserSAM::parse(align, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
@@ -49,6 +49,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             if (x.mapq <= 10)
             {
                 stats.countLow++;
+                lowCon.insert(x.name);
 
 #ifdef ANAQUIN_DEBUG
                 o.logInfo("Mapping: " + x.name + "\t" + x.cID);
@@ -57,7 +58,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             else
             {
                 stats.countSyn++;
-                names.insert(x.name);
+                highCon.insert(x.name);
 
 #ifdef ANAQUIN_DEBUG
                 o.logInfo("Added: " + x.name + "\t" + x.cID);
@@ -100,11 +101,20 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
                 n2 = n1.substr(1, n1.size()-1);
             }
 
-            if (names.count(n1) || names.count(n2))
+            if (lowCon.count(n1) || lowCon.count(n2))
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
-                o.logInfo("Found: " + x.name + "\t" + std::to_string(names.count(n1)) + "\t" + std::to_string(names.count(n2)) + "\t" + n1 + "\t" + n2);
+                o.logInfo("LowCon: " + x.name + "\t" + std::to_string(lowCon.count(n1)) + "\t" + std::to_string(lowCon.count(n2)) + "\t" + n1 + "\t" + n2);
+                m.unlock();
+#endif
+                
+            }
+            else if (highCon.count(n1) || highCon.count(n2))
+            {
+#ifdef ANAQUIN_DEBUG
+                m.lock();
+                o.logInfo("HighCon: " + x.name + "\t" + std::to_string(highCon.count(n1)) + "\t" + std::to_string(highCon.count(n2)) + "\t" + n1 + "\t" + n2);
                 m.unlock();
 #endif
 
