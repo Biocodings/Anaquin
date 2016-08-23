@@ -6,13 +6,18 @@
 #include <sys/stat.h>
 #include "tools/script.hpp"
 #include "writers/writer.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace Anaquin
 {
     class FileWriter : public Writer
     {
         public:
-            FileWriter(const std::string &path) : path(path) {}
+
+            FileWriter(const std::string &path) : path(path)
+            {
+                isRScript = boost::algorithm::ends_with(path, ".R");
+            }
 
             inline void close() override
             {
@@ -36,9 +41,16 @@ namespace Anaquin
                 }
             }
 
-            inline void write(const std::string &l, bool newLine = true) override
+            inline void write(const std::string &x, bool newLine = true) override
             {
-                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << Script::trim(l);
+                if (isRScript)
+                {
+                    *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << Script::trim(x);
+                }
+                else
+                {
+                    *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << x;
+                }
 
                 if (newLine)
                 {
@@ -57,6 +69,10 @@ namespace Anaquin
             }
                 
         private:
+        
+            // Trim R-script?
+            bool isRScript;
+        
             std::string path;
             std::shared_ptr<std::ofstream> _o;
     };

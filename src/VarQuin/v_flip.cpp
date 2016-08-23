@@ -11,13 +11,18 @@
 #include "VarQuin/v_flip.hpp"
 #include "parsers/parser_fq.hpp"
 #include "parsers/parser_sam.hpp"
+#include "writers/file_writer.hpp"
+
+#ifdef ANAQUIN_DEBUG
+#include <mutex>
+#endif
 
 using namespace Anaquin;
 
-static const FileName revGenome_1  = "VarFlip_sequins_1.fq";
-static const FileName revGenome_2  = "VarFlip_sequins_2.fq";
-static const FileName forwGenome_1 = "VarFlip_genome_1.fq";
-static const FileName forwGenome_2 = "VarFlip_genome_2.fq";
+static const FileName revGenome_1 = "VarFlip_sequins_1.fq";
+static const FileName revGenome_2 = "VarFlip_sequins_2.fq";
+static const FileName forGenome_1 = "VarFlip_genome_1.fq";
+static const FileName forGenome_2 = "VarFlip_genome_2.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &seq1,
                             const FileName &seq2,
@@ -43,6 +48,10 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         {
             stats.countSyn++;
             names.insert(x.name);
+
+#ifdef ANAQUIN_DEBUG
+           o.logInfo("Added: " + x.name + "\t" + x.cID);
+#endif
         }
         else
         {
@@ -50,13 +59,18 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         }
     });
 
-    auto f = [&](const FileName &f, const FileName &forw, const FileName &rev)
+#ifdef ANAQUIN_DEBUG
+    std::mutex m;
+#endif
+    
+    auto flip = [&](const FileName &f, const FileName &forw, const FileName &rev)
     {
-        std::ofstream fs, fg;
+        FileWriter ff(o.work);
+        FileWriter rf(o.work);
  
-        fs.open(rev,  std::ios_base::trunc);
-        fg.open(forw, std::ios_base::trunc);
-
+        ff.open(forw);
+        rf.open(rev);
+        
         std::string n1, n2;
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
@@ -77,32 +91,38 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
 
             if (names.count(n1) || names.count(n2))
             {
+#ifdef ANAQUIN_DEBUG
+                m.lock();
+                o.logInfo("Found: " + x.name + "\t" + std::to_string(names.count(n1)) + "\t" + std::to_string(names.count(n2)) + "\t" + n1 + "\t" + n2);
+                m.unlock();
+#endif
+
                 // DNA complement of the sequence
                 complement(x.seq);
                 
-                fs << x.name << " " << x.info << std::endl;
-                fs << x.seq  << std::endl;
-                fs << x.opt  << std::endl;
-                fs << x.qual << std::endl;
+                rf.write(x.name + " " + x.info);
+                rf.write(x.seq);
+                rf.write(x.opt);
+                rf.write(x.qual);
             }
             else
             {
-                fg << x.name << " " << x.info << std::endl;
-                fg << x.seq  << std::endl;
-                fg << x.opt  << std::endl;
-                fg << x.qual << std::endl;
+                ff.write(x.name + " " + x.info);
+                ff.write(x.seq);
+                ff.write(x.opt);
+                ff.write(x.qual);
             }
         });
         
-        fs.close();
-        fg.close();
+        ff.close();
+        rf.close();
     };
 
-    o.info("Generating " + forwGenome_1 + " & " + revGenome_1);
-    o.info("Generating " + forwGenome_2 + " & " + revGenome_2);
+    o.info("Generating " + forGenome_1 + " & " + revGenome_1);
+    o.info("Generating " + forGenome_2 + " & " + revGenome_2);
 
-    std::thread t1(f, seq1, o.work + "/" + forwGenome_1, o.work + "/" + revGenome_1);
-    std::thread t2(f, seq2, o.work + "/" + forwGenome_2, o.work + "/" + revGenome_2);
+    std::thread t1(flip, seq1, forGenome_1, revGenome_1);
+    std::thread t2(flip, seq2, forGenome_2, revGenome_2);
     
     t1.join();
     t2.join();
@@ -172,8 +192,8 @@ void VFlip::report(const std::vector<FileName> &files, const Options &o)
                  seq1,
                  seq2,
                  align,
-                 forwGenome_1,
-                 forwGenome_2,
+                 forGenome_1,
+                 forGenome_2,
                  revGenome_1,
                  revGenome_2,
                  stats,
