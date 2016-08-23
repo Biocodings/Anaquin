@@ -20,6 +20,9 @@ namespace Anaquin
         // Only valid if the alignment is spliced
         Base skipped;
 
+        // Mapping quality
+        int mapq;
+
         /*
          * Optional fields
          */
@@ -47,9 +50,6 @@ namespace Anaquin
         // Position of the primary alignment of the NEXT read in the template
         std::string pnext;
 
-        // Mapping quality
-        int mapq;
-        
         // Segment sequence
         std::string seq;
         

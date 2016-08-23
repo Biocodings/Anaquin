@@ -125,8 +125,6 @@ namespace Anaquin
                 return !Standard::isSynthetic(t.cID);
             });
         }
-        
-        Counts countNA = 0;
     };
 
     struct WriterOptions

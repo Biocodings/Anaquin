@@ -130,13 +130,15 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
 
         align._b  = t;
         align._h  = h;
+
+        // Mapping quality
+        align.mapq = t->core.qual;
         
         const auto hasCID = t->core.tid >= 0;
         
         if (details)
         {
             align.flag   = t->core.flag;
-            align.mapq   = t->core.qual;
             align.seq    = bam2seq(t);
             align.qual   = bam2qual(t);
             align.isForw = !bam_is_rev(t);

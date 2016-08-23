@@ -14,8 +14,13 @@ namespace Anaquin
     struct VFlip
     {
         typedef AnalyzerOptions Options;
-        typedef MappingStats    Stats;
         
+        struct Stats : public MappingStats
+        {
+            // Low mapping quality
+            Counts countLow = 0;
+        };
+
         static Stats analyze(const FileName &,
                              const FileName &,
                              const FileName &,
