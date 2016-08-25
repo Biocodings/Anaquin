@@ -4,6 +4,20 @@
 #    Author: Ted Wong <t.wong@garvan.org.au>
 #
 
+#
+# To compile the source code, you'll need to have the following:
+#
+#   1. Boost:  http://www.boost.org/
+#   2. Catch:  https://github.com/philsquared/Catch
+#   3. Eigen:  https://eigen.tuxfamily.org
+#   4. Klib:   https://github.com/attractivechaos/klib
+#
+# (1) to (4) should be straighforward. They are header-only library, so you'll just need to
+# save them somewhere and update the include paths below.
+# 
+# Please email t.wong@garvan.org.au if you have any problems.
+#
+
 BOOST = /usr/include/boost
 
 # Required for unit-testing
@@ -30,7 +44,7 @@ SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L lib/macOSX -lnmaths -lz -ldl -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lz -ldl -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
