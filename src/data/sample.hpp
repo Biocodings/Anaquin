@@ -1,7 +1,6 @@
 #ifndef STATS_HPP
 #define STATS_HPP
 
-//#include <vector>
 #include <iomanip>
 #include <sstream>
 #include "data/data.hpp"

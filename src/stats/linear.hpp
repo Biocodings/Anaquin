@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-#include "stats/stats.hpp"
+#include "data/sample.hpp"
 
 namespace Anaquin
 {
