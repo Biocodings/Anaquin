@@ -3,10 +3,10 @@
 
 #include <map>
 #include <numeric>
+#include <ss/stats.hpp>
 #include "data/data.hpp"
 #include "data/itree.hpp"
 #include "data/locus.hpp"
-#include <ss/maths/stats.hpp>
 
 namespace Anaquin
 {
