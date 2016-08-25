@@ -6,39 +6,55 @@
 #include <ss/data/errors.hpp>
 #include <ss/internal/rmath.hpp>
 
+#ifndef HAVE_RMATH
+#include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/fisher_f.hpp>
+#include <boost/math/distributions/students_t.hpp>
+#endif
+
 namespace SS
 {
     namespace Internal
     {
-        inline double pt(double x, double n)
+        inline double pf(double q, double df1, double df2)
         {
+#ifdef HAVE_RMATH
             return RMath::pt(x, n);
+#else
+            auto f = boost::math::fisher_f(df1, df2);
+            return boost::math::cdf(f, q);
+#endif
         }
         
-        inline double qt(double p, double ndf)
+        inline double pt(double x, double df)
         {
-            return RMath::qt(p, ndf, 1, 0);
+#ifdef HAVE_RMATH
+            return RMath::pt(x, n);
+#else
+            auto d = boost::math::students_t(df);
+            return boost::math::cdf(d, x);
+#endif
         }
         
-        inline double rnorm(double mu, double sigma)
+        inline double qt(double p, double df)
         {
-            return RMath::rnorm(mu, sigma);
-        }
-        
-        inline double qnorm(double p, double mu, double sigma)
-        {
-            return RMath::qnorm(p, mu, sigma);
-        }
-        
-        inline double dnorm(double x, double mu, double sigma)
-        {
-            return RMath::dnorm(x, mu, sigma);
+#ifdef HAVE_RMATH
+            return RMath::qt(x, n);
+#else
+            auto d = boost::math::students_t(df);
+            return boost::math::quantile(d, p);
+#endif
         }
         
         inline double pnorm(double x, double mu, double sigma)
         {
+#ifdef HAVE_RMATH
             return RMath::pnorm(x, mu, sigma);
-        }        
+#else
+            auto d = boost::math::normal(mu, sigma);
+            return boost::math::cdf(d, x);
+#endif
+        }
     }
 }
 

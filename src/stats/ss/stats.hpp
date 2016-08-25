@@ -83,24 +83,6 @@ namespace SS
             }
         }
         
-        template <class Dist> Real crit(Dist dist, P conf, TestType type)
-        {
-            const auto alpha = 1.0 - conf;
-            
-            if (type == TwoSided)
-            {
-                return dist.quantile(1.0 - (0.5 * alpha));
-            }
-            else if (type == Greater)
-            {
-                return dist.quantile(1.0 - alpha);
-            }
-            else
-            {
-                return -dist.quantile(1.0 - alpha);
-            }
-        }
-
         inline P pval(Real x, P cdf, TestType type)
         {
             if (type == TwoSided)

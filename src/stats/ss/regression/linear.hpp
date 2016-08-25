@@ -2,7 +2,7 @@
 #define SS_LINEAR_HPP
 
 #include <ss/dist.hpp>
-#include <ss/test.hpp>
+#include <ss/stest.hpp>
 #include <ss/matrix.hpp>
 #include <ss/data/errors.hpp>
 #include <ss/internal/vargs.hpp>
@@ -145,7 +145,7 @@ namespace SS
             r.total.ms = r.total.ss / r.total.df;
 
             r.f = r.error.ms ? r.model.ms / r.error.ms : NAN;
-            r.p = (!isinf(r.f) && !isnan(r.f) && r.error.df) ? P(1.0 - RMath::pf(r.f, r.model.df, r.error.df, 1, 0)) : P(NAN);
+            r.p = (!isinf(r.f) && !isnan(r.f) && r.error.df) ? P(1.0 - Internal::pf(r.f, r.model.df, r.error.df)) : P(NAN);
 
             r.r2  = r.model.ss / r.total.ss;
             r.ar2 = errorDF ? (1 - (r.error.ss / errorDF) / (r.total.ss / (n - 1))) : NAN;
