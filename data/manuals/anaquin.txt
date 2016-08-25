@@ -1,3 +1,4 @@
+
 <b>Anaquin</b> - toolkit for sequin data analysis
 Developed at the Garvan Institute of Medical Research.
 
@@ -25,7 +26,3 @@ Version: 0.80
             RnaExpression - Quantitative analysis of sequin expression
             RnaFoldChange - Assess fold-changes in gene expression between multiple samples
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
-            
-            VarAlign      - Measure the read alignment from sequins to the in silico chromosome
-            VarSubsample  - Calibrate the sequence coverage of sequins to accompanying human genome
-            VarDiscover   - Assesses the identification of variants from alignments to the in silico chromosome
