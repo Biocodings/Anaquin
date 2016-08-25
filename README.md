@@ -50,12 +50,3 @@ Finally, to aid in the analysis of sequins, we have also developed a software to
 </ul>
 
 The source code requires a C++11 compiler to build.
-
-## Summary
-
-<ul>
-<li> Statistical analysis</li>
-<li> Genome comparison</li>
-<li> Data visualization</li>
-<li> Bioconductor</li>
-</ul>
