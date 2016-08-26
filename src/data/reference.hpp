@@ -66,8 +66,12 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
+            // Return number of mixtures
+            inline Counts countMix() const { return _mixes.size(); }
+
+            // Return number of sequins
             inline Counts countSeqs() const { return _data.size(); }
-        
+
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -420,7 +424,7 @@ namespace Anaquin
 
             std::set<GeneID>  getGenes(const ChrID &) const;
             std::set<TransID> getTrans(const ChrID &) const;
-        
+
             const GeneData  *findGene (const ChrID &, const GeneID &) const;
             const TransData *findTrans(const ChrID &, const GeneID &) const;
 

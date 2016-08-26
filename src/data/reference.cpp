@@ -222,7 +222,7 @@ const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }
 
-std::set<GeneID>  TransRef::getGenes(const ChrID &cID) const
+std::set<GeneID> TransRef::getGenes(const ChrID &cID) const
 {
     std::set<GeneID> ids;
     

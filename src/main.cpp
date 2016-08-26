@@ -1,4 +1,3 @@
-#include <map>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -8,13 +7,13 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
+#include "RnaQuin/r_gene.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
-#include "RnaQuin/r_cufflink.hpp"
 
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_vscan.hpp"
@@ -55,6 +54,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_EXPRESS   268
 #define TOOL_R_CUFFLINK  269
 #define TOOL_R_FOLD      270
+#define TOOL_R_GENE      271
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_SUBSAMPLE 280
@@ -70,8 +70,6 @@ typedef std::set<Value> Range;
 #define OPT_TOOL     321
 #define OPT_PATH     325
 #define OPT_VERSION  338
-#define OPT_SOFT     339
-#define OPT_C_SOFT   340
 
 /*
  * References - OPT_R_BASE to OPT_U_BASE
@@ -81,7 +79,6 @@ typedef std::set<Value> Range;
 #define OPT_R_BED   801
 #define OPT_METHOD  802
 #define OPT_R_GTF   803
-#define OPT_R_FUS   804
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
@@ -89,7 +86,6 @@ typedef std::set<Value> Range;
 #define OPT_U_BASE  900
 
 #define OPT_U_FILES 909
-#define OPT_C_FILES 910
 #define OPT_REPORT  911
 
 using namespace Anaquin;
@@ -128,10 +124,6 @@ std::string date()
     return str;
 }
 
-/*
- * Defines the possible tools and representations
- */
-
 static std::map<Value, Tool> _tools =
 {
     { "Test",           TOOL_TEST        },
@@ -143,6 +135,7 @@ static std::map<Value, Tool> _tools =
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
+    { "RnaGene",        TOOL_R_GENE      },
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
@@ -306,11 +299,7 @@ static const struct option long_options[] =
 {
     { "v", no_argument, 0, OPT_VERSION },
 
-    { "t",       required_argument, 0, OPT_TOOL },
-    { "tool",    required_argument, 0, OPT_TOOL },
-
     { "ufiles",  required_argument, 0, OPT_U_FILES },
-    { "cfiles",  required_argument, 0, OPT_C_FILES },
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -319,16 +308,12 @@ static const struct option long_options[] =
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
-    { "rfus",    required_argument, 0, OPT_R_FUS  },
     { "rind",    required_argument, 0, OPT_R_IND  },
 
     { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
-
-    { "soft",    required_argument, 0, OPT_SOFT   },
-    { "csoft",   required_argument, 0, OPT_C_SOFT },
 
     { "report",  required_argument, 0, OPT_REPORT },
     
@@ -680,6 +665,14 @@ template <typename Analyzer, typename Files> void analyze(const Files &files, ty
     }, o);
 }
 
+template <typename Analyzer> void analyze_0(typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::report(o);
+    }, o);
+}
+
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
@@ -922,13 +915,6 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            /*
-             * The following options can only be validated by the tool
-             */
-
-            case OPT_SOFT:
-            case OPT_C_SOFT: { _p.opts[opt] = val; break; }
-
             case OPT_U_FILES:
             {
                 std::vector<FileName> temp;
@@ -943,22 +929,6 @@ void parse(int argc, char ** argv)
                 break;
             }
              
-            /*
-             * Parse for the optional input files
-             */
-                
-            case OPT_C_FILES:
-            {
-                Tokens::split(val, ",", _p.oInputs);
-                
-                for (auto i = _p.oInputs.size(); i-- > 0;)
-                {
-                    checkFile(_p.opts[opt] = _p.oInputs[i]);
-                }
-
-                break;
-            }
-
             case OPT_MIXTURE:
             {
                 checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
@@ -966,7 +936,6 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_R_IND:
-            case OPT_R_FUS:
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
@@ -1024,6 +993,7 @@ void parse(int argc, char ** argv)
         case TOOL_TEST:    { Catch::Session().run(1, argv); break; }
 
         case TOOL_R_FOLD:
+        case TOOL_R_GENE:
         case TOOL_R_ALIGN:
         case TOOL_R_EXPRESS:
         case TOOL_R_ASSEMBLY:
@@ -1039,6 +1009,20 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_R_GENE:
+                    {
+                        try
+                        {
+                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        }
+                        catch (...)
+                        {
+                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                        }
+
+                        break;
+                    }
+
                     case TOOL_R_ALIGN:
                     {
                         addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1052,11 +1036,6 @@ void parse(int argc, char ** argv)
                     }
                         
                     case TOOL_R_EXPRESS:
-                    {
-                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        break;
-                    }
-
                     case TOOL_R_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
@@ -1076,9 +1055,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_R_GENE:     { analyze_0<RGene>();                break; }
                 case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);    break; }
                 case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES); break; }
-                case TOOL_R_CUFFLINK: { analyze_1<RCufflink>(OPT_U_FILES); break; }
 
                 case TOOL_R_SUBSAMPLE:
                 {
