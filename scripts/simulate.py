@@ -62,7 +62,7 @@ def readMixture(file):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=0, s=100, isTooLowError=False):
+def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=0, s=1000, isTooLowError=True):
     mixFile = readMixture(file)
     covs = []
 
