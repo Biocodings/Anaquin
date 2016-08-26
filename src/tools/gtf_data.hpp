@@ -5,11 +5,6 @@
 #include "data/intervals.hpp"
 #include "parsers/parser_gtf.hpp"
 
-#ifdef ANAQUIN_DEBUG
-#include <iostream>
-static std::ofstream debug;
-#endif
-
 // Defined in main.cpp
 extern void printWarning(const std::string &);
 
@@ -476,16 +471,12 @@ namespace Anaquin
         
         // Used for unique introns
         std::map<std::string, Locus> m_intrs;
-        
+
         ExonData ed;
         GeneData gd;
         TransData td;
         IntronData id;
         
-#ifdef ANAQUIN_DEBUG
-        debug.open("/Users/tedwong/Sources/QA/uniques.txt");
-#endif
-
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -523,24 +514,14 @@ namespace Anaquin
 
                     c2d[x.cID].t2e[ed.tID].insert(ed);
 
-                    const auto str = x.str == Strand::Forward ? "F" : "B";
-
                     // The key represents a unique exon
-                    const auto key = (boost::format("%1%_%2%_%3%_%4%-%5%") % x.cID
-                                                                           % x.str
-                                                                           % str
-                                                                           % x.l.start
-                                                                           % x.l.end).str();
+                    const auto key = (boost::format("%1%_%2%_%3%-%4%") % x.cID
+                                                                       % x.str
+                                                                       % x.l.start
+                                                                       % x.l.end).str();
                     
                     if (!m_exons.count(key))
                     {
-#ifdef ANAQUIN_DEBUG
-                        if (!Standard::isSynthetic(x.cID))
-                        {
-                            //debug << x.cID << "\t" << x.l.start-1 << "\t" << x.l.end << x.gID << x.tID << std::endl;
-                        }
-#endif
-                        
                         m_exons[key] = x.l;
                         c2d[x.cID].uexons++;
                         c2d[x.cID].t2ue[ed.tID].insert(ed);
@@ -574,8 +555,8 @@ namespace Anaquin
                 /*
                  * -------------------------------------- Cufflinks Bug --------------------------------------
                  *
-                 * It's possible for Cufflink guided assembly to give a transcript for both forward and backward
-                 * strand. An example is in "cufflink_bug.png" in the source distribution. This is clearly invalid,
+                 * It's possible for Cufflink guided assembly to give a transcript in both forward and backward
+                 * strand. An example is in "cufflink_bug.png" in the source distribution. Clearly invalid,
                  * and thus we'll ignore the transcript.
                  */
                 
@@ -628,10 +609,6 @@ namespace Anaquin
                 }
             }
         }
-
-#ifdef ANAQUIN_DEBUG
-        debug.close();
-#endif
 
         return c2d;
     }
