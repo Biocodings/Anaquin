@@ -21,6 +21,8 @@ namespace Anaquin
             Counts countLow = 0;
         };
 
+        static bool isReverse(const std::set<ReadName> &, const ReadName &);
+
         static Stats analyze(const FileName &,
                              const FileName &,
                              const FileName &,

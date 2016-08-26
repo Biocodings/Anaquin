@@ -11,6 +11,7 @@
 		EF0C67931C5F25070033168D /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67871C5F25070033168D /* v_align.cpp */; };
 		EF0C67961C5F25070033168D /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678D1C5F25070033168D /* v_discover.cpp */; };
 		EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF17D29C1BCF246700F503F7 /* t_intervals.cpp */; };
+		EF1B9A901D7078FA000E0D6A /* v_flip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */; };
 		EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */; };
 		EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */; };
 		EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0B01B21EC6D00DEC381 /* standard.cpp */; };
@@ -132,6 +133,7 @@
 		EF17D29C1BCF246700F503F7 /* t_intervals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_intervals.cpp; path = ../tests/data/t_intervals.cpp; sourceTree = "<group>"; };
 		EF184E651D2567CE0086AD1D /* sam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sam.h; path = ../src/htslib/htslib/sam.h; sourceTree = "<group>"; };
 		EF184E661D25697B0086AD1D /* vcf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vcf.h; path = ../src/htslib/htslib/vcf.h; sourceTree = "<group>"; };
+		EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_flip.cpp; path = ../tests/VarQuin/v_flip.cpp; sourceTree = "<group>"; };
 		EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/data/alignment.hpp; sourceTree = "<group>"; };
 		EF1DE0A81B21EC6D00DEC381 /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
 		EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/data/locus.hpp; sourceTree = "<group>"; };
@@ -550,6 +552,7 @@
 			isa = PBXGroup;
 			children = (
 				EFA672F61D0691D2005C3DA6 /* v_align.cpp */,
+				EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */,
 				EF4085AC1D268B600077CAAF /* v_sample.cpp */,
 			);
 			name = VarQuin;
@@ -854,6 +857,7 @@
 				EF26157B1B5FF9DC00BE8037 /* gff_utils.cpp in Sources */,
 				EFB2532C1D6EAFE1002F057E /* sample.cpp in Sources */,
 				EF745EEB1C1E8B1B0072CEBB /* t_parser_gtf.cpp in Sources */,
+				EF1B9A901D7078FA000E0D6A /* v_flip.cpp in Sources */,
 				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
 				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,

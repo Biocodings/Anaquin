@@ -24,6 +24,26 @@ static const FileName revGenome_2 = "VarFlip_sequins_2.fq";
 static const FileName forGenome_1 = "VarFlip_genome_1.fq";
 static const FileName forGenome_2 = "VarFlip_genome_2.fq";
 
+bool VFlip::isReverse(const std::set<ReadName> &refs, const ReadName &x)
+{
+    auto n1 = x;
+    auto n2 = n1;
+    
+    if (n1.length() >= 2 &&
+        ((n1[n1.length()-1] == '1' && n1[n1.length()-2] == '/') ||
+         (n1[n1.length()-1] == '2' && n1[n1.length()-2] == '/')))
+    {
+        n1 = n1.substr(0, n1.size()-2);
+    }
+    
+    if (n1[0] == '@')
+    {
+        n2 = n1.substr(1, n1.size()-1);
+    }
+    
+    return (refs.count(n1) || refs.count(n2));
+}
+
 VFlip::Stats VFlip::analyze(const FileName &seq1,
                             const FileName &seq2,
                             const FileName &align,
@@ -83,25 +103,9 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         ff.open(forw);
         rf.open(rev);
         
-        std::string n1, n2;
-        
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
-            n1 = x.name;
-
-            if (n1.length() >= 2 &&
-                ((n1[n1.length()-1] == '1' && n1[n1.length()-2] == '/') ||
-                 (n1[n1.length()-1] == '2' && n1[n1.length()-2] == '/')))
-            {
-                n1 = n1.substr(0, n1.size()-2);
-            }
-            
-            if (n1[0] == '@')
-            {
-                n2 = n1.substr(1, n1.size()-1);
-            }
-
-            if (lowCon.count(n1) || lowCon.count(n2))
+            if (VFlip::isReverse(lowCon, x.name))
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
@@ -110,7 +114,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
 #endif
                 
             }
-            else if (highCon.count(n1) || highCon.count(n2))
+            else if (VFlip::isReverse(highCon, x.name))
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
