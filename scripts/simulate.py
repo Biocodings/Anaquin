@@ -17,9 +17,9 @@ def split(file, seq_path):
             if (not l2):
                 break
 
-            file = l1.replace(">","")
-            file = file.replace("?","")
-            file = file.replace("\n","")
+            file = l1.replace(">", "")
+            file = file.replace("?", "")
+            file = file.replace("\n", "")
     
             # Create a directory for each sequin
             os.system('mkdir -p ' + (seq_path + file))
@@ -28,7 +28,7 @@ def split(file, seq_path):
             w.write(l1)
             w.write(l2)
 
-def readMixture(file, mix):
+def readMixture(file):
     r = {}
 
     with open(file) as f:
@@ -44,44 +44,43 @@ def readMixture(file, mix):
             if (not l):
                 break
 
-            tokens = l.strip().split(split)
+            toks = l.strip().split(split)
 
             #
             # ID  Length MixA  MixB
             #
-            
-            if (tokens[0] == 'id'):
+
+            if (toks[0] == 'id'):
                 continue
 
             # Create data-structure for the sequin            
-            r[tokens[0]] = { 'id':  tokens[0],
-                             'len': float(tokens[1]),
-                             'A':   float(tokens[2]),
-                             'B':   float(tokens[3]),
-                           }
+            r[toks[0]] = { 'id':  toks[0],
+                           'len': float(toks[1]),
+                           'A':   float(toks[2]),
+                           'B':   float(toks[3]),
+                         }
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-#def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=60000): # For length normalized 
-def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=1, s=50):
-    mixFile = readMixture(file, mix)
+def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=0, s=100, isTooLowError=False):
+    mixFile = readMixture(file)
+    covs = []
 
     for f in os.listdir(basePath):
         key = f.split('.')[0]
 
         if key in mixFile:
+            # Length of the sequin
+            length = mixFile[key]['len']
 
             # The reads depend on the concentration level and sequin length
             #reads = mixFile[key][mix] / mixFile[key]['len'] # Length normalization
             reads = mixFile[key][mix]
-            
+
             # The concentration needed to be added for the simulation. The number of reads is proportional to the expected concentration.
             reads = c + (s * reads)
 
-            # Length of the sequin
-            length = mixFile[key]['len']
-
-            print '\n------------------ ' + key + ' ------------------'
+            #print '\n------------------ ' + key + ' ------------------'
             
             # Path for the sequin
             path  = basePath  + key
@@ -105,51 +104,75 @@ def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=1, s=50):
 
             # Don't bother if the abundance is too low or too high
             if (reads > 1):
-                print 'Generating: ' + str(reads)
+                #print 'Generating: ' + str(reads)
 
                 # Simulate reads from a given sequin
                 i  = path + '/' + key + '.fa'
                 o1 = path + '/' + key + '.R1.fq'
                 o2 = path + '/' + key + '.R2.fq'
 
-                cmd = 'wgsim -s 0 -d 0 -1 100 -2 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2
-                #cmd = 'wgsim -e 0 -r 0 -s 0 -d 0 -1 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' /dev/null'
+                cmd = 'wgsim -1150 -2150 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2 + ' > /dev/null'
 
-                print cmd
+                # What's the estimated coverage?
+                cov = (150 * 2 * reads) / length
+                
+                covs.append(cov)
+                
+                #print cmd
                 os.system(cmd)
                     
                 # We'll need this command to merge the simulations...
                 cmd = 'cp ' + path + '/*.fq ' + basePath
                 os.system(cmd)                    
             else:
-                print 'Warning: ' + key + ' not generated!'                
+                if isTooLowError:
+                    raise Exception('Error: ' + key + ' not generated! Reads: ' + str(reads))
+                else:
+                    print 'Warning: ' + key + ' not generated!'
         else:
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
-    print('Merging the individual simulations...')
+    #print('Merging the individual simulations...')
     os.system('cat ' + basePath + '*R1.fq > ' + basePath + 'simulated_1.fastq')
     os.system('cat ' + basePath + '*R2.fq > ' + basePath + 'simulated_2.fastq')
+
+    print('Minimum coverage for mixture ' + str(mix) + ': ' + str(min(covs)))
+    print('Maximum coverage for mixture ' + str(mix) + ': ' + str(max(covs)))
 
 def print_usage():
     print 'Usage: python simulate.py RNA'
 
-if __name__ == '__main__':
+#
+# Eg: pyytho simulate.py RNA <FASTA> <Mix A & B>
+#
+if __name__ == '__main__':    
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
     elif (sys.argv[1] == 'RNA'):
-        a = ['A1', 'A2', 'A3']              
+        fasta = sys.argv[2]
+        mixAB = sys.argv[3]
+    
+        print('FASTA: ' + fasta)
+        print('Mixture: ' + mixAB)
+        
+        # We'll simulate three replicates for mixture A
+        a = ['A1', 'A2', 'A3']
+        
+        # We'll also simulate three replicates for mixture B
         b = ['B1', 'B2', 'B3']
+        
+        os.system('rm -rf A1 A2 A3 B1 B2 B3 RNA_Simulation')
 
         # Simulate replicates for mixture A
         for i in range(0,len(a)):
-            split('ATR003.v032.fa', 'RNA_Simulation/')
-            simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'A')
+            split(fasta, 'RNA_Simulation/')
+            simulate(mixAB, 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
         # Simulate replicates for mixture B
         for i in range(0,len(b)):
-            split('ATR003.v032.fa', 'RNA_Simulation/')        
-            simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'B')
+            split(fasta, 'RNA_Simulation/')        
+            simulate(mixAB, 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
     else:
         print_usage()
