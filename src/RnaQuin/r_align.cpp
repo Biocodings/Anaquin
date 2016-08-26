@@ -9,8 +9,6 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName GTFRef();
 
-//#define ANAQUIN_DEBUG
-
 #ifdef ANAQUIN_DEBUG
 static std::ofstream __iWriter__;
 static std::ofstream __bWriter__;
@@ -42,9 +40,12 @@ static RAlign::Stats init()
     /*
      * It's important to use meInters() rather than ueInters(). Due to alternative splicing, two
      * different transcripts can give overlapping exons. We don't know where exactly the read
-     * come from. Transcript 1? Transcript 2? We don't have the information. But we can construct
-     * an non-overlapping (or merged) exon regions and use it to calculate statistics such as
-     * base-level sensitivity.
+     * come from. The exon in transcript 1? The exon in transcript 2? We don't have the information.
+     * But we can construct non-overlapping (merged) exon regions and use that to calculate statistics
+     * such as base-level sensitivity.
+     *
+     * It's important to note exon sensitivity is not possible here (again, due to alternative splicing).
+     * The exon intervals are actually merged intervals.
      */
 
     stats.eInters = r.meInters();
