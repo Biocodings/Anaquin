@@ -23,6 +23,8 @@ The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer a
 
 <ul>
 <li>RNA-Seq</li>
+<li>Genetic variation</li>
+<li>Metagenomcis</li>
 </ul>
 
 ## Overview
