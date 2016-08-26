@@ -96,11 +96,11 @@ TEST_CASE("GTF_Merged")
     REQUIRE(!i.overlap(Locus(6955480, 6955485)));
 
     REQUIRE(r.ueInters().size() == 2);
-    REQUIRE(r.ueInters(ChrIS).size() == 869);     // 1192 for non-unique
+    REQUIRE(r.ueInters(ChrIS).size() == 869);    // 1192 for non-unique
     REQUIRE(r.ueInters("chr21").size() == 6540); // 14011 for non-unique
 
     REQUIRE(r.uiInters().size() == 2);
-    REQUIRE(r.uiInters(ChrIS).size() == 754);     // 1028 for non-unique
+    REQUIRE(r.uiInters(ChrIS).size() == 754);    // 1028 for non-unique
     REQUIRE(r.uiInters("chr21").size() == 4214); // 11553 for non-unique
 
     //REQUIRE(r.il.at(ChrIS).at(Locus(6955730, 6960383)) == 1);
@@ -110,8 +110,7 @@ TEST_CASE("GTF_Merged")
 #ifdef GENCODE_TEST
 
 /*
- *  wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_24/gencode.v24.annotation.gtf.gz
- *  gunzip gz
+ * wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_24/gencode.v24.annotation.gtf.gz
  */
 
 TEST_CASE("GTF_GenCode")
