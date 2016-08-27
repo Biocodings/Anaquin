@@ -111,8 +111,9 @@ def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=0, s=1000, isTooLow
                 o1 = path + '/' + key + '.R1.fq'
                 o2 = path + '/' + key + '.R2.fq'
 
-                cmd = 'wgsim -1150 -2150 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2 + ' > /dev/null'
-
+                #cmd = 'wgsim -1150 -2150 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2 + ' > /dev/null'
+                cmd = 'wgsim -1150 -2150 -d 130 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2 + ' > /dev/null'
+                                
                 # What's the estimated coverage?
                 cov = (150 * 2 * reads) / length
                 
@@ -120,6 +121,11 @@ def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=0, s=1000, isTooLow
                 
                 #print cmd
                 os.system(cmd)
+                
+                if (os.stat(o1).st_size == 0):
+                    raise Exception(key + ' not generated!')
+                if (os.stat(o2).st_size == 0):
+                    raise Exception(key + ' not generated!')
                     
                 # We'll need this command to merge the simulations...
                 cmd = 'cp ' + path + '/*.fq ' + basePath
@@ -143,7 +149,23 @@ def print_usage():
     print 'Usage: python simulate.py RNA'
 
 #
-# Eg: pyytho simulate.py RNA <FASTA> <Mix A & B>
+# Eg: python simulate.py RNA <FASTA> <Mix A & B>
+#
+#   bowtie2-build A.R.4.fa A.R.4
+#
+#   tophat2 -o A1 -p 6 A.R.4 A1/simulated_1.fastq A1/simulated_2.fastq
+#   tophat2 -o A2 -p 6 A.R.4 A2/simulated_1.fastq A2/simulated_2.fastq
+#   tophat2 -o A3 -p 6 A.R.4 A3/simulated_1.fastq A3/simulated_2.fastq
+#   tophat2 -o B1 -p 6 A.R.4 B1/simulated_1.fastq B1/simulated_2.fastq
+#   tophat2 -o B2 -p 6 A.R.4 B2/simulated_1.fastq B2/simulated_2.fastq
+#   tophat2 -o B3 -p 6 A.R.4 B3/simulated_1.fastq B3/simulated_2.fastq
+#
+#   cufflinks -p 15 -G ARN020_v001.gtf -o A1/G A1/accepted_hits.bam
+#   cufflinks -p 15 -G ARN020_v001.gtf -o A2/G A2/accepted_hits.bam
+#   cufflinks -p 15 -G ARN020_v001.gtf -o A3/G A3/accepted_hits.bam
+#   cufflinks -p 15 -G ARN020_v001.gtf -o B1/G B1/accepted_hits.bam
+#   cufflinks -p 15 -G ARN020_v001.gtf -o B2/G B2/accepted_hits.bam
+#   cufflinks -p 15 -G ARN020_v001.gtf -o B3/G B3/accepted_hits.bam
 #
 if __name__ == '__main__':    
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
