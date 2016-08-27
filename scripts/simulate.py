@@ -149,7 +149,7 @@ def print_usage():
     print 'Usage: python simulate.py RNA'
 
 #
-# Eg: python simulate.py RNA <FASTA> <Mix A & B>
+# Eg: python simulate.py RNA A.R.2.fa NewMixAB.csv
 #
 #   bowtie2-build A.R.4.fa A.R.4
 #
