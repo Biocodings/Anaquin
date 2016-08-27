@@ -162,34 +162,36 @@ LogFold TransRef::logFoldSeq(const IsoformID &iID) const
     return log2(e2 / e1);
 }
 
-Concent TransRef::concent(const GeneID &gID, Mixture m) const
+Concent TransRef::concent(const GeneID &gID, Mixture mix) const
 {
     for (const auto &i : _impl->gData)
     {
         if (Standard::isSynthetic(i.first))
         {
+            A_ASSERT(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
+
             Concent r = 0;
-            
-            assert(!i.second.t2g.empty());
-            
+
             for (const auto &j : i.second.t2g)
             {
+                // Does this transcript belong to the gene?
                 if (j.second == gID)
                 {
-                    r += match(j.first)->mixes.at(m);
+                    // Add up the concentration
+                    r += match(j.first)->mixes.at(mix);
                 }
             }
-            
+
             if (!r)
             {
-                A_THROW("Failed to find gene [" + gID + "] for mixture");
+                A_THROW("Concentration is zero for gene [" + gID + "]");
             }
-            
+
             return r;
         }
     }
     
-    A_THROW("Failed to find gene [" + gID + "] for mixture");
+    A_THROW("Failed to find gene [" + gID + "]");
 
     // Never executed
     return Concent();
