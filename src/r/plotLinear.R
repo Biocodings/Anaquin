@@ -24,5 +24,4 @@ measured <- %9%
 # Create Anaquin data for PlotLinear
 anaquin <- AnaquinData(analysis='PlotLinear', seqs=row.names(data), %10%=input, measured=measured%12%)
 
-plotLinear(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)ds
-dasddsadasddadd
+plotLinear(anaquin, title=title, xlab=xlab, ylab=ylab, showLOQ=%11%)
