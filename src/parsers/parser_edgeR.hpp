@@ -22,15 +22,11 @@ namespace Anaquin
             std::string line;
             std::vector<Tokens::Token> toks;
             
-            // Read the header
             if (r.nextLine(line))
             {
-                Tokens::split(line, "\t", toks);
+                Tokens::split(line, ",", toks);
 
-                if (toks.size() == 3     &&
-                    toks[0]  == "logFC"  &&
-                    toks[1]  == "logCPM" &&
-                    toks[2]  == "PValue")
+                if (toks.size() == 4  && toks[0].empty() && toks[1] == "logFC" && toks[2] == "logCPM" && toks[3] == "PValue")
                 {
                     return true;
                 }
