@@ -419,7 +419,7 @@ static void generateSummary(const FileName &summary,
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
 
-    const auto hasLOQ = !isnan(ms.b.getMean());
+//    const auto hasLOQ = !isnan(ms.b.getMean());
 
     const auto format = "-------RnaExpression Output\n"
                         "       Summary for input: %1%\n"
@@ -431,30 +431,30 @@ static void generateSummary(const FileName &summary,
                         "       Synthetic: %5%\n"
                         "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
                         "       Genome: %8%\n\n"
-                        "-------Limit of Quantification (LOQ)\n\n"
-                        "       *Estimated by piecewise segmented regression\n\n"
-                        "       Break LOQ:   %9% attomol/ul (%10%)\n\n"
-                        "       *Below LOQ\n"
-                        "       Intercept:   %11%\n"
-                        "       Slope:       %12%\n"
-                        "       Correlation: %13%\n"
-                        "       R2:          %14%\n"
-                        "       Genome:      %15%\n\n"
-                        "       *Above LOQ\n"
-                        "       Intercept:   %16%\n"
-                        "       Slope:       %17%\n"
-                        "       Correlation: %18%\n"
-                        "       R2:          %19%\n"
-                        "       Genome:      %20%\n\n"
+//                        "-------Limit of Quantification (LOQ)\n\n"
+//                        "       *Estimated by piecewise segmented regression\n\n"
+//                        "       Break LOQ:   %9% attomol/ul (%10%)\n\n"
+//                        "       *Below LOQ\n"
+//                        "       Intercept:   %11%\n"
+//                        "       Slope:       %12%\n"
+//                        "       Correlation: %13%\n"
+//                        "       R2:          %14%\n"
+//                        "       Genome:      %15%\n\n"
+//                        "       *Above LOQ\n"
+//                        "       Intercept:   %16%\n"
+//                        "       Slope:       %17%\n"
+//                        "       Correlation: %18%\n"
+//                        "       R2:          %19%\n"
+//                        "       Genome:      %20%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %21%\n"
-                        "       Correlation: %22%\n"
-                        "       R2:          %23%\n"
-                        "       F-statistic: %24%\n"
-                        "       P-value:     %25%\n"
-                        "       SSM:         %26%, DF: %27%\n"
-                        "       SSE:         %28%, DF: %29%\n"
-                        "       SST:         %30%, DF: %31%\n";
+                        "       Slope:       %9%\n"
+                        "       Correlation: %10%\n"
+                        "       R2:          %11%\n"
+                        "       F-statistic: %12%\n"
+                        "       P-value:     %13%\n"
+                        "       SSM:         %14%, DF: %15%\n"
+                        "       SSE:         %16%, DF: %17%\n"
+                        "       SST:         %18%, DF: %19%\n";
     
     o.writer->write((boost::format(format) % STRING(ms.files)                  // 1
                                            % rSyn                              // 2
@@ -464,18 +464,18 @@ static void generateSummary(const FileName &summary,
                                            % limit.abund                       // 6
                                            % limit.id                          // 7
                                            % STRING(ms.countGen)               // 8
-                                           % (hasLOQ ? STRING(ms.b)    : "-")  // 9
-                                           % (hasLOQ ? STRING(ms.bID)  : "-")  // 10
-                                           % (hasLOQ ? STRING(ms.lInt) : "-")  // 11
-                                           % (hasLOQ ? STRING(ms.lSl)  : "-")  // 12
-                                           % (hasLOQ ? STRING(ms.lr)   : "-")  // 13
-                                           % (hasLOQ ? STRING(ms.lR2)  : "-")  // 14
-                                           % (hasLOQ ? STRING(n_below) : "-")  // 15
-                                           % (hasLOQ ? STRING(ms.rInt) : "-")  // 16
-                                           % (hasLOQ ? STRING(ms.rSl)  : "-")  // 17
-                                           % (hasLOQ ? STRING(ms.rr)   : "-")  // 18
-                                           % (hasLOQ ? STRING(ms.rR2)  : "-")  // 19
-                                           % (hasLOQ ? STRING(n_above) : "-")  // 20
+//                                           % (hasLOQ ? STRING(ms.b)    : "-")  // 9
+//                                           % (hasLOQ ? STRING(ms.bID)  : "-")  // 10
+//                                           % (hasLOQ ? STRING(ms.lInt) : "-")  // 11
+//                                           % (hasLOQ ? STRING(ms.lSl)  : "-")  // 12
+//                                           % (hasLOQ ? STRING(ms.lr)   : "-")  // 13
+//                                           % (hasLOQ ? STRING(ms.lR2)  : "-")  // 14
+//                                           % (hasLOQ ? STRING(n_below) : "-")  // 15
+//                                           % (hasLOQ ? STRING(ms.rInt) : "-")  // 16
+//                                           % (hasLOQ ? STRING(ms.rSl)  : "-")  // 17
+//                                           % (hasLOQ ? STRING(ms.rr)   : "-")  // 18
+//                                           % (hasLOQ ? STRING(ms.rR2)  : "-")  // 19
+//                                           % (hasLOQ ? STRING(n_above) : "-")  // 20
                                            % STRING(ms.wLog.sl)                // 21
                                            % STRING(ms.wLog.r)                 // 22
                                            % STRING(ms.wLog.R2)                // 23
