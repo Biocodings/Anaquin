@@ -1097,7 +1097,7 @@ void parse(int argc, char ** argv)
                     }
                     else
                     {
-                        throw std::runtime_error("Unknown file type: " + file + ". Input file should be a GTF file or Anaquin standard format. Please note Anaquin standard format requires a header.");
+                        A_THROW("Unknown file type: " + file + ". Input file should be a GTF file or Anaquin format. Please check our user guide for details.");
                     }
 
                     analyze_n<RExpress>(o);
