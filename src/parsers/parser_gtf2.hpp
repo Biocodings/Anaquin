@@ -118,7 +118,7 @@ namespace Anaquin
                                     {
                                         case '+': { x.str = Forward;  break; }
                                         case '-': { x.str = Backward; break; }
-                                        case '.': { x.str = Unknown;  break; }
+                                        case '.': { x.str = Either;   break; }
                                         default:  { A_THROW("Invalid strand: " + std::string(buf)); }
                                     }
                                     
