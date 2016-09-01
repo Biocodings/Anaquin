@@ -31,7 +31,7 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(r.ueInters().size() == 1);
     REQUIRE(r.uiInters().size() == 1);
     
-    auto merged = r.meInters();
+    auto merged = r.meInters(Strand::Either);
     REQUIRE(merged.count(ChrIS));
     
     std::map<GeneID, Locus> g2l;

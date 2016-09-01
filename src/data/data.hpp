@@ -76,7 +76,7 @@ namespace Anaquin
     {
         Forward,
         Backward,
-        Unknown,
+        Either,
     };
 
     enum RNAFeature
