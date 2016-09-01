@@ -37,8 +37,10 @@
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 
+#ifdef UNIT_TEST
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
+#endif
 
 typedef int Tool;
 typedef int Option;
@@ -990,7 +992,16 @@ void parse(int argc, char ** argv)
     switch (_p.tool)
     {
         case TOOL_VERSION: { printVersion();                break; }
-        case TOOL_TEST:    { Catch::Session().run(1, argv); break; }
+        case TOOL_TEST:
+        {
+#ifdef UNIT_TEST
+            Catch::Session().run(1, argv);
+#else
+            A_THROW("UNIT_TEST is not defined");
+#endif
+
+            break;
+        }
 
         case TOOL_R_FOLD:
         case TOOL_R_GENE:

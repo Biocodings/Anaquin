@@ -956,7 +956,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					UNIT_TESTING,
+					UNIT_TEST,
 					K_HACK,
 				);
 				HEADER_SEARCH_PATHS = (
