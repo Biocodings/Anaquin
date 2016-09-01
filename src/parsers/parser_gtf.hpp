@@ -96,7 +96,7 @@ namespace Anaquin
 
                 if (toks[6] == ".")
                 {
-                    x.str = Strand::Unknown;
+                    x.str = Strand::Either;
                 }
                 else
                 {
