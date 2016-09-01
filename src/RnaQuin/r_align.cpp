@@ -234,7 +234,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
             
             if (match)
             {
-                // We'll use it to calculate the sensitivty at the intron level
+                // We'll use it to calculate sensitivty at the intron level
                 match->map(l);
 
                 writeIntron(align.cID, l, match->gID(), "TP");
