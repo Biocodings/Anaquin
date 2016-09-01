@@ -27,6 +27,9 @@ namespace Anaquin
             l.start = std::min(l.start, x.l.start);
             l.end   = std::max(l.end, x.l.end);
         }
+
+        inline bool isForward()  const { return str == Strand::Forward;  }
+        inline bool isBackward() const { return str == Strand::Backward; }
         
         // Eg: chr1
         ChrID cID;
@@ -265,20 +268,20 @@ namespace Anaquin
         }
         
         // Intervals for merged exons
-        inline MC2Intervals meInters() const
+        inline MC2Intervals meInters(Strand str) const
         {
             MC2Intervals r;
             
             for (const auto &i : *this)
             {
-                r[i.first] = meInters(i.first);
+                r[i.first] = meInters(i.first, str);
             }
             
             return r;
         }
         
         // Intervals for merged exons (only possible at the gene level)
-        inline MergedIntervals<> meInters(const ChrID &cID) const
+        inline MergedIntervals<> meInters(const ChrID &cID, Strand str) const
         {
             MergedIntervals<> r;
 
@@ -293,14 +296,14 @@ namespace Anaquin
 
                 if (!merged.count(gID))
                 {
-                    // Merging the unique exons (it doesn't matter how long this is)
+                    // Merging unique exons (doesn't matter how long this is)
                     merged[gID] = MergedInterval(gID, Locus(1, std::numeric_limits<Base>::max()));
                 }
                 
                 // For each exon in the transcript...
                 for (const auto &j : i.second)
                 {
-                    // This'll merge all the overlapping exons
+                    // Merge all the overlapping exons
                     merged.at(gID).map(j.l);
                 }
             }
@@ -519,7 +522,8 @@ namespace Anaquin
                                                                        % x.str
                                                                        % x.l.start
                                                                        % x.l.end).str();
-                    
+
+                    // Make sure it's unique due to alternative splicing
                     if (!m_exons.count(key))
                     {
                         m_exons[key] = x.l;
