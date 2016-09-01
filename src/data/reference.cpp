@@ -258,9 +258,9 @@ MC2Intervals TransRef::mergedExons() const
     return _impl->gData.mergedExons();
 }
 
-MC2Intervals TransRef::meInters() const
+MC2Intervals TransRef::meInters(Strand str) const
 {
-    return _impl->gData.meInters(Strand::Either);
+    return _impl->gData.meInters(str);
 }
 
 MC2Intervals TransRef::ueInters() const

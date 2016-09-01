@@ -48,7 +48,7 @@ static RAlign::Stats init()
      * The exon intervals are actually merged intervals.
      */
 
-    stats.eInters = r.meInters();
+    stats.eInters = r.meInters(Strand::Either);
 
     A_ASSERT(stats.eInters.size(), "stats.eInters.size()");
     A_ASSERT(stats.iInters.size(), "stats.iInters.size()");

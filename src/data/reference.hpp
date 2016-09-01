@@ -374,7 +374,7 @@ namespace Anaquin
             std::map<ChrID, Hist> histGene() const;
             std::map<ChrID, Hist> histIsof() const;
 
-            MC2Intervals meInters() const;
+            MC2Intervals meInters(Strand str) const;
             MC2Intervals ueInters() const;
             MC2Intervals uiInters() const;
 
