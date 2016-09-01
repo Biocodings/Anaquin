@@ -12,16 +12,10 @@
 #   3. Eigen:  https://eigen.tuxfamily.org
 #   4. Klib:   https://github.com/attractivechaos/klib
 #
-# (1) to (4) should be straighforward. They are header-only library, so you'll just need to
-# save them somewhere and update the include paths below.
-# 
 # Please email t.wong@garvan.org.au if you have any problems.
 #
 
 BOOST = /usr/include/boost
-
-# Required for unit-testing
-CATCH = /Applications/catch/include
 
 # Linear-algebra library
 EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
@@ -47,10 +41,10 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lz -ldl -o $(EXEC)
 
 %.o: %.c
-	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I src/stats -I tests -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I src/stats -I tests -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
