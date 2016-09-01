@@ -32,7 +32,6 @@ CC_FLAGS = -std=c++11
 EXEC         = anaquin
 SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
-SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/RnaQuin/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
@@ -44,7 +43,7 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I src/stats -I tests -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
