@@ -533,7 +533,7 @@ template <typename Reference> void addRef(const ChrID &cID, Reference ref, const
 {
     if (__showInfo__)
     {
-        std::cout << "[INFO]: Reference: " << file << std::endl;
+        std::cout << "[INFO]: Loading: " << file << std::endl;
     }
     
     ref(Reader(file));
@@ -581,7 +581,7 @@ template <typename Reference> void applyRef(Reference ref, Option opt)
 {
     if (__showInfo__)
     {
-        std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
+        std::cout << "[INFO]: Loading: " << _p.opts[opt] << std::endl;
     }
     
     if (!_p.opts[opt].empty())
