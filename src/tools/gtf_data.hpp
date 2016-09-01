@@ -303,6 +303,11 @@ namespace Anaquin
                 // For each exon in the transcript...
                 for (const auto &j : i.second)
                 {
+                    if (str != Strand::Either && (j.str != str))
+                    {
+                        break;
+                    }
+
                     // Merge all the overlapping exons
                     merged.at(gID).map(j.l);
                 }
