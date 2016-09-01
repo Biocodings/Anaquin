@@ -20,7 +20,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
      * Calculating sequencing depth for both genomic and synthetic before subsampling
      */
 
-    o.info("[1/3]: Calculating the coverage before subsampling");
+    o.info("Calculating the coverage before subsampling");
     
     ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
@@ -57,7 +57,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
      *   We should sample for 0.10101/5 = 0.020202.
      */
     
-    o.info("[2/3]: Calculating the normalization factor");
+    o.info("Calculating the normalization factor");
     
     const auto nTotal = stats.before.gen / (1.0 - o.p);
     o.logInfo("New Total: " + std::to_string(nTotal));
