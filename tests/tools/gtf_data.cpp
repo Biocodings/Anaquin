@@ -22,7 +22,9 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(r.countUExonSyn() == 869);
     REQUIRE(r.countUIntr()    == 754);
     REQUIRE(r.countUIntrSyn() == 754);
-    
+
+    REQUIRE(r.at(ChrIS).t2ue.size() == 162);
+
     //REQUIRE(r.il.at(ChrIS).at(Locus(6955730, 6960383)) == 1);
     //REQUIRE(r.il.at(ChrIS).at(Locus(2227518, 2235700)) == 3);
     
@@ -87,6 +89,9 @@ TEST_CASE("GTF_Merged")
     REQUIRE(r.countUIntrGen() == 4214);
     REQUIRE(r.countUExonGen() == 6540);
     
+    REQUIRE(r.at(ChrIS).t2ue.size() == 162);
+    REQUIRE(r.at("chr21").t2ue.size() == 2370);
+
     const auto i = r.gIntervals(ChrIS);
 
     REQUIRE(i.size() == 78);
