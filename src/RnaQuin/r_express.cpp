@@ -114,14 +114,6 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
 {
     RExpress::Stats stats;
     
-    const auto &r = Standard::instance().r_trans;
-    
-    stats.isosHist = r.histIsof();
-    stats.geneHist = r.histGene();
-    
-    assert(!stats.isosHist.empty());
-    assert(!stats.geneHist.empty());
-    
     f(stats);
     
     return stats;

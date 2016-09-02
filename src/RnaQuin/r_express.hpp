@@ -47,9 +47,6 @@ namespace Anaquin
                 double abund = NAN;
             };
 
-            // Histogram distribution
-            std::map<ChrID, Hist> isosHist, geneHist;
-
             LinearStats isos, genes;
 
             // Data for the genome
