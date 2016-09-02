@@ -60,6 +60,11 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                     return;
                 }
                 
+                // Eg: R1_1_1
+                const auto seq = d[0];
+                
+                A_ASSERT(std::count(seq.begin(), seq.end(), '_') == 2, "Invalid sequin: " + seq + ". Valid sequin names include R1_1_1, R1_1_2, R2_2_1 etc.");
+                
                 const auto con = stof(d[column]);
                 
                 switch (format)
@@ -67,13 +72,13 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                     case ID_Length_Mix:
                     {
                         succceed = true;
-                        ref.add(d[0], stoi(d[1]), con, m); break;
+                        ref.add(seq, stoi(d[1]), con, m); break;
                     }
 
                     case ID_Mix:
                     {
                         succceed = true;
-                        ref.add(d[0], 0.0, con, m); break;
+                        ref.add(seq, 0.0, con, m); break;
                     }
                 }
             }, delim);
