@@ -428,54 +428,54 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
 
     const auto lm = stats.vars.linear(true);
     
-    // Calcluate the quantification point with logarithm
-    auto ms = stats.vars.limitQuant(true);
+//    // Calcluate the quantification point with logarithm
+//    auto ms = stats.vars.limitQuant(true);
+//    
+//    // Remember the break-point is on the log2-scale, we'll need to convert it back
+//    ms.b = pow(2, ms.b);
     
-    // Remember the break-point is on the log2-scale, we'll need to convert it back
-    ms.b = pow(2, ms.b);
+//    Counts n_below = 0;
+//    Counts n_above = 0;
+//    
+//    // For each query chromosome...
+//    for (const auto &i : stats.query)
+//    {
+//        // For each genomic chromosome...
+//        if (!Standard::isSynthetic(i.first))
+//        {
+//            for (const auto &j : i.second.af)
+//            {
+//                if (j >= ms.b)
+//                {
+//                    n_above++;
+//                }
+//                else
+//                {
+//                    n_below++;
+//                }
+//            }
+//        }
+//    }
+//
+//    // For each reference chromosome...
+//    for (const auto &i : stats.data)
+//    {
+//        // For each genomic chromosome...
+//        if (!Standard::isSynthetic(i.first))
+//        {
+//            if (i.second.af >= ms.b)
+//            {
+//                n_above++;
+//            }
+//            else
+//            {
+//                n_below++;
+//            }
+//        }
+//    }
     
-    Counts n_below = 0;
-    Counts n_above = 0;
-    
-    // For each query chromosome...
-    for (const auto &i : stats.query)
-    {
-        // For each genomic chromosome...
-        if (!Standard::isSynthetic(i.first))
-        {
-            for (const auto &j : i.second.af)
-            {
-                if (j >= ms.b)
-                {
-                    n_above++;
-                }
-                else
-                {
-                    n_below++;
-                }
-            }
-        }
-    }
-
-    // For each reference chromosome...
-    for (const auto &i : stats.data)
-    {
-        // For each genomic chromosome...
-        if (!Standard::isSynthetic(i.first))
-        {
-            if (i.second.af >= ms.b)
-            {
-                n_above++;
-            }
-            else
-            {
-                n_below++;
-            }
-        }
-    }
-    
-    const auto mm = r.findVar(ChrIS, stol(ms.id));
-    assert(mm);
+//    const auto mm = r.findVar(ChrIS, stol(ms.id));
+//    assert(mm);
     
     auto writeNoScale = [&]()
     {
@@ -648,18 +648,18 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countIndScountSyn()     // 31
                                                 % stats.countIndPC_Syn()     // 32
                                                 % (1-stats.countIndPC_Syn()) // 33
-                                                % ms.b                       // 34
-                                                % mm->id                     // 35
-                                                % ms.lInt                    // 36
-                                                % ms.lSl                     // 37
-                                                % ms.lr                      // 38
-                                                % ms.lR2                     // 39
-                                                % n_above                    // 40
-                                                % ms.rInt                    // 41
-                                                % ms.rSl                     // 42
-                                                % ms.rr                      // 43
-                                                % ms.rR2                     // 43
-                                                % n_below                    // 45
+                                                % "??" //ms.b                       // 34
+                                                % "??" //mm->id                     // 35
+                                                % "??" //ms.lInt                    // 36
+                                                % "??" //ms.lSl                     // 37
+                                                % "??" //ms.lr                      // 38
+                                                % "??" //ms.lR2                     // 39
+                                                % "??" //n_above                    // 40
+                                                % "??" //ms.rInt                    // 41
+                                                % "??" //ms.rSl                     // 42
+                                                % "??" //ms.rr                      // 43
+                                                % "??" //ms.rR2                     // 43
+                                                % "??" //n_below                    // 45
                                                 % lm.m                       // 47
                                                 % lm.r                       // 46
                                                 % lm.R2                      // 48

@@ -23,6 +23,21 @@ TEST_CASE("TExpress_Guided_Invalid")
     REQUIRE(r2.status == 1);
 }
 
+TEST_CASE("TExpress_Replicates")
+{
+    Test::transA();
+    
+    auto o = RExpress::Options();
+    
+    o.format = RExpress::Format::GTF;
+    o.metrs  = RExpress::Metrics::Isoform;
+    
+    auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.gtf", "tests/data/A2.gtf", "tests/data/A3.gtf" }, o);
+
+    
+    
+}
+
 TEST_CASE("TExpress_Guided_Equal")
 {
     Test::transA();

@@ -157,25 +157,22 @@ SInflectStats StatsWriter::multiInfect(const std::vector<FileName>     &files,
         // Linear regression with logarithm
         const auto l_lm = lstats[i].linear(true);
         
-        // Calcluate the inflection point with logarithm
-        const auto inf = lstats[i].limitQuant(true);
-        
         // Remember the break-point is on the log2-scale, we'll need to convert it back
-        const auto b = pow(2, inf.b);
+//        const auto b = pow(2, inf.b);
         
         r.countSyn.add((unsigned)mStats[i].countSyn);
         r.countGen.add((unsigned)mStats[i].countGen);
         
-        r.b.add(b);
-        r.lr.add(inf.lr);
-        r.rr.add(inf.rr);
-        r.bID.add(inf.id);
-        r.lInt.add(inf.lInt);
-        r.rInt.add(inf.rInt);
-        r.lSl.add(inf.lSl);
-        r.rSl.add(inf.rSl);
-        r.lR2.add(inf.lR2);
-        r.rR2.add(inf.rR2);
+//        r.b.add(b);
+//        r.lr.add(inf.lr);
+//        r.rr.add(inf.rr);
+//        r.bID.add(inf.id);
+//        r.lInt.add(inf.lInt);
+//        r.rInt.add(inf.rInt);
+//        r.lSl.add(inf.lSl);
+//        r.rSl.add(inf.rSl);
+//        r.lR2.add(inf.lR2);
+//        r.rR2.add(inf.rR2);
 
         r.wLog.p.add(l_lm.p);
         r.wLog.r.add(l_lm.r);

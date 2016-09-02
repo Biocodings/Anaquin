@@ -43,13 +43,11 @@ namespace Anaquin
     typedef std::string TransID;
     typedef std::string GenomeID;
     typedef std::string SequinID;
-    typedef std::string ContigID;
     typedef std::string IntronID;
     typedef std::string RegionID;
     typedef std::string IsoformID;
     typedef std::string GenericID;
     typedef std::string FeatureID;
-    typedef std::string SampleName;
     
     typedef std::string Path;
     typedef std::string Label;
@@ -57,7 +55,6 @@ namespace Anaquin
     typedef std::string Scripts;
     typedef std::string FileName;
     typedef std::string ReadName;
-    typedef std::string AxisLabel;
     
     typedef long long Base;
     typedef long long Depth;
@@ -96,7 +93,7 @@ namespace Anaquin
     
     struct Limit
     {
-        SequinID id;
+        GenericID id;
         
         // Expected concentration for the sequin
         Concent abund = NAN;

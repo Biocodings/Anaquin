@@ -276,7 +276,6 @@
 		EFE54BB11D6ED6DF00541EA8 /* matrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = matrix.hpp; sourceTree = "<group>"; };
 		EFE54BB41D6ED6DF00541EA8 /* linear.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = linear.hpp; sourceTree = "<group>"; };
 		EFE54BB51D6ED6DF00541EA8 /* model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = model.hpp; sourceTree = "<group>"; };
-		EFE54BB61D6ED6DF00541EA8 /* segmented.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = segmented.hpp; sourceTree = "<group>"; };
 		EFE54BB71D6ED6DF00541EA8 /* stats.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = stats.hpp; sourceTree = "<group>"; };
 		EFE54BB81D6ED6DF00541EA8 /* stest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = stest.hpp; sourceTree = "<group>"; };
 		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
@@ -685,7 +684,6 @@
 			children = (
 				EFE54BB41D6ED6DF00541EA8 /* linear.hpp */,
 				EFE54BB51D6ED6DF00541EA8 /* model.hpp */,
-				EFE54BB61D6ED6DF00541EA8 /* segmented.hpp */,
 			);
 			path = regression;
 			sourceTree = "<group>";

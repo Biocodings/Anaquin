@@ -268,9 +268,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void writeQueries(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
-{}
-
 static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics metrs)
 {
     const auto &r = Standard::instance().r_trans;
@@ -363,11 +360,13 @@ static void generateSummary(const FileName &summary,
         mStats.push_back(stats[i]);
         lStats.push_back(ls);
         
-        assert(!isnan(stats[i].limit.abund) && !stats[i].limit.id.empty());
-
-        if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
+        // Not every replicate is defined...
+        if (!stats[i].limit.id.empty())
         {
-            limit = stats[i].limit;
+            if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
+            {
+                limit = stats[i].limit;
+            }
         }
     }
     
@@ -607,12 +606,6 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     
     generateCSV("RnaExpression_sequins.csv", stats, o);
 
-    /*
-     * Generating RnaExpression_queries.csv
-     */
-    
-    writeQueries("RnaExpression_queries.csv", stats, o);
-    
     /*
      * Generating RnaExpression_linear.R
      */

@@ -63,7 +63,7 @@ namespace Anaquin
             {
                 const auto x = analyze(file, o);
                 
-                if (x.genes.empty() && x.isos.empty())
+                if (x.genes.empty() && x.isos.empty() && files.size() == 1)
                 {
                     throw std::runtime_error("Failed to find anything on the in-silico chromosome: " + file);
                 }
