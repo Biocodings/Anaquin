@@ -323,7 +323,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
             }
             else
             {
-                ss << "\tNA";
+                ss << "\tNaN";
             }
         }
         
