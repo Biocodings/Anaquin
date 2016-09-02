@@ -34,8 +34,54 @@ TEST_CASE("TExpress_Replicates")
     
     auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.gtf", "tests/data/A2.gtf", "tests/data/A3.gtf" }, o);
 
+    REQUIRE(r[0].countSyn   == 170);
+    REQUIRE(r[0].countGen   == 0);
+    REQUIRE(r[0].dilution() == 1.0);
+    REQUIRE(r[1].countSyn   == 3);
+    REQUIRE(r[1].countGen   == 0);
+    REQUIRE(r[1].dilution() == 1.0);
+    REQUIRE(r[2].countSyn   == 170);
+    REQUIRE(r[2].countGen   == 0);
+    REQUIRE(r[2].dilution() == 1.0);
+
+    REQUIRE(r[0].gData.size() == 0);
+    REQUIRE(r[0].genes.size() == 0);
+    REQUIRE(r[0].isos.size()  == 136);
+    REQUIRE(r[1].gData.size() == 0);
+    REQUIRE(r[1].genes.size() == 0);
+    REQUIRE(r[1].isos.size()  == 0);
+    REQUIRE(r[2].gData.size() == 0);
+    REQUIRE(r[2].genes.size() == 0);
+    REQUIRE(r[2].isos.size()  == 127);
+
+    REQUIRE(!r[0].isos.count("R2_71_1"));
+    REQUIRE(r[0].isos["R2_72_1"].x == Approx(0.0157356262));
+    REQUIRE(r[0].isos["R2_72_1"].y == Approx(0.0000099647));
+    REQUIRE(r[0].isos["R2_72_2"].x == Approx(0.031471252));
+    REQUIRE(r[0].isos["R2_72_2"].y == Approx(0.0000000463));
+    REQUIRE(r[0].isos["R2_72_3"].x == Approx(0.062942505));
+    REQUIRE(r[0].isos["R2_72_3"].y == Approx(0.0000000047));
+    REQUIRE(r[0].isos["R2_72_4"].x == Approx(0.12588501));
+    REQUIRE(r[0].isos["R2_72_4"].y == Approx(0.0237112164));
+
+    REQUIRE(!r[1].isos.count("R2_71_1"));
+    REQUIRE(!r[1].isos.count("R2_72_1"));
+    REQUIRE(!r[1].isos.count("R2_72_2"));
+    REQUIRE(!r[1].isos.count("R2_72_3"));
+    REQUIRE(!r[1].isos.count("R2_72_4"));
     
+    REQUIRE(!r[2].isos.count("R2_71_1"));
+    REQUIRE(!r[2].isos.count("R2_72_1"));
+    REQUIRE(!r[2].isos.count("R2_72_2"));
+    REQUIRE(!r[2].isos.count("R2_72_3"));
+    REQUIRE(!r[2].isos.count("R2_72_4"));
     
+    REQUIRE(r[0].limit.id == "R2_72_1");
+    REQUIRE(r[0].limit.abund == Approx(0.015735626));
+    REQUIRE(r[1].limit.id.empty());
+    REQUIRE(isnan(r[1].limit.abund));
+    REQUIRE(r[2].limit.id == "R1_91_1");
+    REQUIRE(r[2].limit.abund == Approx(0.014305115));
 }
 
 TEST_CASE("TExpress_Guided_Equal")
