@@ -50,8 +50,8 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the genome");   }
 
     /*
-     * Calculating the subsamping fraction. Eg: if we have 10m reads to the genome and 5m reads to the
-     * in-silico chromsome. The specified fraction is 1%.
+     * Calculating subsamping fraction. Eg: if we have 10m reads to the genome and 5m reads to the
+     * in-silico chromsome and the specified fraction is 1%.
      *
      *   New total is: 10/0.99 = 10.10101 => Synthetic will have: 0.10101 reads.
      *   We should sample for 0.10101/5 = 0.020202.
@@ -60,16 +60,21 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Calculating the normalization factor");
     
     const auto nTotal = stats.before.gen / (1.0 - o.p);
-    o.logInfo("New Total: " + std::to_string(nTotal));
+    A_ASSERT(nTotal >= stats.before.gen, "New total is less than number of genomic reads");
     
-    A_ASSERT(nTotal >= stats.before.gen, "New total is less than genomic before");
-    
+    // Number of synthetic reads after sampling (eg: 0.10101)
     const auto nSyn = nTotal - stats.before.gen;
-    o.logInfo("New Synthetic: " + std::to_string(nSyn));
 
-    stats.norm = nSyn < stats.before.syn ? static_cast<Proportion>(nSyn) / stats.before.syn : 1.0;
-    o.info("Normalization: " + std::to_string(stats.norm));
+    /*
+     * Make sure we only derive normalization factor if there're enough synthetic reads.
+     */
     
+    stats.norm = nSyn < stats.before.syn ? static_cast<Proportion>(nSyn) / stats.before.syn : 1.0;
+
+    o.logInfo("New Total: "     + std::to_string(nTotal));
+    o.logInfo("New Synthetic: " + std::to_string(nSyn));
+    o.info("Normalization: "    + std::to_string(stats.norm));
+
     // Perform subsampling
     const auto r = Sampler::subsample(file, stats.norm, o, o.toConsole);
 
