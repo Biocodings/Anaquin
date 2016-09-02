@@ -37,7 +37,7 @@ template <typename Iter> Base countLocus(const Iter &iter)
     return n;
 }
 
-struct TransRef::TransRefImpl
+struct RnaRef::RnaRefImpl
 {
     // Includes synthetic and genome
     GTFData gData;
@@ -46,69 +46,69 @@ struct TransRef::TransRefImpl
     std::map<ChrID, Intervals<>> gInters;
 };
 
-TransRef::TransRef() : _impl(new TransRefImpl()) {}
+RnaRef::RnaRef() : _impl(new RnaRefImpl()) {}
 
-Counts TransRef::countLenSyn() const
+Counts RnaRef::countLenSyn() const
 {
     return _impl->gData.countLenSyn();
 }
 
-Counts TransRef::countLenGen() const
+Counts RnaRef::countLenGen() const
 {
     return _impl->gData.countLenGen();
 }
 
-Counts TransRef::countUExon(const ChrID &cID) const
+Counts RnaRef::countUExon(const ChrID &cID) const
 {
     return _impl->gData.countUExon(cID);
 }
 
-Counts TransRef::countUExonSyn() const
+Counts RnaRef::countUExonSyn() const
 {
     return _impl->gData.countUExonSyn();
 }
 
-Counts TransRef::countUExonGen() const
+Counts RnaRef::countUExonGen() const
 {
     return _impl->gData.countUExonGen();
 }
 
-Counts TransRef::countUIntr(const ChrID &cID) const
+Counts RnaRef::countUIntr(const ChrID &cID) const
 {
     return _impl->gData.countUIntr(cID);
 }
 
-Counts TransRef::countUIntrSyn() const
+Counts RnaRef::countUIntrSyn() const
 {
     return _impl->gData.countUIntrSyn();
 }
 
-Counts TransRef::countUIntrGen() const
+Counts RnaRef::countUIntrGen() const
 {
     return _impl->gData.countUIntrGen();
 }
 
-Counts TransRef::countGeneSyn() const
+Counts RnaRef::countGeneSyn() const
 {
     return _impl->gData.countGeneSyn();
 }
 
-Counts TransRef::countGeneGen() const
+Counts RnaRef::countGeneGen() const
 {
     return _impl->gData.countGeneGen();
 }
 
-Counts TransRef::countTransSyn() const
+Counts RnaRef::countTransSyn() const
 {
     return _impl->gData.countTransSyn();
 }
 
-Counts TransRef::countTransGen() const
+Counts RnaRef::countTransGen() const
 {
     return _impl->gData.countTransGen();
 }
 
-void TransRef::readRef(const Reader &r)
+void RnaRef::readRef(const Reader &r)
 {
     for (const auto &i : (_impl->gData = gtfData(r)))
     {
@@ -119,17 +119,17 @@ void TransRef::readRef(const Reader &r)
     }
 }
 
-std::map<ChrID, Hist> TransRef::histGene() const
+std::map<ChrID, Hist> RnaRef::histGene() const
 {
     return _impl->gData.histGene();
 }
 
-std::map<ChrID, Hist> TransRef::histIsof() const
+std::map<ChrID, Hist> RnaRef::histIsof() const
 {
     return _impl->gData.histIsof();
 }
 
-Counts TransRef::countGeneSeqs() const
+Counts RnaRef::countGeneSeqs() const
 {
     std::set<GeneID> gIDs;
     
@@ -141,7 +141,7 @@ Counts TransRef::countGeneSeqs() const
     return gIDs.size();
 }
 
-LogFold TransRef::logFoldGene(const GeneID &gID) const
+LogFold RnaRef::logFoldGene(const GeneID &gID) const
 {
     const auto e1 = concent(gID, Mix_1);
     const auto e2 = concent(gID, Mix_2);
@@ -149,7 +149,7 @@ LogFold TransRef::logFoldGene(const GeneID &gID) const
     return log2(e2 / e1);
 }
 
-LogFold TransRef::logFoldSeq(const IsoformID &iID) const
+LogFold RnaRef::logFoldSeq(const IsoformID &iID) const
 {
     const auto m = match(iID);
     
@@ -162,7 +162,7 @@ LogFold TransRef::logFoldSeq(const IsoformID &iID) const
     return log2(e2 / e1);
 }
 
-Concent TransRef::concent(const GeneID &gID, Mixture mix) const
+Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
 {
     for (const auto &i : _impl->gData)
     {
@@ -197,12 +197,12 @@ Concent TransRef::concent(const GeneID &gID, Mixture mix) const
     return Concent();
 }
 
-GeneID TransRef::s2g(const SequinID &sID) const
+GeneID RnaRef::s2g(const SequinID &sID) const
 {
     return _impl->gData.at(ChrIS).t2g.at(sID);
 }
 
-const TransData *TransRef::findTrans(const ChrID &cID, const TransID &tID) const
+const TransData *RnaRef::findTrans(const ChrID &cID, const TransID &tID) const
 {
     if (!_impl->gData.count(cID))
     {
@@ -213,7 +213,7 @@ const TransData *TransRef::findTrans(const ChrID &cID, const TransID &tID) const
     return _impl->gData.at(cID).t2d.count(tID) ? &(_impl->gData.at(cID).t2d[tID]) : nullptr;
 }
 
-const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
+const GeneData * RnaRef::findGene(const ChrID &cID, const GeneID &gID) const
 {
     if (!_impl->gData.count(cID))
     {
@@ -224,7 +224,7 @@ const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }
 
-std::set<GeneID> TransRef::getGenes(const ChrID &cID) const
+std::set<GeneID> RnaRef::getGenes(const ChrID &cID) const
 {
     std::set<GeneID> ids;
     
@@ -236,7 +236,7 @@ std::set<GeneID> TransRef::getGenes(const ChrID &cID) const
     return ids;
 }
 
-std::set<TransID> TransRef::getTrans(const ChrID &cID) const
+std::set<TransID> RnaRef::getTrans(const ChrID &cID) const
 {
     std::set<GeneID> ids;
     
@@ -248,32 +248,32 @@ std::set<TransID> TransRef::getTrans(const ChrID &cID) const
     return ids;
 }
 
-MergedIntervals<> TransRef::mergedExons(const ChrID &cID) const
+MergedIntervals<> RnaRef::mergedExons(const ChrID &cID) const
 {
     return _impl->gData.mergedExons(cID);
 }
 
-MC2Intervals TransRef::mergedExons() const
+MC2Intervals RnaRef::mergedExons() const
 {
     return _impl->gData.mergedExons();
 }
 
-MC2Intervals TransRef::meInters(Strand str) const
+MC2Intervals RnaRef::meInters(Strand str) const
 {
     return _impl->gData.meInters(str);
 }
 
-MC2Intervals TransRef::ueInters() const
+MC2Intervals RnaRef::ueInters() const
 {
     return _impl->gData.ueInters();
 }
 
-MC2Intervals TransRef::uiInters() const
+MC2Intervals RnaRef::uiInters() const
 {
     return _impl->gData.uiInters();
 }
 
-void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
+void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
 {
     assert(!mIDs.empty() && !aIDs.empty());
     
@@ -340,7 +340,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     assert(!_data.empty());
 }
 
-void TransRef::validate()
+void RnaRef::validate()
 {
     auto iIDs = std::set<SequinID>();
     

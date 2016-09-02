@@ -363,11 +363,11 @@ namespace Anaquin
     struct GeneData;
     struct TransData;
     
-    class TransRef : public Reference<SequinData, DefaultStats>
+    class RnaRef : public Reference<SequinData, DefaultStats>
     {
         public:
 
-            TransRef();
+            RnaRef();
 
             void readRef(const Reader &);
 
@@ -436,9 +436,9 @@ namespace Anaquin
         
         private:
 
-            struct TransRefImpl;
+            struct RnaRefImpl;
 
-            std::shared_ptr<TransRefImpl> _impl;        
+            std::shared_ptr<RnaRefImpl> _impl;        
     };
 }
 
