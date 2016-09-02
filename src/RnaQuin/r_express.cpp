@@ -211,7 +211,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     f(metrs);
 
                     /*
-                     * A transcriptome GTF file might not have genes defined. We'll need to add
+                     * Transcriptome GTF file might not have genes defined. We'll need to add
                      * the transcripts together.
                      */
 
@@ -238,12 +238,15 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 {
                     const auto m = r.findTrans(ChrIS, i.first);
                     
-                    // Add up the isoform expressions for each of the sequin gene
+                    // Add up the isoform expression for each of the sequin gene
                     express[m->gID] += i.second.y;
                 }
                 
                 // Important, we'll need to reset counting for isoforms
                 stats.countSyn = 0;
+                
+                // Start again at the gene level
+                stats.limit = Limit();
                 
                 for (const auto &i : express)
                 {
@@ -413,9 +416,8 @@ static void generateSummary(const FileName &summary,
 
 //    const auto hasLOQ = !isnan(ms.b.getMean());
 
-    const auto format = "-------RnaExpression Output\n"
-                        "       Summary for input: %1%\n"
-                        "       *Arithmetic average and standard deviation are shown\n\n"
+    const auto format = "-------RnaExpression Output\n\n"
+                        "       Summary for input: %1%\n\n"
                         "-------Reference Transcript Annotations\n\n"
                         "       Synthetic: %2%\n"
                         "       Mixture file: %3%\n\n"

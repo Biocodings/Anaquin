@@ -23,7 +23,7 @@ TEST_CASE("TExpress_Guided_Invalid")
     REQUIRE(r2.status == 1);
 }
 
-TEST_CASE("TExpress_Guided_Equals")
+TEST_CASE("TExpress_Guided_Equal")
 {
     Test::transA();
     
@@ -61,6 +61,9 @@ TEST_CASE("TExpress_Guided_Equals")
     REQUIRE(r.isos["R2_73_2"].x == Approx(1.831054688));
     REQUIRE(r.isos["R2_73_2"].y == Approx(0.05));
     
+    REQUIRE(r.limit.id == "R2_72_1");
+    REQUIRE(r.limit.abund == Approx(0.015735626));
+
     const auto ls = r.genes.linear();
     
     REQUIRE(isnan(ls.r));
@@ -74,7 +77,7 @@ TEST_CASE("TExpress_Guided_Equals")
     REQUIRE(r2.status == 0);
 }
 
-TEST_CASE("TExpress_Guided_Fews")
+TEST_CASE("TExpress_Guided_Head")
 {
     Test::transA();
     
@@ -98,6 +101,9 @@ TEST_CASE("TExpress_Guided_Fews")
     REQUIRE(r.genes["R2_72"].y == Approx(0.4431061925));
     REQUIRE(r.genes["R2_73"].x == Approx(1.8882751465));
     REQUIRE(r.genes["R2_73"].y == Approx(0.3761108));
+    
+    REQUIRE(r.limit.id == "R2_72");
+    REQUIRE(r.limit.abund == Approx(0.2360343933));
     
     const auto ls = r.genes.linear();
 
@@ -124,6 +130,9 @@ TEST_CASE("TExpress_Denovo_Genes")
     REQUIRE(r1.genes.size() == 0);
     REQUIRE(r1.isos.size()  == 0);
 
+    REQUIRE(r1.limit.id.empty());
+    REQUIRE(isnan(r1.limit.abund));
+    
     Test::clear();
     
     const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/denovo.gtf");
@@ -150,6 +159,9 @@ TEST_CASE("TExpress_Denovo_Isoforms")
     REQUIRE(r1.gData.size() == 293);
     REQUIRE(r1.genes.size() == 0);
     REQUIRE(r1.isos.size()  == 0);
+    
+    REQUIRE(r1.limit.id.empty());
+    REQUIRE(isnan(r1.limit.abund));
     
     Test::clear();
     
