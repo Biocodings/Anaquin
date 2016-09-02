@@ -67,7 +67,7 @@ namespace Anaquin
                 {
                     throw std::runtime_error("Failed to find anything on the in-silico chromosome: " + file);
                 }
-                
+
                 stats.push_back(x);
             }
 

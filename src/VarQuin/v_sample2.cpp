@@ -236,13 +236,13 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
         }
     }
     
-    stats.beforeGen = SS::getMean(allBeforeGenC);
-    stats.beforeSyn = SS::getMean(allBeforeSynC);
+    stats.beforeGen = SS::mean(allBeforeGenC);
+    stats.beforeSyn = SS::mean(allBeforeSynC);
     stats.afterGen  = stats.beforeGen;
-    stats.afterSyn  = SS::getMean(allAfterSynC);
+    stats.afterSyn  = SS::mean(allAfterSynC);
     
     stats.normSD   = SS::getSD(allNorms);
-    stats.normAver = SS::getMean(allNorms);
+    stats.normAver = SS::mean(allNorms);
     
     stats.totAfter.countGen = stats.totBefore.countGen;
     

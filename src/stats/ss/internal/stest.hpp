@@ -18,7 +18,7 @@ namespace SS
             
             SS_ASSERT(x.size(), "Samples size must not be zero");
             
-            const auto u  = getMean(x);
+            const auto u  = mean(x);
             const auto n  = x.size();
             const auto s  = getSD(x) / sqrt(n);
             const auto t  = (u - h0) / s;
@@ -49,8 +49,8 @@ namespace SS
             SS_ASSERT(x.size() == y.size(), "Samples must match in dimension");
             SS_ASSERT(x.size(), "Samples size must not be zero");
             
-            const auto u1 = getMean(x);
-            const auto u2 = getMean(y);
+            const auto u1 = mean(x);
+            const auto u2 = mean(y);
             const auto s1 = getSD(x);
             const auto s2 = getSD(y);
             const auto n1 = x.size();
@@ -105,8 +105,8 @@ namespace SS
             SS_ASSERT(x.size() == y.size(), "Samples must match in dimension");
             SS_ASSERT(x.size(), "Samples size must not be zero");
             
-            const auto u1 = getMean(x);
-            const auto u2 = getMean(y);
+            const auto u1 = mean(x);
+            const auto u2 = mean(y);
             const auto s1 = getSD(x);
             const auto s2 = getSD(y);
             const auto n1 = x.size();

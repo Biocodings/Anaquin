@@ -55,11 +55,22 @@ namespace Anaquin
     
     struct SReals : public SSamples<double>
     {
-        inline double getMean() const { return SS::getMean(SSamples<double>::_data); }
+        inline double mean() const
+        {
+            auto data = SSamples<double>::_data;
+            
+            // Some samples might not define...
+            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return isnan(x); }), data.end());
+            
+            return SS::mean(data);
+        }
         
         virtual operator std::string() const
         {
-            const auto &data = SSamples<double>::_data;
+            auto data = SSamples<double>::_data;
+            
+            // Some samples might not define...
+            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return isnan(x); }), data.end());
             
             if (data.size() == 0)
             {
@@ -67,7 +78,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::getMean(data) % SS::getSD(data)).str();
+                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::mean(data) % SS::getSD(data)).str();
             }
             else
             {
@@ -109,7 +120,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1% \u00B1 %2%") % SS::getMean(data) % SS::getSD(data)).str();
+                return (boost::format("%1% \u00B1 %2%") % SS::mean(data) % SS::getSD(data)).str();
             }
             else
             {

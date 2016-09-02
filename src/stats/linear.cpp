@@ -1,4 +1,5 @@
 #include "stats/linear.hpp"
+#include "tools/errors.hpp"
 #include <ss/regression/linear.hpp>
 
 using namespace Anaquin;
@@ -108,11 +109,10 @@ LinearModel LinearStats::linear(bool shouldLog) const
     
     try
     {
-        if (std::adjacent_find(d.x.begin(), d.x.end(), std::not_equal_to<double>()) == d.x.end())
-        {
-            throw std::runtime_error("Failed to perform linear regression. Flat mixture.");
-        }
-        
+        A_ASSERT(!d.x.empty() && !d.y.empty(), "Failed to perform linear regression. Empty inputs.");
+        A_ASSERT(std::adjacent_find(d.x.begin(), d.x.end(), std::not_equal_to<double>()) != d.x.end(),
+                        "Failed to perform linear regression. Flat mixture.");
+
         const auto m = SS::linearModel(d.y, d.x);
 
         lm.F     = m.f;

@@ -39,7 +39,7 @@ namespace SS
     }
     
     // Computes the arithmetic mean
-    template <typename T> typename T::value_type getMean(const T &x)
+    template <typename T> typename T::value_type mean(const T &x)
     {
         return (1.0 * Internal::sum(x)) / Internal::count(x);
     }

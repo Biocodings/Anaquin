@@ -160,8 +160,8 @@ SInflectStats StatsWriter::multiInfect(const std::vector<FileName>     &files,
         // Remember the break-point is on the log2-scale, we'll need to convert it back
 //        const auto b = pow(2, inf.b);
         
-        r.countSyn.add((unsigned)mStats[i].countSyn);
-        r.countGen.add((unsigned)mStats[i].countGen);
+        r.countSyn.add(mStats[i].countSyn);
+        r.countGen.add(mStats[i].countGen);
         
 //        r.b.add(b);
 //        r.lr.add(inf.lr);

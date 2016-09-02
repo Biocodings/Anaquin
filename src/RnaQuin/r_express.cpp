@@ -115,7 +115,7 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
     RExpress::Stats stats;
     
     f(stats);
-    
+
     return stats;
 }
 
@@ -274,7 +274,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     
     std::set<SequinID> seqs;
     
-    // This is the data structure that will be convenient
+    // This is the data structure that will be useful
     std::map<unsigned, std::map<SequinID, Concent>> data;
     
     // Expected concentration
@@ -288,12 +288,14 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
         auto &ls = metrs == RExpress::Metrics::Isoform ? stats[i].isos : stats[i].genes;
 
         ss << ((boost::format("\tObserved%1%") % (i+1)).str());
-        
+
         for (const auto &j : ls)
         {
             seqs.insert(j.first);
             expect[j.first]  = j.second.x;
             data[i][j.first] = j.second.y;
+            
+            A_ASSERT(expect[j.first], "Zero expect concentration");
         }
     }
     
@@ -330,10 +332,6 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     
     return ss.str();
 }
-
-/*
- * Generate summary statistics for a single sample and multiple samples.
- */
 
 static void generateSummary(const FileName &summary,
                             const std::vector<FileName >&files,
@@ -377,43 +375,43 @@ static void generateSummary(const FileName &summary,
     const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
     
     // Breakpoint estimated by piecewise regression
-    const auto b = ms.b.getMean();
+    const auto b = ms.b.mean();
     
-    // Number of genomic features above the breakpoint
-    SCounts n_above;
-    
-    // Number of genomic features below the breakpoint
-    SCounts n_below;
-    
-    // Counting all replicates...
-    for (const auto &i : stats)
-    {
-        Counts above = 0;
-        Counts below = 0;
-
-        // Counting for each genome gene/isoform...
-        for (const auto &j : i.gData)
-        {
-            assert(!isnan(j.second.abund));
-            
-            if (j.second.abund >= b)
-            {
-                above++;
-            }
-            else
-            {
-                below++;
-            }
-        }
-        
-        n_above.add((Counts)above);
-        n_below.add((Counts)below);
-    }
+//    // Number of genomic features above the breakpoint
+//    SCounts n_above;
+//    
+//    // Number of genomic features below the breakpoint
+//    SCounts n_below;
+//    
+//    // Counting all replicates...
+//    for (const auto &i : stats)
+//    {
+//        Counts above = 0;
+//        Counts below = 0;
+//
+//        // Counting for each genome gene/isoform...
+//        for (const auto &j : i.gData)
+//        {
+//            assert(!isnan(j.second.abund));
+//            
+//            if (j.second.abund >= b)
+//            {
+//                above++;
+//            }
+//            else
+//            {
+//                below++;
+//            }
+//        }
+//        
+//        n_above.add((Counts)above);
+//        n_below.add((Counts)below);
+//    }
     
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
 
-//    const auto hasLOQ = !isnan(ms.b.getMean());
+//    const auto hasLOQ = !isnan(ms.b.mean());
 
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"
@@ -424,21 +422,6 @@ static void generateSummary(const FileName &summary,
                         "       Synthetic: %5%\n"
                         "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
                         "       Genome: %8%\n\n"
-//                        "-------Limit of Quantification (LOQ)\n\n"
-//                        "       *Estimated by piecewise segmented regression\n\n"
-//                        "       Break LOQ:   %9% attomol/ul (%10%)\n\n"
-//                        "       *Below LOQ\n"
-//                        "       Intercept:   %11%\n"
-//                        "       Slope:       %12%\n"
-//                        "       Correlation: %13%\n"
-//                        "       R2:          %14%\n"
-//                        "       Genome:      %15%\n\n"
-//                        "       *Above LOQ\n"
-//                        "       Intercept:   %16%\n"
-//                        "       Slope:       %17%\n"
-//                        "       Correlation: %18%\n"
-//                        "       R2:          %19%\n"
-//                        "       Genome:      %20%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
                         "       Slope:       %9%\n"
                         "       Correlation: %10%\n"
@@ -449,37 +432,25 @@ static void generateSummary(const FileName &summary,
                         "       SSE:         %16%, DF: %17%\n"
                         "       SST:         %18%, DF: %19%\n";
     
-    o.writer->write((boost::format(format) % STRING(ms.files)                  // 1
-                                           % rSyn                              // 2
-                                           % MixRef()                          // 3
-                                           % title                             // 4
-                                           % STRING(ms.countSyn)               // 5
-                                           % limit.abund                       // 6
-                                           % limit.id                          // 7
-                                           % STRING(ms.countGen)               // 8
-//                                           % (hasLOQ ? STRING(ms.b)    : "-")  // 9
-//                                           % (hasLOQ ? STRING(ms.bID)  : "-")  // 10
-//                                           % (hasLOQ ? STRING(ms.lInt) : "-")  // 11
-//                                           % (hasLOQ ? STRING(ms.lSl)  : "-")  // 12
-//                                           % (hasLOQ ? STRING(ms.lr)   : "-")  // 13
-//                                           % (hasLOQ ? STRING(ms.lR2)  : "-")  // 14
-//                                           % (hasLOQ ? STRING(n_below) : "-")  // 15
-//                                           % (hasLOQ ? STRING(ms.rInt) : "-")  // 16
-//                                           % (hasLOQ ? STRING(ms.rSl)  : "-")  // 17
-//                                           % (hasLOQ ? STRING(ms.rr)   : "-")  // 18
-//                                           % (hasLOQ ? STRING(ms.rR2)  : "-")  // 19
-//                                           % (hasLOQ ? STRING(n_above) : "-")  // 20
-                                           % STRING(ms.wLog.sl)                // 21
-                                           % STRING(ms.wLog.r)                 // 22
-                                           % STRING(ms.wLog.R2)                // 23
-                                           % STRING(ms.wLog.F)                 // 24
-                                           % STRING(ms.wLog.p)                 // 25
-                                           % STRING(ms.wLog.SSM)               // 26
-                                           % STRING(ms.wLog.SSM_D)             // 27
-                                           % STRING(ms.wLog.SSE)               // 28
-                                           % STRING(ms.wLog.SSE_D)             // 29
-                                           % STRING(ms.wLog.SST)               // 30
-                                           % STRING(ms.wLog.SST_D)             // 31
+    o.writer->write((boost::format(format) % STRING(ms.files)      // 1
+                                           % rSyn                  // 2
+                                           % MixRef()              // 3
+                                           % title                 // 4
+                                           % STRING(ms.countSyn)   // 5
+                                           % limit.abund           // 6
+                                           % limit.id              // 7
+                                           % STRING(ms.countGen)   // 8
+                                           % STRING(ms.wLog.sl)    // 21
+                                           % STRING(ms.wLog.r)     // 22
+                                           % STRING(ms.wLog.R2)    // 23
+                                           % STRING(ms.wLog.F)     // 24
+                                           % STRING(ms.wLog.p)     // 25
+                                           % STRING(ms.wLog.SSM)   // 26
+                                           % STRING(ms.wLog.SSM_D) // 27
+                                           % STRING(ms.wLog.SSE)   // 28
+                                           % STRING(ms.wLog.SSE_D) // 29
+                                           % STRING(ms.wLog.SST)   // 30
+                                           % STRING(ms.wLog.SST_D) // 31
                      ).str());
     o.writer->close();
 }
@@ -536,9 +507,7 @@ static void generateCSV(const FileName &output, const std::vector<RExpress::Stat
 
     o.info("Generating " + output);
     o.writer->open(output);
-    
-    auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
-    
+
     if (stats.size() == 1)
     {
         const auto format = "%1%\t%2%\t%3%\t%4%";
@@ -547,6 +516,9 @@ static void generateCSV(const FileName &output, const std::vector<RExpress::Stat
                                                % "Length"
                                                % "InputConcent"
                                                % "Observed").str());
+        
+        auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
+        
         for (const auto &i : ls)
         {
             Locus l;
