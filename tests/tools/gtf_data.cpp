@@ -71,7 +71,7 @@ TEST_CASE("GTF_Synthetic")
 
 TEST_CASE("GTF_Merged")
 {
-    const auto r = gtfData(Reader("data/RnaQuin/merged.gtf"));
+    const auto r = gtfData(Reader("tests/data/merged.gtf"));
 
     REQUIRE(r.countGeneSyn()  == 78);
     REQUIRE(r.countTransSyn() == 164);
