@@ -58,17 +58,6 @@ namespace Anaquin
 
             return ss.str();
         }
-
-        /*
-         * -------------------- Linear Statistics --------------------
-         */
-        
-        static Scripts linearSummary(const FileName &,
-                                     const FileName &,
-                                     const LinearStats &,
-                                     const MappingStats &,
-                                     const Hist  &,
-                                     const Units &units);
     };
     
     struct RWriter

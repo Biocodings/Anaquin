@@ -199,6 +199,8 @@ namespace Anaquin
                 std::set<Proportion> af;
             };
 
+            struct VarStats : public LinearStats, public LimitStats {};
+            
             std::map<ChrID, QueryData> query;
 
             /*
@@ -206,13 +208,13 @@ namespace Anaquin
              */
             
             // Statistics for all variants
-            LinearStats vars;
+            VarStats vars;
             
             // Statistics for SNPs
-            LinearStats snp;
+            VarStats snp;
             
             // Statistics for indels
-            LinearStats ind;
+            VarStats ind;
             
             std::map<long, Counts> readR;
             std::map<long, Counts> readV;

@@ -39,7 +39,7 @@ namespace Anaquin
             Metrics metrs;
         };
         
-        struct Stats : public MappingStats
+        struct Stats : public MappingStats, public LimitStats
         {
             struct GenData
             {

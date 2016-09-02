@@ -137,9 +137,6 @@ namespace Anaquin
             std::map<SequinID, double> id2y;
         };
 
-        // Absolute detection limit
-        Limit limit;
-
         inline bool contains(const SequinID &id) const
         {
             return (*this).count(id);

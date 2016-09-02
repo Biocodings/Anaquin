@@ -77,6 +77,12 @@ namespace Anaquin
         std::map<ChrID, Hist> hist;
     };
     
+    struct LimitStats
+    {
+        // Absolute detection limit
+        Limit limit;
+    };
+
     struct MappingStats
     {
         inline Counts total() const

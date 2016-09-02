@@ -94,10 +94,10 @@ template <typename T> void update(RExpress::Stats &stats,
                 ls.add(id, exp, obs);
             }
 
-            if (isnan(ls.limit.abund) || exp < ls.limit.abund)
+            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
             {
-                ls.limit.id = id;
-                ls.limit.abund = exp;
+                stats.limit.id = id;
+                stats.limit.abund = exp;
             }
         }
     }
@@ -252,10 +252,10 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     stats.countSyn++;
                     stats.genes.add(i.first, input, i.second);
                     
-                    if (isnan(stats.genes.limit.abund) || input < stats.genes.limit.abund)
+                    if (isnan(stats.limit.abund) || input < stats.limit.abund)
                     {
-                        stats.genes.limit.id = i.first;
-                        stats.genes.limit.abund = input;
+                        stats.limit.id = i.first;
+                        stats.limit.abund = input;
                     }
                 }
 
@@ -360,11 +360,11 @@ static void generateSummary(const FileName &summary,
         mStats.push_back(stats[i]);
         lStats.push_back(ls);
         
-        assert(!isnan(ls.limit.abund) && !ls.limit.id.empty());
+        assert(!isnan(stats[i].limit.abund) && !stats[i].limit.id.empty());
 
-        if (isnan(limit.abund) || ls.limit.abund < limit.abund)
+        if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
         {
-            limit = ls.limit;
+            limit = stats[i].limit;
         }
     }
     
