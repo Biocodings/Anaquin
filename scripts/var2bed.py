@@ -1,6 +1,10 @@
 import os
 import sys
 
+#
+# Convert a synthetic VCF file, add flanking regions to each of the variants and generate a new BED file.
+#
+
 if __name__ == '__main__':
     with open(sys.argv[1]) as f:
         for line in f.readlines():
