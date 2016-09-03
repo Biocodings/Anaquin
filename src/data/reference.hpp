@@ -312,9 +312,6 @@ namespace Anaquin
             inline Counts countVarSyn() const { return countSNPSyn() + countIndSyn(); }
             inline Counts countVarGen() const { return countSNPGen() + countIndGen(); }
 
-            // Histogram for all reference chromosomes
-            std::map<ChrID, Hist> hist() const;
-
             C2Intervals  dInters()    const;
             ID2Intervals dIntersSyn() const;
             C2Intervals  dIntersGen() const;

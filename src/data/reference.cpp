@@ -454,11 +454,6 @@ void VarRef::readVRef(const Reader &r)
     }
 }
 
-std::map<ChrID, Hist> VarRef::hist() const
-{
-    return _impl->bData.hist();
-}
-
 C2Intervals  VarRef::dInters()    const { return _impl->bData.inters();    }
 ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(); }
 
@@ -583,7 +578,7 @@ void VarRef::validate()
     }
     else
     {
-        throw std::runtime_error("Failed to find VarQuin sequins in the annotation file");
+        A_THROW("Failed to find VarQuin sequins in the annotation file");
     }
     
     /*
