@@ -223,11 +223,6 @@ namespace Anaquin
         double fuzzy;
     };
 
-    struct ViewerOptions : public AnalyzerOptions
-    {
-        Path path;
-    };
-    
     struct ReportOptions : public AnalyzerOptions
     {
         FileName mix;

@@ -59,17 +59,8 @@ struct VDiscoverImpl : public VCFDataUser
             if (!isnan(m.query.p))     { __countP__++; }
             if (!isnan(m.query.depth)) { __countD__++; }
 
-            /*
-             * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
-             * remains unchanged.
-             */
-            
             // Only matching if the position and alleles agree
             const auto matched = m.match && m.ref && m.alt;
-            
-            /*
-             * Matched by position? reference allele? alternative allele?
-             */
             
             if (matched)
             {
@@ -81,7 +72,7 @@ struct VDiscoverImpl : public VCFDataUser
                 
                 stats->data.at(cID).af = m.query.alleleFreq();
                 
-                if (Standard::isSynthetic(cID))
+//                if (Standard::isSynthetic(cID))
                 {
                     const auto exp = r.findAFreq(baseID(m.match->id));
                     const auto obs = m.query.alleleFreq();
@@ -112,11 +103,7 @@ struct VDiscoverImpl : public VCFDataUser
             }
             else
             {
-                /*
-                 * Variant not found in the reference. This is a FP unless it can be filtered by
-                 * the p-value.
-                 */
-                
+                // FP because the variant is not found in the reference
                 //stats.data[cID].fps_.insert(key);
                 stats->data[cID].fps.push_back(m);
             }
@@ -160,14 +147,16 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     impl.o = &o;
     impl.stats = &stats;
 
-    // Read the input variant file and process them
+    // Read the input variants
     stats.vData = vcfData(file, o.format, &impl);
 
     o.info("Aggregating statistics");
 
     for (const auto &i : stats.data)
     {
-        auto &x = stats.data[i.first];
+        const auto &cID = i.first;
+        
+        auto &x = stats.data[cID];
         
         for (const auto &j : i.second.tps)
         {
@@ -194,9 +183,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
         
         x.m_snp.nq() = x.dSNP();
-        x.m_snp.nr() = r.countSNP(i.first);
+        x.m_snp.nr() = r.countSNP(cID);
         x.m_ind.nq() = x.dInd();
-        x.m_ind.nr() = r.countInd(i.first);
+        x.m_ind.nr() = r.countInd(cID);
 
         x.m.nq() = x.m_snp.nq() + x.m_ind.nq();
         x.m.nr() = x.m_snp.nr() + x.m_ind.nr();
@@ -239,18 +228,18 @@ static void writeQuins(const FileName &file,
                                            % "Type").str());
     for (const auto &i : stats.hist)
     {
-        if (!Standard::isSynthetic(i.first))
+        const auto &cID = i.first;
+        
+        if (!Standard::isSynthetic(cID))
         {
             continue;
         }
         
-        const auto cID = i.first;
-        
         // Search all query variants...
         for (const auto &j : i.second)
         {
-            auto key = j.first;
-            
+            const auto &key = j.first;
+
             // Detected the sequin?
             if (j.second)
             {
@@ -359,15 +348,10 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
 
     for (const auto &i : stats.data)
     {
-        if (Standard::isSynthetic(i.first))
+//        if (Standard::isSynthetic(i.first))
         {
             const auto &cID = i.first;
             
-            // We'll need it to search for the sequin where the FPs are
-            const auto inters = r.mInters(cID);
-            
-            assert(inters.size());
-
             auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
             {
                 for (const auto &i : x)
@@ -376,15 +360,27 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                     
                     if (label == "FP")
                     {
-                        const auto m = inters.contains(i.query.l);
+                        /*
+                         * We know this is a false-positive, but we can trace it to one of the sequins?
+                         */
                         
-                        // Can we find the corresponding region for the FP?
-                        if (m)
+                        if (r.hasInters(cID))
                         {
-                            sID = m->id();
-
-                            // It has to be sequin name (eg: D_3_12)
-                            assert(!sID.empty());
+                            // We'll need it to search for the sequin where the FPs are
+                            const auto inters = r.mInters(cID);
+                            
+                            assert(inters.size());
+                            
+                            const auto m = inters.contains(i.query.l);
+                            
+                            // Can we find the corresponding region for the FP?
+                            if (m)
+                            {
+                                sID = m->id();
+                                
+                                // It has to be sequin name (eg: D_3_12)
+                                assert(!sID.empty());
+                            }
                         }
                     }
                     
@@ -426,58 +422,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
-    const auto lm = stats.vars.linear(true);
-    
-//    // Calcluate the quantification point with logarithm
-//    auto ms = stats.vars.limitQuant(true);
-//    
-//    // Remember the break-point is on the log2-scale, we'll need to convert it back
-//    ms.b = pow(2, ms.b);
-    
-//    Counts n_below = 0;
-//    Counts n_above = 0;
-//    
-//    // For each query chromosome...
-//    for (const auto &i : stats.query)
-//    {
-//        // For each genomic chromosome...
-//        if (!Standard::isSynthetic(i.first))
-//        {
-//            for (const auto &j : i.second.af)
-//            {
-//                if (j >= ms.b)
-//                {
-//                    n_above++;
-//                }
-//                else
-//                {
-//                    n_below++;
-//                }
-//            }
-//        }
-//    }
-//
-//    // For each reference chromosome...
-//    for (const auto &i : stats.data)
-//    {
-//        // For each genomic chromosome...
-//        if (!Standard::isSynthetic(i.first))
-//        {
-//            if (i.second.af >= ms.b)
-//            {
-//                n_above++;
-//            }
-//            else
-//            {
-//                n_below++;
-//            }
-//        }
-//    }
-    
-//    const auto mm = r.findVar(ChrIS, stol(ms.id));
-//    assert(mm);
-    
-    auto writeNoScale = [&]()
+    auto germline = [&]()
     {
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
@@ -549,8 +494,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          ).str());
     };
     
-    auto writeScale = [&]()
+    auto somatic = [&]()
     {
+        const auto lm = stats.vars.linear(true);
+
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
                              "       Reference variant annotations:    %1%\n"
@@ -676,11 +623,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     
     if (r.isGermline())
     {
-        writeNoScale();
+        germline();
     }
     else
     {
-        writeScale();
+        somatic();
     }
 
     o.writer->close();
@@ -727,12 +674,12 @@ void VDiscover::report(const FileName &file, const Options &o)
     if (__countP__ >= __countD__)
     {
         o.info("P-value for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "1-data$Pval"));
+        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "1-data$Pval", "0"));
     }
     else
     {
         o.info("Depth for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth"));
+        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth", "NULL"));
     }
     
     o.writer->close();

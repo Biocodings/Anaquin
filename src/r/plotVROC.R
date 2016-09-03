@@ -14,18 +14,6 @@ data <- read.csv('%3%/%4%', sep='\t')
 # Remove false-positves that are not called within the sequin regions
 data <- data[data$ID != 'NA',]
 
-# Define your signifance
-sign <- 0.10
-
-if (all(is.na(data$Pval)))
-{
-    data <- data
-} else
-{
-    # It's only really FP if it's p-value is smaller than our threshold
-    data <- data[data$Label!='FP' | (data$Pval == '-' | data$Pval<=sign),]
-}
-
 # Uncomment the line to filter for SNPs (similar for 'Insertion' and 'Deletion')
 #data <- data[data$Type=='SNP',]
 
@@ -47,6 +35,6 @@ if (nrow(data[data$Label=='FP',]) > 0)
 }
 
 # Create Anaquin data for PlotROC
-anaquin <- AnaquinData(analysis='PlotROC', names=data$name, input=data$ExpFold, score=score, label=data$Label)
+anaquin <- AnaquinData(analysis='PlotROC', seqs=data$name, ratio=data$ExpFold, score=score, label=data$Label)
 
-plotROC(anaquin, title=title, legTitle=legTitle, refRats=0)
+plotROC(anaquin, title=title, legTitle=legTitle, refRats=%6%)

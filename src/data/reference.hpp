@@ -320,6 +320,9 @@ namespace Anaquin
             MC2Intervals msInters() const;
             MC2Intervals mgInters() const;
         
+            // Do we have the chromosome in the reference?
+            bool hasInters(const ChrID &) const;
+        
             MergedIntervals<> mInters(const ChrID &) const;
         
             std::map<ChrID, std::map<long, Counts>> vHist() const;
@@ -329,9 +332,6 @@ namespace Anaquin
 
             Concent findRCon(const SequinID &) const;
             Concent findVCon(const SequinID &) const;
-        
-            // Returns the expected allele fold-change
-            Fold findAFold(const SequinID &) const;
 
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;

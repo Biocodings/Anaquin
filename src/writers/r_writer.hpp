@@ -62,7 +62,7 @@ namespace Anaquin
     
     struct RWriter
     {
-        static Scripts createVROC(const FileName &, const std::string &);
+        static Scripts createVROC(const FileName &, const std::string &, const std::string &);
         
         static Scripts createSensitivity(const FileName    &,
                                          const std::string &,

@@ -1,9 +1,7 @@
 #ifndef BED_DATA_HPP
 #define BED_DATA_HPP
 
-#include "data/hist.hpp"
 #include "data/minters.hpp"
-#include "data/standard.hpp"
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
@@ -15,21 +13,21 @@ namespace Anaquin
 
     struct BedChrData
     {
-        std::map<std::string, Data> g2d;
+        std::map<RegionID, Data> r2d;
     };
     
     struct BedData : public std::map<ChrID, BedChrData>
     {
         inline Counts countGene(const ChrID &cID) const
         {
-            return at(cID).g2d.size();
+            return at(cID).r2d.size();
         }
         
         inline Counts countBase(const ChrID &cID) const
         {
             Base b = 0;
             
-            for (const auto &i : at(cID).g2d)
+            for (const auto &i : at(cID).r2d)
             {
                 b += i.second.l.length();
             }
@@ -86,7 +84,7 @@ namespace Anaquin
             
             for (const auto &i : *this)
             {
-                for (const auto &j :i.second.g2d)
+                for (const auto &j :i.second.r2d)
                 {
                     r[i.first][j.first];
                 }
@@ -99,7 +97,7 @@ namespace Anaquin
         {
             Intervals<> r;
             
-            for (const auto &i : at(cID).g2d)
+            for (const auto &i : at(cID).r2d)
             {
                 r.add(Interval(i.first, i.second.l));
             }
@@ -157,7 +155,7 @@ namespace Anaquin
         {
             MergedIntervals<> r;
             
-            for (const auto &i : at(cID).g2d)
+            for (const auto &i : at(cID).r2d)
             {
                 #define BIN_SIZE 10000
                 
@@ -240,16 +238,16 @@ namespace Anaquin
             {
                 const auto bID = baseID(x.name);
                 
-                if (c2d[x.cID].g2d.count(bID))
+                if (c2d[x.cID].r2d.count(bID))
                 {
                     return;
                 }
 
-                c2d[x.cID].g2d[bID] = x;
+                c2d[x.cID].r2d[bID] = x;
             }
             else
             {
-                c2d[x.cID].g2d[x.name] = x;
+                c2d[x.cID].r2d[x.name] = x;
             }
         });
 

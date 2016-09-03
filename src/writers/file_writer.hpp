@@ -14,10 +14,7 @@ namespace Anaquin
     {
         public:
 
-            FileWriter(const std::string &path) : path(path)
-            {
-                isRScript = boost::algorithm::ends_with(path, ".R");
-            }
+            FileWriter(const std::string &path) : path(path) {}
 
             inline void close() override
             {
@@ -27,6 +24,8 @@ namespace Anaquin
 
             inline void open(const FileName &file) override
             {
+                isRScript = boost::algorithm::ends_with(file, ".R");
+
                 if (!path.empty())
                 {
                     system((boost::format("mkdir -p %1%") % path).str().c_str());

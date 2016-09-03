@@ -21,13 +21,14 @@ extern FileName mixture();
 // Defined in resources.cpp
 extern Scripts PlotVROC();
 
-Scripts RWriter::createVROC(const FileName &file, const std::string &score)
+Scripts RWriter::createVROC(const FileName &file, const std::string &score, const std::string &refRat)
 {
     return (boost::format(PlotVROC()) % date()
                                       % __full_command__
                                       % __output__
                                       % file
-                                      % score).str();
+                                      % score
+                                      % refRat).str();
 }
 
 Scripts RWriter::createSensitivity(const FileName    &file,

@@ -11,13 +11,11 @@ namespace Anaquin
 {
     struct VDiscover
     {
-        typedef VarFormat Format;
-        
         struct Options : public AnalyzerOptions
         {
             Options() {}
 
-            Format format;
+            VarFormat format;
         };
 
         struct Stats : public MappingStats, public VariantStats
@@ -98,7 +96,8 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countVar_TP(cID) : 0;
+//                    return Standard::isSynthetic(cID) ? countVar_TP(cID) : 0;
+                    return countVar_TP(cID);
                 });
             }
             
@@ -106,7 +105,8 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countSNP_FP(cID) : 0;
+//                    return Standard::isSynthetic(cID) ? countSNP_FP(cID) : 0;
+                    return countSNP_FP(cID);
                 });
             }
             

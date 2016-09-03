@@ -466,6 +466,8 @@ MergedIntervals<> VarRef::mInters(const ChrID &cID) const
     return _impl->bData.minters(cID);
 }
 
+bool VarRef::hasInters(const ChrID &cID) const { return _impl->bData.count(cID); }
+
 bool VarRef::isGermline() const
 {
     std::set<Proportion> freqs;
@@ -475,7 +477,8 @@ bool VarRef::isGermline() const
         freqs.insert(findAFreq(i.first));
     }
     
-    return freqs.size() == 1;
+    // Only homozygousa and heterozygous?
+    return freqs.size() == 2 && freqs.count(0.5) && freqs.count(1);
 }
 
 Concent VarRef::findRCon(const SequinID &id) const
@@ -497,12 +500,6 @@ Proportion VarRef::findAFreq(const SequinID &id) const
     const auto &v = p.v;
 
     return v->abund / (r->abund + v->abund);
-}
-
-Fold VarRef::findAFold(const SequinID &id) const
-{
-    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
-    return round(p.r->abund / p.v->abund);
 }
 
 Counts VarRef::countInd(const ChrID &cID) const
@@ -562,24 +559,21 @@ Counts VarRef::countGeneGen() const
 
 void VarRef::validate()
 {
-    // Coordinate annotation?
-    const auto shouldCoord = !_impl->bData["chr1"].g2d.empty(); // TODO: Need to loop through all chromosomes
-    
-    if (shouldCoord)
+    A_ASSERT(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
+
+    std::set<SequinID> seqIDs;
+
+    for (const auto &i : _impl->bData)
     {
-        std::set<SequinID> ids;
-        
-        for (const auto &i : _impl->bData["chr1"].g2d)
+        for (const auto &j : i.second.r2d)
         {
-            ids.insert(i.first);
+            seqIDs.insert(j.first);
         }
-        
-        merge(ids);
     }
-    else
-    {
-        A_THROW("Failed to find VarQuin sequins in the annotation file");
-    }
+
+    A_ASSERT(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
+    
+    merge(seqIDs);
     
     /*
      * Constructing allele frequency for the variants

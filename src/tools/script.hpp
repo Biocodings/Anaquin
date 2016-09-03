@@ -11,9 +11,6 @@
 #include <boost/format.hpp>
 
 // Defined in resources.cpp
-extern std::string ViewerScript();
-
-// Defined in resources.cpp
 extern std::string ReportScript();
 
 // Defined in resources.cpp
@@ -59,12 +56,6 @@ namespace Anaquin
                                                                             % file1
                                                                             % file2)).str();
             Script::run(ReportScript(), "python", cmd);
-        }
-        
-        static void viewer(const std::string &args)
-        {
-            std::cout << args << std::endl;
-            Script::run(ViewerScript(), "python", args);
         }
         
         static std::string trim(const std::string &str)

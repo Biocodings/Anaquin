@@ -80,7 +80,11 @@ namespace Anaquin
         
         inline const Variant * findVar(const ChrID &cID, const Locus &l)
         {
-            if (at(cID).s2d.count(l.start))
+            if (!count(cID))
+            {
+                return nullptr;
+            }
+            else if (at(cID).s2d.count(l.start))
             {
                 return &(at(cID).s2d.at(l.start));
             }
@@ -88,13 +92,13 @@ namespace Anaquin
             {
                 return &(at(cID).i2d.at(l.start));
             }
-            
+
             return nullptr;
         }
 
         inline Counts countSNP(const ChrID &cID) const
         {
-            return at(cID).s2d.size();
+            return count(cID) ? at(cID).s2d.size() : 0;
         }
         
         inline Counts countVar() const
@@ -125,7 +129,7 @@ namespace Anaquin
         
         inline Counts countInd(const ChrID &cID) const
         {
-            return at(cID).i2d.size();
+            return count(cID) ? at(cID).i2d.size() : 0;
         }
         
         inline Counts countInd() const
