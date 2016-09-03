@@ -61,7 +61,7 @@ namespace Anaquin
         ChrID cID;
 
         // Eg: D_1_10
-        SequinID id;
+        VarID id;
 
         // The reference position, with the 1st base having position 1
         Locus l;

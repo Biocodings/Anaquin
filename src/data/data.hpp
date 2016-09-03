@@ -35,7 +35,7 @@ namespace Anaquin
     typedef long double Probability;
     
     typedef std::string ChrID;
-    typedef std::string BinID;
+    typedef std::string VarID;
     typedef std::string GeneID;
     typedef std::string ExonID;
     typedef std::string GenoID;
@@ -47,8 +47,7 @@ namespace Anaquin
     typedef std::string RegionID;
     typedef std::string IsoformID;
     typedef std::string GenericID;
-    typedef std::string FeatureID;
-    
+
     typedef std::string Path;
     typedef std::string Label;
     typedef std::string Units;
