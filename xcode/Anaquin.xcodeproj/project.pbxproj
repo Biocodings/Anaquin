@@ -52,6 +52,7 @@
 		EFA869691D606C1400A4326B /* v_sample2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA869671D606C1400A4326B /* v_sample2.cpp */; };
 		EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE711BCB7D6100780182 /* coverage.cpp */; };
 		EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB108441C22D29E004DCBCF /* t_itree.cpp */; };
+		EFB149D01D7AF0AD001A0A12 /* t_parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB149CF1D7AF0AD001A0A12 /* t_parser_vcf.cpp */; };
 		EFB2532C1D6EAFE1002F057E /* t_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB2532B1D6EAFE1002F057E /* t_sample.cpp */; };
 		EFB26DB71D19373400B08054 /* t_minters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB26DB61D19373400B08054 /* t_minters.cpp */; };
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
@@ -220,6 +221,7 @@
 		EFAA9B531D0EB05700AA210E /* parser_fold.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_fold.hpp; path = ../src/parsers/parser_fold.hpp; sourceTree = "<group>"; };
 		EFAA9B571D0EE0CF00AA210E /* parser_express.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_express.hpp; path = ../src/parsers/parser_express.hpp; sourceTree = "<group>"; };
 		EFB108441C22D29E004DCBCF /* t_itree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_itree.cpp; path = ../tests/data/t_itree.cpp; sourceTree = "<group>"; };
+		EFB149CF1D7AF0AD001A0A12 /* t_parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_vcf.cpp; path = ../tests/parsers/t_parser_vcf.cpp; sourceTree = "<group>"; };
 		EFB1E0421B0098F300F093A2 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
 		EFB2532A1D6EAFAC002F057E /* sample.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sample.hpp; path = ../src/data/sample.hpp; sourceTree = "<group>"; };
 		EFB2532B1D6EAFE1002F057E /* t_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_sample.cpp; path = ../tests/data/t_sample.cpp; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 				EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */,
 				EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */,
 				EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */,
+				EFB149CF1D7AF0AD001A0A12 /* t_parser_vcf.cpp */,
 				EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */,
 			);
 			name = Parsers;
@@ -814,6 +817,7 @@
 				EFDD6A9B1B0DD76200450029 /* sam.c in Sources */,
 				EFDD6A961B0DD76200450029 /* kfunc.c in Sources */,
 				EFDD6ACD1B0DD76C00450029 /* cram_io.c in Sources */,
+				EFB149D01D7AF0AD001A0A12 /* t_parser_vcf.cpp in Sources */,
 				EF3860E81AD3783A0062D246 /* parser_cufflink.cpp in Sources */,
 				EFFC30D01D090A2000814E0F /* r_assembly.cpp in Sources */,
 				EFFC30C81D08F7AA00814E0F /* r_sample.cpp in Sources */,
