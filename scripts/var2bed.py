@@ -13,9 +13,10 @@ if __name__ == '__main__':
             if line[0] != '#':
                 toks  = line.split('\t')
                 chrID = toks[0]
+                seqID = toks[2]
                 pos = int(toks[1])
                 
                 start = pos - 500
                 end   = pos + 500
 
-                print (chrID + '\t' + str(start) + '\t' + str(end) + '\t' + 'D_' + str(start) + '_' + str(end))
+                print (chrID + '\t' + str(start) + '\t' + str(end) + '\t' + seqID)
