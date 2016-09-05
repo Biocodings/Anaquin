@@ -14,8 +14,8 @@ The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer a
 
 ## Citation
 
-* Spliced synthetic genes as internal controls in RNA sequencing experiments (2016)
-* Representing genetic variation with synthetic DNA standards (2016)
+* Spliced synthetic genes as internal controls in RNA sequencing experiments
+* Representing genetic variation with synthetic DNA standards
 
 ## Bioinformatics
 
