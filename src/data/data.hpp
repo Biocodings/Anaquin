@@ -58,8 +58,11 @@ namespace Anaquin
     typedef long long Base;
     typedef long long Depth;
     typedef long long Counts;
+    typedef long long Quality;
     
     const ChrID Geno  = "geno";
+    
+    // Synthetic chromosome for RnaQuin
     const ChrID ChrIS = "chrIS";
     
     enum Mixture

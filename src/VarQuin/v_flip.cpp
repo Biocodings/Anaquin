@@ -51,8 +51,12 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
 {
     Stats stats;
 
-    std::set<ReadName> lowCon, highCon;
-
+    // Filter for low mapping quality
+    std::set<ReadName> lowMap;
+    
+    // Reads mapped to reverse genome
+    std::set<ReadName> normal;
+    
     ParserSAM::parse(align, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -66,22 +70,22 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         }
         else if (Standard::isSynthetic(x.cID))
         {
-            if (x.mapq <= 10)
+            if (x.mapq <= stats.mFilter)
             {
-                stats.countLow++;
-                lowCon.insert(x.name);
+                stats.mCounts++;
+                lowMap.insert(x.name);
 
 #ifdef ANAQUIN_DEBUG
-                o.logInfo("Mapping: " + x.name + "\t" + x.cID);
+                o.logInfo("MAPQ: " + x.name + "\t" + x.cID);
 #endif
             }
             else
             {
                 stats.countSyn++;
-                highCon.insert(x.name);
+                normal.insert(x.name);
 
 #ifdef ANAQUIN_DEBUG
-                o.logInfo("Added: " + x.name + "\t" + x.cID);
+                o.logInfo("Normal: " + x.name + "\t" + x.cID);
 #endif
             }
         }
@@ -105,20 +109,19 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
-            if (VFlip::isReverse(lowCon, x.name))
+            if (VFlip::isReverse(lowMap, x.name))
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
-                o.logInfo("LowCon: " + x.name + "\t" + std::to_string(lowCon.count(n1)) + "\t" + std::to_string(lowCon.count(n2)) + "\t" + n1 + "\t" + n2);
+                o.logInfo("MAPQ: " + x.name + "\t" + std::to_string(lowCon.count(n1)) + "\t" + std::to_string(lowCon.count(n2)) + "\t" + n1 + "\t" + n2);
                 m.unlock();
 #endif
-                
             }
-            else if (VFlip::isReverse(highCon, x.name))
+            else if (VFlip::isReverse(normal, x.name))
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
-                o.logInfo("HighCon: " + x.name + "\t" + std::to_string(highCon.count(n1)) + "\t" + std::to_string(highCon.count(n2)) + "\t" + n1 + "\t" + n2);
+                o.logInfo("Normal: " + x.name + "\t" + std::to_string(highCon.count(n1)) + "\t" + std::to_string(highCon.count(n2)) + "\t" + n1 + "\t" + n2);
                 m.unlock();
 #endif
 
@@ -151,6 +154,8 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
     
     t1.join();
     t2.join();
+    
+    stats.mProp = static_cast<double>(stats.mCounts) / stats.countSyn;
 
     return stats;
 }
@@ -172,15 +177,19 @@ static void writeSummary(const FileName &file,
                          "                             %2%\n"
                          "       Alignment file:       %3%\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Forward reads: %4%\n"
-                         "                      %5%\n\n"
-                         "       Flipped reverse reads: %6%\n"
-                         "                              %7%\n\n"
+                         "       Reads mapped to the forward genome: %4%\n"
+                         "                                           %5%\n\n"
+                         "       Reads mapped to the reverse genome: %6%\n"
+                         "                                           %7%\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped: %8% (%9%%%)\n"
                          "       Forward:  %10% (%11%%%)\n"
                          "       Reverse:  %12% (%13%%%)\n"
-                         "       Dilution: %14$.2f\n";
+                         "       Dilution: %14$.2f\n\n"
+                         "-------Filters\n\n"
+                         "       Mapping quality: %15% quality score\n\n"
+                         "-------Filtered Reads\n\n"
+                         "       Mapping quality: %16% (%17%)\n";
 
     o.generate(file);
     o.writer->open(file);
@@ -198,6 +207,9 @@ static void writeSummary(const FileName &file,
                                             % stats.countSyn   // 12
                                             % stats.propSyn()  // 13
                                             % stats.dilution() // 14
+                                            % stats.mFilter    // 15
+                                            % stats.mCounts    // 16
+                                            % stats.mProp      // 17
                      ).str());
 }
     

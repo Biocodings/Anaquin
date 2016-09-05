@@ -17,8 +17,17 @@ namespace Anaquin
         
         struct Stats : public MappingStats
         {
-            // Low mapping quality
-            Counts countLow = 0;
+            /*
+             * Filter for mapping quality
+             */
+            
+            Quality mFilter = 10;
+            
+            // Number of reads filtered by mapping quality
+            Counts mCounts = 0;
+            
+            // Proportion of reads filtered by mapping quality
+            Proportion mProp;
         };
 
         static bool isReverse(const std::set<ReadName> &, const ReadName &);
