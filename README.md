@@ -8,7 +8,7 @@
 
 VarQuin and MetaQuin will be added in future releases.
 
-Respository for the R-package is http://github.com/student-t/Anaquin. Due to technical issues with Bioconductor, we are forced to name the respository to **Anaquin**. However, we also give the same name to our C++ software.
+Respository for the R-package is hosted by Bioconductor and available at: https://github.com/Bioconductor-mirror/Anaquin.
 
 The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0CB4QFjAAahUKEwiWt5b-7p3IAhWEjJQKHcxhDMg&url=http%3A%2F%2Fwww.garvan.org.au%2F&usg=AFQjCNF03pFvjJsIYqEbmxMV3SBTC5PJxg&sig2=jxHlEHfy_CNSJ4cZyVfvVQ'>Garvan Institute of Medical Research</a>. See <a href='http://www.sequin.xyz'>www.sequin.xyz</a> for further details. In particular, the <a href='www.sequin.xyz/about/introduction/'>introduction page</a> should be helpful.
 
