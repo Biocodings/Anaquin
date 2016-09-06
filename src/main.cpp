@@ -681,6 +681,15 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
     return analyze<Analyzer>(_p.opts.at(x), o);
 }
 
+// Analyze for two samples
+template <typename Analyzer> void analyze_2(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::report(_p.inputs[0], _p.inputs[1], o);
+    }, o);
+}
+
 // Analyze for n samples
 template < typename Analyzer> void analyze_n(typename Analyzer::Options o = typename Analyzer::Options())
 {
@@ -1221,7 +1230,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_ALIGN: { analyze_1<VAlign>(OPT_U_FILES); break; }
+                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
+
                 case TOOL_V_FLIP:
                 {
                     if (_p.inputs.size() != 3)

@@ -234,19 +234,14 @@ namespace Anaquin
         
         ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &)
         {
-            if (Standard::isSynthetic(x.cID))
+            if (Standard::isSynthetic(x.name) && !Standard::isSynthetic(x.cID))
             {
-                const auto bID = baseID(x.name);
-                
-                if (c2d[x.cID].r2d.count(bID))
-                {
-                    return;
-                }
-
-                c2d[x.cID].r2d[bID] = x;
+                // Eg: chr1 0 248956422 GS_058
+                c2d[Standard::toReverse(x.cID)].r2d[x.name] = x;
             }
             else
             {
+                // Eg: chr1 0 248956422 chr1
                 c2d[x.cID].r2d[x.name] = x;
             }
         });

@@ -1,5 +1,6 @@
 #include "VarQuin/v_align.hpp"
 #include "parsers/parser_sam.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
 
@@ -42,6 +43,11 @@ static VAlign::Stats init()
 
 static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
 {
+    if (!stats.data.count(align.cID))
+    {
+        return;
+    }
+    
     auto &x = stats.data.at(align.cID);
 
     Locus l;
@@ -148,18 +154,17 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
     }
 }
 
-VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
+VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const Options &o)
 {
     auto stats = init();
     
     o.info(std::to_string(stats.inters.size()) + " chromosomes in the reference");
-    o.analyze(file);
 
 #ifdef DEBUG_VALIGN
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
 #endif
 
-    ParserSAM::parse(file, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    auto classify = [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -169,35 +174,71 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         // Intron? Probably a mistake.
         if (info.skip)
         {
-            o.warn("Skipped alignment: " + align.name);
+            o.warn("Skipped alignment: " + x.name);
         }
         
-        if (!align.mapped)
+        if (!x.mapped)
         {
             return;
         }
-
-        stats.update(align);
-
+        
+        stats.update(x);
+        
         if (info.skip)
         {
             return;
         }
         
-        if (Standard::isSynthetic(align.cID))
+        if (Standard::isSynthetic(x.cID))
         {
-            classifyAlign(stats, align);
+            classifyAlign(stats, x);
         }
-        else if (Standard::isGenomic(align.cID))
+        else if (Standard::isGenomic(x.cID))
         {
-            classifyAlign(stats, align);
+            classifyAlign(stats, x);
         }
         else
         {
-            o.warn(align.cID);
+            o.warn(x.cID);
+        }
+    };
+    
+    /*
+     * 1: Analyzing genomic alignments
+     */
+    
+    o.analyze(gen);
+    
+    ParserSAM::parse(gen, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    {
+        // Ignore alignments mapped to the reverse genome
+        if (!Standard::isSynthetic(align.cID))
+        {
+            classify(align, info);
         }
     });
+
+    /*
+     * 2: Analyzing sequin alignments (also in the forward genome)
+     */
     
+    o.analyze(seqs);
+    
+    ParserSAM::parse(seqs, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    {
+        // Eg: fron chr2 to chrev2
+        boost::replace_all(align.cID, "chr", "chrev");
+
+        if (Standard::isSynthetic(align.cID))
+        {
+            classify(align, info);
+        }
+        else
+        {
+            o.logInfo("Invalid chromosome for sequins: " + align.cID + "." + align.name);
+        }
+    });
+
 #ifdef DEBUG_VALIGN
     __bWriter__.close();
 #endif
@@ -213,7 +254,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     Base gtp = 0;
     Base gfp = 0;
     
-    o.info("Analyzing " + toString(stats.inters.size()) + " chromsomes");
+    o.info("Analyzing " + std::to_string(stats.inters.size()) + " chromsomes");
 
     // For each chromosome...
     for (const auto &i : stats.inters)
@@ -355,7 +396,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
+static void writeSummary(const FileName &file,
+                         const FileName &gen,
+                         const FileName &seq,
+                         const VAlign::Stats &stats,
+                         const VAlign::Options &o)
 {
     extern FileName BedRef();
 
@@ -371,62 +416,64 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
 
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       User alignment file: %2%\n\n"
+                         "       Genome alignment file: %2%\n"
+                         "       Synthetic alignment file: %3%\n\n"
                          "-------Alignments\n\n"
-                         "       Synthetic: %3% (%4%)\n"
-                         "       Genome:    %5% (%6%)\n"
-                         "       Dilution:  %7$.2f\n\n"
+                         "       Synthetic: %4% (%5%)\n"
+                         "       Genome:    %6% (%7%)\n"
+                         "       Dilution:  %8$.2f\n\n"
                          "-------Reference annotation (Synthetic)\n\n"
-                         "       Synthetic: %8% regions\n"
-                         "       Synthetic: %9% bases\n\n"
+                         "       Synthetic: %9% regions\n"
+                         "       Synthetic: %10% bases\n\n"
                          "-------Reference annotation (Genome)\n\n"
-                         "       Genome: %10% regions\n"
-                         "       Genome: %11% bases\n\n"
+                         "       Genome: %11% regions\n"
+                         "       Genome: %12% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Alignment level\n"
-                         "       Correct:     %12%\n"
-                         "       Incorrect:   %13%\n\n"
-                         "       Precision:   %14$.4f\n\n"
+                         "       Correct:     %13%\n"
+                         "       Incorrect:   %14%\n\n"
+                         "       Precision:   %15$.4f\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %15%\n"
-                         "       Uncovered:   %16%\n"
-                         "       Erroneous:   %17%\n"
-                         "       Total:       %18%\n\n"
-                         "       Sensitivity: %19$.4f\n"
-                         "       Precision:   %20$.4f\n\n"
+                         "       Covered:     %16%\n"
+                         "       Uncovered:   %17%\n"
+                         "       Erroneous:   %18%\n"
+                         "       Total:       %19%\n\n"
+                         "       Sensitivity: %20$.4f\n"
+                         "       Precision:   %21$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %21%\n"
-                         "       Uncovered:   %22%\n"
-                         "       Total:       %23%\n\n"
-                         "       Sensitivity: %24$.4f\n";
+                         "       Covered:     %22%\n"
+                         "       Uncovered:   %23%\n"
+                         "       Total:       %24%\n\n"
+                         "       Sensitivity: %25$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
-                                            % src                     // 2
-                                            % stats.countSyn          // 3
-                                            % (100 * stats.propSyn()) // 4
-                                            % stats.countGen          // 5
-                                            % (100 * stats.propGen()) // 6
-                                            % stats.dilution()        // 7
-                                            % r.countGeneSyn()        // 8
-                                            % r.countBaseSyn()        // 9
-                                            % r.countGeneGen()        // 10
-                                            % r.countBaseGen()        // 11
-                                            % stats.sa.tp()           // 12
-                                            % stats.sa.fp()           // 13
-                                            % stats.sa.pc()           // 14
-                                            % stats.sb.tp()           // 15
-                                            % stats.sb.fn()           // 16
-                                            % stats.sb.fp()           // 17
-                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 18
-                                            % stats.sb.sn()                   // 19
-                                            % stats.sb.pc()                   // 20
-                                            % stats.gb.tp()                   // 21
-                                            % stats.gb.fn()                   // 22
-                                            % (stats.gb.tp() + stats.gb.fn()) // 23
-                                            % stats.gb.sn()                   // 24
+                                            % gen                     // 2
+                                            % seq                     // 3
+                                            % stats.countSyn          // 4
+                                            % (100 * stats.propSyn()) // 5
+                                            % stats.countGen          // 6
+                                            % (100 * stats.propGen()) // 7
+                                            % stats.dilution()        // 8
+                                            % r.countGeneSyn()        // 9
+                                            % r.countBaseSyn()        // 10
+                                            % r.countGeneGen()        // 11
+                                            % r.countBaseGen()        // 12
+                                            % stats.sa.tp()           // 13
+                                            % stats.sa.fp()           // 14
+                                            % stats.sa.pc()           // 15
+                                            % stats.sb.tp()           // 16
+                                            % stats.sb.fn()           // 17
+                                            % stats.sb.fp()           // 18
+                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 19
+                                            % stats.sb.sn()                   // 20
+                                            % stats.sb.pc()                   // 21
+                                            % stats.gb.tp()                   // 22
+                                            % stats.gb.fn()                   // 23
+                                            % (stats.gb.tp() + stats.gb.fn()) // 24
+                                            % stats.gb.sn()                   // 25
                      ).str());
     o.writer->close();
 }
@@ -537,9 +584,9 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
 #endif
 }
 
-void VAlign::report(const FileName &file, const Options &o)
+void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
 {
-    const auto stats = analyze(file, o);
+    const auto stats = analyze(gen, seqs, o);
 
     o.info("Generating statistics");
     
@@ -547,7 +594,7 @@ void VAlign::report(const FileName &file, const Options &o)
      * Generating VarAlign_summary.stats
      */
     
-    writeSummary("VarAlign_summary.stats", file, stats, o);
+    writeSummary("VarAlign_summary.stats", gen, seqs, stats, o);
 
     /*
      * Generating VarAlign_quins.stats

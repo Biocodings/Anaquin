@@ -13,6 +13,7 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_gtf.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
 
@@ -109,6 +110,16 @@ bool Standard::isGenomic(const ChrID &cID)
     return Standard::genoIDs.count(cID);
 }
 
+ChrID Standard::toReverse(const ChrID &cID)
+{
+    auto x = cID;
+    
+    // Eg; chr2 to chrev2
+    boost::replace_all(x, "chr", "chrev");
+
+    return x;
+}
+
 bool Standard::isSynthetic(const ChrID &cID)
 {
     assert(!cID.empty());
@@ -121,15 +132,20 @@ bool Standard::isSynthetic(const ChrID &cID)
         return true;
     }
 
-    /*
-     * Eg: chrev10
-     */
-
+    // Eg; chrev10
     else if (cID.find("rev") != std::string::npos)
     {
         return true;
     }
-
+    else if (cID.find("GS_") != std::string::npos)
+    {
+        return true;
+    }
+    else if (cID.find("GI_") != std::string::npos)
+    {
+        return true;
+    }
+    
     return false;
 }
 

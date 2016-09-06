@@ -27,11 +27,9 @@ namespace Anaquin
 
             // Reference genomic chromosomes
             static std::set<ChrID> genoIDs;
-        
-            /*
-             * ---------------- General analysis ----------------
-             */
 
+            static ChrID toReverse(const ChrID &);
+        
             // Whether the chromosome is synthetic
             static bool isSynthetic(const ChrID &);
 

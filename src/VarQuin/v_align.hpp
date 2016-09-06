@@ -87,8 +87,8 @@ namespace Anaquin
             std::map<GeneID, Proportion> g2s;
         };
 
-        static Stats analyze(const FileName &, const Options &o = Options());
-        static void  report (const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());        
+        static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
 }
 
