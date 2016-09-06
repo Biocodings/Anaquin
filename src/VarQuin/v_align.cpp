@@ -3,8 +3,6 @@
 
 using namespace Anaquin;
 
-#define DEBUG_VALIGN
-
 #ifdef DEBUG_VALIGN
 static std::ofstream __bWriter__;
 #endif
@@ -76,15 +74,15 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             assert(l.length() > rGaps);
         };
         
-        // Does the read aligned within a gene (or a region)?
+        // Does the read aligned within a region (eg: gene)?
         const auto m = stats.inters.at(align.cID).contains(l);
-        
+
         if (m)
         {
             isContained = true;
             
             f(m);
-            assert(lGaps == 0 && rGaps == 0);
+            A_ASSERT("lGaps == 0 && rGaps == 0", "No gaps expected for a TP");
             
             stats.data[align.cID].tp++;
             x.aLvl.r2r[m->id()]++;
@@ -157,7 +155,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     o.info(std::to_string(stats.inters.size()) + " chromosomes in the reference");
     o.analyze(file);
 
+#ifdef DEBUG_VALIGN
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
+#endif
 
     ParserSAM::parse(file, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
@@ -198,7 +198,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
     
+#ifdef DEBUG_VALIGN
     __bWriter__.close();
+#endif
 
     o.info("Alignments analyzed. Generating statistics.");
     
@@ -218,41 +220,39 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     {
         const auto &cID = i.first;
         
-        auto &x = stats.data.at(cID);
-
-        // For each region... (whole chromosome for the whole genome sequencing)
+        // For each region...
         for (const auto &j : i.second.data())
         {
-            const auto &gID  = j.first;
+            const auto &rID  = j.first;
             const auto isSyn = Standard::isSynthetic(cID);
 
-            const auto m = stats.inters.at(cID).find(gID);
+            const auto m = stats.inters.at(cID).find(rID);
             assert(m);
 
-            // Statistics for the gene (created by the interval)
-            const auto ms = m->stats();
+            // Statistics for the region
+            const auto rs = m->stats();
 
-            assert(ms.length);
+            A_ASSERT(rs.length, "Empty region: " + rID);
             
             if (isSyn)
             {
-                stats.s2l[gID] = ms.length;
-                stats.s2c[gID] = ms.nonZeros;
+                stats.s2l[rID] = rs.length;
+                stats.s2c[rID] = rs.nonZeros;
 
-                // Sensitivty for the gene
-                stats.g2s[gID] = static_cast<Proportion>(stats.s2c.at(gID)) / stats.s2l.at(gID);
+                // Sensitivty for the region
+                stats.g2s[rID] = static_cast<Proportion>(stats.s2c.at(rID)) / stats.s2l.at(rID);
             }
             else
             {
-                stats.g2l[gID] = ms.length;
-                stats.g2c[gID] = ms.nonZeros;
+                stats.g2l[rID] = rs.length;
+                stats.g2c[rID] = rs.nonZeros;
 
                 // Sensitivty for the gene
-                stats.g2s[gID] = static_cast<Proportion>(stats.g2c.at(gID)) / stats.g2l.at(gID);
+                stats.g2s[rID] = static_cast<Proportion>(stats.g2c.at(rID)) / stats.g2l.at(rID);
             }
             
-            assert(stats.s2c[gID] <= stats.s2l[gID]);
-            assert(stats.g2c[gID] <= stats.g2l[gID]);
+            assert(stats.s2c[rID] <= stats.s2l[rID]);
+            assert(stats.g2c[rID] <= stats.g2l[rID]);
 
             if (!stats.data.count(cID))
             {
@@ -261,12 +261,12 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             else
             {
                 // TP at the base level
-                const auto btp = stats.data.at(cID).align.count(gID) ? stats.data.at(cID).align.at(gID) : 0;
+                const auto btp = stats.data.at(cID).align.count(rID) ? stats.data.at(cID).align.at(rID) : 0;
                 
                 // FP at the base level (requires overlapping)
-                const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
+                const auto bfp = (stats.data.at(i.first).lGaps.count(rID) ? stats.data.at(i.first).lGaps.at(rID) : 0)
                                                 +
-                                 (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
+                                 (stats.data.at(i.first).rGaps.count(rID) ? stats.data.at(i.first).rGaps.at(rID) : 0);
                 
                 assert(!isnan(btp) && btp >= 0);
                 assert(!isnan(bfp) && bfp >= 0);
@@ -287,12 +287,14 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                     gfp += bfp;
                 }
                 
-                stats.g2p[gID] = bpc;
+                stats.g2p[rID] = bpc;
             }
             
             assert(stp >= 0);
             assert(sfp >= 0);
         }
+
+        auto &x = stats.data.at(cID);
 
         /*
          * Aggregating alignment statistics for the whole chromosome
@@ -496,9 +498,12 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
                 // Data for the chromosome
                 const auto &x = stats.data.at(cID);
                 
+                // Number of reads mapped to the region
+                const auto reads = x.aLvl.r2r.count(sID) ? x.aLvl.r2r.at(sID) : 0;
+                
                 o.writer->write((boost::format(format) % sID
                                                        % stats.s2l.at(sID)
-                                                       % x.aLvl.r2r.at(sID)
+                                                       % reads
                                                        % stats.g2s.at(sID)
                                                        % stats.g2p.at(sID)).str());
             }
@@ -551,13 +556,13 @@ void VAlign::report(const FileName &file, const Options &o)
     writeQuins("VarAlign_sequins.csv", stats, o);
 
     /*
-     * Generating VarAlign_queries.stats
+     * Generating VarAlign_queries.stats (for debugging)
      */
     
     writeQueries("VarAlign_queries.stats", stats, o);
 
     /*
-     * Generating VarAlign_rbase.stats
+     * Generating VarAlign_rbase.stats (for debugging)
      */
     
     writeBQuins("VarAlign_rbase.stats", stats, o);
