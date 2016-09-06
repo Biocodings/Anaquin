@@ -23,14 +23,16 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
+          'data/manuals/VarFlip.txt',          
 
           'scripts/reports.py',
+          'scripts/kexpress.py',
 
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
     	  'src/r/plotLogistic.R',
 
-          # ---------- Transcriptome ----------
+          # ---------- RnaQuin ----------
 
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
@@ -41,7 +43,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/RnaQuin/MRN029_v001.csv',          
           'data/RnaQuin/MRN030_v001.csv',
 
-          # ---------- Variant ----------
+          # ---------- VarQuin ----------
 
    	      'src/r/plotVLOD.R',
           'src/r/plotVROC.R',
