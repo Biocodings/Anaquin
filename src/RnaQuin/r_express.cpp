@@ -333,11 +333,11 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     return ss.str();
 }
 
-static void generateSummary(const FileName &summary,
-                            const std::vector<FileName >&files,
-                            const std::vector<RExpress::Stats> &stats,
-                            const RExpress::Options  &o,
-                            const Units &units)
+void RExpress::generateSummary(const FileName &summary,
+                               const std::vector<FileName >&files,
+                               const std::vector<RExpress::Stats> &stats,
+                               const RExpress::Options &o,
+                               const Units &units)
 {
     const auto &r = Standard::instance().r_trans;
     
@@ -374,44 +374,8 @@ static void generateSummary(const FileName &summary,
     
     const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
     
-    // Breakpoint estimated by piecewise regression
-//    const auto b = ms.b.mean();
-    
-//    // Number of genomic features above the breakpoint
-//    SCounts n_above;
-//    
-//    // Number of genomic features below the breakpoint
-//    SCounts n_below;
-//    
-//    // Counting all replicates...
-//    for (const auto &i : stats)
-//    {
-//        Counts above = 0;
-//        Counts below = 0;
-//
-//        // Counting for each genome gene/isoform...
-//        for (const auto &j : i.gData)
-//        {
-//            assert(!isnan(j.second.abund));
-//            
-//            if (j.second.abund >= b)
-//            {
-//                above++;
-//            }
-//            else
-//            {
-//                below++;
-//            }
-//        }
-//        
-//        n_above.add((Counts)above);
-//        n_below.add((Counts)below);
-//    }
-    
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
-
-//    const auto hasLOQ = !isnan(ms.b.mean());
 
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"

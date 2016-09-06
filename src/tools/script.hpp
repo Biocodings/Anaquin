@@ -24,6 +24,8 @@ namespace Anaquin
         {
             const auto f = [&](const std::string &cmd)
             {
+                std::cout << cmd << std::endl;
+                
                 const int status = system(cmd.c_str());
                 
                 if (status != 0)

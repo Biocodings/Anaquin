@@ -13,6 +13,7 @@
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
+#include "RnaQuin/r_kexpress.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 #include "VarQuin/v_flip.hpp"
@@ -22,6 +23,7 @@
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
+#include "VarQuin/v_kexpress.hpp"
 
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_fold.hpp"
@@ -57,6 +59,8 @@ typedef std::set<Value> Range;
 #define TOOL_R_CUFFLINK  269
 #define TOOL_R_FOLD      270
 #define TOOL_R_GENE      271
+#define TOOL_R_KEXPRESS  272
+#define TOOL_V_KEXPRESS  273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_SUBSAMPLE 280
@@ -136,7 +140,10 @@ static std::map<Value, Tool> _tools =
 
     { "RnaAlign",       TOOL_R_ALIGN     },
     { "RnaAssembly",    TOOL_R_ASSEMBLY  },
+    { "RnaExpress",     TOOL_R_EXPRESS   },
     { "RnaExpression",  TOOL_R_EXPRESS   },
+    { "RnaKExpress",    TOOL_R_KEXPRESS  },
+    { "RnaKExpression", TOOL_R_KEXPRESS  },
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
@@ -144,6 +151,8 @@ static std::map<Value, Tool> _tools =
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
+    { "VarKExpress",    TOOL_V_KEXPRESS  },
+    { "VarKExpression", TOOL_V_KEXPRESS  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
     { "VarSequence",    TOOL_V_SEQUENCE  },
@@ -159,6 +168,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
+    { TOOL_R_KEXPRESS,  { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
 
@@ -171,6 +181,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
+    { TOOL_V_KEXPRESS,  { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
 };
 
 /*
@@ -379,21 +390,25 @@ static Scripts manual(Tool tool)
     extern Scripts RnaSubsample();
     extern Scripts RnaAssembly();
     extern Scripts RnaExpression();
+    extern Scripts RnaKExpression();
     extern Scripts RnaFoldChange();
     extern Scripts VarAlign();
     extern Scripts VarSubsample();
     extern Scripts VarDiscover();
-    
+    extern Scripts VarKExpression();
+
     switch (tool)
     {
-        case TOOL_R_ALIGN:     { return RnaAlign();      }
-        case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
-        case TOOL_R_EXPRESS:   { return RnaExpression(); }
-        case TOOL_R_FOLD:      { return RnaFoldChange(); }
-        case TOOL_R_SUBSAMPLE: { return RnaSubsample();  }
-        case TOOL_V_ALIGN:     { return VarAlign();      }
-        case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
-        case TOOL_V_DISCOVER:  { return VarDiscover();   }
+        case TOOL_R_ALIGN:     { return RnaAlign();       }
+        case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
+        case TOOL_R_EXPRESS:   { return RnaExpression();  }
+        case TOOL_R_KEXPRESS:  { return RnaKExpression(); }
+        case TOOL_R_FOLD:      { return RnaFoldChange();  }
+        case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
+        case TOOL_V_ALIGN:     { return VarAlign();       }
+        case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
+        case TOOL_V_DISCOVER:  { return VarDiscover();    }
+        case TOOL_V_KEXPRESS:  { return VarKExpression(); }
     }
 
     throw std::runtime_error("Manual not found");
@@ -675,6 +690,14 @@ template <typename Analyzer> void analyze_0(typename Analyzer::Options o = typen
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(o);
+    }, o);
+}
+
+template <typename Analyzer> void analyze_k(typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::report(_p.opts[OPT_R_IND], _p.inputs[0], _p.inputs[1], o);        
     }, o);
 }
 
@@ -1019,6 +1042,7 @@ void parse(int argc, char ** argv)
         case TOOL_R_GENE:
         case TOOL_R_ALIGN:
         case TOOL_R_EXPRESS:
+        case TOOL_R_KEXPRESS:
         case TOOL_R_ASSEMBLY:
         case TOOL_R_CUFFLINK:
         case TOOL_R_SUBSAMPLE:
@@ -1057,8 +1081,9 @@ void parse(int argc, char ** argv)
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }
-                        
+                     
                     case TOOL_R_EXPRESS:
+                    case TOOL_R_KEXPRESS:
                     case TOOL_R_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
@@ -1078,9 +1103,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_R_GENE:     { analyze_0<RGene>();                break; }
-                case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);    break; }
-                case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES); break; }
+                case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
+                case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);             break; }
+                case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
+                case TOOL_R_KEXPRESS: { analyze_k<RKExpress>(RKExpress::Options()); break; }
 
                 case TOOL_R_SUBSAMPLE:
                 {

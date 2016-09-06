@@ -21,13 +21,14 @@
  */
 
 #include "resources/reports.py"
+#include "resources/kexpress.py"
 
 #include "resources/plotFold.R"
 #include "resources/plotLinear.R"
 #include "resources/plotLogistic.R"
 
 /*
- * Transcriptome Resources
+ * RnaQuin Resources
  */
 
 #include "resources/plotTROC.R"
@@ -40,7 +41,7 @@
 #include "resources/MRN030_v001.csv"
 
 /*
- * Variant Resources
+ * VarQuin Resources
  */
 
 #include "resources/plotVLOD.R"
@@ -58,6 +59,11 @@ typedef std::string Scripts;
 Scripts ReportScript()
 {
     return ToString(scripts_reports_py);
+}
+
+Scripts KExpressScript()
+{
+    return ToString(scripts_kexpress_py);
 }
 
 Scripts Manual()
@@ -99,6 +105,11 @@ Scripts RnaAssembly()
     return ToString(data_manuals_RnaAssembly_txt);
 }
 
+Scripts RnaKExpression()
+{
+    return "";
+}
+
 Scripts RnaExpression()
 {
     return ToString(data_manuals_RnaExpression_txt);
@@ -122,6 +133,11 @@ Scripts VarSubsample()
 Scripts VarDiscover()
 {
     return ToString(data_manuals_VarDiscover_txt);
+}
+
+Scripts VarKExpression()
+{
+    return "";
 }
 
 /*
