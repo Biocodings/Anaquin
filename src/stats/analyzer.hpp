@@ -192,6 +192,11 @@ namespace Anaquin
         {
             logger->write("[WARN]: " + s);
         }
+
+        inline void logWait(const std::string &s) const
+        {
+            logger->write("[WAIT]: " + s);
+        }
         
         inline void error(const std::string &s) const
         {
