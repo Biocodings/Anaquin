@@ -230,11 +230,6 @@ static void writeQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        if (!Standard::isSynthetic(cID))
-        {
-            continue;
-        }
-        
         // Search all query variants...
         for (const auto &j : i.second)
         {
@@ -461,6 +456,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Sensitivity: %26$.4f\n"
                              "       Precision:   %27$.4f\n"
                              "       FDR Rate:    %28$.4f\n";
+
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                   // 1
@@ -479,16 +475,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 14
                                                 % stats.countInd_FP_Syn()    // 15
                                                 % stats.countVar_FP_Syn()    // 16
-                                                % stats.countSNP_FcountSyn()    // 17
-                                                % stats.countInd_FcountSyn()    // 18
-                                                % stats.countVar_FcountSyn()    // 19
-                                                % stats.countVarScountSyn()     // 20
+                                                % stats.countSNP_FcountSyn() // 17
+                                                % stats.countInd_FcountSyn() // 18
+                                                % stats.countVar_FcountSyn() // 19
+                                                % stats.countVarScountSyn()  // 20
                                                 % stats.countVarPC_Syn()     // 21
                                                 % (1-stats.countVarPC_Syn()) // 22
-                                                % stats.countSNPScountSyn()     // 23
+                                                % stats.countSNPScountSyn()  // 23
                                                 % stats.countSNPPC_Syn()     // 24
                                                 % (1-stats.countSNPPC_Syn()) // 25
-                                                % stats.countIndScountSyn()     // 26
+                                                % stats.countIndScountSyn()  // 26
                                                 % stats.countIndPC_Syn()     // 27
                                                 % (1-stats.countIndPC_Syn()) // 28
                          ).str());

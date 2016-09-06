@@ -152,7 +152,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
     std::thread t1(flip, seq1, forGenome_1, revGenome_1);
     std::thread t2(flip, seq2, forGenome_2, revGenome_2);
     
-    t1.join();
+    t1.join();  
     t2.join();
     
     stats.mProp = static_cast<double>(stats.mCounts) / stats.countSyn;
@@ -177,10 +177,10 @@ static void writeSummary(const FileName &file,
                          "                             %2%\n"
                          "       Alignment file:       %3%\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Reads mapped to the forward genome: %4%\n"
-                         "                                           %5%\n\n"
-                         "       Reads mapped to the reverse genome: %6%\n"
-                         "                                           %7%\n\n"
+                         "       Genomic alignments: %4%\n"
+                         "                           %5%\n\n"
+                         "       Sequin alignments:  %6%\n"
+                         "                           %7%\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped: %8% (%9%%%)\n"
                          "       Forward:  %10% (%11%%%)\n"

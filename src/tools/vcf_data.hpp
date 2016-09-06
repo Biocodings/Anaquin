@@ -118,7 +118,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const VCFChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countSNP(cID) : 0;
+                return countSNP(cID);
             });
         }
         
@@ -144,7 +144,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const VCFChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countInd(cID) : 0;
+                return countInd(cID);
             });
         }
     

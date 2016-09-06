@@ -1203,6 +1203,7 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_DISCOVER:
                     {
+                        __hackBedFile__ = true;
                         addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);

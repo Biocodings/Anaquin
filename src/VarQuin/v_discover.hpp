@@ -80,7 +80,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countSNP_TP(cID) : 0;
+                    return countSNP_TP(cID);
                 });
             }
 
@@ -88,7 +88,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countInd_TP(cID) : 0;
+                    return countInd_TP(cID);
                 });
             }
             
@@ -96,7 +96,6 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-//                    return Standard::isSynthetic(cID) ? countVar_TP(cID) : 0;
                     return countVar_TP(cID);
                 });
             }
@@ -105,7 +104,6 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-//                    return Standard::isSynthetic(cID) ? countSNP_FP(cID) : 0;
                     return countSNP_FP(cID);
                 });
             }
@@ -114,7 +112,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countInd_FP(cID) : 0;
+                    return countInd_FP(cID);
                 });
             }
             
@@ -122,7 +120,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countVar_FP(cID) : 0;
+                    return countVar_FP(cID);
                 });
             }
             
@@ -130,7 +128,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countSNP_FN(cID) : 0;
+                    return countSNP_FN(cID);
                 });
             }
             
@@ -138,7 +136,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countInd_FN(cID) : 0;
+                    return countInd_FN(cID);
                 });
             }
             
@@ -146,7 +144,7 @@ namespace Anaquin
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
-                    return Standard::isSynthetic(cID) ? countVar_FN(cID) : 0;
+                    return countVar_FN(cID);
                 });
             }
             
