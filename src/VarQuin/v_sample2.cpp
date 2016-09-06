@@ -122,7 +122,7 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
-            o.wait(std::to_string(info.p.i));
+            o.logWait(std::to_string(info.p.i));
         }
         
         if (x.mapped)
@@ -138,7 +138,7 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
-            o.wait(std::to_string(info.p.i));
+            o.logWait(std::to_string(info.p.i));
         }
         
         if (x.mapped)
@@ -194,7 +194,7 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             
             if (isnan(norm))
             {
-                o.warn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
+                o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
                                                                               % l.start
                                                                               % l.end).str());
                 
@@ -203,7 +203,7 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             }
             else if (norm == 1.0)
             {
-                o.warn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
+                o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
                                                                             % l.start
                                                                             % l.end).str());
             }
