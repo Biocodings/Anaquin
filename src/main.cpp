@@ -92,6 +92,9 @@ typedef std::set<Value> Range;
 
 using namespace Anaquin;
 
+// Shared with BedData
+bool __hackBedFile__ = false;
+
 // Shared with other modules
 bool __hack__ = false;
 
@@ -1185,8 +1188,14 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_V_ALIGN:
                     case TOOL_V_SUBSAMPLE:
+                    {
+                        __hackBedFile__ = true;
+                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        break;
+                    }
+
+                    case TOOL_V_ALIGN:
                     {
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
                         break;

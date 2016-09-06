@@ -28,7 +28,7 @@ static ReaderBam::Stats sample(const FileName &file,
     {
         for (const auto &j : i.second)
         {
-            assert(j.second > 0 && j.second <= 1.0);
+            assert(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
             select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
         }
     }
@@ -74,7 +74,7 @@ static ReaderBam::Stats sample(const FileName &file,
         {
             stats.totAfter.countSyn++;
             
-            //writer.write(x);
+            writer.write(x);
             return true;
         }
 
@@ -162,8 +162,9 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     // For each chromosome...
     for (auto &i : refs)
     {
-        const auto &cID = i.first;
-        
+        // Eg: chr1
+        const auto cID = i.first;
+
         // For each region...
         for (auto &j : i.second.data())
         {
@@ -184,16 +185,27 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             
             const auto synC = stats2cov(o.meth, ss);
             const auto genC = stats2cov(o.meth, gs);
-            const auto norm = std::min(genC / synC, 1.0);
+            
+            // Normalization factor, defined if there's synthetic coverage
+            auto norm = synC ? std::min(genC / synC, 1.0) : NAN;
             
             allBeforeGenC.push_back(genC);
             allBeforeSynC.push_back(synC);
             
-            if (norm == 1.0)
+            if (isnan(norm))
             {
-                o.warn((boost::format("Normalization factor is 1 for %1%:%2%-%3%") % i.first
-                                                                                   % l.start
-                                                                                   % l.end).str());
+                o.warn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
+                                                                              % l.start
+                                                                              % l.end).str());
+                
+                // We can't just use NAN...
+                norm = 0.0;
+            }
+            else if (norm == 1.0)
+            {
+                o.warn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
+                                                                            % l.start
+                                                                            % l.end).str());
             }
             else
             {

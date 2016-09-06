@@ -7,6 +7,9 @@
 #include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_bed.hpp"
 
+// Defined in main.cpp
+extern bool __hackBedFile__;
+
 namespace Anaquin
 {
     typedef ParserBed::Data Data;
@@ -234,7 +237,7 @@ namespace Anaquin
         
         ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &)
         {
-            if (Standard::isSynthetic(x.name) && !Standard::isSynthetic(x.cID))
+            if (!__hackBedFile__ && Standard::isSynthetic(x.name) && !Standard::isSynthetic(x.cID))
             {
                 // Eg: chr1 0 248956422 GS_058
                 c2d[Standard::toReverse(x.cID)].r2d[x.name] = x;
