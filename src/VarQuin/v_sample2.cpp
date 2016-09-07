@@ -58,8 +58,12 @@ static ReaderBam::Stats sample(const FileName &file,
         {
             Interval *inter;
             
-            // Within sampling regions?
-            if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l))) // Contains?
+            /*
+             * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
+             * into the regions still give valuable information and sequencing depth.
+             */
+
+            if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
             {
                 if (select.at(x.cID).at(inter->l())->select(x.name))
                 {
