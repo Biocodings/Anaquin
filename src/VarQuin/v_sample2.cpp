@@ -229,8 +229,12 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     // Now, we have the normalization factors. We can proceed with subsampling.
     const auto after = sample(seq, norms, stats, o);
     
+    /*
+     * Assume our subsampling is working, let's check the coverage for every region.
+     */
+    
     // For each chromosome...
-    for (auto &i : refs)
+    for (auto &i : after.inters)
     {
         // For each region...
         for (auto &j : i.second.data())
@@ -332,7 +336,7 @@ static void generateSummary(const FileName &file,
                          "       Alignment file (genome):  %2%\n"
                          "       Alignment file (sequins): %3%\n\n"
                          "-------Reference regions\n\n"
-                         "       Variant regions: %4% regions\n\n"
+                         "       Variant regions: %4% regions\n"
                          "       Method: %5%\n\n"
                          "-------Total alignments (before subsampling)\n\n"
                          "       Genome:    %6%\n"
@@ -371,10 +375,10 @@ static void generateSummary(const FileName &file,
                                             % stats.sampAfter.countSyn  // 13
                                             % stats.normAver            // 14
                                             % stats.normSD              // 15
-                                            % stats.beforeGen           // 16
-                                            % stats.beforeSyn           // 17
-                                            % stats.afterGen            // 18
-                                            % stats.afterSyn            // 19
+                                            % stats.beforeSyn           // 16
+                                            % stats.beforeGen           // 17
+                                            % stats.afterSyn            // 18
+                                            % stats.afterGen            // 19
                      ).str());
     o.writer->close();
 }
