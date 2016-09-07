@@ -246,10 +246,10 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     o.logInfo(__RForSyn__);
     o.logInfo(__RForGen__);
     
-    A_ASSERT(!__QForSyn__.empty(), "Error in __QForSyn__");
-    A_ASSERT(!__QForGen__.empty(), "Error in __QForGen__");
-    A_ASSERT(!__RForSyn__.empty(), "Error in __RForSyn__");
-    A_ASSERT(!__RForGen__.empty(), "Error in __RForGen__");
+    A_CHECK(!__QForSyn__.empty(), "Error in __QForSyn__");
+    A_CHECK(!__QForGen__.empty(), "Error in __QForGen__");
+    A_CHECK(!__RForSyn__.empty(), "Error in __RForSyn__");
+    A_CHECK(!__RForGen__.empty(), "Error in __RForGen__");
     
     o.info("Temporary transcripts generated");
 
@@ -277,7 +277,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     t1.join();
     t2.join();
     
-    A_ASSERT(stats.sExons, "stats.sExons");
+    A_CHECK(stats.sExons, "stats.sExons");
 
     return stats;
 }

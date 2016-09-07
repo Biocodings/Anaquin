@@ -7,8 +7,8 @@ using namespace Anaquin;
 
 RSample::Stats RSample::stats(const FileName &file, const Options &o)
 {
-    A_ASSERT(!isnan(o.p), "Sampling probability must not be NAN");
-    A_ASSERT(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1)");
+    A_CHECK(!isnan(o.p), "Sampling probability must not be NAN");
+    A_CHECK(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1)");
 
     RSample::Stats stats;
     
@@ -60,7 +60,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Calculating the normalization factor");
     
     const auto nTotal = stats.before.gen / (1.0 - o.p);
-    A_ASSERT(nTotal >= stats.before.gen, "New total is less than number of genomic reads");
+    A_CHECK(nTotal >= stats.before.gen, "New total is less than number of genomic reads");
     
     // Number of synthetic reads after sampling (eg: 0.10101)
     const auto nSyn = nTotal - stats.before.gen;

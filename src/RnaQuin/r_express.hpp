@@ -74,6 +74,11 @@ namespace Anaquin
             return stats;
         }
 
+        static void generateR(const FileName &,
+                              const FileName &,
+                              const std::vector<Stats> &,
+                              const Options &o);
+
         static void generateSummary(const FileName &,
                                     const std::vector<FileName > &,
                                     const std::vector<Stats> &,

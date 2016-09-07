@@ -1,12 +1,12 @@
 #include "tools/script.hpp"
-#include "RnaQuin/r_kexpress.hpp"
+#include "RnaQuin/r_kreport.hpp"
 
 using namespace Anaquin;
 
 // Defined in resources.cpp
 extern Scripts KExpressScript();
 
-RKExpress::Stats RKExpress::analyze(const FileName &index, const FileName &p1, const FileName &p2, const Options &o)
+RKReport::Stats RKReport::analyze(const FileName &index, const FileName &p1, const FileName &p2, const Options &o)
 {
     // Where the analysis should be saved
     const auto output = tmpFile();
@@ -25,22 +25,32 @@ RKExpress::Stats RKExpress::analyze(const FileName &index, const FileName &p1, c
     
     const auto abund = output + "/abundance.tsv";
     
-    RKExpress::Stats stats(RExpress::analyze(abund, ro));
+    RKReport::Stats stats(RExpress::analyze(abund, ro));
     stats.abund = abund;
 
     return stats;
 }
 
-void RKExpress::report(const FileName &index, const FileName &p1, const FileName &p2, const Options &o)
+void RKReport::report(const FileName &index, const FileName &p1, const FileName &p2, const Options &o)
 {
-    const auto stats = RKExpress::analyze(index, p1, p2, o);
+    const auto stats = RKReport::analyze(index, p1, p2, o);
     
     RExpress::Options ro;
     ro.writer = o.writer;
 
+    const auto vStats = std::vector<RExpress::Stats> { stats.stats };
+    
     /*
-     * Generating RnaKExpress_summary.stats
+     * Generating output files to a temporatory directory, from which we can create our report
      */
     
     RExpress::generateSummary("RnaKExpress_summary.stats", std::vector<FileName> { stats.abund }, std::vector<RExpress::Stats> { stats.stats }, ro, "genes");
+
+    RExpress::generateR("RnaKExpression_linear.R", "RnaKExpression_sequins.csv", vStats, ro);
+
+    /*
+     * Create a PDF report based on those files
+     */
+    
+    
 }

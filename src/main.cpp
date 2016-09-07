@@ -13,7 +13,7 @@
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
-#include "RnaQuin/r_kexpress.hpp"
+#include "RnaQuin/r_kreport.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 #include "VarQuin/v_flip.hpp"
@@ -151,8 +151,8 @@ static std::map<Value, Tool> _tools =
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VarKExpress",    TOOL_V_KEXPRESS  },
-    { "VarKExpression", TOOL_V_KEXPRESS  },
+    { "VaRKReport",    TOOL_V_KEXPRESS  },
+    { "VaRKReportion", TOOL_V_KEXPRESS  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
     { "VarSequence",    TOOL_V_SEQUENCE  },
@@ -395,7 +395,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarSubsample();
     extern Scripts VarDiscover();
-    extern Scripts VarKExpression();
+    extern Scripts VaRKReportion();
 
     switch (tool)
     {
@@ -408,7 +408,7 @@ static Scripts manual(Tool tool)
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_KEXPRESS:  { return VarKExpression(); }
+        case TOOL_V_KEXPRESS:  { return VaRKReportion(); }
     }
 
     throw std::runtime_error("Manual not found");
@@ -1106,7 +1106,7 @@ void parse(int argc, char ** argv)
                 case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
                 case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);             break; }
                 case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
-                case TOOL_R_KEXPRESS: { analyze_k<RKExpress>(RKExpress::Options()); break; }
+                case TOOL_R_KEXPRESS: { analyze_k<RKReport>(RKReport::Options()); break; }
 
                 case TOOL_R_SUBSAMPLE:
                 {

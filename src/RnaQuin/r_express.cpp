@@ -295,7 +295,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
             expect[j.first]  = j.second.x;
             data[i][j.first] = j.second.y;
             
-            A_ASSERT(expect[j.first], "Zero expect concentration");
+            A_CHECK(expect[j.first], "Zero expect concentration");
         }
     }
     
@@ -419,10 +419,10 @@ void RExpress::generateSummary(const FileName &summary,
     o.writer->close();
 }
 
-static void generateR(const FileName &output,
-                      const FileName &csv,
-                      const std::vector<RExpress::Stats> &stats,
-                      const RExpress::Options &o)
+void RExpress::generateR(const FileName &output,
+                         const FileName &csv,
+                         const std::vector<RExpress::Stats> &stats,
+                         const RExpress::Options &o)
 {
     o.info("Generating " + output);
     o.writer->open(output);
@@ -534,7 +534,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_summary.stats
      */
     
-    generateSummary("RnaExpression_summary.stats", files, stats, o, units);
+    RExpress::generateSummary("RnaExpression_summary.stats", files, stats, o, units);
     
     /*
      * Generating RnaExpression_sequins.csv
@@ -546,5 +546,5 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_linear.R
      */
     
-    generateR("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
+    RExpress::generateR("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
 }

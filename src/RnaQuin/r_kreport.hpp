@@ -6,7 +6,7 @@
 
 namespace Anaquin
 {
-    struct RKExpress : public Analyzer
+    struct RKReport : public Analyzer
     {
         typedef ParserCufflink::Data TestData;
         typedef AnalyzerOptions Options;

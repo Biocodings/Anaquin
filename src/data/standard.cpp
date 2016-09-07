@@ -64,7 +64,7 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                 // Eg: R1_1_1
                 const auto seq = d[0];
                 
-                A_ASSERT(std::count(seq.begin(), seq.end(), '_') == 2, "Invalid sequin: " + seq + ". Valid sequin names include R1_1_1, R1_1_2, R2_2_1 etc.");
+                A_CHECK(std::count(seq.begin(), seq.end(), '_') == 2, "Invalid sequin: " + seq + ". Valid sequin names include R1_1_1, R1_1_2, R2_2_1 etc.");
                 
                 const auto con = stof(d[column]);
                 
@@ -171,14 +171,14 @@ void Standard::addTRef(const Reader &r)
 
 void Standard::addTMix(const Reader &r)
 {
-    A_ASSERT(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
 
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addTDMix(const Reader &r)
 {
-    A_ASSERT(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
     readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);

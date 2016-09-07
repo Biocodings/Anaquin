@@ -143,7 +143,7 @@ namespace Anaquin
                             
                         case Action::NewColon:
                         {
-                            A_ASSERT(p == Phase::Attr, "Invalid line: " + std::to_string(i));
+                            A_CHECK(p == Phase::Attr, "Invalid line: " + std::to_string(i));
                             
                             if (attrS)
                             {

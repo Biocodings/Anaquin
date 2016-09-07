@@ -29,6 +29,8 @@ static ReaderBam::Stats sample(const FileName &file,
         for (const auto &j : i.second)
         {
             assert(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
+            
+            // Create independent random generator for each region
             select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
         }
     }
@@ -52,20 +54,21 @@ static ReaderBam::Stats sample(const FileName &file,
         
         auto shouldSampled = !x.mapped;
         
-        if (x.mapped && !shouldSampled)
+        if (!shouldSampled)
         {
             Interval *inter;
             
             // Within sampling regions?
-            if (sampled.count(x.cID) && (inter = sampled.at(x.cID).contains(x.l)))
+            if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l))) // Contains?
             {
-                if (select[x.cID][inter->l()]->select(x.name))
+                if (select.at(x.cID).at(inter->l())->select(x.name))
                 {
                     shouldSampled = true;
                 }
             }
             else
             {
+                // Never sample for reads outside the regions
                 shouldSampled = true;
             }
         }
@@ -74,7 +77,9 @@ static ReaderBam::Stats sample(const FileName &file,
         {
             stats.totAfter.countSyn++;
             
+            // Write SAM read to console
             writer.write(x);
+            
             return true;
         }
 
@@ -115,7 +120,7 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     // Regions to subsample
     const auto refs = r.dInters();
     
-    A_ASSERT(!refs.empty(), "Empty reference sampling regions");
+    A_CHECK(!refs.empty(), "Empty reference sampling regions");
     
     // Checking genomic alignments before subsampling
     const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)

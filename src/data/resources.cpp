@@ -135,7 +135,7 @@ Scripts VarDiscover()
     return ToString(data_manuals_VarDiscover_txt);
 }
 
-Scripts VarKExpression()
+Scripts VaRKReportion()
 {
     return "";
 }

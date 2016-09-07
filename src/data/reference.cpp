@@ -168,7 +168,7 @@ Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
     {
         if (Standard::isSynthetic(i.first))
         {
-            A_ASSERT(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
+            A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
 
             Concent r = 0;
 
@@ -559,7 +559,7 @@ Counts VarRef::countGeneGen() const
 
 void VarRef::validate()
 {
-    A_ASSERT(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
+    A_CHECK(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
 
     std::set<SequinID> seqIDs;
 
@@ -571,7 +571,7 @@ void VarRef::validate()
         }
     }
 
-    A_ASSERT(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
+    A_CHECK(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
     
     merge(seqIDs);
     

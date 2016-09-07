@@ -88,7 +88,7 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             isContained = true;
             
             f(m);
-            A_ASSERT("lGaps == 0 && rGaps == 0", "No gaps expected for a TP");
+            A_CHECK("lGaps == 0 && rGaps == 0", "No gaps expected for a TP");
             
             stats.data[align.cID].tp++;
             x.aLvl.r2r[m->id()]++;
@@ -273,7 +273,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             // Statistics for the region
             const auto rs = m->stats();
 
-            A_ASSERT(rs.length, "Empty region: " + rID);
+            A_CHECK(rs.length, "Empty region: " + rID);
             
             if (isSyn)
             {

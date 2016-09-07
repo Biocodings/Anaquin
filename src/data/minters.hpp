@@ -142,11 +142,11 @@ namespace Anaquin
                     loci.push_back(LOCUS_TO_TINTERVAL(i.second));
                 }
                 
-                A_ASSERT(!loci.empty(), "No interval was built. Zero interval.");
+                A_CHECK(!loci.empty(), "No interval was built. Zero interval.");
             
                 _tree = std::shared_ptr<IntervalTree<T *>>(new IntervalTree<T *> { loci });
 
-                A_ASSERT(_tree, "Failed to build interval treee");
+                A_CHECK(_tree, "Failed to build interval treee");
             }
         
             inline T * find(const typename T::IntervalID &id)
