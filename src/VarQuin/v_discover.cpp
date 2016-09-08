@@ -373,7 +373,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                             {
                                 sID = m->id();
                                 
-                                // It has to be sequin name (eg: D_3_12)
+                                // It has to be a sequin (eg: D_3_12)
                                 assert(!sID.empty());
                             }
                         }
@@ -532,30 +532,15 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Sensitivity: %31$.4f\n"
                              "       Precision:   %32$.4f\n"
                              "       FDR Rate:    %33$.4f\n\n"
-                             "-------Limit of Quantification (LOQ)\n"
-                             "      *Estimated by piecewise segmented regression\n\n"
-                             "       Break LOQ: %34% attomol/ul (%35%)\n\n"
-                             "      *Below LOQ\n"
-                             "       Intercept:   %36%\n"
-                             "       Slope:       %37%\n"
-                             "       Correlation: %38%\n"
-                             "       R2:          %39%\n"
-                             "       Genome:      %40%\n\n"
-                             "      *Above LOQ\n"
-                             "       Intercept:   %41%\n"
-                             "       Slope:       %42%\n"
-                             "       Correlation: %43%\n"
-                             "       R2:          %44%\n"
-                             "       Genome:      %45%\n\n"
                              "-------Overall linear regression (log2 scale)\n\n"
-                             "      Slope:       %46%\n"
-                             "      Correlation: %47%\n"
-                             "      R2:          %48%\n"
-                             "      F-statistic: %49%\n"
-                             "      P-value:     %50%\n"
-                             "      SSM:         %51%, DF: %52%\n"
-                             "      SSE:         %53%, DF: %54%\n"
-                             "      SST:         %55%, DF: %56%\n";
+                             "      Slope:       %34%\n"
+                             "      Correlation: %35%\n"
+                             "      R2:          %36%\n"
+                             "      F-statistic: %37%\n"
+                             "      P-value:     %38%\n"
+                             "      SSM:         %39%, DF: %40%\n"
+                             "      SSE:         %41%, DF: %42%\n"
+                             "      SST:         %43%, DF: %44%\n";
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                   // 1
@@ -579,41 +564,29 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 19
                                                 % stats.countInd_FP_Syn()    // 20
                                                 % stats.countVar_FP_Syn()    // 21
-                                                % stats.countSNP_FcountSyn()    // 22
-                                                % stats.countInd_FcountSyn()    // 23
-                                                % stats.countVar_FcountSyn()    // 24
-                                                % stats.countVarScountSyn()     // 25
+                                                % stats.countSNP_FcountSyn() // 22
+                                                % stats.countInd_FcountSyn() // 23
+                                                % stats.countVar_FcountSyn() // 24
+                                                % stats.countVarScountSyn()  // 25
                                                 % stats.countVarPC_Syn()     // 26
                                                 % (1-stats.countVarPC_Syn()) // 27
-                                                % stats.countSNPScountSyn()     // 28
+                                                % stats.countSNPScountSyn()  // 28
                                                 % stats.countSNPPC_Syn()     // 29
                                                 % (1-stats.countSNPPC_Syn()) // 30
-                                                % stats.countIndScountSyn()     // 31
+                                                % stats.countIndScountSyn()  // 31
                                                 % stats.countIndPC_Syn()     // 32
                                                 % (1-stats.countIndPC_Syn()) // 33
-                                                % "??" //ms.b                       // 34
-                                                % "??" //mm->id                     // 35
-                                                % "??" //ms.lInt                    // 36
-                                                % "??" //ms.lSl                     // 37
-                                                % "??" //ms.lr                      // 38
-                                                % "??" //ms.lR2                     // 39
-                                                % "??" //n_above                    // 40
-                                                % "??" //ms.rInt                    // 41
-                                                % "??" //ms.rSl                     // 42
-                                                % "??" //ms.rr                      // 43
-                                                % "??" //ms.rR2                     // 43
-                                                % "??" //n_below                    // 45
-                                                % lm.m                       // 47
-                                                % lm.r                       // 46
-                                                % lm.R2                      // 48
-                                                % lm.F                       // 49
-                                                % lm.p                       // 50
-                                                % lm.SSM                     // 51
-                                                % lm.SSM_D                   // 52
-                                                % lm.SSE                     // 53
-                                                % lm.SSE_D                   // 54
-                                                % lm.SST                     // 55
-                                                % lm.SST_D                   // 56
+                                                % lm.m                       // 34
+                                                % lm.r                       // 35
+                                                % lm.R2                      // 36
+                                                % lm.F                       // 37
+                                                % lm.p                       // 38
+                                                % lm.SSM                     // 39
+                                                % lm.SSM_D                   // 40
+                                                % lm.SSE                     // 41
+                                                % lm.SSE_D                   // 42
+                                                % lm.SST                     // 43
+                                                % lm.SST_D                   // 44
                          ).str());
     };
     
@@ -694,7 +667,7 @@ void VDiscover::report(const FileName &file, const Options &o)
                                               "Measured allele frequency (log2)",
                                               "ExpFreq",
                                               "ObsFreq",
-                                              "expected",
+                                              "input",
                                                true));
         o.writer->close();
 
