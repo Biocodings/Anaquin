@@ -89,55 +89,55 @@ namespace Anaquin
                         if (t[0] == "AF") { d.allF = stof(t[1]); }
                     }
                 }
-                
-                Tokens::split(fields[Field::Format], ":", formats);
-                assert(std::find(formats.begin(), formats.end(), "GT") != formats.end());
-                
+
                 /*
-                 * Anaquin doesn't really support multi-alleles (because VarQuin design doesn't have it).
+                 * Anaquin doesn't support multi-alleles (because sequins don't have it)
                  */
                 
                 std::vector<Sequence> alts;
                 Tokens::split(fields[Field::Alt], ",", alts);
                 
-                // Simply ignore any other allele
-                d.alt = alts[0];
-
-                // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
-                Tokens::split(fields[Field::FormatData], ":", t);
-
-                // Check all the format data...
-                for (auto j = 0; j < t.size(); j++)
-                {
-                    if (formats[j] == "AD")
-                    {
-                        std::vector<std::string> toks;
-                        Tokens::split(t[j], ",", toks);
-                        
-                        if (toks.size() == 1)
-                        {
-                            d.readR = s2d(toks[0]);
-                            d.readV = s2d(toks[0]);
-                        }
-                        else
-                        {
-                            d.readR = s2d(toks[0]);
-                            d.readV = s2d(toks[1]);
-                        }
-                    }
-                    else if (formats[j] == "DP")
-                    {
-                        d.depth = s2d(t[j]);
-                    }
-                }
-
-                if (d.alt == ".")
+                // Ignore anything that is not really a variant
+                if ((d.alt = alts[0]) == ".")
                 {
                     continue;
                 }
-
+                
                 d.qual = fields[Field::Qual] != "." ? s2d(fields[Field::Qual]) : NAN;
 
+                if (fields.size() > Field::Format)
+                {
+                    Tokens::split(fields[Field::Format], ":", formats);
+                    
+                    // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
+                    Tokens::split(fields[Field::FormatData], ":", t);
+                    
+                    // Check all the format data...
+                    for (auto j = 0; j < t.size(); j++)
+                    {
+                        if (formats[j] == "AD")
+                        {
+                            std::vector<std::string> toks;
+                            Tokens::split(t[j], ",", toks);
+                            
+                            if (toks.size() == 1)
+                            {
+                                d.readR = s2d(toks[0]);
+                                d.readV = s2d(toks[0]);
+                            }
+                            else
+                            {
+                                d.readR = s2d(toks[0]);
+                                d.readV = s2d(toks[1]);
+                            }
+                        }
+                        else if (formats[j] == "DP")
+                        {
+                            d.depth = s2d(t[j]);
+                        }
+                    }
+                }
+                
                 f(d, p);
             }
         }
