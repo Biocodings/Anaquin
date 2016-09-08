@@ -54,7 +54,7 @@ namespace Anaquin
             const auto cmd = ((boost::format("%1% %2% %3%") % type
                                                             % (o.work + "/" + report)
                                                             % inputs)).str();
-            Script::run(ReportScript(), "python", cmd);
+            Script::run(Script::trim(ReportScript()), "python", cmd);
         }
         
         static std::string trim(const std::string &str)
