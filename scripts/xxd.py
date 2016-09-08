@@ -19,6 +19,8 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaExpression.txt',
           'data/manuals/RnaFoldChange.txt',
           'data/manuals/RnaSubsample.txt',
+          'data/manuals/RnaKReport.txt',
+          'data/manuals/VarKReport.txt',
 
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',

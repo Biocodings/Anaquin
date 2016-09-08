@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #
-# This script implements TransReport, VarReport, FusionReport and MetaReport. It's designed to embed within Anaquin and not for
+# This script implements RnaKReport, VarKReport and MetaKReport. It's designed to embed within Anaquin and not for
 # external usage.
 #
 
@@ -837,7 +837,7 @@ def parse(file):
     print ('Parsing completed. ' + str(len(dict)) + ' keys found.')
     return dict
 
-def report2PDF(r, path, name):
+def report2PDF(r, name, path):
     
     global TEMP_PATH
     TEMP_PATH = path
@@ -860,15 +860,15 @@ def report2PDF(r, path, name):
     os.chdir(path)
 
     # Create the PDF report
-    execute('R CMD BATCH ' + r2pdf)
+    execute('/usr/local/bin/R CMD BATCH ' + r2pdf)
 
     # Move it to where it's supposed to be
-    execute('mv report.pdf ' + path + os.sep + name + ' 2>/dev/null')
+    execute('mv report.pdf ' + name + ' 2>/dev/null')
 
     #execute('rm ' + r2pdf)
     #execute('rm ' + report)
 
-    print('PDF generated. Please check: ' + path + os.sep + name)
+    print('PDF generated. Please check: ' + name)
 
 # Running threads
 thds = []
@@ -1014,11 +1014,13 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
 
     generatePDF(r, path, 'TransReport_report.pdf')
 
-def generatePDF(output, title, path, files, descs):
-    
-    r = Report()    
-    r.startChapter(title)
-            
+def createRNReport(name, inputs):    
+    r = Report()
+    r.startChapter('RNAQuin Report')
+
+    files = ['RnaKReport_summary.stats', 'RnaKReport_sequins.csv', 'RnaKReport_linear.R']
+    descs = ['Summary Statistics', 'Detailed Statistics', 'Gene Expression']
+
     for i in range(0, len(files)):
         file = files[i]
         desc = descs[i]
@@ -1034,65 +1036,27 @@ def generatePDF(output, title, path, files, descs):
             r.addTextFile(desc, file)
             
     r.endChapter()
-    
-    report2PDF(r, path, output)
+   
+    report2PDF(r, name, inputs)
 
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
 #
-#   Eg: scripts/reports.py VarQuin ./anaquin data/VarQuin/MVA011.v013.csv data/VarQuin/AVA010.v032.index LVA086.1_val_1.fq LVA086.2_val_2.fq
-#   Eg: scripts/reports.py report.pdf FusDiscover /Users/tedwong/Sources/QA/output FusDiscover_summary.stats,FusDiscover_quins.stats,FusDiscover_ROC.R ,,,
+#   Eg: python reports.py RnaQuin /Users/tedwong/reports.pdf /Users/tedwong/output
 #
 
 if __name__ == '__main__':
 
+    # Sequin?
+    __mode__ = sys.argv[1]
+
     # Name of the PDF file?
-    output = sys.argv[1]
+    file = sys.argv[2]
     
-    # Title? Eg: 'TransExpress'
-    title  = sys.argv[2]
+    # Where are the statistic files?
+    inputs = sys.argv[3]
     
-    # Where is directory for the files?
-    path   = sys.argv[3]
-    
-    # The generated files
-    files  = sys.argv[4]
-    
-    # Description for the files
-    descs  = sys.argv[5]
-    
-    __mode__ = title    
-    generatePDF(output, title, path, files.split(','), descs.split(','))
-
-    #if (len(sys.argv) != 3 and len(sys.argv) != 8):
-    #    print 'python reports.py TransQuin|VarQuin <SAM/BAM>'
-    #    print 'python reports.py TransQuin|VarQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
-    #else:
-    #    __mode__ = sys.argv[1]
-
-        # Alignment-required methods
-    #    if (len(sys.argv) == 3):
-    #        file = sys.argv[2]
-    
-    #        output = 'RMarkdown'
-
-    #        if   (__mode__ == 'TransQuin'):
-    #            TransQuin(parse(file), output)
-    #        elif (__mode__ == 'VarQuin'):
-    #            VarQuin(parse(file), output)
-    #        elif (__mode__ == 'FusQuin'):
-    #            FusQuin(parse(file), output)
-                
-        # Alignment-free methods
-    #    else:
-    #        anaq  = sys.argv[2]
-    #        path  = sys.argv[3]
-    #        mix   = sys.argv[4]
-    #        ind   = sys.argv[5]
-    #        file1 = sys.argv[6]
-    #        file2 = sys.argv[7]
-            
-    #        if   (__mode__ == 'TransQuin'):
-    #            TransQuinKM(anaq, path, ind, mix, file1, file2)
-    #        elif (__mode__ == 'VarQuin'):
-    #            VarQuinKM(anaq, path, ind, mix, file1, file2)
+    if __mode__ == 'RnaQuin':
+        createRNReport(file, inputs)
+    elif __mode__ == 'VarQuin':
+        createVNReport(file, inputs)

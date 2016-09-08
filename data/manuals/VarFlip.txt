@@ -1,28 +1,31 @@
 <b>Anaquin Manual</b>
 
 <b>NAME</b>
-    VarAlign - Measures the read alignment from sequins to the in silico chromosome.
+    VarFlip - Compute reverse complement of sequin alignments to the reverse genome.
 
 <b>DESCRIPTION</b>
-    VarAlign calculates several useful statistics to describe alignment performance, including:
-    a) Dilution factor indicates fraction of reads that align to the in silico chromosome, relative to the accompanying  genome. 
-    b) Sensitivity indicates the fraction of annotated regions covered by alignments. 
-    c) Precision indicates the accuracy of alignments.
+    VarFlip is designed to compute reverse complement of sequin reads aligned to the reverse
+    synthetic genome. It takes raw sequence files and its alignment files for inputs. The tool
+    extracts all reads aligned to the reverse genome, compute their reverse complement and generate
+    a new set of pair-ended sequence files for the sequin reads.
+
+    Filters can be applied to filter our low quality reads aligned to the reverse genome. Users are
+    expected to realign the generated sequin pair-ended sequence files against the human genome.
 
 <b>SUPPORT SOFTWARE</b>
-     Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+     VarFlip takes the standard SAM/BAM file that is supported by all popular alignment softwares.
      
 <b>USAGE EXAMPLE</b>
-     anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin VarFlip –ufiles seq_1.fq –ufiles seq_2.fq –ufiles aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -rbed        Reference annotation file in BED format
-        -ufiles      User-generated alignment files in SAM/BAM format
+        -ufiles      First pair for the input sequence file in FASTQ format
+        -ufiles      Second pair for the input sequence file in FASTQ format
+        -ufiles      Generated forward/reverse  alignment file in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to
 
 <b>OUTPUTS</b>
-     VarAlign_summary.stats - gives the summary statistics
-     VarAlign_sequins.csv   - gives detailed statistics for each sequin
+     VarFlip_summary.stats - gives the summary statistics

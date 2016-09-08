@@ -13,12 +13,13 @@
      Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
      
 <b>USAGE EXAMPLE</b>
-     anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin VarAlign –rbed reference.bed –ufiles sample.bam -ufiles sequins.bam
 
 <b>TOOL OPTIONS</b>
      Required:
         -rbed        Reference annotation file in BED format
-        -ufiles      User-generated alignment files in SAM/BAM format
+        -ufiles      Generated alignment file for the sample in SAM/BAM format
+        -ufiles      Generated alignment file for the sequins in SAM/BAM format     
 
      Optional:
         -o = output  Directory in which output files are written to
