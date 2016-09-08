@@ -47,7 +47,8 @@
  */
 
 #include "resources/plotVLOD.R"
-#include "resources/plotVROC.R"
+#include "resources/plotVGROC.R"
+#include "resources/plotVCROC.R"
 
 #include "resources/sampled.bed"
 #include "resources/AVA009_v001.vcf"
@@ -195,9 +196,14 @@ Scripts PlotVLOD()
     return ToString(src_r_plotVLOD_R);
 }
 
-Scripts PlotVROC()
+Scripts PlotVGROC()
 {
-    return ToString(src_r_plotVROC_R);
+    return ToString(src_r_plotVGROC_R);
+}
+
+Scripts PlotVCROC()
+{
+    return ToString(src_r_plotVCROC_R);
 }
 
 Scripts VarDataMixA()

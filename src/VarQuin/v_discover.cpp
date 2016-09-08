@@ -7,10 +7,39 @@ using namespace Anaquin;
 extern Scripts PlotVLOD();
 
 // Defined in resources.cpp
-extern Scripts PlotVROC();
+extern Scripts PlotVGROC();
+
+// Defined in resources.cpp
+extern Scripts PlotVCROC();
 
 static Counts __countD__ = 0;
 static Counts __countP__ = 0;
+
+// Defined in main.cpp
+extern Path __output__;
+
+// Defined in main.cpp
+extern std::string __full_command__;
+
+static Scripts createVGROC(const FileName &file, const std::string &score, const std::string &refRat)
+{
+    return (boost::format(PlotVGROC()) % date()
+                                       % __full_command__
+                                       % __output__
+                                       % file
+                                       % score
+                                       % refRat).str();
+}
+
+static Scripts createVCROC(const FileName &file, const std::string &score, const std::string &refRat)
+{
+    return (boost::format(PlotVCROC()) % date()
+                                       % __full_command__
+                                       % __output__
+                                       % file
+                                       % score
+                                       % refRat).str();
+}
 
 struct VDiscoverImpl : public VCFDataUser
 {
@@ -643,12 +672,12 @@ void VDiscover::report(const FileName &file, const Options &o)
     if (__countP__ >= __countD__)
     {
         o.info("P-value for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "1-data$Pval", "0"));
+        o.writer->write(createVCROC("VarDiscover_detected.csv", "1-data$Pval", "-1"));
     }
     else
     {
         o.info("Depth for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
+        o.writer->write(createVGROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
     }
     
     o.writer->close();
