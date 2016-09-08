@@ -26,3 +26,9 @@ Version: 0.80
             RnaExpression - Quantitative analysis of sequin expression
             RnaFoldChange - Assess fold-changes in gene expression between multiple samples
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
+
+            VarAlign      - Measures the read alignment from sequins to the in silico chromosome
+            VarFlip       - Compute reverse complement of sequin alignments to the reverse genome
+            VarDiscover   - Assess the identification of variants on the in silico chromosome
+            VarSubsample  - Calibrate sequence coverage of sequins to accompanying human genome
+             

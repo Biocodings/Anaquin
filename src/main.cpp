@@ -361,7 +361,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "v0.99.11" << std::endl;
+    std::cout << "v0.99.12" << std::endl;
 }
 
 template <typename F> bool testFile(const FileName &x, F f)
@@ -384,29 +384,31 @@ template <typename F> bool testFile(const FileName &x, F f)
 
 static Scripts manual(Tool tool)
 {
-    extern Scripts RnaAlign();
-    extern Scripts RnaSubsample();
-    extern Scripts RnaAssembly();
-    extern Scripts RnaExpression();
-    extern Scripts RnaKReport();
-    extern Scripts RnaFoldChange();
+    extern Scripts VarFlip();
     extern Scripts VarAlign();
-    extern Scripts VarSubsample();
+    extern Scripts RnaAlign();
+    extern Scripts RnaKReport();
+    extern Scripts VarKReport();
+    extern Scripts RnaAssembly();
     extern Scripts VarDiscover();
-    extern Scripts VaRKReportion();
+    extern Scripts RnaSubsample();
+    extern Scripts VarSubsample();
+    extern Scripts RnaExpression();
+    extern Scripts RnaFoldChange();
 
     switch (tool)
     {
-        case TOOL_R_ALIGN:     { return RnaAlign();       }
-        case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
-        case TOOL_R_EXPRESS:   { return RnaExpression();  }
-        case TOOL_R_KREPORT:   { return RnaKReport(); }
-        case TOOL_R_FOLD:      { return RnaFoldChange();  }
-        case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
-        case TOOL_V_ALIGN:     { return VarAlign();       }
-        case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
-        case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_KREPORT:   { return VaRKReportion(); }
+        case TOOL_R_ALIGN:     { return RnaAlign();      }
+        case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
+        case TOOL_R_EXPRESS:   { return RnaExpression(); }
+        case TOOL_R_KREPORT:   { return RnaKReport();    }
+        case TOOL_R_FOLD:      { return RnaFoldChange(); }
+        case TOOL_V_FLIP:      { return VarFlip();       }
+        case TOOL_R_SUBSAMPLE: { return RnaSubsample();  }
+        case TOOL_V_ALIGN:     { return VarAlign();      }
+        case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
+        case TOOL_V_DISCOVER:  { return VarDiscover();   }
+        case TOOL_V_KREPORT:   { return VarKReport();    }
     }
 
     throw std::runtime_error("Manual not found");

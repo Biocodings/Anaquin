@@ -1,7 +1,7 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-     RnaAlign - Assess spliced-read alignments to the in silico chromosome
+     VarKReport - Assess spliced-read alignments to the in silico chromosome
 
 <b>DESCRIPTION</b>
     RnaAlign can be used to assess the alignment of sequins-derived reads to the in silico chromosome and calculates

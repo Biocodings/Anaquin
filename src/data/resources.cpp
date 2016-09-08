@@ -7,6 +7,7 @@
  */
 
 #include "resources/anaquin.txt"
+#include "resources/VarFlip.txt"
 #include "resources/VarAlign.txt"
 #include "resources/RnaAlign.txt"
 #include "resources/RnaKReport.txt"
@@ -113,11 +114,6 @@ Scripts RnaKReport()
     return ToString(data_manuals_RnaKReport_txt);
 }
 
-Scripts VarKReport()
-{
-    return ToString(data_manuals_VarKReport_txt);
-}
-
 Scripts RnaExpression()
 {
     return ToString(data_manuals_RnaExpression_txt);
@@ -133,6 +129,11 @@ Scripts VarAlign()
     return ToString(data_manuals_VarAlign_txt);
 }
 
+Scripts VarFlip()
+{
+    return ToString(data_manuals_VarFlip_txt);
+}
+
 Scripts VarSubsample()
 {
     return ToString(data_manuals_VarSubsample_txt);
@@ -143,9 +144,9 @@ Scripts VarDiscover()
     return ToString(data_manuals_VarDiscover_txt);
 }
 
-Scripts VaRKReportion()
+Scripts VarKReport()
 {
-    return "";
+    return ToString(data_manuals_VarKReport_txt);
 }
 
 /*

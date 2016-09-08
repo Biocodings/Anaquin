@@ -8,7 +8,6 @@
 
 library(Anaquin)
 
-# Load reference sequins
 data <- read.csv('%3%/%4%', sep='\t')
 
 # Don't lose those zero p-values
@@ -32,9 +31,7 @@ xLabels <- c('-3', '-2', '-1')
 yBreaks <- c(1, 1e-100, 1e-200, 1e-300)
 yLabels <- c(1, -100, -200, -300)
 
-# Create Anaquin data set for plotLODR
-
 # Create Anaquin data for PlotLODR
-anaquin <- AnaquinData(analysis='PlotLODR', names=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
+anaquin <- AnaquinData(analysis='PlotLODR', seqs=paste(data$ID, data$Position, sep='_'), ratio=data$EFold, pval=data$Pval, measured=data$ExpFreq)
 
 plotLODR(anaquin, shouldFit=FALSE, xBreaks = xBreaks, xLabels=xLabels, yBreaks=yBreaks, yLabels=yLabels, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)
