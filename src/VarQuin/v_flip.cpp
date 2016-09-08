@@ -113,7 +113,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
-                o.logInfo("MAPQ: " + x.name + "\t" + std::to_string(lowMap.count(n1)) + "\t" + std::to_string(lowMap.count(n2)) + "\t" + n1 + "\t" + n2);
+                o.logInfo("MAPQ: " + x.name + "\t" + std::to_string(lowMap.count(x.name)) + "\t" + x.name);
                 m.unlock();
 #endif
             }
@@ -121,7 +121,7 @@ VFlip::Stats VFlip::analyze(const FileName &seq1,
             {
 #ifdef ANAQUIN_DEBUG
                 m.lock();
-                o.logInfo("Normal: " + x.name + "\t" + std::to_string(normal.count(n1)) + "\t" + std::to_string(normal.count(n2)) + "\t" + n1 + "\t" + n2);
+                o.logInfo("Normal: " + x.name + "\t" + std::to_string(normal.count(x.name)) + "\t" + x.name);
                 m.unlock();
 #endif
 
