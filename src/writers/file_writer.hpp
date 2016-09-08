@@ -24,7 +24,8 @@ namespace Anaquin
 
             inline void open(const FileName &file) override
             {
-                isRScript = boost::algorithm::ends_with(file, ".R");
+                isScript = boost::algorithm::ends_with(file, ".R") ||
+                           boost::algorithm::ends_with(file, ".py");
 
                 if (!path.empty())
                 {
@@ -42,7 +43,7 @@ namespace Anaquin
 
             inline void write(const std::string &x, bool newLine = true) override
             {
-                if (isRScript)
+                if (isScript)
                 {
                     *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << Script::trim(x);
                 }
@@ -69,8 +70,8 @@ namespace Anaquin
                 
         private:
         
-            // Trim R-script?
-            bool isRScript;
+            // Trim script?
+            bool isScript;
         
             std::string path;
             std::shared_ptr<std::ofstream> _o;
