@@ -17,6 +17,9 @@ namespace Anaquin
             
             RExpress::Stats stats;
             
+            // The path for the analysis files
+            Path output;
+            
             // Kallisto's abundance.tsv
             FileName abund;
         };

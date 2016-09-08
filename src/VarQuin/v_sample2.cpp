@@ -290,11 +290,12 @@ static void generateCSV(const FileName &file, const VSample2::Stats &stats, cons
 {
     o.generate(file);
 
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%");
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ChrID"
+    o.writer->write((boost::format(format) % "ID"
+                                           % "ChrID"
                                            % "Start"
                                            % "End"
                                            % "Genome"
@@ -308,7 +309,8 @@ static void generateCSV(const FileName &file, const VSample2::Stats &stats, cons
         // For each variant...
         for (const auto &j : i.second)
         {
-            o.writer->write((boost::format(format) % i.first
+            o.writer->write((boost::format(format) % "?"
+                                                   % i.first
                                                    % j.first.start
                                                    % j.first.end
                                                    % j.second.gen
@@ -348,17 +350,17 @@ static void generateSummary(const FileName &file,
                          "       Variant regions: %4% regions\n"
                          "       Method: %5%\n\n"
                          "-------Total alignments (before subsampling)\n\n"
-                         "       Genome:    %6%\n"
-                         "       Synthetic: %7%\n\n"
+                         "       Synthetic: %6%\n"
+                         "       Genome:    %7%\n\n"
                          "-------Total alignments (after subsampling)\n\n"
-                         "       Genome:    %8%\n"
-                         "       Synthetic: %9%\n\n"
+                         "       Synthetic: %8%\n"
+                         "       Genome:    %9%\n\n"
                          "-------Alignments within sampling regions (before subsampling)\n\n"
-                         "       Genome:    %10%\n"
-                         "       Synthetic: %11%\n\n"
+                         "       Synthetic: %10%\n"
+                         "       Genome:    %11%\n\n"
                          "-------Alignments within sampling regions (after subsampling)\n\n"
-                         "       Genome:    %12%\n"
-                         "       Synthetic: %13%\n\n"
+                         "       Synthetic: %12%\n"
+                         "       Genome:    %13%\n\n"
                          "       Normalization: %14% \u00B1 %15%\n\n"
                          "-------Before subsampling (within sampling regions)\n\n"
                          "       Synthetic coverage (average): %16%\n"
@@ -378,10 +380,10 @@ static void generateSummary(const FileName &file,
                                             % stats.totBefore.countSyn  // 7
                                             % stats.totAfter.countGen   // 8
                                             % stats.totAfter.countSyn   // 9
-                                            % stats.sampBefore.countGen // 10
-                                            % stats.sampBefore.countSyn // 11
-                                            % stats.sampAfter.countGen  // 12
-                                            % stats.sampAfter.countSyn  // 13
+                                            % stats.sampBefore.countSyn // 10
+                                            % stats.sampBefore.countGen // 11
+                                            % stats.sampAfter.countSyn  // 12
+                                            % stats.sampAfter.countGen  // 13
                                             % stats.normAver            // 14
                                             % stats.normSD              // 15
                                             % stats.beforeSyn           // 16

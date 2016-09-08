@@ -675,7 +675,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     else
     {
         o.info("Depth for scoring");
-        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth", "NULL"));
+        o.writer->write(RWriter::createVROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
     }
     
     o.writer->close();

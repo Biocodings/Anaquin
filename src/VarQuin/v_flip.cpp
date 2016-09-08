@@ -185,11 +185,11 @@ static void writeSummary(const FileName &file,
                          "       Unmapped: %8% (%9%%%)\n"
                          "       Forward:  %10% (%11%%%)\n"
                          "       Reverse:  %12% (%13%%%)\n"
-                         "       Dilution: %14$.2f\n\n"
+                         "       Dilution: %14$.4f\n\n"
                          "-------Filters\n\n"
-                         "       Mapping quality: %15% quality score\n\n"
+                         "       Mapping Quality: %15% quality score\n\n"
                          "-------Filtered Reads\n\n"
-                         "       Mapping quality: %16% (%17%)\n";
+                         "       Mapping Quality: %16% (%17%)\n";
 
     o.generate(file);
     o.writer->open(file);

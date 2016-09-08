@@ -465,7 +465,7 @@ void RExpress::generateR(const FileName &output,
     o.writer->close();
 }
 
-static void generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
+void RExpress::generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -540,7 +540,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_sequins.csv
      */
     
-    generateCSV("RnaExpression_sequins.csv", stats, o);
+    RExpress::generateCSV("RnaExpression_sequins.csv", stats, o);
 
     /*
      * Generating RnaExpression_linear.R

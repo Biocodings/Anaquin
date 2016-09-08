@@ -7,13 +7,15 @@
  */
 
 #include "resources/anaquin.txt"
+#include "resources/VarAlign.txt"
 #include "resources/RnaAlign.txt"
-#include "resources/RnaSubsample.txt"
+#include "resources/RnaKReport.txt"
+#include "resources/VarKReport.txt"
 #include "resources/RnaAssembly.txt"
+#include "resources/VarDiscover.txt"
+#include "resources/RnaSubsample.txt"
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
-#include "resources/VarAlign.txt"
-#include "resources/VarDiscover.txt"
 #include "resources/VarSubsample.txt"
 
 /*
@@ -105,9 +107,14 @@ Scripts RnaAssembly()
     return ToString(data_manuals_RnaAssembly_txt);
 }
 
-Scripts RnaKExpression()
+Scripts RnaKReport()
 {
-    return "";
+    return ToString(data_manuals_RnaKReport_txt);
+}
+
+Scripts VarKReport()
+{
+    return ToString(data_manuals_VarKReport_txt);
 }
 
 Scripts RnaExpression()

@@ -74,6 +74,8 @@ namespace Anaquin
             return stats;
         }
 
+        static void generateCSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
+
         static void generateR(const FileName &,
                               const FileName &,
                               const std::vector<Stats> &,

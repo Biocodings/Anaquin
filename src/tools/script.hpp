@@ -45,18 +45,15 @@ namespace Anaquin
             f(prefix + " " + tmp + " " + args);
         }
         
+        // Eg: python reports.py RnaQuin reports.pdf output
         template <typename Option> static void report(const std::string &type,
-                                                      const std::string &file1,
-                                                      const std::string &file2,
+                                                      const FileName &report,
+                                                      const FileName &inputs,
                                                       const Option &o)
         {
-            const auto cmd = ((boost::format("%1% %2% %3% %4% %5% %6% %7%") % type
-                                                                            % __anaquin__
-                                                                            % o.work
-                                                                            % o.mix
-                                                                            % o.index
-                                                                            % file1
-                                                                            % file2)).str();
+            const auto cmd = ((boost::format("%1% %2% %3%") % type
+                                                            % (o.work + "/" + report)
+                                                            % inputs)).str();
             Script::run(ReportScript(), "python", cmd);
         }
         
@@ -81,23 +78,6 @@ namespace Anaquin
                 ss << *iter;
             }
 
-//            for (auto i = 0; i < str.size(); i++)
-//            {
-//                auto curr = str.at(i);
-//                auto next = i != str.size()-1 ? str.at(i+1) : 0;
-//
-//                if (curr == '$' && !isprint(next))
-//                {
-//                    continue;
-//                }
-//                else if (curr == '\x02')
-//                {
-//                    continue;
-//                }
-//                
-//                ss << curr;
-//            }
-        
             auto tmp = ss.str();
             std::reverse(tmp.begin(), tmp.end());
             return tmp;
