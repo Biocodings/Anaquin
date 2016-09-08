@@ -860,7 +860,7 @@ def report2PDF(r, name, path):
     os.chdir(path)
 
     # Create the PDF report
-    execute('/usr/local/bin/R CMD BATCH ' + r2pdf)
+    execute('R CMD BATCH ' + r2pdf)
 
     # Move it to where it's supposed to be
     execute('mv report.pdf ' + name + ' 2>/dev/null')
