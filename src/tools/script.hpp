@@ -20,7 +20,7 @@ namespace Anaquin
 {
     struct Script
     {
-        static void run(const std::string &code, const std::string &prefix, const std::string &args, const std::string &exts = "")
+        static void run(const std::string &code, const std::string &prefix, const std::string &args)
         {
             const auto f = [&](const std::string &cmd)
             {
@@ -35,7 +35,7 @@ namespace Anaquin
             };
             
             // Create a copy of the script
-            const auto tmp = tmpFile() + exts;
+            const auto tmp = tmpFile();
             
             std::ofstream out(tmp);
             out << code;

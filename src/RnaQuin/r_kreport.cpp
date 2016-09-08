@@ -16,10 +16,10 @@ RKReport::Stats RKReport::analyze(const FileName &index, const FileName &p1, con
     const std::string output = tmpFile();
     
     // The script to run
-    const auto script = KExpressScript();
-    
+    const auto script = Script::trim(KExpressScript());
+
     // Eg: python kexpress.py RNAQuin ARN004.v032.index /tmp/kallisto LRN087.1_val_1.fq LRN087.2_val_2.fq
-    Script::run(script, "python", "RnaQuin " + index + " " + output + " " + p1 + " " + p2, ".py"    );
+    Script::run(script, "python", "RnaQuin " + index + " " + output + " " + p1 + " " + p2);
     
     RExpress::Options ro;
     
