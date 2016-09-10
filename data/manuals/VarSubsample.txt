@@ -1,4 +1,4 @@
-<b>Anaquin Manual</b>
+<b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
      VarSubsample - Calibrate sequence coverage of sequins to accompanying human genome

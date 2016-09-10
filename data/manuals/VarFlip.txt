@@ -1,4 +1,4 @@
-<b>Anaquin Manual</b>
+<b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
     VarFlip - Compute reverse complement of sequin alignments to the reverse genome.
@@ -29,3 +29,9 @@
 
 <b>OUTPUTS</b>
      VarFlip_summary.stats - gives the summary statistics
+	 VarFlip_genome.1.fq   - is the first paired-end sequence file containing reads from the inputs
+	                         that are aligned to the hg38 genome
+	 VarFlip_genome.2.fq   - is the second paired-end for VarFlip_genome.1.fq
+	 VarFlip_sequins.1.fq  - is the first paired-end sequence file with reads from the inputs that
+	                         are aligned to the reverse genome.
+	 VarFlip_sequins.2.fq  - is the second paired-end for VarFlip_sequins_1.fq
