@@ -267,7 +267,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     if ((__hasGen__ = !isEmpty(__QForGen__)))
     {
-        o.analyze("genome");
+        o.analyze("Genome");
         compareGTF(Geno, __RForGen__, __QForGen__);
         copyStats(Geno);
     }
