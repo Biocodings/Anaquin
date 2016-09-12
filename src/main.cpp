@@ -725,34 +725,38 @@ template < typename Analyzer> void analyze_n(typename Analyzer::Options o = type
     }, o);
 }
 
-static void checkInputs(int argc, char ** argv)
+static void fixInputs(int argc, char ** argv)
 {
-    /*
-     * Detect for weird inputs, such as "–" (invalid ASCII)
-     */
-    
     for (auto i = 0; i < argc; i++)
     {
-        if (argv[i])
+        if (argv[i] && strlen(argv[i]) && argv[i][0] == (char)-30)
         {
-            const auto str = std::string(argv[i]);
+            auto tmp = std::string(argv[i]);
             
-            if (str.size() >= 2)
+            auto invalid = [&](char c)
             {
-                const int key = (int) str[0];
-                
-                if (key == -30) // –
-                {
-                    throw std::runtime_error("Invalid " + std::string(argv[i]) + ". Please note '–' is NOT the character '-' that you see on your keyboard. The given option is therefore invalid, please type the character manually.");
-                }
-            }
+                return !(c>=0 && c <128);
+            };
+            
+            tmp.erase(remove_if(tmp.begin(), tmp.end(), invalid), tmp.end());
+            tmp = "-" + tmp;
+
+            strcpy(argv[i], tmp.c_str());
         }
     }
 }
 
 void parse(int argc, char ** argv)
 {
-    checkInputs(argc, argv);
+    auto tmp = new char*[argc+1];
+    
+    for (auto i = 0; i < argc; i++)
+    {
+        tmp[i] = (char *) malloc((strlen(argv[i]) + 1) * sizeof(char));
+        strcpy(tmp[i], argv[i]);
+    }
+    
+    fixInputs(argc, argv=tmp);
 
     auto &tool = _p.tool;
     

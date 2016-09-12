@@ -4,11 +4,13 @@
 
 using namespace Anaquin;
 
-TEST_CASE("RnaFoldChange_Manuscript")
+TEST_CASE("RnaFoldChange_Guide")
 {
     Test::clear();
     
-    const auto r = Test::test("RnaFoldChange -o 5.5.3 -m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
-
-    REQUIRE(r.status == 0);
+    const auto r1 = Test::test("RnaFoldChange -o 5.5.3 -m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
+    const auto r2 = Test::test("RnaFoldChange –o 5.5.3 –m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
+    
+    REQUIRE(r1.status == 0);
+    REQUIRE(r2.status == 0);
 }
