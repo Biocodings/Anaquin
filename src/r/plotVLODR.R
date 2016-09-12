@@ -21,7 +21,7 @@ data <- data[data$Type=='SNP',]
 
 xlab     <- 'Expected allele frequency (log10)'
 ylab     <- 'P-value (log10)'
-title    <- 'LOD Plot'
+title    <- 'LODR Plot'
 legTitle <- 'Allele Freq'
 
 data$EFold <- round(data$ExpRef / data$ExpVar)

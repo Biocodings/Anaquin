@@ -701,11 +701,11 @@ void VDiscover::report(const FileName &file, const Options &o)
         o.writer->close();
 
         /*
-         * Generating VarDiscover_LOD.R
+         * Generating VarDiscover_LODR.R
          */
         
-        o.generate("VarDiscover_LOD.R");
-        o.writer->open("VarDiscover_LOD.R");
+        o.generate("VarDiscover_LODR.R");
+        o.writer->open("VarDiscover_LODR.R");
         o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLODR()));
         o.writer->close();
     }
@@ -720,7 +720,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.report->addFile("VarDiscover_sequins.csv");
     o.report->addFile("VarDiscover_detected.csv");
     o.report->addFile("VarDiscover_ROC.R");
-    o.report->addFile("VarDiscover_LOD.R");
+    o.report->addFile("VarDiscover_LODR.R");
     
     if (!r.isGermline())
     {
