@@ -47,7 +47,7 @@ data  = [ 'data/manuals/anaquin.txt',
 
           # ---------- VarQuin ----------
 
-   	      'src/r/plotVLOD.R',
+   	      'src/r/plotVLODR.R',
           'src/r/plotVGROC.R',
           'src/r/plotVCROC.R',          
 

@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVLOD();
+extern Scripts PlotVLODR();
 
 // Defined in resources.cpp
 extern Scripts PlotVGROC();
@@ -706,7 +706,7 @@ void VDiscover::report(const FileName &file, const Options &o)
         
         o.generate("VarDiscover_LOD.R");
         o.writer->open("VarDiscover_LOD.R");
-        o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLOD()));
+        o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLODR()));
         o.writer->close();
     }
 

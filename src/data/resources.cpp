@@ -47,7 +47,7 @@
  * VarQuin Resources
  */
 
-#include "resources/plotVLOD.R"
+#include "resources/plotVLODR.R"
 #include "resources/plotVGROC.R"
 #include "resources/plotVCROC.R"
 
@@ -192,9 +192,9 @@ Scripts RnaDataMixAB()
  * Variant Resources
  */
 
-Scripts PlotVLOD()
+Scripts PlotVLODR()
 {
-    return ToString(src_r_plotVLOD_R);
+    return ToString(src_r_plotVLODR_R);
 }
 
 Scripts PlotVGROC()
