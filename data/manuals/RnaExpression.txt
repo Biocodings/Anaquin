@@ -18,10 +18,10 @@
 
 <b>USAGE EXAMPLE</b>
      For single replicate:
-     anaquin RnaExpression –m mixture.csv –ufiles sample1.gtf
+     anaquin RnaExpression –m mixture.csv -method gene –ufiles sample1.gtf
 
      For multiple replicates:
-     anaquin RnaExpression –m mixture.csv –ufiles sample1.gtf –ufiles sample2.gtf –ufiles sample3.gtf
+     anaquin RnaExpression –m mixture.csv -method gene –ufiles sample1.gtf –ufiles sample2.gtf –ufiles sample3.gtf
 
 <b>TOOL OPTIONS</b>
      Required:
