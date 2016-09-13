@@ -35,6 +35,6 @@
 
 <b>OUTPUTS</b>
      RnaExpression_summary.stats - provides global summary statistics for sequin expression
-     RnaExpress_sequins.csv      - provides detailed statistics for each individual sequin
-     RnaExpress_linear.R         - provides R-script for plotting a linear model between expression level (dependent variable)
+     RnaExpression_sequins.csv   - provides detailed statistics for each individual sequin
+     RnaExpression_linear.R      - provides R-script for plotting a linear model between expression level (dependent variable)
                                    and input concentration (independent variable) on the logarithm scale
