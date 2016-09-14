@@ -8,7 +8,7 @@ using namespace Anaquin;
 extern Path __output__;
 
 // Defined in resources.cpp
-extern Scripts KExpressScript();
+extern Scripts KReportScript();
 
 RKReport::Stats RKReport::analyze(const FileName &index, const FileName &p1, const FileName &p2, const Options &o)
 {
@@ -16,10 +16,10 @@ RKReport::Stats RKReport::analyze(const FileName &index, const FileName &p1, con
     const std::string output = tmpFile();
     
     // The script to run
-    const auto script = Script::trim(KExpressScript());
+    const auto script = Script::trim(KReportScript());
 
-    // Eg: python kexpress.py RNAQuin ARN004.v032.index /tmp/kallisto LRN087.1_val_1.fq LRN087.2_val_2.fq
-    Script::run(script, "python", "RnaQuin " + index + " " + output + " " + p1 + " " + p2);
+    // Eg: python kexpress.py RNAQuin ARN004.v032.index 1,0 /tmp/kallisto LRN087.1_val_1.fq LRN087.2_val_2.fq
+    Script::run(script, "python", "RnaQuin " + index + " " + output + " 1,0 " + p1 + " " + p2);
     
     RExpress::Options ro;
     
@@ -27,7 +27,7 @@ RKReport::Stats RKReport::analyze(const FileName &index, const FileName &p1, con
     ro.metrs  = RExpress::Metrics::Gene;
     ro.format = RExpress::Format::Kallisto;
     
-    const auto abund = output + "/abundance.tsv";
+    const auto abund = output + "/A1/abundance.tsv";
     
     RKReport::Stats stats(RExpress::analyze(abund, ro));
     stats.abund  = abund;

@@ -86,52 +86,52 @@ def RNAKReport(index, output, A1, A2, B1, B2):
         run(quant)
 
     # Do we have at least two replicates in each sample?
-    if len(A1) > 0 and len(B1) > 0:
-        sleuth = """
-                 library(sleuth)
-
+    #if len(A1) > 0 and len(B1) > 0:
+    #    sleuth = """
+    #             library(sleuth)
+    #
                  # Where the Kallisto files are
-                 path <- '%s'
-
+    #             path <- '%s'
+    #
                  # List of sample IDs
-                 sample_id <- dir(file.path(path))
-                 
+    #             sample_id <- dir(file.path(path))
+    #             
                  # List of paths to the Kallisto results indexed by the sample IDs
-                 kal_dirs <- sapply(sample_id, function(id) file.path('/tmp/kallisto', "results", id, "kallisto"))
-                 
-                 samps <- c(%s)
-                 conds <- c(%s)
-
+    #             kal_dirs <- sapply(sample_id, function(id) file.path('/tmp/kallisto', "results", id, "kallisto"))
+    #             
+    #             samps <- c(%s)
+    #             conds <- c(%s)
+    #
                  # Construct full path for the samples
-                 path <- paste(path, samps, sep='/')
-
-                 s2c <- data.frame(sample=samps, condition=conds)
-                 s2c <- dplyr::mutate(s2c, path=path)
-
-                 so <- sleuth_prep(s2c, ~condition)
-                 so <- sleuth_fit(so)
-                 so <- sleuth_wt(so, 'conditionB')
-
-                 results <- sleuth_results(so, 'conditionB')
-
-                 write.csv(results, file='%s', row.names=FALSE, quote=FALSE)"""
-                 
-        samps = ["'" + s + "'" for s in samps]
-        conds = ["'" + s + "'" for s in conds]        
-
-        sleuth = sleuth % (output, ','.join(samps), ','.join(conds), "1")
-
+    #             path <- paste(path, samps, sep='/')
+    #
+    #             s2c <- data.frame(sample=samps, condition=conds)
+    #             s2c <- dplyr::mutate(s2c, path=path)
+    #
+    #             so <- sleuth_prep(s2c, ~condition)
+    #             so <- sleuth_fit(so)
+    #             so <- sleuth_wt(so, 'conditionB')
+    #
+    #             results <- sleuth_results(so, 'conditionB')
+    #
+    #             write.csv(results, file='%s', row.names=FALSE, quote=FALSE)"""
+    #             
+    #    samps = ["'" + s + "'" for s in samps]
+    #    conds = ["'" + s + "'" for s in conds]        
+    #
+    #    sleuth = sleuth % (output, ','.join(samps), ','.join(conds), "1")
+    #
         # Create a R script for Sleuth
-        createText(output + '/sleuth.R', sleuth)
-
+    #    createText(output + '/sleuth.R', sleuth)
+    #
         # Run Sleuth
-        runRScript(output + '/sleuth.R')
+    #   runRScript(output + '/sleuth.R')
 
 def VarKReport(file):
     pass
 
 #
-# Eg: python kReport.py RnaQuin ARN004.v032.index /tmp/kallisto 1,0 LRN087.1_val_1.fq LRN087.2_val_2.fq
+# Eg: python kReport.py RnaQuin ARN024.v032.index /tmp/kallisto 1,0 LRN087.1_val_1.fq LRN087.2_val_2.fq
 #
 if __name__ == '__main__':
 
@@ -148,6 +148,7 @@ if __name__ == '__main__':
         os.makedirs(output)    
 
     if mode == 'RnaQuin':
+        
         # What's the design for A? Eg: 3,3
         A = 2*int(sys.argv[4].split(',')[0]) # Paired-end
     

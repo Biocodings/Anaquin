@@ -28,7 +28,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarFlip.txt',          
 
           'scripts/reports.py',
-          'scripts/kexpress.py',
+          'scripts/kReport.py',
 
           'src/r/plotFold.R',
           'src/r/plotLinear.R',

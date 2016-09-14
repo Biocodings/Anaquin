@@ -24,7 +24,7 @@
  */
 
 #include "resources/reports.py"
-#include "resources/kexpress.py"
+#include "resources/kReport.py"
 
 #include "resources/plotFold.R"
 #include "resources/plotLinear.R"
@@ -65,9 +65,9 @@ Scripts ReportScript()
     return ToString(scripts_reports_py);
 }
 
-Scripts KExpressScript()
+Scripts KReportScript()
 {
-    return ToString(scripts_kexpress_py);
+    return ToString(scripts_kReport_py);
 }
 
 Scripts Manual()

@@ -1,13 +1,13 @@
-//#include <catch.hpp>
-//#include "test.hpp"
-//#include "VarQuin/v_sample.hpp"
-//
-//using namespace Anaquin;
-//
+#include <catch.hpp>
+#include "test.hpp"
+#include "VarQuin/v_sample.hpp"
+
+using namespace Anaquin;
+
 //extern Scripts VarDataBed();
-//
-//TEST_CASE("VSubsample_ZeroProp")
-//{
+
+TEST_CASE("VSubsample_ZeroProp")
+{
 //    Test::clear();
 //
 //    Standard::instance().addVStd(Reader(VarDataBed(),  DataMode::String));
@@ -25,4 +25,4 @@
 //    REQUIRE(r.gen.size() == 1);
 //    REQUIRE(r.synC == Approx(78.3425844909));
 //    REQUIRE(r.genC == Approx(0.0112222222));
-//}
+}

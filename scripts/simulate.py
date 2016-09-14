@@ -151,6 +151,9 @@ def print_usage():
 #
 # Eg: python simulate.py RNA A.R.2.fa NewMixAB.csv
 #
+#   data <- read.csv('/Users/tedwong/Desktop/ABCD.csv', sep=',')
+#   write.table(data, sep='\t', quote=FALSE, file='/Users/tedwong/Desktop/MixAB.csv', row.names=FALSE)
+#
 #   bowtie2-build A.R.4.fa A.R.4
 #
 #   tophat2 -o A1 -p 6 A.R.4 A1/simulated_1.fastq A1/simulated_2.fastq
