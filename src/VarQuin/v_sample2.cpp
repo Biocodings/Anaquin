@@ -98,17 +98,12 @@ template <typename Stats> Coverage stats2cov(const VSample2::Method meth, const 
         case VSample2::Method::Mean:   { return stats.mean; }
         case VSample2::Method::Median: { return stats.p50;  }
 
-        case VSample2::Method::Prop:
-        {
-            throw std::runtime_error("Not implemented");
-            break;
-        }
+        /*
+         * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure to report coverage.
+         */
 
-        case VSample2::Method::Reads:
-        {
-            throw std::runtime_error("Not implemented");
-            break;
-        }
+        case VSample2::Method::Prop:
+        case VSample2::Method::Reads: { return stats.mean; }
     }
 }
 
@@ -194,9 +189,33 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             
             const auto synC = stats2cov(o.meth, ss);
             const auto genC = stats2cov(o.meth, gs);
-            
-            // Normalization factor, defined if there's synthetic coverage
-            auto norm = synC ? std::min(genC / synC, 1.0) : NAN;
+
+            Proportion norm = NAN;
+
+            switch (o.meth)
+            {
+                case VSample2::Method::Mean:
+                case VSample2::Method::Median: { norm = synC ? std::min(genC / synC, 1.0) : NAN; break; }
+                case VSample2::Method::Prop:
+                {
+                    A_ASSERT(!isnan(o.p));
+                    norm = o.p;
+                    break;
+                }
+
+                case VSample2::Method::Reads:
+                {
+                    A_ASSERT(!isnan(o.reads));
+
+                    // Number of reads in the region
+                    const auto aligns = ss.aligns;
+
+                    // Try to keep subsample the fixed number of reads
+                    norm = o.reads >= aligns ? 1.0 : ((Proportion) o.reads) / aligns;
+
+                    break;
+                }
+            }
             
             allBeforeGenC.push_back(genC);
             allBeforeSynC.push_back(synC);

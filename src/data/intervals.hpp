@@ -30,6 +30,9 @@ namespace Anaquin
                 // Sum of all coverage
                 Coverage sums = 0;
             
+                // Total number of alignments
+                Counts aligns = 0;
+                
                 // Distribution for the coverage
                 std::map<Coverage, Counts> hist;
             
@@ -85,6 +88,8 @@ namespace Anaquin
                 if (lp) { *lp = left;  }
                 if (rp) { *rp = right; }
             
+                _counts++;
+                
                 return left + right;
             }
         
@@ -124,11 +129,12 @@ namespace Anaquin
             
                 std::sort(x.begin(), x.end());
                 
-                stats.mean = stats.sums / stats.length;
-                stats.p25  = SS::quantile(x, 0.25);
-                stats.p50  = SS::quantile(x, 0.50);
-                stats.p75  = SS::quantile(x, 0.75);
-            
+                stats.mean   = stats.sums / stats.length;
+                stats.p25    = SS::quantile(x, 0.25);
+                stats.p50    = SS::quantile(x, 0.50);
+                stats.p75    = SS::quantile(x, 0.75);
+                stats.aligns = count();
+
                 return stats;
             }
         
@@ -177,6 +183,9 @@ namespace Anaquin
         
             inline IntervalID name() const override { return id(); }
         
+            // Return total number of alignments mapped
+            inline Counts count() const { return _counts; }
+
         private:
         
             struct Depth
@@ -189,7 +198,10 @@ namespace Anaquin
             Locus _l;
         
             IntervalID _id;
-        
+
+            // Number of alignments mapped to the interval
+            Counts _counts = 0;
+
             // For each base in the interval (relative to the beginning of the interval)
             std::vector<Depth> _covs;
     };

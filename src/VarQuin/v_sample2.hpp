@@ -69,7 +69,10 @@ namespace Anaquin
             Method meth = Method::Mean;
             
             // Defined only if meth==Prop
-            Proportion p;
+            Proportion p = NAN;
+            
+            // Defined only if meth==Reads
+            Counts reads = NAN;
         };
         
         static Stats analyze(const FileName &gen,
