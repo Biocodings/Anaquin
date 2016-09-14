@@ -52,6 +52,7 @@
 #include "resources/plotVCROC.R"
 
 #include "resources/sampled.bed"
+#include "resources/AVA033_v001.bed"
 #include "resources/AVA009_v001.vcf"
 #include "resources/MVA011_v001.csv"
 #include "resources/MVA012_v001.csv"
@@ -205,6 +206,11 @@ Scripts PlotVGROC()
 Scripts PlotVCROC()
 {
     return ToString(src_r_plotVCROC_R);
+}
+
+Scripts AVA033Bed()
+{
+    return ToString(data_VarQuin_AVA033_v001_bed);
 }
 
 Scripts VarDataMixA()

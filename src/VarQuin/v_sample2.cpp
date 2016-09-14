@@ -226,11 +226,11 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
             if (!genC) { stats.noGAlign++; }
             if (!synC) { stats.noSAlign++; }
             
+            stats.c2v[cID][l].rID    = j.first;
             stats.c2v[cID][l].gen    = genC;
             stats.c2v[cID][l].before = synC;
             stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
             
-            stats.totLen += l.length();
             allNorms.push_back(norm);
         }
     }
@@ -280,9 +280,6 @@ VSample2::Stats VSample2::analyze(const FileName &gen, const FileName &seq, cons
     // Remember, the synthetic reads have been mapped to the forward genome
     stats.sampAfter.countSyn = after.countGen;
 
-    // Average sampling length
-    stats.averLen = static_cast<Base>(stats.totLen / (double) stats.count);
-    
     return stats;
 }
 
@@ -309,7 +306,7 @@ static void generateCSV(const FileName &file, const VSample2::Stats &stats, cons
         // For each variant...
         for (const auto &j : i.second)
         {
-            o.writer->write((boost::format(format) % "?"
+            o.writer->write((boost::format(format) % j.second.rID
                                                    % i.first
                                                    % j.first.start
                                                    % j.first.end
@@ -376,10 +373,10 @@ static void generateSummary(const FileName &file,
                                             % seq                       // 3
                                             % stats.count               // 4
                                             % meth2Str()                // 5
-                                            % stats.totBefore.countGen  // 6
-                                            % stats.totBefore.countSyn  // 7
-                                            % stats.totAfter.countGen   // 8
-                                            % stats.totAfter.countSyn   // 9
+                                            % stats.totBefore.countSyn  // 6
+                                            % stats.totBefore.countGen  // 7
+                                            % stats.totAfter.countSyn   // 8
+                                            % stats.totAfter.countGen   // 9
                                             % stats.sampBefore.countSyn // 10
                                             % stats.sampBefore.countGen // 11
                                             % stats.sampAfter.countSyn  // 12

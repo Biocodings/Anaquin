@@ -52,6 +52,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'src/r/plotVCROC.R',          
 
           'data/VarQuin/sampled.bed',
+          'data/VarQuin/AVA033_v001.bed',
           'data/VarQuin/AVA009_v001.vcf',
           'data/VarQuin/MVA011_v001.csv',
           'data/VarQuin/MVA012_v001.csv',

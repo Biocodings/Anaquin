@@ -18,6 +18,8 @@ namespace Anaquin
         
         struct SampledInfo
         {
+            RegionID rID;
+            
             // Alignment coverage for the genome
             Coverage gen;
             
@@ -41,12 +43,6 @@ namespace Anaquin
         {
             // Total number of subsampling regions
             Counts count = 0;
-            
-            // Average subsampling length
-            Base averLen;
-            
-            // Total subsampling length
-            Base totLen;
             
             // Number of regions without alignment (genomic)
             Counts noGAlign = 0;
