@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import subprocess
+from multiprocessing.dummy import Pool as ThreadPool 
 
 # Where Anaquin is located
 ANAQUIN_PATH = 'anaquin'
@@ -1107,27 +1108,29 @@ def RnaQuin(index, output, A1, A2, B1, B2):
     samps = []
     conds = []
     
+    def runKallisto(cmd):
+        # Command for Kallisto
+        quant = 'kallisto quant -b 500 -i ' + index + ' -o ' + cmd
+
+        # Quantify the replicate
+        run(quant)
+
+    cmds = []
+
     # For each replicate in the first sample...
     for i in range(len(A1)):
         samps.append('A' + str(i+1))
         conds.append('0')
-
-        # Command for Kallisto
-        quant = 'kallisto quant -b 500 -i ' + index + ' -o ' + (output + '/A' + str(i+1)) + ' ' + A1[i] + ' ' + A2[i]
-
-        # Quantify the replicate
-        run(quant)
+        cmds.append(output + '/A' + str(i+1) + ' ' + A1[i] + ' ' + A2[i])
 
     # For each replicate in the second sample...
     for i in range(len(B1)):
         samps.append('B' + str(i+1))
-        conds.append('1')        
+        conds.append('1')
+        cmds.append(output + '/B' + str(i+1) + ' ' + B1[i] + ' ' + B2[i])
 
-        # Command for Kallisto
-        quant = 'kallisto quant -b 500 -i ' + index + ' -o ' + (output + '/B' + str(i+1)) + ' ' + B1[i] + ' ' + B2[i]
-
-        # Quantify the replicate
-        run(quant)
+    p = ThreadPool(6) 
+    p.map(runKallisto, cmds)
     
     print 'Kallisto quantification completed'
     
