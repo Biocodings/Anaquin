@@ -1029,8 +1029,8 @@ def createRNReport(name, inputs):
     diffGF = ['FoldG/RnaFold_summary.stats', 'FoldG/RnaFold_sequins.csv', 'FoldG/RnaFoldChange_fold.R']
     diffGD = ['Summary Statistics (Gene)', 'Detailed Statistics', 'Fold Plot (Gene)']
     
-    files = expIF + expGF
-    descs = expID + expGD
+    files = expIF + expGF + diffIF + diffID
+    descs = expID + expGD + diffGF + diffGD
 
     for i in range(0, len(files)):
         file = files[i]
