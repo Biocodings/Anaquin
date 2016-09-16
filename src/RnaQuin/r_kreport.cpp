@@ -144,8 +144,8 @@ void RKReport::report(const std::vector<FileName> &files, const Options &o)
             setWorkDir(stats.output + "/FoldG", ro);
             ro.metrs = RFold::Metrics::Gene;
             
-            RFold::generateCSV("RnaFold_sequins.csv", stats.gFold, ro);
-            RFold::generateSummary("RnaFold_summary.stats", src, stats.gFold, ro, "genes");
+            RFold::generateCSV("RnaFoldChange_sequins.csv", stats.gFold, ro);
+            RFold::generateSummary("RnaFoldChange_summary.stats", src, stats.gFold, ro, "genes");
             RFold::generateR(stats.gFold, ro);
         }
         
@@ -153,8 +153,8 @@ void RKReport::report(const std::vector<FileName> &files, const Options &o)
             setWorkDir(stats.output + "/FoldI", ro);
             ro.metrs = RFold::Metrics::Isoform;
             
-            RFold::generateCSV("RnaFold_sequins.csv", stats.iFold, ro);
-            RFold::generateSummary("RnaFold_summary.stats", src, stats.iFold, ro, "isoforms");
+            RFold::generateCSV("RnaFoldChange_sequins.csv", stats.iFold, ro);
+            RFold::generateSummary("RnaFoldChange_summary.stats", src, stats.iFold, ro, "isoforms");
             RFold::generateR(stats.iFold, ro);
         }
     }
