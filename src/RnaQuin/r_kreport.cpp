@@ -153,8 +153,8 @@ void RKReport::report(const std::vector<FileName> &files, const Options &o)
             setWorkDir(stats.output + "/FoldI", ro);
             ro.metrs = RFold::Metrics::Isoform;
             
-            RFold::generateCSV("RnaKReport_sequins.csv", stats.iFold, ro);
-            RFold::generateSummary("RnaKReport_summary.stats", src, stats.iFold, ro, "isoforms");
+            RFold::generateCSV("RnaFold_sequins.csv", stats.iFold, ro);
+            RFold::generateSummary("RnaFold_summary.stats", src, stats.iFold, ro, "isoforms");
             RFold::generateR(stats.iFold, ro);
         }
     }
