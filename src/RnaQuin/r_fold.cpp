@@ -10,6 +10,7 @@
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_cdiff.hpp"
+#include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_DESeq2.hpp"
 
 using namespace Anaquin;
@@ -153,6 +154,16 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     {
         switch (o.format)
         {
+            case Format::Sleuth:
+            {
+                ParserSleuth::parse(file, [&](const ParserSleuth::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+
+                break;
+            }
+                
             case Format::Anaquin:
             {
                 ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
@@ -196,7 +207,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+void RFold::generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -265,7 +276,7 @@ static void generateCSV(const FileName &file, const RFold::Stats &stats, const R
     o.writer->close();
 }
 
-static void generateSummary(const FileName &file,
+void RFold::generateSummary(const FileName &file,
                             const FileName &src,
                             const RFold::Stats &stats,
                             const RFold::Options &o,
@@ -320,6 +331,63 @@ static void generateSummary(const FileName &file,
     o.writer->close();
 }
 
+void RFold::generateR(const RFold::Stats &stats, const RFold::Options &o)
+{
+    /*
+     * Generating RnaFoldChange_fold.R
+     */
+    
+    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
+    const auto extra = o.format == Format::DESeq2 ? "" : "";
+    
+    o.generate("RnaFoldChange_fold.R");
+    o.writer->open("RnaFoldChange_fold.R");
+    o.writer->write(RWriter::createFold("RnaFoldChange_sequins.csv",
+                                        o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
+                                        "Expected fold change (log2)",
+                                        "Measured fold change (log2)",
+                                        "ExpLFC",
+                                        "ObsLFC",
+                                        false,
+                                        extra));
+    o.writer->close();
+    
+    /*
+     * Generating RnaFoldChange_ROC.R
+     */
+    
+    o.generate("RnaFoldChange_ROC.R");
+    o.writer->open("RnaFoldChange_ROC.R");
+    o.writer->write(RWriter::createScript("RnaFoldChange_sequins.csv", PlotTROC()));
+    o.writer->close();
+    
+    /*
+     * Generating RnaFoldChange_LODR.R
+     */
+    
+    switch (o.format)
+    {
+        case Format::Sleuth:
+        {
+            break;
+        }
+            
+        case Format::edgeR:
+        case Format::Cuffdiff:
+        {
+            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
+            break;
+        }
+            
+        case Format::DESeq2:
+        case Format::Anaquin:
+        {
+            RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
+            break;
+        }
+    }
+}
+
 void RFold::report(const FileName &file, const Options &o)
 {
     const auto m = std::map<Metrics, std::string>
@@ -349,54 +417,11 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_sequins.csv
      */
 
-    generateCSV("RnaFoldChange_sequins.csv", stats, o);
+    RFold::generateCSV("RnaFoldChange_sequins.csv", stats, o);
     
     /*
-     * Generating RnaFoldChange_fold.R
+     * Generate R scripts
      */
-    
-    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
-    const auto extra = o.format == Format::DESeq2 ? "" : "";
-    
-    o.generate("RnaFoldChange_fold.R");
-    o.writer->open("RnaFoldChange_fold.R");
-    o.writer->write(RWriter::createFold("RnaFoldChange_sequins.csv",
-                                        o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
-                                        "Expected fold change (log2)",
-                                        "Measured fold change (log2)",
-                                        "ExpLFC",
-                                        "ObsLFC",
-                                        false,
-                                        extra));
-    o.writer->close();
 
-    /*
-     * Generating RnaFoldChange_ROC.R
-     */
-    
-    o.generate("RnaFoldChange_ROC.R");
-    o.writer->open("RnaFoldChange_ROC.R");
-    o.writer->write(RWriter::createScript("RnaFoldChange_sequins.csv", PlotTROC()));
-    o.writer->close();
-
-    /*
-     * Generating RnaFoldChange_LODR.R
-     */
-    
-    switch (o.format)
-    {
-        case Format::edgeR:
-        case Format::Cuffdiff:
-        {
-            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
-            break;
-        }
-            
-        case Format::DESeq2:
-        case Format::Anaquin:
-        {
-            RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
-            break;
-        }
-    }
+    RFold::generateR(stats, o);
 }

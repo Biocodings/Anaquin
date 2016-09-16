@@ -66,7 +66,7 @@ namespace Anaquin
             
             std::string line;
             std::vector<std::string> toks;
-            
+
             while (r.nextLine(line))
             {
                 Tokens::split(line, ",", toks);

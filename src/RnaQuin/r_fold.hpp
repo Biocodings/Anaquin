@@ -50,6 +50,7 @@ namespace Anaquin
         {
             DESeq2,
             edgeR,
+            Sleuth,
             Cuffdiff,
             Anaquin            
         };
@@ -95,6 +96,15 @@ namespace Anaquin
             // Log-fold ratios standard deviation
             std::vector<double> ses;
         };
+
+        static void generateR(const RFold::Stats &, const RFold::Options &);
+        static void generateCSV(const FileName &, const RFold::Stats &, const RFold::Options &);
+        
+        static void generateSummary(const FileName &,
+                                    const FileName &,
+                                    const RFold::Stats &,
+                                    const RFold::Options &,
+                                    const Units &);
 
         /*
          * Classify and construct a vector of TP/FP/TN/FN, given the q-values and expected

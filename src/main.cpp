@@ -10,7 +10,6 @@
 #include "RnaQuin/r_gene.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
-#include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_kreport.hpp"
@@ -30,6 +29,7 @@
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
+#include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_varscan.hpp"
 #include "parsers/parser_express.hpp"
 #include "parsers/parser_cufflink.hpp"
@@ -693,14 +693,6 @@ template <typename Analyzer> void analyze_0(typename Analyzer::Options o = typen
     }, o);
 }
 
-template <typename Analyzer> void analyze_k(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        Analyzer::report(_p.opts[OPT_R_IND], _p.inputs[0], _p.inputs[1], o);        
-    }, o);
-}
-
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
@@ -1087,10 +1079,15 @@ void parse(int argc, char ** argv)
                     }
                      
                     case TOOL_R_EXPRESS:
-                    case TOOL_R_KREPORT:
                     case TOOL_R_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        break;
+                    }
+                        
+                    case TOOL_R_KREPORT:
+                    {
+                        addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }
 
@@ -1110,7 +1107,13 @@ void parse(int argc, char ** argv)
                 case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
                 case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);             break; }
                 case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
-                case TOOL_R_KREPORT: { analyze_k<RKReport>(RKReport::Options()); break; }
+                case TOOL_R_KREPORT:
+                {
+                    RKReport::Options o;
+                    o.index = _p.opts[OPT_R_IND];
+                    analyze_n<RKReport>(o);
+                    break;
+                }
 
                 case TOOL_R_SUBSAMPLE:
                 {
@@ -1174,6 +1177,11 @@ void parse(int argc, char ** argv)
                     {
                         o.format = RFold::Format::Cuffdiff;
                         std::cout << "[INFO]: Cuffdiff format" << std::endl;
+                    }
+                    else if (ParserSleuth::isSleuth(Reader(file)))
+                    {
+                        o.format = RFold::Format::Sleuth;
+                        std::cout << "[INFO]: Sleuth format" << std::endl;
                     }
                     else if (ParserDESeq2::isDESeq2(Reader(file)))
                     {
