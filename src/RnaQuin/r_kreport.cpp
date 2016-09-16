@@ -163,5 +163,5 @@ void RKReport::report(const std::vector<FileName> &files, const Options &o)
      * Create a PDF report based on the generated files
      */
 
-    Script::run(reportScript(), "python", "RnaReport RnaKReport_report.pdf " + stats.output);
+    Script::run(reportScript(), "python", "RnaReport " + o.work + "/RnaKReport_report.pdf " + stats.output);
 }
