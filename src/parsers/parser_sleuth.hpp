@@ -28,6 +28,36 @@ namespace Anaquin
         
         typedef DiffTest Data;
 
+        static bool isSleuth(const Reader &r)
+        {
+            std::string line;
+            std::vector<Token> toks;
+            
+            // Read the header
+            if (r.nextLine(line))
+            {
+                Tokens::split(line, ",", toks);
+                
+                if (toks.size() == 11             &&
+                    toks[0]  == "target_id"       &&
+                    toks[1]  == "pval"            &&
+                    toks[2]  == "qval"            &&
+                    toks[3]  == "b"               &&
+                    toks[4]  == "se_b"            &&
+                    toks[5]  == "mean_obs"        &&
+                    toks[6]  == "var_obs"         &&
+                    toks[7]  == "tech_var"        &&
+                    toks[8]  == "sigma_sq"        &&
+                    toks[9]  == "smooth_sigma_sq" &&
+                    toks[10] == "final_sigma_sq")
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
         template <typename F> static void parse(const Reader &r, F f)
         {
             const auto &ref = Standard::instance().r_trans;

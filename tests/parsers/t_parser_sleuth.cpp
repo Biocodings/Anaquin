@@ -7,6 +7,11 @@ using namespace Anaquin;
 
 TEST_CASE("ParserSleuth_1")
 {
+    REQUIRE(ParserSleuth::isSleuth(Reader("tests/data/sleuth.csv")));
+}
+
+TEST_CASE("ParserSleuth_2")
+{
     Test::transA();
 
     std::vector<ParserSleuth::Data> x;
