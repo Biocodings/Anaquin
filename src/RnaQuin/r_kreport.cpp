@@ -46,15 +46,35 @@ void RKReport::report(const FileName &index, const FileName &p1, const FileName 
 
     // Make sure to reuse the temporary directory
     ro.writer = std::shared_ptr<FileWriter>(new FileWriter(stats.output));
-    
-    // We're doing gene expression
-    ro.metrs = RExpress::Metrics::Gene;
-    
+
     ro.logger = o.logger;
-    
+
     const auto vStats = std::vector<RExpress::Stats> { stats.stats };
     
     __output__ = stats.output;
+
+    /*
+     * Gene expression
+     */
+    
+    {
+        ro.metrs = RExpress::Metrics::Gene;
+        
+        
+    }
+    
+    /*
+     * Isoform expression
+     */
+    
+    {
+        ro.metrs = RExpress::Metrics::Isoform;
+        
+        
+    }
+    
+    
+   
     
     /*
      * Generating outputs to the temporatory directory, from which we can create our report.

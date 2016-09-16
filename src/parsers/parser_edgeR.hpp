@@ -20,7 +20,7 @@ namespace Anaquin
         static bool isEdgeR(const Reader &r)
         {
             std::string line;
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
             
             if (r.nextLine(line))
             {

@@ -1,0 +1,88 @@
+#ifndef PARSER_SLEUTH_HPP
+#define PARSER_SLEUTH_HPP
+
+#include "data/dtest.hpp"
+#include "data/tokens.hpp"
+#include "data/reader.hpp"
+#include "data/standard.hpp"
+#include "stats/analyzer.hpp"
+
+namespace Anaquin
+{
+    struct ParserSleuth
+    {
+        typedef enum
+        {
+            TargetID,
+            PValue,
+            QValue,
+            B,
+            SE_B,
+            MeanObs,
+            VarObs,
+            TechVar,
+            SigmaSQ,
+            SmoothSigmaSQ,
+            FinalSigmaSQ,
+        } Field;
+        
+        typedef DiffTest Data;
+
+        template <typename F> static void parse(const Reader &r, F f)
+        {
+            const auto &ref = Standard::instance().r_trans;
+            
+            ParserProgress p;
+            
+            std::string line;
+            std::vector<std::string> toks;
+            
+            while (r.nextLine(line))
+            {
+                Tokens::split(line, ",", toks);
+                
+                Data t;
+                
+                if (p.i)
+                {
+                    t.iID = toks[Field::TargetID];
+                    
+                    // Can we match the isoform to sequins?
+                    auto isChrIS = ref.match(t.iID);
+                    
+                    t.cID = isChrIS ? ChrIS : Geno;
+                    t.gID = isChrIS ? ref.s2g(t.iID) : "";
+                    
+                    if (toks[Field::PValue] == "NA" || toks[Field::QValue] == "NA")
+                    {
+                        t.status = DiffTest::Status::NotTested;
+                    }
+                    else
+                    {
+                        t.status = DiffTest::Status::Tested;
+                        
+                        t.mean = stod(toks[Field::MeanObs]);
+                        
+                        // Measured log-fold change
+                        t.logF_ = stod(toks[Field::B]);
+                        
+                        // Standard error for the log-fold change
+                        t.logFSE = stod(toks[Field::SE_B]);
+                        
+                        // Probability under the null hypothesis
+                        t.p = stold(toks[Field::PValue]);
+                        
+                        // Probability controlled for multi-testing
+                        t.q = stold(toks[Field::QValue]);
+                    }
+                    
+                    f(t, p);
+                }
+                
+                p.i++;
+            }
+        }
+    };
+}
+
+#endif

@@ -1,16 +1,14 @@
 #ifndef TOKENS_HPP
 #define TOKENS_HPP
 
-#include <string>
 #include <vector>
+#include "data/data.hpp"
 #include <boost/algorithm/string.hpp>
 
 namespace Anaquin
 {
     struct Tokens
     {
-        typedef std::string Token;
-        
         template <typename T> static void split(const std::string &str, const std::string &d, T &r)
         {
             r.clear();

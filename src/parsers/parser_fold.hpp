@@ -35,7 +35,7 @@ namespace Anaquin
         static bool isDiff(const Reader &r)
         {
             std::string line;
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
             
             // Read the header
             if (r.nextLine(line))
@@ -67,7 +67,7 @@ namespace Anaquin
             
             Reader rr(file);
             ParserProgress p;
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
 
             std::string line;
             
@@ -112,7 +112,7 @@ namespace Anaquin
         
         static bool isIsoform(const Reader &r)
         {
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
             
             if (r.nextTokens(toks, "\t"))
             {

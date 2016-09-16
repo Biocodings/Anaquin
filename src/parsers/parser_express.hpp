@@ -31,7 +31,7 @@ namespace Anaquin
         static bool isExpress(const Reader &r)
         {
             std::string line;
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
 
             // Read the header
             if (r.nextLine(line))
@@ -55,7 +55,7 @@ namespace Anaquin
         {
             ParserProgress p;
             std::string line;
-            std::vector<Tokens::Token> toks;
+            std::vector<Token> toks;
             
             while (r.nextLine(line))
             {
