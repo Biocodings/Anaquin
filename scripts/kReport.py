@@ -1025,9 +1025,9 @@ def createRNReport(name, inputs):
     expGF = ['ExpressG/RnaExpress_summary.stats', 'ExpressG/RnaExpress_sequins.csv', 'ExpressG/RnaExpress_linear.R']
     expGD = ['Summary Statistics (Gene)', 'Detailed Statistics', 'Gene Expression']
 
-    diffIF = ['FoldI/RnaFold_summary.stats', 'FoldI/RnaFold_sequins.csv', 'FoldI/RnaFoldChange_fold.R']
+    diffIF = ['FoldI/RnaFoldChange_summary.stats', 'FoldI/RnaFoldChange_sequins.csv', 'FoldI/RnaFoldChange_fold.R']
     diffID = ['Summary Statistics (Isoform)', 'Detailed Statistics', 'Fold Plot (Isoform)']    
-    diffGF = ['FoldG/RnaFold_summary.stats', 'FoldG/RnaFold_sequins.csv', 'FoldG/RnaFoldChange_fold.R']
+    diffGF = ['FoldG/RnaFoldChange_summary.stats', 'FoldG/RnaFoldChange_sequins.csv', 'FoldG/RnaFoldChange_fold.R']
     diffGD = ['Summary Statistics (Gene)', 'Detailed Statistics', 'Fold Plot (Gene)']
     
     files = expIF + expGF + diffIF + diffGF
