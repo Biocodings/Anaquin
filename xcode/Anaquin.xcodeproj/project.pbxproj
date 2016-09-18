@@ -57,6 +57,7 @@
 		EFB2532C1D6EAFE1002F057E /* t_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB2532B1D6EAFE1002F057E /* t_sample.cpp */; };
 		EFB26DB71D19373400B08054 /* t_minters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB26DB61D19373400B08054 /* t_minters.cpp */; };
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
+		EFC4BEC91D8EC534005BFA10 /* t_parser_salmon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */; };
 		EFC68C931D79159F00E511CE /* t_mixture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC68C921D79159F00E511CE /* t_mixture.cpp */; };
 		EFD6292B1C4CAE2400FDF262 /* r_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */; };
 		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
@@ -234,6 +235,8 @@
 		EFB7FF381B4F848D0045DC6A /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_locus.cpp; path = ../tests/data/t_locus.cpp; sourceTree = "<group>"; };
 		EFB897141C524A3500B875EE /* linear.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = linear.hpp; path = ../src/stats/linear.hpp; sourceTree = "<group>"; };
 		EFC0DAC51B8C056F005F6C85 /* reference.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = reference.hpp; path = ../src/data/reference.hpp; sourceTree = "<group>"; };
+		EFC4BEC71D8EC41F005BFA10 /* parser_salmon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_salmon.hpp; path = ../src/parsers/parser_salmon.hpp; sourceTree = "<group>"; };
+		EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_salmon.cpp; path = ../tests/parsers/t_parser_salmon.cpp; sourceTree = "<group>"; };
 		EFC68C921D79159F00E511CE /* t_mixture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_mixture.cpp; path = ../tests/data/t_mixture.cpp; sourceTree = "<group>"; };
 		EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_writer.cpp; path = ../src/writers/r_writer.cpp; sourceTree = "<group>"; };
 		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -465,6 +468,7 @@
 				EF3860E01AD3783A0062D246 /* parser_gtf.hpp */,
 				EFDF22B71D515E8B00E3E92A /* parser_gtf2.hpp */,
 				EF3302BC1C8E81FF007A73A2 /* parser_kallisto.hpp */,
+				EFC4BEC71D8EC41F005BFA10 /* parser_salmon.hpp */,
 				EF3860E11AD3783A0062D246 /* parser_sam.cpp */,
 				EF3860E21AD3783A0062D246 /* parser_sam.hpp */,
 				EF99B8B71D8BAA910082ED31 /* parser_sleuth.hpp */,
@@ -511,6 +515,7 @@
 			children = (
 				EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */,
 				EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */,
+				EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */,
 				EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */,
 				EF99B8B81D8BAABE0082ED31 /* t_parser_sleuth.cpp */,
 				EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */,
@@ -826,6 +831,7 @@
 				EF4085AD1D268B600077CAAF /* v_sample.cpp in Sources */,
 				EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */,
 				EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */,
+				EFC4BEC91D8EC534005BFA10 /* t_parser_salmon.cpp in Sources */,
 				EFDD6A9B1B0DD76200450029 /* sam.c in Sources */,
 				EFDD6A961B0DD76200450029 /* kfunc.c in Sources */,
 				EFDD6ACD1B0DD76C00450029 /* cram_io.c in Sources */,

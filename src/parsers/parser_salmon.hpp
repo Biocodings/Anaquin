@@ -1,5 +1,5 @@
-#ifndef PARSER_KALLISTO_HPP
-#define PARSER_KALLISTO_HPP
+#ifndef PARSER_SALMON_HPP
+#define PARSER_SALMON_HPP
 
 #include "data/data.hpp"
 #include "data/tokens.hpp"
@@ -10,15 +10,15 @@
 
 namespace Anaquin
 {
-    struct ParserKallisto
+    struct ParserSalmon
     {
         enum Field
         {
-            TargetID,
+            Name,
             Length,
             EffLength,
-            EstCounts,
             TPM,
+            NumReads,
         };
 
         struct Data
@@ -32,7 +32,7 @@ namespace Anaquin
             Coverage abund;
         };
         
-        static bool isKallisto(const Reader &r)
+        static bool isSalmon(const Reader &r)
         {
             std::string line;
             std::vector<Token> toks;
@@ -42,12 +42,12 @@ namespace Anaquin
             {
                 Tokens::split(line, "\t", toks);
                 
-                if (toks.size() == 5         &&
-                    toks[0]  == "target_id"  &&
-                    toks[1]  == "length"     &&
-                    toks[2]  == "eff_length" &&
-                    toks[3]  == "est_counts" &&
-                    toks[4]  == "tpm")
+                if (toks.size() == 5              &&
+                    toks[0]  == "Name"            &&
+                    toks[1]  == "Length"          &&
+                    toks[2]  == "EffectiveLength" &&
+                    toks[3]  == "TPM"             &&
+                    toks[4]  == "NumReads")
                 {
                     return true;
                 }
@@ -58,7 +58,7 @@ namespace Anaquin
 
         static void parse(const Reader &rr, std::function<void(const Data &, const ParserProgress &)> f)
         {
-            protectParse("Kallisto format", [&]()
+            protectParse("Salmon format", [&]()
             {
                 const auto &r = Standard::instance().r_trans;
 
@@ -77,7 +77,7 @@ namespace Anaquin
                     
                     Tokens::split(line, "\t", toks);
                     
-                    d.id = toks[TargetID];
+                    d.id = toks[Name];
                     
                     if (r.findTrans(ChrIS, d.id))
                     {

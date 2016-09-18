@@ -32,6 +32,7 @@
 #include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_varscan.hpp"
 #include "parsers/parser_express.hpp"
+#include "parsers/parser_salmon.hpp"
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
 
