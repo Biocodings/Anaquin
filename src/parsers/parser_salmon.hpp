@@ -25,11 +25,10 @@ namespace Anaquin
         {
             ChrID cID;
             
-            // Eg: R1_101_1
-            IsoformID id;
+            SequinID id;
 
             // Estimated abundance
-            Coverage abund;
+            Measured abund;
         };
         
         static bool isSalmon(const Reader &r)
@@ -60,7 +59,7 @@ namespace Anaquin
         {
             protectParse("Salmon format", [&]()
             {
-                const auto &r = Standard::instance().r_trans;
+                //const auto &r = Standard::instance().v_ref;
 
                 Data d;
                 ParserProgress p;
@@ -79,15 +78,15 @@ namespace Anaquin
                     
                     d.id = toks[Name];
                     
-                    if (r.findTrans(ChrIS, d.id))
+                    //if (r.findTrans(ChrIS, d.id))
                     {
                         d.cID = ChrIS;
                     }
-                    else
-                    {
+                    //else
+                    //{
                         // We don't know exactly where it is...
-                        d.cID = Geno;
-                    }
+                    //    d.cID = Geno;
+                    //}
 
                     d.abund = s2d(toks[TPM]);
                     

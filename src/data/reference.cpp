@@ -559,22 +559,29 @@ Counts VarRef::countGeneGen() const
 
 void VarRef::validate()
 {
-    A_CHECK(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
-
-    std::set<SequinID> seqIDs;
-
-    for (const auto &i : _impl->bData)
+    if (!_impl->bData.countBase())
     {
-        for (const auto &j : i.second.r2d)
+        merge(_rawMIDs, _rawMIDs);
+    }
+    else
+    {
+        A_CHECK(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
+        
+        std::set<SequinID> seqIDs;
+        
+        for (const auto &i : _impl->bData)
         {
-            seqIDs.insert(j.first);
+            for (const auto &j : i.second.r2d)
+            {
+                seqIDs.insert(j.first);
+            }
         }
+        
+        A_CHECK(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
+        
+        merge(seqIDs);
     }
 
-    A_CHECK(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
-    
-    merge(seqIDs);
-    
     /*
      * Constructing allele frequency for the variants
      */

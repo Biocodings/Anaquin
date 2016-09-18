@@ -25,9 +25,6 @@ namespace Anaquin
     typedef double Coverage;
     typedef double Measured;
     
-    // Number of lines in a file (most likely a large file)
-    typedef long long Lines;
-    
     typedef double Fold;
     typedef double LogFold;
     typedef double Express;

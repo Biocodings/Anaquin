@@ -19,45 +19,9 @@ namespace Anaquin
     
     struct StatsWriter
     {
-        typedef std::map<std::string, Counts> Hist;
-
         static SInflectStats multiInfect(const std::vector<FileName>     &,
                                          const std::vector<MappingStats> &,
                                          const std::vector<LinearStats>  &);
-        
-        static Scripts writeCSV(const LinearStats &stats,
-                                const Label &xLabel = "Expected",
-                                const Label &yLabel = "Measured",
-                                bool shouldLog = false)
-        {
-            const auto d = stats.data(false);
-            return StatsWriter::writeCSV(d.x, d.y, d.ids, xLabel, yLabel, shouldLog);
-        }
-
-        static Scripts writeCSV(const std::vector<double> &x,
-                                const std::vector<double> &y,
-                                const std::vector<SequinID> &ids,
-                                const Label &xLabel,
-                                const Label &yLabel,
-                                bool shouldLog = false)
-        {
-            std::stringstream ss;
-            ss << ((boost::format("ID\t%1%\t%2%\n") % xLabel % yLabel).str());
-
-            std::set<SequinID> sorted(ids.begin(), ids.end());
-            
-            for (const auto &s : sorted)
-            {
-                const auto it = std::find(ids.begin(), ids.end(), s);
-                const auto i  = std::distance(ids.begin(), it);
-                
-                ss << ((boost::format("%1%\t%2%\t%3%\n") % ids.at(i)
-                                                         % (shouldLog ? log2(x.at(i)) : x.at(i))
-                                                         % (shouldLog ? log2(y.at(i)) : y.at(i))).str());
-            }
-
-            return ss.str();
-        }
     };
     
     struct RWriter

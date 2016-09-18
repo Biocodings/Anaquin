@@ -16,13 +16,12 @@
 #include "RnaQuin/r_assembly.hpp"
 
 #include "VarQuin/v_flip.hpp"
-#include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_report.hpp"
-#include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
-#include "VarQuin/v_kexpress.hpp"
 
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_fold.hpp"
@@ -64,10 +63,10 @@ typedef std::set<Value> Range;
 #define TOOL_V_KREPORT   273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
+#define TOOL_V_ALLELE    276
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_R_SUBSAMPLE 281
 #define TOOL_V_FLIP      305
-#define TOOL_V_SEQUENCE  310
 
 /*
  * Options specified in the command line
@@ -149,12 +148,12 @@ static std::map<Value, Tool> _tools =
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
     { "RnaGene",        TOOL_R_GENE      },
 
+    { "VarAllele",      TOOL_V_ALLELE    },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VaRKReport",     TOOL_V_KREPORT  },
+    { "VarKReport",     TOOL_V_KREPORT   },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
-    { "VarSequence",    TOOL_V_SEQUENCE  },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -176,11 +175,11 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_V_FLIP,      { OPT_U_FILES } },
-    { TOOL_V_SEQUENCE,  { OPT_U_FILES } },
+    { TOOL_V_ALLELE,    { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
-    { TOOL_V_KREPORT,  { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
+    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
 };
 
 /*
@@ -1214,8 +1213,8 @@ void parse(int argc, char ** argv)
 
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
+        case TOOL_V_ALLELE:
         case TOOL_V_DISCOVER:
-        case TOOL_V_SEQUENCE:
         case TOOL_V_SUBSAMPLE:
         {
             if (__showInfo__)
@@ -1223,10 +1222,16 @@ void parse(int argc, char ** argv)
                 std::cout << "[INFO]: Variant Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_V_FLIP && _p.tool != TOOL_V_SEQUENCE)
+            if (_p.tool != TOOL_V_FLIP)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_V_ALLELE:
+                    {
+                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        break;
+                    }
+                        
                     case TOOL_V_SUBSAMPLE:
                     {
                         __hackBedFile__ = true;
@@ -1280,6 +1285,14 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
+
+                case TOOL_V_ALLELE:
+                {
+                    VAllele::Options o;
+                    o.format = VAllele::Format::Salmon;
+                    analyze_1<VAllele>(OPT_U_FILES, o);
+                    break;
+                }
 
                 case TOOL_V_FLIP:
                 {

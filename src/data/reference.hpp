@@ -282,8 +282,8 @@ namespace Anaquin
             void readBRef(const Reader &);
             void readVRef(const Reader &);
 
-            Anaquin::Base countBaseSyn() const;
-            Anaquin::Base countBaseGen() const;
+            Base countBaseSyn() const;
+            Base countBaseGen() const;
 
             Counts countGeneSyn() const;
             Counts countGeneGen() const;
