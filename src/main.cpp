@@ -361,7 +361,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "v0.99.12" << std::endl;
+    std::cout << "v0.99.13" << std::endl;
 }
 
 template <typename F> bool testFile(const FileName &x, F f)
