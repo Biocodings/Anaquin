@@ -14,6 +14,10 @@ The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer a
 
 This is a beta software as we are trying to work with the bioinformatics community. Please send us your suggestions (eg: what do you want Anaquin to do?). Detailed workflow guide is avaialble for download at www.sequin.xyz.
 
+## License
+
+<a href='https://opensource.org/licenses/BSD-3-Clause'>The BSD 3-Clause License</a>
+
 ## Citation
 
 * Spliced synthetic genes as internal controls in RNA sequencing experiments
