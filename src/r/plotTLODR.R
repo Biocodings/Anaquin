@@ -8,7 +8,6 @@
 
 library(Anaquin)
 
-# Load reference sequins
 data <- read.csv('%3%/%4%', row.name=1, sep='\t')
 
 # Remove undetected sequins
