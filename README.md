@@ -1,12 +1,6 @@
 # Anaquin
 
-**Anaquin** is a C++/R bioinformatics framework for qualitative and quantitative controls in next-generation sequencing experiments. The following sequins are supported:
-
-<ul>
-<li>RnaQuin
-</ul>
-
-VarQuin and MetaQuin will be added in future releases.
+**Anaquin** is a C++/R bioinformatics framework for qualitative and quantitative controls in next-generation sequencing experiments. 
 
 Respository for the R-package is hosted by Bioconductor and available at: https://github.com/Bioconductor-mirror/Anaquin.
 
