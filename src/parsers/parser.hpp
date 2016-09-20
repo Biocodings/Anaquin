@@ -1,8 +1,7 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include <string>
-#include <stdexcept>
+#include "tools/errors.hpp"
 
 namespace Anaquin
 {
@@ -16,13 +15,6 @@ namespace Anaquin
         long long i = 0;
     };
 
-    struct InvalidFileError : public std::exception
-    {
-        InvalidFileError(const std::string &file) : file(file) {}
-
-        const std::string file;
-    };
-    
     template <typename F> void protectParse(const std::string &msg, F f)
     {
         try
@@ -31,7 +23,7 @@ namespace Anaquin
         }
         catch (...)
         {
-            throw std::runtime_error("Invalid file, expected " + msg + ". Please check and try again.");
+            throw BadFormatException("Invalid file, expected " + msg + ". Please check and try again.");
         }
     }
 }

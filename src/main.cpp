@@ -1404,6 +1404,10 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const BadFormatException &ex)
+    {
+        printError("Invalid file format. " + std::string(ex.what()));
+    }
     catch (const NoValueError &ex)
     {
         printError("Invalid command. Need to specify " + ex.opt + ".");
@@ -1428,10 +1432,6 @@ int parse_options(int argc, char ** argv)
     catch (const InvalidFileError &ex)
     {
         printError((boost::format("%1%%2%") % "Invalid command. File is invalid: " % ex.file).str());
-    }
-    catch (const std::runtime_error &ex)
-    {
-        printError(ex.what());
     }
     catch (const std::exception &ex)
     {

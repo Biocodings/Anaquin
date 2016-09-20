@@ -9,7 +9,7 @@ using namespace Anaquin;
 
 struct Anaquin::ReaderInternal
 {
-    std::string t;
+    Line line;
     
     // Defined only for file input
     std::string file;
@@ -24,7 +24,7 @@ struct Anaquin::ReaderInternal
 Reader::Reader(const Reader &r)
 {
     _imp = new ReaderInternal();
-    _imp->t = r._imp->t;
+    _imp->line = r._imp->line;
     _imp->f = r._imp->f;
     _imp->s = r._imp->s;
 
@@ -73,6 +73,11 @@ Reader::~Reader()
     delete _imp;
 }
 
+Line Reader::lastLine() const
+{
+    return _imp->line;
+}
+
 void Reader::reset()
 {
     if (_imp->f)
@@ -115,12 +120,12 @@ bool Reader::nextLine(std::string &line) const
 
 bool Reader::nextTokens(std::vector<std::string> &toks, const std::string &c) const
 {
-    _imp->t.clear();
+    _imp->line.clear();
 
-    if (nextLine(_imp->t))
+    if (nextLine(_imp->line))
     {
         toks.clear();
-        boost::split(toks, _imp->t, boost::is_any_of(c));
+        boost::split(toks, _imp->line, boost::is_any_of(c));
         return true;
     }
     else

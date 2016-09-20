@@ -1,0 +1,7 @@
+Mixture	First Paired	Second Paired 
+A	L.R.1.1_val_1.fq	L.R.1.2_val_2.fq
+A	L.R.2.1_val_1.fq	L.R.2.2_val_2.fq
+A	L.R.3.1_val_1.fq	L.R.3.2_val_2.fq
+B	L.R.4.1_val_1.fq	L.R.4.2_val_2.fq
+B	L.R.5.1_val_1.fq	L.R.5.2_val_2.fq
+B	L.R.6.1_val_1.fq	L.R.6.2_val_2.fq

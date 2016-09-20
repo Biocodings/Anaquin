@@ -40,6 +40,8 @@ namespace Anaquin
             // Returns the next line and parse it into tokens
             bool nextTokens(std::vector<std::string> &, const std::string &c) const;
 
+            Line lastLine() const;
+
         private:
             ReaderInternal *_imp;
     };
