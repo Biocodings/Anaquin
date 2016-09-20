@@ -15,30 +15,25 @@ static Scripts reportScript()
     return Script::trim(KReportScript());
 }
 
-RKReport::Stats RKReport::analyze(const std::vector<FileName> &files, const Options &o)
+RKReport::Stats RKReport::analyze(const FileName &file, const Options &o)
 {
+    RKReport::Stats stats;
+
+    stats.exp = ParserExp::parse(file);
+    
     // Where the analysis should be saved
     const std::string output = tmpFile();
     
-    // Eg: L.R.1.1.fq L.R.1.2.fq L.R.2.1.fq L.R.2.2.fq
-    std::string end;
-    
-    for (auto &file : files)
-    {
-        end += file + " ";
-    }
-    
-    std::cout << "RnaQuin " + o.index + " " + output + " 3,3 " + end << std::endl;
+    std::cout << "RnaQuin " + o.index + " " + output + file << std::endl;
     
     /*
      * Generate Kallisto and Sleuth analysis.
      *
-     *   Eg: python kexpress.py RNAQuin ARN004.v032.index 1,0 /tmp/kallisto LRN087.1_val_1.fq LRN087.2_val_2.fq
+     *   Eg: python kexpress.py RNAQuin ARN004.v032.index 1,0 /tmp/kallisto experiment.txt
      */
     
-    Script::run(reportScript(), "python", "RnaQuin " + o.index + " " + output + " 3,3 " + end);
-    
-    RKReport::Stats stats;
+    Script::run(reportScript(), "python", "RnaQuin " + o.index + " " + output + " " + file);
+
     stats.output = output;
 
     stats.kFiles.push_back(output + "/A1/abundance.tsv");
@@ -93,9 +88,9 @@ template <typename T> void setWorkDir(const Path &path, T &o)
     __output__ = path;
 }
 
-void RKReport::report(const std::vector<FileName> &files, const Options &o)
+void RKReport::report(const FileName &file, const Options &o)
 {
-    const auto stats = RKReport::analyze(files, o);
+    const auto stats = RKReport::analyze(file, o);
     
     o.info("Temporary: " + stats.output);
     

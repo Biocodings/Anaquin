@@ -5,18 +5,14 @@
 import io
 import os
 import sys
+import numpy
+import pandas
 import tempfile
 import subprocess
 from multiprocessing.dummy import Pool as ThreadPool 
 
-# Where Anaquin is located
-ANAQUIN_PATH = 'anaquin'
-
 # Where the temporary files are saved
 TEMP_PATH = tempfile.gettempdir()
-
-EXPECT_NUM = 'Number'
-EXPECT_STR = 'String'
 
 # Eg: /home/tedwong/Sources/CountTable.txt
 EXPECT_FILE = 'File'
@@ -24,105 +20,24 @@ EXPECT_FILE = 'File'
 # Eg: /home/tedwong/Sources/CountTable_1.txt,/home/tedwong/Sources/CountTable_2.txt
 EXPECT_FILES = 'Files'
 
-# Eg: ['1',2',3','4']
-EXPECT_LIST = 'List'
-
-
-
-# Do we want to do unit testing?
-__unitTesting__ = True
-
 # Global variable
 __mode__ = None
-
-def download(url):
-    path = tempfile.gettempdir()
-    path = path + os.sep + str(uuid.uuid4())
-    urllib.urlretrieve(url, path)    
-    return path
 
 def execute(cmd):
     print(cmd)
     os.system(cmd)
 
-# Execute a FusQuin command
-def rFusQuin(tool, args, config, onlyPrint=False):
+def checkRInstall(pack):
+    tmp = tempfile.gettempdir() + '/RPackInstalled.R'    
+    cmd = pack + ' %in% rownames(installed.packages())'
 
-    # Eg: /Users/tedwong/Desktop/K_562
-    root = get(config, 'ROOT_PATH')
+    # Create an R-script for checking the existance of the package
+    run('echo "require(' + pack + ')" > ' + tmp)
 
-    mix   = appendRoot(root, get(config, 'MIX_FILE')) # CSV format
-    cVars = appendRoot(root, get(config, 'CHRT_VAR')) # VCF format
-
-    # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rvcf ' + cVars
-
-    # Now add up the arguments
-    req = req + ' -o ' + TEMP_PATH + args
-
-    print(req + '\n')
+    # Eg: object 'ggplot2s' not found
+    out = run('Rscript ' + tmp)
     
-    # Execute the Anaquin request
-    if not onlyPrint:
-        os.system(req)
-
-# Execute a VarQuin command
-def rVarQuin(tool, args, config, onlyPrint=False):
-
-    # Eg: /Users/tedwong/Desktop/K_562
-    root = get(config, 'ROOT_PATH')
-
-    mix   = appendRoot(root, get(config, 'MIX_FILE')) # CSV format
-    cVars = appendRoot(root, get(config, 'CHRT_VAR')) # VCF format
-
-    # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rvcf ' + cVars
-
-    # Now add up the arguments
-    req = req + ' -o ' + TEMP_PATH + args
-
-    print(req + '\n')
-    
-    # Execute the Anaquin request
-    if not onlyPrint:
-        os.system(req)
-
-# Execute an TransQuin command
-def rTransQuin(tool, args, config, onlyPrint=False, subdir=''):
-    
-    # Eg: /Users/tedwong/Desktop/K_562
-    root = get(config, 'ROOT_PATH')
-
-    names   = get(config, 'NAMES')
-    factors = get(config, 'FACTORS')
-    
-    mix   = appendRoot(root, get(config, 'MIX_FILE'))   # CSV format
-    c_ref = appendRoot(root, get(config, 'CHRT_ANNOT')) # GTF format
-    e_ref = appendRoot(root, get(config, 'EXP_ANNOT'))  # GTF format
-    
-    names   = get(config, 'NAMES')    
-    factors = get(config, 'FACTORS')
-    
-    if (len(subdir)):
-        subdir = '/' + subdir
-    
-    # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + c_ref + ' -rexp ' + e_ref
-    
-    # Now add up the arguments
-    req = req + ' -o ' + TEMP_PATH + subdir + ' -factors ' + factors + ' -names ' + names + ' ' + args
-
-    print(req + '\n')
-
-    # Execute the Anaquin request
-    if not onlyPrint:
-        os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
-
-###################################
-#                                 #
-#        Accessor functions       #
-#                                 #
-###################################
+    return not ('no package' in out)
 
 def checkFiles(root, files, max=None):
 
@@ -323,230 +238,6 @@ output:
             for i in range(0, len(self.chapters)):
                 self.chapters[i].generate(file, output)
 
-def createReport(file, report):
-    pass
-
-#################################
-#                               #
-#        Sequin functions       #
-#                               #
-#################################
-
-def TransQuin(config, output):
-    
-    r = Report()
-    
-    # Eg: A1,A2,A3,B1,B2,B3
-    names = getNames(config)
-    
-    #############################################
-    #                                           #
-    #  1. Generating statistics for alignments  #
-    #                                           #
-    #############################################
-
-    print ('----------------------- Alignments -----------------------\n')
-
-    # Alignment files
-    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
-
-    #
-    # Generate a request for TransQuin for differential analysis. For example:
-    #
-    #    anaquin TransAlign -m ... -rgtf ... -factors 1,1,1... -names A1,A2,A3... -ufiles C1.BAM,C2.BAM,C3.BAM
-    #
-
-    req = '-ufiles ' + files
-    
-    # Execute the command
-    anaquin('TransAlign', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (TransAlign)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Alignment statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
-
-    r.endChapter()
-
-    ############################################
-    #                                          #
-    #  2. Generating statistics for assembly   #
-    #                                          #
-    ############################################
-
-    print ('----------------------- Assembly -----------------------\n')
-
-    # Assembly software
-    soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
-
-    # Assembly files
-    files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
-    
-    #
-    # Generate a request for TransAssembly for assembly analysis. For example:
-    #
-    #    anaquin TransAssembly -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles A1.gtf,A2.gtf,A3.gtf...
-    #
-
-    req = '-soft ' + soft + ' -ufiles ' + files
-    
-    # Execute the command
-    anaquin('TransAssembly', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (TransAssembly)')
-
-    # Add summary statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Assembly statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
-
-    r.endChapter()
-
-    #############################################################
-    #                                                           #
-    #  3. Generating statistics for expression analysis (Gene)  #
-    #                                                           #
-    #############################################################
-
-    print ('----------------------- Expression (Gene) -----------------------\n')
-
-    soft  = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
-    files = get(config, 'EXP_G_FILE', EXPECT_FILES)
-
-    #
-    # Generate a request for TransExp for expression analysis. For example:
-    #
-    #    anaquin TransExp -m ... -rgtf ... -lvl gene -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
-    #
-
-    req = '-soft ' + soft + ' -level gene  -ufiles ' + files
-    
-    # Execute the command for genes
-    anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
-
-    r.startChapter('Statistics (Gene Expression)')
-
-    dPooled  = 'The pooled scatter plot shows the expected abundance against measured abundance on the logarithm scale for all the replicates. This is done by plotting the average and standard deviation. The line is the fitted linear regression with 95% confidence interval drawn in black.\nA high R2 is desirable; the higher it is, the more accurate the gene expression experiment is.'
-    dScatter = 'The scatter plot shows the relationship between expected abundance against measured abundance on the logarithm scale for a single replicate. The line is the fitted linear regression with 95% confidence interval drawn in black.\nA high R2 is desirable; the higher it is, the more accurate the gene expression experiment is.'
-
-    r.addRCode('Pooled scatter plot for gene expression', 'TG' + os.sep + 'TransExpress_pooled.R', dPooled)
-    r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats')
-
-    # Add summary statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Gene expression statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
-        r.addRCode('Gene expression scatter plot for: '  + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', dScatter)
-
-    r.endChapter()
-    
-    ################################################################
-    #                                                              #
-    #  4. Generating statistics for expression analysis (Isoform)  #
-    #                                                              #
-    ################################################################
-    
-    print ('----------------------- Expression (Isoform) -----------------------\n')
-
-    # Expression software
-    soft = get(config, 'EXP_I_SOFT', { 'Cufflinks', 'StringTie' })
-
-    # Expression files
-    files = get(config, 'EXP_I_FILE', EXPECT_FILES)
-
-    dPooled  = dPooled.replace('gene',  'isoform')
-    dScatter = dScatter.replace('gene', 'isoform')
-    dMinor   = 'The Minor/Major plot shows the relative quantification of alternative spliced isoforms by measuring the minimum isoform as a fraction of the major isoform for each sequin gene. The accuracy of the quantification is typically dependent on sequence coverage and higher for high abundance genes. The concentration of the gene is shown by colors.'
-
-    #
-    # Generate a request for TransExp for expression analysis. For example:
-    #
-    #    anaquin TransExp -m ... -rgtf ... -lvl isoform -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
-    #
-
-    req = '-soft ' + soft + ' -level isoform  -ufiles ' + files
-    
-    # Execute the command for genes
-    anaquin('TransExpress', req, config, onlyPrint=True, subdir='TI')
-
-    r.startChapter('Statistics (Isoform Expression)')
-
-    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', dMinor)
-    r.addRCode('Pooled scatter plot for isoform expression', 'TI' + os.sep + 'TransExpress_pooled.R', dPooled)
-    r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats')
-
-    # Add summary statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Isoform expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats')
-        r.addRCode('Isoform expression scatter plot for: '  + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', dScatter)
-
-    r.endChapter()
-
-    ########################################################
-    #                                                      #
-    #  5. Generating statistics for differential analysis  #
-    #                                                      #
-    ########################################################
-
-    print ('----------------------- Differential -----------------------\n')
-
-    lvl = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
-
-    cSoft  = get(config, 'COUNT_SOFT', { 'HTSeqCount' })    
-    cFiles = get(config, 'DIFF_COUNT', EXPECT_FILES)
-
-    print('Counting software: ' + cSoft)
-
-    dSoft = get(config, 'DIFF_SOFT', ['Cuffdiff', 'edgeR', 'DEXSeq2', 'DESeq2'])
-    dFile = get(config, 'DIFF_FILE', EXPECT_FILE)
-    
-    print('Differential software: ' + dSoft)
-
-    #
-    # Generate a request for TransQuin for differential analysis. For example:
-    #
-    #   anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles P1.txt,P2.txt,P3.txt... -cfiles C1.txt,C2.txt,C3.txt...
-    #
-    
-    req = ' -soft ' + dSoft + ' -csoft ' + cSoft + ' -level ' + lvl + ' -cfiles ' + cFiles + ' -ufiles ' + dFile
-
-    # Execute the command
-    anaquin('TransDiff', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (Gene Expression Differential)')
-
-    # Add summary statistics for each replicate
-    r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
-
-    # Add scatter plot
-    r.addRCode('Scatter plot', 'TransDiffs_scatter.R', 'The scatter plot shows the expected fold-change of genes against their measured fold-change. The more correlated they are the more accurate the experiment is. The R2 statistic measures how accurate the experiment is in detecting fold-changes. Accurate detection of fold-changes is crucial for differential analysis.\nThe accuracy of the quantification is typically dependent on abundance and higher for high abundance genes. The concentration of the gene is shown by colors.')
-
-    # Add ROC plot
-    r.addRCode('ROC plot', 'TransDiffs_ROC.R', 'When true differences in expression exist between samples in an experiment, those differences should be detected in differential expression tests; where no differences exist, no difference should be detected. The true-positive and true-negative sequins controls can be used in a receiver operator characteristic (ROC) curve analysis of rank ordered differential expression test P-values.')
-
-    # Add MA plot
-    r.addRCode('MA plot', 'TransDiffs_MA.R', 'The MA plot is used to study dependences between the log fold-ratio and the average normalized counts. The counts are normalized as they are adjusted for the library size. Typically, the variability is higher for less abundance genes.\n\nSequin data points are colored by log-ratio. They represent the mean log-fold changes for a given concentration level. Endogenous genes data points are shown as pink points.')
-
-    # Add LODR plot
-    r.addRCode('LODR plot', 'TransDiffs_LODR.R', 'Identifying differentially expressed genes is the objective of differential expression experiments; however, how much information is needed to have confidence that a given fold change in expression of transcripts will be detected? The LODR estimates can inform researchers of diagnostic power at a given fold change.\n\nAn LODR estimate for a particular fold change is the minimum signal, above which differentially expressed transcripts can be detected with a specified degree of confidence. The estimate for each ratio group is found based on the intersection of the model upper confidence interval upper bound with the P-value threshold.')
-
-    r.endChapter()
-
-    #########################################
-    #                                       #
-    #       6. Generating apprendix         #
-    #                                       #
-    #########################################
-
-    r.startChapter('Apprendix: Sequin Alignment')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
-
-    r.endChapter()
-
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
-
-
 def VarQuin(config, output):
     
     r = Report()
@@ -687,112 +378,6 @@ def VarQuin(config, output):
 
     # Generate a markup report (which can then be converted into various formats)
     r.generate('report.Rmd', output)
-
-
-def FusQuin(config, output):
-    
-    r = Report()
-    
-    # Eg: A1,A2,A3,B1,B2,B3
-    names = getNames(config)
-
-    ##############################################
-    #                                            #
-    #         1. Generating FusionDiscover       #
-    #                                            #
-    ##############################################
-
-    print ('----------------------- Fusion Discovery -----------------------\n')
-
-    #
-    # Generate a request for fusion discovery. For example:
-    #
-    #    anaquin -t FusionDiscover -soft star -rfus2.ref -ufiles star-fusion.fusion_candidates.txt 
-    #
-
-    files = get(config, 'FUS_FILE', EXPECT_FILES)
-    soft  = get(config, 'FUS_SOFT', { 'StarFusion', 'TopHatFusion', })
-    req   = ' -soft ' + soft + ' -ufiles ' + files + ' -rfus data/fusion/AFU004.v032.ref '
-
-    # Execute the command
-    rFusQuin('FusionDiscover', req, config)
-
-    r.startChapter('Statistics (Fusion Discovery)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'FusionDiscover_summary.stats', )
-
-    r.endChapter()
-
-    ##############################################
-    #                                            #
-    #         2. Generating FusionExpress        #
-    #                                            #
-    ##############################################
-
-    print ('----------------------- Fusion Expression -----------------------\n')
-
-    #
-    # Generate a request for fusion expression. For example:
-    #
-    #    anaquin -t FusionExpress -soft star -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -ufiles SJ.out.tab
-    #    anaquin -t FusionExpress -soft star -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -ufiles star-fusion.fusion_candidates.txt
-    #
-
-    req = ' -soft ' + soft + ' -ufiles ' + files + ' -rfus data/fusion/AFU004.v032.ref '
-
-    # Execute the command
-    rFusQuin('FusionExpress', req, config)
-
-    r.startChapter('Statistics (Fusion Expression)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'FusionExpress_summary.stats', )
-
-    r.endChapter()
-
-    ##############################################
-    #                                            #
-    #   3. Generating for differential analysis  #
-    #                                            #
-    ##############################################
-
-    print ('----------------------- Fusion Differential -----------------------\n')
-
-    #
-    # Generate a request for fusion differential. For example:
-    #
-    #    anaquin -t FusionDiff -soft star -rfus data/fusion/AFU004.v032.ref -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -utab SJ.out.tab -ufiles star-fusion.fusion_candidates.txt
-    #
-
-    req = ' -soft ' + soft + ' -rfus data/fusion/AFU004.v032.ref -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -utab SJ.out.tab -ufiles star-fusion.fusion_candidates.txt '
-
-    # Execute the command
-    rFusQuin('FusionDiff', req, config)
-
-    r.startChapter('Statistics (Fusion Differential)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'FusionDiff_summary.stats', )
-
-    r.endChapter()
-
-    ##############################################
-    #                                            #
-    #           4. Generating Apprendix          #
-    #                                            #
-    ##############################################
-
-    r.startChapter('Apprendix: Fusion Discover')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Fusion Discover statistics for: ' + names[i], 'FusionDiscover_labels.csv', )
-
-    r.endChapter()
-
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('report.RMarkdown', output)
-
 
 #################################
 #                               #
@@ -947,69 +532,6 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
 
     generatePDF(r, path, 'VarReport_report.pdf')
 
-# Generate a TransQuin report with alignment-free k-mers
-def TransQuinKM(anaq, path, index, mix, file1, file2):
-
-    global TEMP_PATH
-    TEMP_PATH = path
-
-    r = Report()
-    
-    # In TransQuin, the file is the metadata
-    file = file1
-
-    def TransKExpress(r):
-        
-        ###########################################
-        #                                         #
-        #       1. Generating TransKExpress       #
-        #                                         #
-        ###########################################
-        
-        # Eg: anaquin -t TransKExpress -soft kallisto -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR002.v013.csv  -ufiles kallisto/abundance.tsv
-        execute(anaq + ' -o ' + path + ' -t TransKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
-    
-        r.startChapter('Statistics (Expression)')
-    
-        r.addTextFile('Summary statistics', 'TransKExpress_summary.stats', )
-        r.addRCode('Expected abundance vs measured abundance', 'TransKExpress_express.R', '')
-
-        r.endChapter()
-
-    def TransKDiff(r, meta):
-    
-        #########################################
-        #                                       #
-        #       2. Generating TransKDiff        #
-        #                                       #
-        #########################################
-    
-        # Eg: anaquin -t TransKDiff -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR004.v013.csv -soft sleuth -ufiles meta.csv
-        execute(anaq + ' -o ' + path + ' -t TransKDiff -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + meta)
-    
-        r.startChapter('Statistics (Differential analysis)')
-    
-        r.addTextFile('Summary statistics', 'TransKDiff_summary.stats', )
-        r.addRCode('Expected log-fold vs measured log-fold', 'TransKDiff_fold.R', '')
-        #r.addRCode('ROC Curve', 'TransKDiff_ROC.R', '')
-
-        r.endChapter()
-
-    addCmd(TransKDiff, [r, file])
-    wait()
-    
-    ##############################################
-    #                                            #
-    #           3. Generating Apprendix          #
-    #                                            #
-    ##############################################
-
-    r.startChapter('Apprendix:')
-    r.addTextFile('Statistics for differential: ', 'TransKDiff_quins.csv', )
-    r.endChapter()
-
-    generatePDF(r, path, 'TransReport_report.pdf')
-
 # Create a PDF report for RnaQuin
 def createRNReport(name, inputs):    
     r = Report()
@@ -1083,26 +605,12 @@ def checkInstall(program):
 
     return None
     
-def checkRInstall(pack):
-    tmp = tempfile.gettempdir() + '/RPackInstalled.R'    
-    cmd = pack + ' %in% rownames(installed.packages())'
-
-    # Create an R-script for checking the existance of the package
-    run('echo "require(' + pack + ')" > ' + tmp)
-
-    # Eg: object 'ggplot2s' not found
-    out = run('Rscript ' + tmp)
-    
-    return not ('no package' in out)
-
-def RnaQuin(index, output, A1, A2, B1, B2):
+def RnaQuin(index, output, exp):
     if checkInstall('kallisto') is None:
         raise Exception('Kallisto is not installed. Please consult the user guide on www.sequin.xyz and try again.')
-
-    if checkInstall('R') is None:
+    elif checkInstall('R') is None:
         raise Exception('R is not installed. Please consult the user guide on www.sequin.xyz and try again.')
-
-    if not checkRInstall('sleuth'):
+    elif not checkRInstall('sleuth'):
         raise Exception('Sleuth R-package is not installed. Please consult the user guide on www.sequin.xyz and try again.')
 
     samps = []
@@ -1117,17 +625,18 @@ def RnaQuin(index, output, A1, A2, B1, B2):
 
     cmds = []
 
-    # For each replicate in the first sample...
-    for i in range(len(A1)):
+    # For each replicate for mixture A...
+    for i in range(len(exp.A)):
+        info = exp.A[i]        
         samps.append('A' + str(i+1))
         conds.append('0')
-        cmds.append(output + '/A' + str(i+1) + ' ' + A1[i] + ' ' + A2[i])
+        cmds.append(output + '/A' + str(i+1) + ' ' + info['First'] + ' ' + info['Second'])
 
-    # For each replicate in the second sample...
-    for i in range(len(B1)):
+    # For each replicate for mixture B...
+    for i in range(len(exp.B)):
         samps.append('B' + str(i+1))
         conds.append('1')
-        cmds.append(output + '/B' + str(i+1) + ' ' + B1[i] + ' ' + B2[i])
+        cmds.append(output + '/B' + str(i+1) + ' ' + info['First'] + ' ' + info['Second'])
 
     p = ThreadPool(6) 
     p.map(runKallisto, cmds)
@@ -1138,9 +647,9 @@ def RnaQuin(index, output, A1, A2, B1, B2):
     # Reference: https://www.biostars.org/p/143458/#148465
     #            https://www.biostars.org/p/157240/#157242
     #
-
-    # Do we have at least two replicates in each sample?
-    if len(A1) > 0 and len(B1) > 0:
+    
+    # Do we have at least two replicates for each mixture?
+    if len(exp.A) > 1 and len(exp.B) > 1:
         sleuth = """
                  library(sleuth)
     
@@ -1182,45 +691,45 @@ def RnaQuin(index, output, A1, A2, B1, B2):
         
         print 'Sleuth quantification completed'
 
+    print 'RnaQuin quantification completed'
+
 #
 # VarQuin currently supports Kallisto and Salmon.    
 #
 def VarKReport(file):
     pass
 
-def parseSamples(argv, A1, A2, B1, B2):
-    #
-    # It's common to sample replicates for Rna-Seq. Parse those samples.
-    #
+class Experiment:
+    def __init__(self, file):
+        data = pandas.read_csv(file, sep='\t')        
+        data['Mixture'] = data['Mixture'].astype('category')
         
-    # What's the design for A? Eg: 3,3
-    A = 2*int(sys.argv[4].split(',')[0]) # Paired-end
-    
-    # What's the design for B? Eg: 3,3
-    B = 2*int(sys.argv[4].split(',')[1]) # Paired-end
+        # Eg: 'A','A','B','B'
+        mix = data['Mixture']
+        
+        if (len(mix.unique()) != 1 and len(mix.unique()) != 2):
+            raise Exception('Invalid mixture column: ' + mix)        
+        elif (not mix.isin(['A', 'B']).all()):
+            raise Exception('Invalid mixture column. The values can only be A or B.')
 
-    for i in sys.argv[5:5+A]:
-        if len(A1) == len(A2):
-            A1.append(i)
-        else:
-            A2.append(i)
+        self.A = []
+        self.B = []
 
-    if B > 0:
-        for i in sys.argv[5+A:5+A+B]:
-            if len(B1) == len(B2):
-                B1.append(i)
+        for index, row in data.iterrows():
+            if row[0] == 'A':
+                self.A.append({'First':row[1], 'Second':row[2]})
             else:
-                B2.append(i)
+                self.B.append({'First':row[1], 'Second':row[2]})
 
 #
-# Eg: python ~/Sources/QA/scripts/kReport.py RnaQuin ARN024_v001.index /tmp/kallisto 3,3 LRN087.1_val_1.fq LRN087.2_val_2.fq LRN088.1_val_1.fq LRN088.2_val_2.fq LRN089.1_val_1.fq LRN089.2_val_2.fq LRN090.1_val_1.fq LRN090.2_val_2.fq LRN091.1_val_1.fq LRN091.2_val_2.fq LRN092.1_val_1.fq LRN092.2_val_2.fq
+# This file is part of Anaquin and not designed for external usage. Error checking is kept to minmial.
 #
-# Eg: python kReport.py RnaReport RnaKReport_report.pdf /tmp/kallisto
+#   Eg: python ~/Sources/QA/scripts/kReport.py RnaQuin ARN024_v001.index /tmp/kallisto experiment.txt
+#   Eg: python kReport.py RnaReport RnaKReport_report.pdf /tmp/kallisto
 #
 # Note: please give full path
 #
 if __name__ == '__main__':
-
     # Which sequin?
     __mode__ = sys.argv[1]
 
@@ -1234,14 +743,7 @@ if __name__ == '__main__':
         os.makedirs(output)    
 
     if __mode__ == 'RnaQuin':
-        
-        A1 = []
-        A2 = []
-        B1 = []
-        B2 = []
-
-        parseSamples(sys.argv, A1, A2, B1, B2)
-        RnaQuin(file, output, A1, A2, B1, B2)
+        RnaQuin(file, output, Experiment(sys.argv[4]))
 
     elif __mode__ == 'VarQuin':
         VarQuin(file, output, pair1, pair2)

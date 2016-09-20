@@ -1111,7 +1111,7 @@ void parse(int argc, char ** argv)
                 {
                     RKReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
-                    analyze_n<RKReport>(o);
+                    analyze_1<RKReport>(OPT_U_FILES, o);
                     break;
                 }
 
@@ -1404,9 +1404,13 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const FailedCommandException &ex)
+    {
+        printError("Invalid command: " + std::string(ex.what()));
+    }
     catch (const BadFormatException &ex)
     {
-        printError("Invalid file format. " + std::string(ex.what()));
+        printError("Invalid file format: " + std::string(ex.what()));
     }
     catch (const NoValueError &ex)
     {

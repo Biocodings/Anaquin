@@ -22,6 +22,11 @@ namespace Anaquin
         const std::string file;
     };
 
+    struct FailedCommandException : public std::runtime_error
+    {
+        FailedCommandException(const std::string &msg) : std::runtime_error(msg) {}
+    };
+    
     struct BadFormatException : public std::runtime_error
     {
         BadFormatException(const std::string &msg) : std::runtime_error(msg) {}

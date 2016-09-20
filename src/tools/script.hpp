@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "data/file.hpp"
+#include "tools/errors.hpp"
 #include <boost/format.hpp>
 
 // Defined in resources.cpp
@@ -30,7 +31,7 @@ namespace Anaquin
                 
                 if (status != 0)
                 {
-                    throw std::runtime_error("Failed: " + cmd);
+                    throw FailedCommandException("Failed: " + cmd);
                 }
             };
             

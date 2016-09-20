@@ -4,6 +4,7 @@
 #include "stats/analyzer.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_express.hpp"
+#include "parsers/parser_exp.hpp"
 
 namespace Anaquin
 {
@@ -20,7 +21,7 @@ namespace Anaquin
         {
             // Kallsito quantification files
             std::vector<FileName> kFiles;
-            
+
             // Statistics for expression at the isoform level
             std::vector<RExpress::Stats> iExpress;
             
@@ -35,10 +36,12 @@ namespace Anaquin
             
             // The path for the analysis files
             Path output;
+
+            ParserExp::Experiment exp;
         };
         
-        static Stats analyze(const std::vector<FileName> &, const Options &);        
-        static void report(const std::vector<FileName> &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &);
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 
