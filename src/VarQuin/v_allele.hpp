@@ -22,6 +22,10 @@ namespace Anaquin
             // Empty Implementation
         };
 
+        static void generateCSV(const FileName &, const Stats &, const Options &);
+        static void generateSummary(const FileName &, const Stats &, const Options &);
+        static void generateR(const FileName &, const FileName &, const Stats &, const Options &);
+
         static Stats analyze(const FileName &, const Options &o);
         static void report  (const FileName &, const Options &o = Options());
     };

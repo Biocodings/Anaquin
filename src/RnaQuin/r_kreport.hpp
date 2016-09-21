@@ -1,5 +1,5 @@
-#ifndef R_KEXPRESS_HPP
-#define R_KEXPRESS_HPP
+#ifndef R_KREPORT_HPP
+#define R_KREPORT_HPP
 
 #include "stats/analyzer.hpp"
 #include "RnaQuin/r_fold.hpp"
@@ -10,8 +10,6 @@ namespace Anaquin
 {
     struct RKReport : public Analyzer
     {
-        typedef ParserCufflink::Data TestData;
-        
         struct Options : public AnalyzerOptions
         {
             FileName index;

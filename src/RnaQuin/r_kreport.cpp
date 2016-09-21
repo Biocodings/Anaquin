@@ -15,16 +15,16 @@ static Scripts reportScript()
     return Script::trim(KReportScript());
 }
 
-RKReport::Stats RKReport::analyze(const FileName &file, const Options &o)
+RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
 {
     RKReport::Stats stats;
 
-    stats.exp = ParserExp::parse(file);
+    stats.exp = ParserExp::parse(data);
     
     // Where the analysis should be saved
     const std::string output = tmpFile();
     
-    std::cout << "RnaQuin " + o.index + " " + output + file << std::endl;
+    std::cout << "QRnaQuin " + o.index + " " + output + data << std::endl;
     
     /*
      * Generate Kallisto and Sleuth analysis.
@@ -32,7 +32,7 @@ RKReport::Stats RKReport::analyze(const FileName &file, const Options &o)
      *   Eg: python kexpress.py RNAQuin ARN004.v032.index 1,0 /tmp/kallisto experiment.txt
      */
     
-    Script::run(reportScript(), "python", "RnaQuin " + o.index + " " + output + " " + file);
+    Script::run(reportScript(), "python", "RnaQuin " + o.index + " " + output + " " + data);
 
     stats.output = output;
 
@@ -158,5 +158,5 @@ void RKReport::report(const FileName &file, const Options &o)
      * Create a PDF report based on the generated files
      */
 
-    Script::run(reportScript(), "python", "RnaReport " + o.work + "/RnaKReport_report.pdf " + stats.output);
+    Script::run(reportScript(), "python", "RRnaQuin " + o.work + "/RnaKReport_report.pdf " + stats.output);
 }

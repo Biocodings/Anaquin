@@ -52,9 +52,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const VAllele::Options &o)
     return stats;
 }
 
-static void writeQuins(const FileName &file,
-                       const VAllele::Stats &stats,
-                       const VAllele::Options &o)
+void VAllele::generateCSV(const FileName &file, const Stats &stats, const VAllele::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%";
     
@@ -63,7 +61,7 @@ static void writeQuins(const FileName &file,
     o.writer->write((boost::format(format) % "ID"
                                            % "ExpFreq"
                                            % "ObsFreq").str());
-
+    
     const auto d = stats.data(false);
     
     for (auto i = 0; i < d.ids.size(); i++)
@@ -76,23 +74,11 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-void VAllele::report(const FileName &file, const VAllele::Options &o)
+void VAllele::generateR(const FileName &file, const FileName &src, const Stats &stats, const VAllele::Options &o)
 {
-    const auto stats = analyze(file, o);
-    
-    /*
-     * Generating VarAllele_sequins.csv
-     */
-    
-    writeQuins("VarAllele_sequins.csv", stats, o);
-    
-    /*
-     * Generating VarAllele_allele.R
-     */
-    
-    o.generate("VarAllele_allele.R");
-    o.writer->open("VarAllele_allele.R");
-    o.writer->write(RWriter::createLinear("VarAllele_sequins.csv",
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(RWriter::createLinear(src,
                                           "Allele Frequency",
                                           "Expected allele frequency (log2)",
                                           "Measured allele frequency (log2)",
@@ -101,4 +87,32 @@ void VAllele::report(const FileName &file, const VAllele::Options &o)
                                           "input",
                                           true));
     o.writer->close();
+}
+
+void VAllele::generateSummary(const FileName &file, const Stats &stats, const VAllele::Options &o)
+{
+    
+}
+
+void VAllele::report(const FileName &file, const VAllele::Options &o)
+{
+    const auto stats = analyze(file, o);
+
+    /*
+     * Generating VarAllele_summary.csv
+     */
+    
+    VAllele::generateSummary("VarAllele_summary.csv", stats, o);
+    
+    /*
+     * Generating VarAllele_sequins.csv
+     */
+
+    VAllele::generateCSV("VarAllele_sequins.csv", stats, o);
+    
+    /*
+     * Generating VarAllele_allele.R
+     */
+
+    VAllele::generateR("VarAllele_allele.R", "VarAllele_sequins.csv", stats, o);
 }
