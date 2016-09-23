@@ -333,16 +333,12 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     return ss.str();
 }
 
-void RExpress::generateSummary(const FileName &summary,
-                               const std::vector<FileName >&files,
-                               const std::vector<RExpress::Stats> &stats,
-                               const RExpress::Options &o,
-                               const Units &units)
+Scripts RExpress::generateSummary(const std::vector<FileName> &files,
+                                  const std::vector<RExpress::Stats> &stats,
+                                  const RExpress::Options &o,
+                                  const Units &units)
 {
     const auto &r = Standard::instance().r_trans;
-    
-    o.info("Generating " + summary);
-    o.writer->open(summary);
     
     std::vector<SequinHist>   hists;
     std::vector<LinearStats>  lStats;
@@ -376,7 +372,7 @@ void RExpress::generateSummary(const FileName &summary,
     
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
-
+    
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference Transcript Annotations\n\n"
@@ -396,26 +392,37 @@ void RExpress::generateSummary(const FileName &summary,
                         "       SSE:         %16%, DF: %17%\n"
                         "       SST:         %18%, DF: %19%\n";
     
-    o.writer->write((boost::format(format) % STRING(ms.files)      // 1
-                                           % rSyn                  // 2
-                                           % MixRef()              // 3
-                                           % title                 // 4
-                                           % STRING(ms.countSyn)   // 5
-                                           % limit.abund           // 6
-                                           % limit.id              // 7
-                                           % STRING(ms.countGen)   // 8
-                                           % STRING(ms.wLog.sl)    // 21
-                                           % STRING(ms.wLog.r)     // 22
-                                           % STRING(ms.wLog.R2)    // 23
-                                           % STRING(ms.wLog.F)     // 24
-                                           % STRING(ms.wLog.p)     // 25
-                                           % STRING(ms.wLog.SSM)   // 26
-                                           % STRING(ms.wLog.SSM_D) // 27
-                                           % STRING(ms.wLog.SSE)   // 28
-                                           % STRING(ms.wLog.SSE_D) // 29
-                                           % STRING(ms.wLog.SST)   // 30
-                                           % STRING(ms.wLog.SST_D) // 31
-                     ).str());
+    return (boost::format(format) % STRING(ms.files)      // 1
+                                  % rSyn                  // 2
+                                  % MixRef()              // 3
+                                  % title                 // 4
+                                  % STRING(ms.countSyn)   // 5
+                                  % limit.abund           // 6
+                                  % limit.id              // 7
+                                  % STRING(ms.countGen)   // 8
+                                  % STRING(ms.wLog.sl)    // 9
+                                  % STRING(ms.wLog.r)     // 10
+                                  % STRING(ms.wLog.R2)    // 11
+                                  % STRING(ms.wLog.F)     // 12
+                                  % STRING(ms.wLog.p)     // 13
+                                  % STRING(ms.wLog.SSM)   // 14
+                                  % STRING(ms.wLog.SSM_D) // 15
+                                  % STRING(ms.wLog.SSE)   // 16
+                                  % STRING(ms.wLog.SSE_D) // 17
+                                  % STRING(ms.wLog.SST)   // 18
+                                  % STRING(ms.wLog.SST_D) // 19
+                     ).str();
+}
+
+void RExpress::writeSummary(const FileName &file,
+                            const std::vector<FileName >&srcs,
+                            const std::vector<RExpress::Stats> &stats,
+                            const RExpress::Options &o,
+                            const Units &units)
+{
+    o.info("Generating " + file);
+    o.writer->open(file);
+    o.writer->write(RExpress::generateSummary(srcs, stats, o, units));
     o.writer->close();
 }
 
@@ -534,7 +541,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_summary.stats
      */
     
-    RExpress::generateSummary("RnaExpression_summary.stats", files, stats, o, units);
+    RExpress::writeSummary("RnaExpression_summary.stats", files, stats, o, units);
     
     /*
      * Generating RnaExpression_sequins.csv

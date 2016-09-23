@@ -1,6 +1,6 @@
 #include <thread>
 #include <fstream>
-#include "data/file.hpp"
+#include "tools/system.hpp"
 #include "data/compare.hpp"
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_assembly.hpp"
@@ -42,7 +42,7 @@ static std::string exec(const char* cmd)
 
 static FileName grepGTF(const FileName &file, const std::string &key, bool shouldGeneTrans = true)
 {
-    const auto tmp = tmpFile();
+    const auto tmp = System::tmpFile();
 
     std::string cmd;
     
@@ -67,7 +67,7 @@ static FileName grepGTF(const FileName &file, const std::string &key, bool shoul
 
 static FileName grepVGTF(const FileName &file, const std::string &key)
 {
-    const auto tmp = tmpFile();
+    const auto tmp = System::tmpFile();
     const auto cmd = "grep -v " + key + " " + file + " > " + tmp;
     const auto msg = exec(cmd.c_str());
     
@@ -264,8 +264,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     /*
      * Comparing for the genome
      */
-    
-    if ((__hasGen__ = !isEmpty(__QForGen__)))
+
+    if ((__hasGen__ = !System::isEmpty(__QForGen__)))
     {
         o.analyze("Genome");
         compareGTF(Geno, __RForGen__, __QForGen__);

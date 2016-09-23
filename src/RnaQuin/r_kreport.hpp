@@ -17,8 +17,8 @@ namespace Anaquin
 
         struct Stats
         {
-            // Kallsito quantification files
-            std::vector<FileName> kFiles;
+            // Kallsito quantified files
+            std::vector<FileName> abunds;
 
             // Statistics for expression at the isoform level
             std::vector<RExpress::Stats> iExpress;

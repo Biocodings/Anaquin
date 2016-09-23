@@ -23,9 +23,6 @@
  * Scripts
  */
 
-#include "resources/reports.py"
-#include "resources/kReport.py"
-
 #include "resources/plotFold.R"
 #include "resources/plotLinear.R"
 #include "resources/plotLogistic.R"
@@ -60,16 +57,6 @@
 typedef std::string Scripts;
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
-
-Scripts ReportScript()
-{
-    return ToString(scripts_reports_py);
-}
-
-Scripts KReportScript()
-{
-    return ToString(scripts_kReport_py);
-}
 
 Scripts Manual()
 {

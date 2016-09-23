@@ -14,10 +14,10 @@ namespace Anaquin
         struct Sample
         {
             // File name for the first paired-end
-            FileName first;
+            FileName p1;
             
             // File anme for the second paired-end
-            FileName second;
+            FileName p2;
         };
         
         struct Experiment
@@ -28,8 +28,8 @@ namespace Anaquin
         static Experiment parse(const Reader &r) throw()
         {
             Experiment exp;
-            
-            protectParse("Experiment format", [&]()
+
+            protectParse("Metadata format", [&]()
             {
                 std::vector<std::string> toks;
 
@@ -53,8 +53,8 @@ namespace Anaquin
                     
                     Sample samp;
                     
-                    samp.first  = toks[1];
-                    samp.second = toks[2];
+                    samp.p1  = toks[1];
+                    samp.p2 = toks[2];
 
                     if (toks[0] == "A") { exp.samps[Mixture::Mix_1].push_back(samp); }
                     else                { exp.samps[Mixture::Mix_2].push_back(samp); }

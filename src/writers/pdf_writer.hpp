@@ -40,7 +40,7 @@ namespace Anaquin
                                                                          % path
                                                                          % concat(_files, "")
                                                                          % concat(_subTits, "")).str();
-                Script::run(ReportScript(), "python", cmd);
+                //Script::run(ReportScript(), "python", cmd);
             }
 
         private:

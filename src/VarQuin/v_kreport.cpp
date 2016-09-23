@@ -8,37 +8,29 @@ using namespace Anaquin;
 // Shared with other modules
 extern Path __output__;
 
-// Defined in resources.cpp
-extern Scripts KReportScript();
-
-static Scripts reportScript()
-{
-    return Script::trim(KReportScript());
-}
-
 VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
 {
     VKReport::Stats stats;
 
-    // Where the analysis should be saved
-    const std::string output = tmpFile();
-    
-    std::cout << "QVarQuin " + o.index + " " + output + data << std::endl;
-    
-    Script::run(reportScript(), "python", "QVarQuin " + o.index + " " + output + " " + data);
-
-    stats.output = output;
-
-    {
-        VAllele::Options ro;
-        
-        ro.writer = o.writer;
-        ro.format = VAllele::Format::Salmon;
-
-        // Statistics for allele frequency detection
-        stats.allele = VAllele::analyze(output + "/quant.sf", ro);
-    }
-
+//    // Where the analysis should be saved
+//    const std::string output = tmpFile();
+//    
+//    std::cout << "QVarQuin " + o.index + " " + output + data << std::endl;
+//    
+//    Script::run(reportScript(), "python", "QVarQuin " + o.index + " " + output + " " + data);
+//
+//    stats.output = output;
+//
+//    {
+//        VAllele::Options ro;
+//        
+//        ro.writer = o.writer;
+//        ro.format = VAllele::Format::Salmon;
+//
+//        // Statistics for allele frequency detection
+//        stats.allele = VAllele::analyze(output + "/quant.sf", ro);
+//    }
+//
     return stats;
 }
 
@@ -77,5 +69,5 @@ void VKReport::report(const FileName &file, const Options &o)
      * Create a PDF report based on the generated files
      */
 
-    Script::run(reportScript(), "python", "RVarQuin " + o.work + "/VarKReport_report.pdf " + stats.output);
+//    Script::run(reportScript(), "python", "RVarQuin " + o.work + "/VarKReport_report.pdf " + stats.output);
 }

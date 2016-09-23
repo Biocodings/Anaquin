@@ -7,8 +7,8 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include "data/file.hpp"
 #include "tools/errors.hpp"
+#include "tools/system.hpp"
 #include <boost/format.hpp>
 
 // Defined in resources.cpp
@@ -21,43 +21,6 @@ namespace Anaquin
 {
     struct Script
     {
-        static void run(const std::string &code, const std::string &prefix, const std::string &args)
-        {
-            const auto f = [&](const std::string &cmd)
-            {
-                std::cout << cmd << std::endl;
-                
-                const int status = system(cmd.c_str());
-                
-                if (status != 0)
-                {
-                    throw FailedCommandException("Failed: " + cmd);
-                }
-            };
-            
-            // Create a copy of the script
-            const auto tmp = tmpFile();
-            
-            std::ofstream out(tmp);
-            out << code;
-            out.close();
-            
-            // Run the script with given arguments
-            f(prefix + " " + tmp + " " + args);
-        }
-        
-        // Eg: python reports.py RnaQuin reports.pdf output
-        template <typename Option> static void report(const std::string &type,
-                                                      const FileName &report,
-                                                      const FileName &inputs,
-                                                      const Option &o)
-        {
-            const auto cmd = ((boost::format("%1% %2% %3%") % type
-                                                            % (o.work + "/" + report)
-                                                            % inputs)).str();
-            Script::run(Script::trim(ReportScript()), "python", cmd);
-        }
-        
         static std::string trim(const std::string &str)
         {
             std::stringstream ss;

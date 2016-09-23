@@ -1,5 +1,6 @@
 #
-# This file implements the k-mer quantification pipeline for Anaquin.
+# This file implements the k-mer quantification pipeline for Anaquin. This file is part of Anaquin and not designed
+# for external usage. Error checking is kept to minmial.
 #
 
 import io
@@ -532,15 +533,36 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
 
     generatePDF(r, path, 'VarReport_report.pdf')
 
-# Create a PDF report for RnaQuin
-def createRNReport(name, inputs):    
+# Create a PDF report for VarQuin
+def createVReport(name, inputs):
     r = Report()
-    r.startChapter('RNAQuin Report')
+    r.startChapter('VarQuin Report')
 
-    #
-    # Expression analysis at isoform and gene level
-    # Differential analysis at isoform and gene level
-    #
+    files = ['ExpressI/RnaExpress_summary.stats', 'ExpressI/RnaExpress_sequins.csv', 'ExpressI/RnaExpress_linear.R']
+    descs = ['FoldI/RnaFoldChange_summary.stats', 'FoldI/RnaFoldChange_sequins.csv', 'FoldI/RnaFoldChange_fold.R']
+    
+    for i in range(0, len(files)):
+        file = files[i]
+        desc = descs[i]
+        
+        if (desc == ''):
+            desc = file
+        
+        if file.endswith('R'):
+            r.addRCode(desc, file, '')
+        elif file.endswith('stats') and ('quins' in file):
+            r.addTextFile(desc, file)
+        else:
+            r.addTextFile(desc, file)
+            
+    r.endChapter()
+   
+    report2PDF(r, name, inputs)    
+
+# Create a PDF report for RnaQuin
+def createRReport(name, inputs):    
+    r = Report()
+    r.startChapter('RnaQuin Report')
 
     expIF = ['ExpressI/RnaExpress_summary.stats', 'ExpressI/RnaExpress_sequins.csv', 'ExpressI/RnaExpress_linear.R']
     expID = ['Summary Statistics (Isoform)', 'Detailed Statistics', 'Gene Expression']    
@@ -605,7 +627,30 @@ def checkInstall(program):
 
     return None
     
-def RnaQuin(index, output, exp):
+def quantVarQuin(index, output, exp):
+    if checkInstall('salmon') is None:
+        raise Exception('Salmon is not installed. Please consult the user guide on www.sequin.xyz and try again.')
+    elif checkInstall('R') is None:
+        raise Exception('R is not installed. Please consult the user guide on www.sequin.xyz and try again.')
+    
+    def runSalmon(first, second):
+        # Eg: salmon quant -i salmon.index -l A -1 A.fastq -2 B.fastq -o quant
+        run('salmon quant -i ' + index + ' -l A -o ' + output + '/quant -1 ' + first + ' -2 ' + second)
+
+    if len(exp.A) != 1:
+        raise Exception('VarKReport only supports a single sample. Please consult the user guide on www.sequin.xyz and try again.')
+    elif len(exp.B) != 0:
+        raise Exception('VarKReport does not support mixture B. Please consult the user guide on www.sequin.xyz and try again.')        
+
+    samps = []
+    conds = []
+    cmds  = []
+
+    runSalmon(exp.A[0]['First'], exp.A[0]['Second'])
+    
+    print ('Quantification completed')
+
+def quantRnaQuin(index, output, exp):
     if checkInstall('kallisto') is None:
         raise Exception('Kallisto is not installed. Please consult the user guide on www.sequin.xyz and try again.')
     elif checkInstall('R') is None:
@@ -618,10 +663,7 @@ def RnaQuin(index, output, exp):
     
     def runKallisto(cmd):
         # Command for Kallisto
-        quant = 'kallisto quant -b 500 -i ' + index + ' -o ' + cmd
-
-        # Quantify the replicate
-        run(quant)
+        run('kallisto quant -b 500 -i ' + index + ' -o ' + cmd)
 
     cmds = []
 
@@ -693,9 +735,6 @@ def RnaQuin(index, output, exp):
 
     print 'RnaQuin quantification completed'
 
-#
-# VarQuin currently supports Kallisto and Salmon.    
-#
 def VarKReport(file):
     pass
 
@@ -722,10 +761,11 @@ class Experiment:
                 self.B.append({'First':row[1], 'Second':row[2]})
 
 #
-# This file is part of Anaquin and not designed for external usage. Error checking is kept to minmial.
+# Eg: python kReport.py QRnaQuin ARN024_v001.index /tmp/kallisto experiment.txt
+# Eg: python kReport.py QVarQuin salmon.index /tmp/salmon vMeta.txt
 #
-#   Eg: python ~/Sources/QA/scripts/kReport.py RnaQuin ARN024_v001.index /tmp/kallisto experiment.txt
-#   Eg: python kReport.py RnaReport RnaKReport_report.pdf /tmp/kallisto
+# Eg: python kReport.py RRnaQuin RnaKReport_report.pdf /tmp/kallisto
+# Eg: python kReport.py RVarQuin VarKReport_report.pdf /tmp/salmon
 #
 # Note: please give full path
 #
@@ -742,14 +782,11 @@ if __name__ == '__main__':
     if not os.path.exists(output):
         os.makedirs(output)    
 
-    if __mode__ == 'RnaQuin':
-        RnaQuin(file, output, Experiment(sys.argv[4]))
-
-    elif __mode__ == 'VarQuin':
-        VarQuin(file, output, pair1, pair2)
-
-    elif __mode__ == 'RnaReport':        
-        createRNReport(file, output)
-
-    elif __mode__ == 'VarReport':
-        pass
+    if __mode__ == 'QRnaQuin':
+        quantRnaQuin(file, output, Experiment(sys.argv[4]))
+    elif __mode__ == 'QVarQuin':
+        quantVarQuin(file, output, Experiment(sys.argv[4]))
+    elif __mode__ == 'RRnaQuin':        
+        createRReport(file, output)
+    elif __mode__ == 'RVarQuin':
+        createVReport(file, output)

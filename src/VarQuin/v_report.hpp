@@ -18,7 +18,7 @@ namespace Anaquin
 
         static void generate(const FileName &file1, const FileName &file2, const Options &o = Options())
         {
-            Script::report("VarQuin", file1, file2, o);
+//            Script::report("VarQuin", file1, file2, o);
         }
     };
 }

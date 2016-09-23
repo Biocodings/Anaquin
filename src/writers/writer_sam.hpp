@@ -2,7 +2,7 @@
 #define WRITER_SAM_HPP
 
 #include <htslib/sam.h>
-#include "data/file.hpp"
+#include "tools/system.hpp"
 #include "tools/samtools.hpp"
 #include "writers/writer.hpp"
 
@@ -31,7 +31,7 @@ namespace Anaquin
                 // Disable file writing in the htslib library
                 __NO_SAM_FILE_WRITING__ = 1;
                 
-                _fp = sam_open(tmpFile().c_str(), "w");
+                _fp = sam_open(System::tmpFile().c_str(), "w");
                 
                 _term = true;
             }

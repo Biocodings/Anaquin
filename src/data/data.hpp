@@ -49,6 +49,7 @@ namespace Anaquin
     typedef std::string Label;
     typedef std::string Token;
     typedef std::string Units;
+    typedef std::string Command;
     typedef std::string Scripts;
     typedef std::string FileName;
     typedef std::string ReadName;

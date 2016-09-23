@@ -81,12 +81,17 @@ namespace Anaquin
                               const std::vector<Stats> &,
                               const Options &o);
 
-        static void generateSummary(const FileName &,
-                                    const std::vector<FileName > &,
-                                    const std::vector<Stats> &,
-                                    const Options &,
-                                    const Units &);
+        static Scripts generateSummary(const std::vector<FileName > &,
+                                       const std::vector<Stats> &,
+                                       const Options &,
+                                       const Units &);
         
+        static void writeSummary(const FileName &,
+                                 const std::vector<FileName > &,
+                                 const std::vector<Stats> &,
+                                 const Options &,
+                                 const Units &);
+
         static std::vector<Stats> analyze(const std::vector<TestData> &, const Options &);
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };
