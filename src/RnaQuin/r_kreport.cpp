@@ -25,6 +25,8 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     // Where the analysis files should be saved
     const auto output = System::tmpFile();
 
+    std::cout << output << std::endl;
+    
     // Create the directory structure
     System::runCmd("mkdir -p " + output);
     
@@ -111,6 +113,40 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     });
     
     /*
+     * Perform sleuth differential analysis (recommended by the Kallisto team)
+     */
+    
+    // Do we have at least two replicates for each mixture?
+    if (stats.exp.samps.size() == 2 && stats.exp.samps[Mix_1].size() >= 2 && stats.exp.samps[Mix_2].size() >= 2)
+    {
+        const auto script = "library(sleuth)\n\n"
+                            "# Where the Kallisto files are\n"
+                            "path <- '%1%'\n\n"
+                            "# Samples (eg. A1, A2...)\n"
+                            "samps <- dir(file.path(path))\n\n"
+                            "samps <- samps[samps!='sleuth.R']\n\n"
+                            "# Factors for the samples\n"
+                            "conds <- c(rep(1,sum(startsWith(samps, 'A'))), rep(0,sum(startsWith(samps, 'B'))))\n\n"
+                            "# Construct full path for the samples\n"
+                            "path <- paste(path, samps, sep='/')\n\n"
+                            "s2c <- data.frame(sample=samps, condition=conds)\n"
+                            "s2c <- dplyr::mutate(s2c, path=path)\n\n"
+                            "so <- sleuth_prep(s2c, ~condition)\n"
+                            "so <- sleuth_fit(so)\n"
+                            "so <- sleuth_wt(so, 'condition1')\n\n"
+                            "results <- sleuth_results(so, 'condition1')\n"
+                            "write.csv(results, file='sleuth.csv', row.names=FALSE, quote=FALSE)";
+
+        FileWriter fw(output);
+        fw.open("sleuth.R");
+        fw.write(((boost::format(script)) % output).str());
+        fw.close();
+
+        // Run differential analysis and save results to sleuth.csv
+        System::runCmd("RScript " + output + "/sleuth.R");
+    }
+
+    /*
      * Kallisto output files are in the output directory. We should analyze those files.
      */
     
@@ -134,22 +170,22 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
         }
     }
     
-    {
-        RFold::Options ro;
-        
-        ro.writer = o.writer;
-        ro.format = RFold::Format::Sleuth;
-        
-        {
-            ro.metrs = RFold::Metrics::Isoform;
-            stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
-        }
-        
-        {
-            ro.metrs = RFold::Metrics::Gene;
-            stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
-        }
-    }
+//    {
+//        RFold::Options ro;
+//        
+//        ro.writer = o.writer;
+//        ro.format = RFold::Format::Sleuth;
+//        
+//        {
+//            ro.metrs = RFold::Metrics::Isoform;
+//            stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
+//        }
+//        
+//        {
+//            ro.metrs = RFold::Metrics::Gene;
+//            stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
+//        }
+//    }
 
     return stats;
 }
@@ -236,18 +272,36 @@ void RKReport::report(const FileName &file, const Options &o)
         }
     }
 
+    std::cout << tmp << std::endl;
+    
     /*
      * C++ doesn't have the functionality to create a PDF report. Generate an Rmarkdown document and use it to create
      * a PDF document (other document types are also possible).
      */
 
     std::cout << tmp + "/report.Rmd" << std::endl;
-    
-    FileWriter fw("/Users/tedwong/Sources/QA");
-    fw.open("report.Rmd");
-    fw.write(mark.generate("RnaQuin Report"));
-    fw.close();
 
+    {
+        FileWriter fw(tmp);
+        fw.open("report.Rmd");
+        fw.write(mark.generate("RnaQuin Report"));
+        fw.close();
+    }
+
+    /*
+     * Convert the markup document to PDF
+     */
+
+    {
+        FileWriter fw(tmp);
+        fw.open("r2pdf.R");
+        fw.write("library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
+        fw.close();
+
+        System::runCmd("cd " + tmp + "; RScript " + tmp + "/r2pdf.R");
+        System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaKReport_report.pdf");
+    }
+    
     /*
      * Differential analysis at the isoform and gene level
      */
