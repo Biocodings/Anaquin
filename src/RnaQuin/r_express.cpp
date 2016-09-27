@@ -426,14 +426,10 @@ void RExpress::writeSummary(const FileName &file,
     o.writer->close();
 }
 
-void RExpress::generateR(const FileName &output,
-                         const FileName &csv,
-                         const std::vector<RExpress::Stats> &stats,
-                         const RExpress::Options &o)
+Scripts RExpress::generateRLinear(const FileName &csv,
+                                  const std::vector<RExpress::Stats> &stats,
+                                  const RExpress::Options &o)
 {
-    o.info("Generating " + output);
-    o.writer->open(output);
-    
     const auto title = o.metrs == Metrics::Gene ? "Gene Expression" : "Isoform Expression";
     
     Units measured;
@@ -447,46 +443,54 @@ void RExpress::generateR(const FileName &output,
 
     if (stats.size() == 1)
     {
-        o.writer->write(RWriter::createLinear(csv,
-                                              title,
-                                              "Input Concentration (log2)",
-                                              measured + " (log2)",
-                                              "InputConcent",
-                                              "Observed",
-                                              "input",
-                                              true));
+        return RWriter::createLinear(csv,
+                                     title,
+                                     "Input Concentration (log2)",
+                                     measured + " (log2)",
+                                     "InputConcent",
+                                     "Observed",
+                                     "input",
+                                     true);
     }
     else
     {
-        o.writer->write(RWriter::createMultiLinear(csv,
-                                                   title,
-                                                   "Input Concentration (log2)",
-                                                   measured + " (log2)",
-                                                   "InputConcent",
-                                                   "Observed",
-                                                   "input",
-                                                   true,
-                                                   true));
+        return RWriter::createMultiLinear(csv,
+                                          title,
+                                          "Input Concentration (log2)",
+                                           measured + " (log2)",
+                                          "InputConcent",
+                                          "Observed",
+                                          "input",
+                                           true,
+                                           true);
     }
-    
+}
+
+void RExpress::writeRLinear(const FileName &file,
+                            const FileName &csv,
+                            const std::vector<RExpress::Stats> &stats,
+                            const RExpress::Options &o)
+{
+    o.info("Generating " + file);
+    o.writer->open(file);
+    o.writer->write(RExpress::generateRLinear(csv, stats, o));
     o.writer->close();
 }
 
-void RExpress::generateCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
+Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-
-    o.info("Generating " + output);
-    o.writer->open(output);
-
+    
     if (stats.size() == 1)
     {
+        std::stringstream ss;
+        
         const auto format = "%1%\t%2%\t%3%\t%4%";
         
-        o.writer->write((boost::format(format) % "ID"
-                                               % "Length"
-                                               % "InputConcent"
-                                               % "Observed").str());
+        ss << (boost::format(format) % "ID"
+                                     % "Length"
+                                     % "InputConcent"
+                                     % "Observed").str();
         
         auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
         
@@ -499,19 +503,28 @@ void RExpress::generateCSV(const FileName &output, const std::vector<RExpress::S
                 case RExpress::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
                 case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
             }
-
+            
             assert(l.length() > 1);
-            o.writer->write((boost::format(format) % i.first
-                                                   % l.length()
-                                                   % i.second.x
-                                                   % i.second.y).str());
+            
+            ss << (boost::format(format) % i.first
+                                         % l.length()
+                                         % i.second.x
+                                         % i.second.y).str();
         }
+        
+        return ss.str();
     }
     else
     {
-        o.writer->write(multipleCSV(stats, o.metrs));
+        return multipleCSV(stats, o.metrs);
     }
+}
 
+void RExpress::writeCSV(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
+{
+    o.info("Generating " + output);
+    o.writer->open(output);
+    o.writer->write(generateCSV(stats, o));
     o.writer->close();
 }
 
@@ -547,11 +560,11 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpression_sequins.csv
      */
     
-    RExpress::generateCSV("RnaExpression_sequins.csv", stats, o);
+    RExpress::writeCSV("RnaExpression_sequins.csv", stats, o);
 
     /*
      * Generating RnaExpression_linear.R
      */
     
-    RExpress::generateR("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
+    RExpress::writeRLinear("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
 }

@@ -1,5 +1,4 @@
 #include "tools/coverage.hpp"
-#include "writers/file_writer.hpp"
 
 // Defined in main.cpp
 extern bool __showInfo__;

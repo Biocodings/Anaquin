@@ -74,24 +74,31 @@ namespace Anaquin
             return stats;
         }
 
-        static void generateCSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
-
-        static void generateR(const FileName &,
-                              const FileName &,
-                              const std::vector<Stats> &,
-                              const Options &o);
+        static Scripts generateCSV(const std::vector<RExpress::Stats> &,
+                                   const Options &);
 
         static Scripts generateSummary(const std::vector<FileName > &,
                                        const std::vector<Stats> &,
                                        const Options &,
                                        const Units &);
+
+        static Scripts generateRLinear(const FileName &,
+                                       const std::vector<Stats> &,
+                                       const Options &);
         
+        static void writeCSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
+
         static void writeSummary(const FileName &,
                                  const std::vector<FileName > &,
                                  const std::vector<Stats> &,
                                  const Options &,
                                  const Units &);
 
+        static void writeRLinear(const FileName &,
+                                 const FileName &,
+                                 const std::vector<Stats> &,
+                                 const Options &);
+        
         static std::vector<Stats> analyze(const std::vector<TestData> &, const Options &);
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };

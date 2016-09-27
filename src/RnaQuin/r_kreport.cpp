@@ -7,9 +7,6 @@
 
 using namespace Anaquin;
 
-// Shared with other modules
-extern Path __output__;
-
 RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
 {
     if (!System::checkConsole("kallisto"))
@@ -154,19 +151,14 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     return stats;
 }
 
-template <typename T> void setWorkDir(const Path &path, T &o)
-{
-    // Make sure to reuse the temporary directory
-    o.writer = std::shared_ptr<FileWriter>(new FileWriter(path));
-    
-    __output__ = path;
-}
-
 void RKReport::report(const FileName &file, const Options &o)
 {
     const auto stats = RKReport::analyze(file, o);
 
-    MarkDown mark("RnaQuin Report");
+    // Directory where the temporary files should be saved
+    const auto tmp = System::tmpFile();
+    
+    MarkDown mark;
     
     /*
      * Expression analysis at the isoform and gene level
@@ -181,27 +173,40 @@ void RKReport::report(const FileName &file, const Options &o)
         {
             ro.metrs = RExpress::Metrics::Gene;
             
-//            RExpress::generateCSV("RnaExpress_sequins.csv", stats.gExpress, ro);
-//            RExpress::generateSummary("RnaExpress_summary.stats", stats.abunds, stats.gExpress, ro, "genes");
-//            RExpress::generateR("RnaExpress_linear.R", "RnaExpress_sequins.csv", stats.gExpress, ro);
+            const auto x = RExpress::generateSummary(stats.abunds, stats.gExpress, ro, "genes");
+            const auto y = RExpress::generateCSV(stats.gExpress, ro);
+            
+            mark.start("Gene Analysis");
+            mark.addText("Summary Statistics", x);
+            mark.addText("Sequin Statistics", y);
+            mark.end();
         }
-        
+
         {
             ro.metrs = RExpress::Metrics::Isoform;
 
-            // Summary statistics
-            const auto txt = RExpress::generateSummary(stats.abunds, stats.iExpress, ro, "isoforms");
-            
+            const auto x = RExpress::generateSummary(stats.abunds, stats.iExpress, ro, "isoforms");
+            const auto y = RExpress::generateCSV(stats.iExpress, ro);
+
             mark.start("Isoform Analysis");
-            mark.addText(txt);
+            mark.addText("Summary Statistics", x);
+            mark.addText("Sequin Statistics", y);
             mark.end();
         }
     }
 
-    const auto txt = mark.generate();
+    /*
+     * C++ doesn't have the functionality to create a PDF report. Generate an Rmarkdown document and use it to create
+     * a PDF document (other document types are also possible).
+     */
+
+    std::cout << tmp + "/report.Rmd" << std::endl;
     
-    std::cout << txt << std::endl;
-    
+    FileWriter fw("/Users/tedwong/Sources/QA");
+    fw.open("report.Rmd");
+    fw.write(mark.generate("RnaQuin Report"));
+    fw.close();
+
     /*
      * Differential analysis at the isoform and gene level
      */
@@ -232,10 +237,4 @@ void RKReport::report(const FileName &file, const Options &o)
 //            RFold::generateR(stats.iFold, ro);
 //        }
 //    }
-//    
-//    /*
-//     * Create a PDF report based on the generated files
-//     */
-//
-//    System::runScript(reportScript(), "python", "RRnaQuin " + o.work + "/RnaKReport_report.pdf " + stats.output);
 }

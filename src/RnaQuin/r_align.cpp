@@ -2,7 +2,6 @@
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "parsers/parser_sam.hpp"
-#include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 

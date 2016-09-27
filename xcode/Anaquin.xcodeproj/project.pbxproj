@@ -12,6 +12,7 @@
 		EF0C67961C5F25070033168D /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678D1C5F25070033168D /* v_discover.cpp */; };
 		EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF17D29C1BCF246700F503F7 /* t_intervals.cpp */; };
 		EF1B9A901D7078FA000E0D6A /* v_flip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */; };
+		EF1C8D181D9A2BDC00D6D97F /* markdown.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1C8D171D9A2BDC00D6D97F /* markdown.cpp */; };
 		EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */; };
 		EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */; };
 		EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0B01B21EC6D00DEC381 /* standard.cpp */; };
@@ -143,6 +144,7 @@
 		EF184E651D2567CE0086AD1D /* sam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sam.h; path = ../src/htslib/htslib/sam.h; sourceTree = "<group>"; };
 		EF184E661D25697B0086AD1D /* vcf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vcf.h; path = ../src/htslib/htslib/vcf.h; sourceTree = "<group>"; };
 		EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_flip.cpp; path = ../tests/VarQuin/v_flip.cpp; sourceTree = "<group>"; };
+		EF1C8D171D9A2BDC00D6D97F /* markdown.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = markdown.cpp; path = ../src/tools/markdown.cpp; sourceTree = "<group>"; };
 		EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/data/alignment.hpp; sourceTree = "<group>"; };
 		EF1DE0A81B21EC6D00DEC381 /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
 		EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/data/locus.hpp; sourceTree = "<group>"; };
@@ -598,6 +600,7 @@
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
 				EF6AE1231D4DCF9F005AF569 /* errors.hpp */,
 				EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */,
+				EF1C8D171D9A2BDC00D6D97F /* markdown.cpp */,
 				EF71F97E1D94F9EA00F10CBF /* markdown.hpp */,
 				EF0092F21D61BCD100573D44 /* random.hpp */,
 				EFFD9A881D26BB6A00A7A80B /* sample.cpp */,
@@ -775,7 +778,7 @@
 		7F7C704A1AB4726E00C6EE36 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Garvan Institute";
 				TargetAttributes = {
 					7F7C70511AB4726E00C6EE36 = {
@@ -879,6 +882,7 @@
 				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
 				EF2615801B5FF9F500BE8037 /* codons.cpp in Sources */,
 				EF3302BE1C8E8498007A73A2 /* t_parser_kallisto.cpp in Sources */,
+				EF1C8D181D9A2BDC00D6D97F /* markdown.cpp in Sources */,
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,
 				EFFC30D21D090A2000814E0F /* r_express.cpp in Sources */,
 				EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */,
@@ -926,8 +930,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -935,6 +941,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -967,8 +974,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
@@ -976,6 +985,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
