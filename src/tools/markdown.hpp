@@ -13,37 +13,34 @@ namespace Anaquin
     {
         private:
         
-            typedef std::string Code;
-        
-            struct Item
-            {
-                virtual Code generate() const = 0;
-            };
-        
-            class RItem : public Item
+            class Item
             {
                 public:
-                    RItem(const Code &code) : _code(code) {}
-            
-                    virtual Code generate() const
-                    {
-                        throw "";
-                    }
-            
-                private:
-                    const Code _code;
-            };
-        
-            class TextItem : public Item
-            {
-                public:
-                    TextItem(const Title &title, const Code &txt) : _txt(txt), _title(title) {}
-            
-                    virtual Scripts generate() const;
+                    Item(const Title &title, const Scripts &txt) : _title(title), _txt(txt) {}
+                
+                    virtual Scripts generate() const = 0;
+                
+                protected:
 
-                private:
+                    // Eg: Gene Expression
+                    const Title _title;
+                
+                    // Eg: R-script
                     const Scripts _txt;
-                    const Title   _title;
+            };
+        
+            struct RItem : public Item
+            {
+                RItem(const Title &title, const Scripts &txt) : Item(title, txt) {}
+                
+                virtual Scripts generate() const;
+            };
+        
+            struct TextItem : public Item
+            {
+                TextItem(const Title &title, const Scripts &txt) : Item(title, txt) {}
+
+                virtual Scripts generate() const;
             };
         
             class Section
@@ -56,6 +53,11 @@ namespace Anaquin
                         _items.push_back(std::shared_ptr<Item>(new TextItem(title, txt)));
                     }
             
+                    inline void addRCode(const Title &title, const Scripts &txt)
+                    {
+                        _items.push_back(std::shared_ptr<Item>(new RItem(title, txt)));
+                    }
+
                     inline Scripts generate() const;
 
                 private:
@@ -74,6 +76,11 @@ namespace Anaquin
             {
                 _sections.push_back(*_current);
                 _current = nullptr;
+            }
+
+            inline void addRCode(const Title &title, const Scripts &txt)
+            {
+                _current->addRCode(title, txt);
             }
 
             inline void addText(const Title &title, const Scripts &txt)

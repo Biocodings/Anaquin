@@ -691,6 +691,7 @@ void VDiscover::report(const FileName &file, const Options &o)
         o.generate("VarDiscover_allele.R");
         o.writer->open("VarDiscover_allele.R");
         o.writer->write(RWriter::createLinear("VarDiscover_sequins.csv",
+                                              o.work,
                                               "Allele Frequency",
                                               "Expected allele frequency (log2)",
                                               "Measured allele frequency (log2)",
@@ -708,22 +709,5 @@ void VDiscover::report(const FileName &file, const Options &o)
         o.writer->open("VarDiscover_LODR.R");
         o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLODR()));
         o.writer->close();
-    }
-
-    /*
-     * Generating VarDiscover_report.pdf
-     */
-    
-    o.report->open("VarDiscover_report.pdf");
-    o.report->addTitle("VarDiscover");
-    o.report->addFile("VarDiscover_summary.stats");
-    o.report->addFile("VarDiscover_sequins.csv");
-    o.report->addFile("VarDiscover_detected.csv");
-    o.report->addFile("VarDiscover_ROC.R");
-    o.report->addFile("VarDiscover_LODR.R");
-    
-    if (!r.isGermline())
-    {
-        o.report->addFile("VarDiscover_allele.R");
     }
 }

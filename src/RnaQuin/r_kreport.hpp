@@ -17,14 +17,14 @@ namespace Anaquin
 
         struct Stats
         {
-            // Kallsito quantified files
-            std::vector<FileName> abunds;
-
+            // Kallsito quantified files in TSV format
+            std::map<Mixture, std::vector<FileName>> tsvs;
+            
             // Statistics for expression at the isoform level
-            std::vector<RExpress::Stats> iExpress;
+            std::map<Mixture, std::vector<RExpress::Stats>> iExpress;
             
             // Statistics for expression at the gene level
-            std::vector<RExpress::Stats> gExpress;
+            std::map<Mixture, std::vector<RExpress::Stats>> gExpress;
             
             // Statistics for differential at the isoform level
             RFold::Stats iFold;
@@ -32,9 +32,6 @@ namespace Anaquin
             // Statistics for differential at the gene level
             RFold::Stats gFold;
             
-            // The path for the analysis files
-            Path output;
-
             ParserExp::Experiment exp;
         };
         

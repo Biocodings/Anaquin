@@ -444,6 +444,7 @@ Scripts RExpress::generateRLinear(const FileName &csv,
     if (stats.size() == 1)
     {
         return RWriter::createLinear(csv,
+                                     o.work,
                                      title,
                                      "Input Concentration (log2)",
                                      measured + " (log2)",
@@ -455,6 +456,7 @@ Scripts RExpress::generateRLinear(const FileName &csv,
     else
     {
         return RWriter::createMultiLinear(csv,
+                                          o.work,
                                           title,
                                           "Input Concentration (log2)",
                                            measured + " (log2)",

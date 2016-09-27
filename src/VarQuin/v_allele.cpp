@@ -79,6 +79,7 @@ void VAllele::generateR(const FileName &file, const FileName &src, const Stats &
     o.generate(file);
     o.writer->open(file);
     o.writer->write(RWriter::createLinear(src,
+                                          o.work,
                                           "Allele Frequency",
                                           "Expected allele frequency (log2)",
                                           "Measured allele frequency (log2)",

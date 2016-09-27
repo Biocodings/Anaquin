@@ -454,13 +454,13 @@ void RAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_assembly.R");
     o.writer->open("RnaAssembly_assembly.R");
-    o.writer->write(RWriter::createSensitivity("RnaAssembly_sequins.csv",
-                                               "Assembly Detection",
-                                               "Input Concentration (log2)",
-                                               "Sensitivity",
-                                               "InputConcent",
-                                               "Sn",
-                                               true));
+    o.writer->write(RWriter::createLogistic("RnaAssembly_sequins.csv",
+                                            "Assembly Detection",
+                                            "Input Concentration (log2)",
+                                            "Sensitivity",
+                                            "InputConcent",
+                                            "Sn",
+                                            true));
     o.writer->close();
     
     /*

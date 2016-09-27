@@ -15,16 +15,13 @@ extern Scripts PlotFold();
 // Defined in resources.cpp
 extern Scripts PlotLogistic();
 
-// Defined in main.cpp
-extern FileName mixture();
-
-Scripts RWriter::createSensitivity(const FileName    &file,
-                                   const std::string &title,
-                                   const std::string &xlab,
-                                   const std::string &ylab,
-                                   const std::string &expected,
-                                   const std::string &measured,
-                                   bool showLOQ)
+Scripts RWriter::createLogistic(const FileName    &file,
+                                const std::string &title,
+                                const std::string &xlab,
+                                const std::string &ylab,
+                                const std::string &expected,
+                                const std::string &measured,
+                                bool showLOQ)
 {
     return (boost::format(PlotLogistic()) % date()
                                              % __full_command__
@@ -64,14 +61,15 @@ Scripts RWriter::createFold(const FileName    &file,
 }
 
 Scripts RWriter::createMultiLinear(const FileName    &file,
+                                   const Path        &path,
                                    const std::string &title,
                                    const std::string &xlab,
                                    const std::string &ylab,
                                    const std::string &expected,
                                    const std::string &measured,
                                    const std::string &xname,
-                                   bool showLOQ,
-                                   bool shouldLog,
+                                   bool  showLOQ,
+                                   bool  shouldLog,
                                    const std::string &extra)
 {
     const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
@@ -79,7 +77,7 @@ Scripts RWriter::createMultiLinear(const FileName    &file,
     
     return (boost::format(PlotLinear()) % date()
                                          % __full_command__
-                                         % __output__
+                                         % path
                                          % file
                                          % title
                                          % xlab
@@ -92,27 +90,28 @@ Scripts RWriter::createMultiLinear(const FileName    &file,
 }
 
 Scripts RWriter::createLinear(const FileName    &file,
+                              const Path        &path,
                               const std::string &title,
                               const std::string &xlab,
                               const std::string &ylab,
                               const std::string &expected,
                               const std::string &measured,
                               const std::string &xname,
-                              bool showLOQ,
+                              bool  showLOQ,
                               const std::string &extra)
 {
     return (boost::format(PlotLinear()) % date()
-                                         % __full_command__
-                                         % __output__
-                                         % file
-                                         % title
-                                         % xlab
-                                         % ylab
-                                         % ("log2(data$" + expected + ")")
-                                         % ("log2(data$" + measured + ")")
-                                         % xname
-                                         % (showLOQ ? "TRUE" : "FALSE")
-                                         % extra).str();
+                                        % __full_command__
+                                        % path
+                                        % file
+                                        % title
+                                        % xlab
+                                        % ylab
+                                        % ("log2(data$" + expected + ")")
+                                        % ("log2(data$" + measured + ")")
+                                        % xname
+                                        % (showLOQ ? "TRUE" : "FALSE")
+                                        % extra).str();
 }
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &script)

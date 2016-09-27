@@ -5,6 +5,20 @@
 
 using namespace Anaquin;
 
+Scripts MarkDown::RItem::generate() const
+{
+    std::stringstream ss;
+    
+    ss << "\n## ";
+    ss << _title;
+    ss << "\n\n";
+    ss << "```{r results='hide', message=FALSE, warning=FALSE, echo=FALSE}\n";
+    ss << _txt;
+    ss << "\n```\n\n" << std::endl;
+
+    return ss.str();
+}
+
 Scripts MarkDown::TextItem::generate() const
 {
     std::stringstream ss;
@@ -27,7 +41,7 @@ Scripts MarkDown::Section::generate() const
     
     for (auto &item : _items)
     {
-        ss << item->generate() << std::endl;
+        ss << item->generate() << "\\pagebreak" << std::endl;
     }
     
     return ss.str();

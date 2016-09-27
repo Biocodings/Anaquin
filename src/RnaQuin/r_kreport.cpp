@@ -65,7 +65,7 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
             samp.path = output + "/A" + std::to_string(++i);
 
             samps.push_back(samp);
-            stats.abunds.push_back(samp.path + "/abundance.tsv");
+            stats.tsvs[Mix_1].push_back(samp.path + "/abundance.tsv");
         }
     }
 
@@ -83,7 +83,7 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
             samp.path = output + "/B" + std::to_string(++i);
             
             samps.push_back(samp);
-            stats.abunds.push_back(samp.path + "/abundance.tsv");
+            stats.tsvs[Mix_2].push_back(samp.path + "/abundance.tsv");
         }
     }
     
@@ -120,33 +120,36 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
         ro.writer = o.writer;
         ro.format = RExpress::Format::Kallisto;
         
+        for (auto &mix : stats.exp.samps)
         {
-            ro.metrs = RExpress::Metrics::Isoform;
-            stats.iExpress = RExpress::analyze(stats.abunds, ro);
-        }
+            {
+                ro.metrs = RExpress::Metrics::Isoform;
+                stats.iExpress[mix.first] = RExpress::analyze(stats.tsvs.at(mix.first), ro);
+            }
 
-        {
-            ro.metrs = RExpress::Metrics::Gene;
-            stats.gExpress = RExpress::analyze(stats.abunds, ro);
+            {
+                ro.metrs = RExpress::Metrics::Gene;
+                stats.gExpress[mix.first] = RExpress::analyze(stats.tsvs.at(mix.first), ro);
+            }
         }
     }
     
-//    {
-//        RFold::Options ro;
-//        
-//        ro.writer = o.writer;
-//        ro.format = RFold::Format::Sleuth;
-//        
-//        {
-//            ro.metrs = RFold::Metrics::Isoform;
-//            stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
-//        }
-//        
-//        {
-//            ro.metrs = RFold::Metrics::Gene;
-//            stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
-//        }
-//    }
+    {
+        RFold::Options ro;
+        
+        ro.writer = o.writer;
+        ro.format = RFold::Format::Sleuth;
+        
+        {
+            ro.metrs = RFold::Metrics::Isoform;
+            stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
+        }
+        
+        {
+            ro.metrs = RFold::Metrics::Gene;
+            stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
+        }
+    }
 
     return stats;
 }
@@ -167,31 +170,69 @@ void RKReport::report(const FileName &file, const Options &o)
     {
         RExpress::Options ro;
         
+        ro.work   = tmp;
         ro.logger = o.logger;
         ro.format = RExpress::Format::Kallisto;
         
+        // Gene expression analysis for a mixture
+        auto geneExpress = [&](const Title &title,
+                               const std::vector<FileName> &files,
+                               const std::vector<RExpress::Stats> &stats)
         {
             ro.metrs = RExpress::Metrics::Gene;
             
-            const auto x = RExpress::generateSummary(stats.abunds, stats.gExpress, ro, "genes");
-            const auto y = RExpress::generateCSV(stats.gExpress, ro);
-            
-            mark.start("Gene Analysis");
-            mark.addText("Summary Statistics", x);
-            mark.addText("Sequin Statistics", y);
-            mark.end();
-        }
+            const auto x = RExpress::generateSummary(files, stats, ro, "genes");
+            const auto y = RExpress::generateCSV(stats, ro);
+            const auto z = RExpress::generateRLinear("/RnaKReportGeneExpress.csv", stats, ro);
 
+            FileWriter fw(tmp);
+            fw.open("RnaKReportGeneExpress.csv");
+            fw.write(y);
+            fw.close();
+            
+            mark.start(title);
+            mark.addText("Summary Statistics", x);
+            mark.addText("Sequin Statistics",  y);
+            mark.addRCode("Plot for Gene Expression", z);
+            mark.end();
+        };
+        
+        // Isoform expression analysis for a mixture
+        auto isoExpress = [&](const Title &title,
+                              const std::vector<FileName> &files,
+                              const std::vector<RExpress::Stats> &stats)
         {
             ro.metrs = RExpress::Metrics::Isoform;
-
-            const auto x = RExpress::generateSummary(stats.abunds, stats.iExpress, ro, "isoforms");
-            const auto y = RExpress::generateCSV(stats.iExpress, ro);
-
-            mark.start("Isoform Analysis");
+            
+            const auto x = RExpress::generateSummary(files, stats, ro, "genes");
+            const auto y = RExpress::generateCSV(stats, ro);
+            const auto z = RExpress::generateRLinear("/RnaKReportIsoformExpress.csv", stats, ro);
+            
+            FileWriter fw(tmp);
+            fw.open("RnaKReportIsoformExpress.csv");
+            fw.write(y);
+            fw.close();
+            
+            mark.start(title);
             mark.addText("Summary Statistics", x);
-            mark.addText("Sequin Statistics", y);
+            mark.addText("Sequin Statistics",  y);
+            mark.addRCode("Plot for Isoform Expression", z);
             mark.end();
+        };
+        
+        for (auto &mix : stats.exp.samps)
+        {
+            const auto mixStr = mix.first == Mix_1 ? "Mixture A" : "Mixture B";
+            
+            {
+                const auto format = "Gene Expression (%1%)";
+                geneExpress(((boost::format(format) % mixStr).str()), stats.tsvs.at(mix.first), stats.gExpress.at(mix.first));
+            }
+            
+            {
+                const auto format = "Isoform Expression (%1%)";
+                isoExpress(((boost::format(format) % mixStr).str()), stats.tsvs.at(mix.first), stats.iExpress.at(mix.first));
+            }
         }
     }
 

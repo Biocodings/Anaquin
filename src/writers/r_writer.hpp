@@ -26,15 +26,16 @@ namespace Anaquin
     
     struct RWriter
     {
-        static Scripts createSensitivity(const FileName    &,
-                                         const std::string &,
-                                         const std::string &,
-                                         const std::string &,
-                                         const std::string &,
-                                         const std::string &,
-                                         bool showLOQ);
+        static Scripts createLogistic(const FileName    &,
+                                      const std::string &,
+                                      const std::string &,
+                                      const std::string &,
+                                      const std::string &,
+                                      const std::string &,
+                                      bool showLOQ);
         
-        static Scripts createMultiLinear(const FileName  &,
+        static Scripts createMultiLinear(const FileName    &,
+                                         const Path        &,
                                          const std::string &,
                                          const std::string &,
                                          const std::string &,
@@ -54,7 +55,8 @@ namespace Anaquin
                                   bool shouldLog,
                                   const std::string &extra = "");
         
-        static Scripts createLinear(const FileName  &,
+        static Scripts createLinear(const FileName    &,
+                                    const Path        &,
                                     const std::string &,
                                     const std::string &,
                                     const std::string &,
