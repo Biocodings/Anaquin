@@ -249,6 +249,28 @@ void RKReport::report(const FileName &file, const Options &o)
             const auto mixStr = mix.first == Mix_1 ? "Mixture A" : "Mixture B";
             
             {
+                // Gene expression for each sample
+                for (auto i = 0; i < mix.second.size(); i++)
+                {
+                    const auto format = "Gene Expression (%1%) for %2%";
+                    geneExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
+                                  std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
+                                  std::vector<RExpress::Stats> { stats.gExpress.at(mix.first)[i] });
+                }
+            }
+            
+            {
+                // Isoform expression for each sample
+                for (auto i = 0; i < mix.second.size(); i++)
+                {
+                    const auto format = "Isoform Expression (%1%) for %2%";
+                    isoExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
+                                 std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
+                                 std::vector<RExpress::Stats> { stats.iExpress.at(mix.first)[i] });
+                }
+            }
+
+            {
                 const auto format = "Gene Expression (%1%)";
                 geneExpress(((boost::format(format) % mixStr).str()), stats.tsvs.at(mix.first), stats.gExpress.at(mix.first));
             }
