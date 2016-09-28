@@ -178,7 +178,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
-    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
+    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
 };
 
 /*
@@ -1213,6 +1213,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
+        case TOOL_V_KREPORT:
         case TOOL_V_DISCOVER:
         case TOOL_V_SUBSAMPLE:
         {
@@ -1226,6 +1227,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_V_ALLELE:
+                    case TOOL_V_KREPORT:
                     {
                         addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
@@ -1283,6 +1285,14 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_V_KREPORT:
+                {
+                    VKReport::Options o;
+                    o.index = _p.opts[OPT_R_IND];
+                    analyze_1<VKReport>(OPT_U_FILES, o);
+                    break;
+                }
+
                 case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
 
                 case TOOL_V_ALLELE:
