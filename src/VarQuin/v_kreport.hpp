@@ -3,6 +3,7 @@
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/v_allele.hpp"
+#include "parsers/parser_exp.hpp"
 
 namespace Anaquin
 {
@@ -15,10 +16,10 @@ namespace Anaquin
 
         struct Stats
         {
+            // Allele frequency
             VAllele::Stats allele;
 
-            // The path for the analysis files
-            Path output;            
+            ParserExp::Experiment exp;
         };
         
         static Stats analyze(const FileName &, const Options &);

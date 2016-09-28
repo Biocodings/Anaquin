@@ -56,19 +56,16 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     // Eg: A1, A2 A3
     Counts i = 0;
     
-    if (!stats.exp.samps.at(Mix_1).empty())
+    for (const auto &info : stats.exp.samps[Mix_1])
     {
-        for (const auto &info : stats.exp.samps[Mix_1])
-        {
-            KalSample samp;
-            
-            samp.p1   = info.p1;
-            samp.p2   = info.p2;
-            samp.path = output + "/A" + std::to_string(++i);
-            
-            samps.push_back(samp);
-            stats.tsvs[Mix_1].push_back(samp.path + "/abundance.tsv");
-        }
+        KalSample samp;
+        
+        samp.p1   = info.p1;
+        samp.p2   = info.p2;
+        samp.path = output + "/A" + std::to_string(++i);
+        
+        samps.push_back(samp);
+        stats.tsvs[Mix_1].push_back(samp.path + "/abundance.tsv");
     }
     
     // Eg: B1, B2 B3
@@ -99,19 +96,19 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     std::vector<std::thread> kals;
     
     std::for_each(samps.begin(), samps.end(), [&](const KalSample &samp)
-                  {
-                      kals.push_back(std::thread(runKallisto, samp));
-                  });
+    {
+        kals.push_back(std::thread(runKallisto, samp));
+    });
     
     /*
      * Wait until Kallisto quantification completes
      */
     
     std::for_each(kals.begin(), kals.end(), [&](std::thread &tID)
-                  {
-                      tID.join();
-                  });
-    
+    {
+        tID.join();
+    });
+
     /*
      * Perform sleuth differential analysis (recommended by the Kallisto team)
      */
@@ -217,10 +214,7 @@ void RKReport::report(const FileName &file, const Options &o)
             const auto y = RExpress::generateCSV(stats, ro);
             const auto z = RExpress::generateRLinear("/RnaKReportGeneExpress.csv", stats, ro);
             
-            FileWriter fw(tmp);
-            fw.open("RnaKReportGeneExpress.csv");
-            fw.write(y);
-            fw.close();
+            FileWriter::create(tmp, "RnaKReportGeneExpress.csv", y);
             
             mark.start(title);
             mark.addText("Summary Statistics", x);
@@ -308,18 +302,9 @@ void RKReport::report(const FileName &file, const Options &o)
     
     std::cout << tmp + "/report.Rmd" << std::endl;
     
-    {
-        FileWriter::create(tmp, "report.Rmd", mark.generate("RnaQuin Report"));
-    }
+    FileWriter::create(tmp, "report.Rmd", mark.generate("RnaQuin Report"));
+    FileWriter::create(tmp, "r2pdf.R", "library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
     
-    /*
-     * Convert the markup document to PDF
-     */
-    
-    {
-        FileWriter::create(tmp, "r2pdf.R", "library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
-        
-        System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
-        System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaKReport_report.pdf");
-    }
+    System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
+    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaKReport_report.pdf");
 }

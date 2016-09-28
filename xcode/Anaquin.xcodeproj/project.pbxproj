@@ -207,7 +207,6 @@
 		EF71F97E1D94F9EA00F10CBF /* markdown.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = markdown.hpp; path = ../src/tools/markdown.hpp; sourceTree = "<group>"; };
 		EF721FBD1D4E470D00288973 /* script.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = script.hpp; path = ../src/tools/script.hpp; sourceTree = "<group>"; };
 		EF721FBE1D4E478900288973 /* script.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = script.cpp; path = ../tests/tools/script.cpp; sourceTree = "<group>"; };
-		EF7278541CAD48F70012648F /* v_report.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = v_report.hpp; path = ../src/VarQuin/v_report.hpp; sourceTree = "<group>"; };
 		EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_gtf.cpp; path = ../tests/parsers/t_parser_gtf.cpp; sourceTree = "<group>"; };
 		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
@@ -413,7 +412,6 @@
 				EF8F26291D12B70200E9A441 /* v_flip.hpp */,
 				EF5B4ABA1D926AD8004F4CA9 /* v_kreport.cpp */,
 				EF5B4ABB1D926AD8004F4CA9 /* v_kreport.hpp */,
-				EF7278541CAD48F70012648F /* v_report.hpp */,
 				EF9ED39B1D07D10700CE7F2B /* v_sample.cpp */,
 				EF0C67901C5F25070033168D /* v_sample.hpp */,
 				EFA869671D606C1400A4326B /* v_sample2.cpp */,

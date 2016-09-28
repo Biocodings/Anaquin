@@ -64,6 +64,12 @@ namespace Anaquin
         // Empty Implementation
     };
     
+    struct Sample
+    {
+        Path path;
+        FileName p1, p2;
+    };
+    
     typedef std::map<SequinID, Counts> Hist;
     
     struct SequinStats

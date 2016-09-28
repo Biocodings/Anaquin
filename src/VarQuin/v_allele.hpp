@@ -22,12 +22,16 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        static void generateCSV(const FileName &, const Stats &, const Options &);
-        static void generateSummary(const FileName &, const Stats &, const Options &);
-        static void generateR(const FileName &, const FileName &, const Stats &, const Options &);
+        static Scripts generateCSV(const Stats &, const Options &);
+        static Scripts generateSummary(const Stats &, const Options &);
+        static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
+
+        static void writeCSV(const FileName &, const Stats &, const Options &);
+        static void writeSummary(const FileName &, const Stats &, const Options &);
+        static void writeRLinear(const FileName &, const FileName &, const Stats &, const Options &);
 
         static Stats analyze(const FileName &, const Options &o);
-        static void report  (const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

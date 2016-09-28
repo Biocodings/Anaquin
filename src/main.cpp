@@ -17,9 +17,8 @@
 
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_report.hpp"
 #include "VarQuin/v_allele.hpp"
-#include "VarQuin/v_report.hpp"
+#include "VarQuin/v_kreport.hpp"
 #include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
 

@@ -52,45 +52,58 @@ VAllele::Stats VAllele::analyze(const FileName &file, const VAllele::Options &o)
     return stats;
 }
 
-void VAllele::generateCSV(const FileName &file, const Stats &stats, const VAllele::Options &o)
+Scripts VAllele::generateCSV(const Stats &stats, const VAllele::Options &o)
 {
+    std::stringstream ss;
+
     const auto format = "%1%\t%2%\t%3%";
-    
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
-                                           % "ExpFreq"
-                                           % "ObsFreq").str());
+    ss << (boost::format(format) % "ID" % "ExpFreq" % "ObsFreq").str();
     
     const auto d = stats.data(false);
     
     for (auto i = 0; i < d.ids.size(); i++)
     {
-        o.writer->write((boost::format(format) % d.ids[i]
-                                               % d.x[i]
-                                               % d.y[i]).str());
+        ss << (boost::format(format) % d.ids[i] % d.x[i] % d.y[i]).str() << std::endl;
     }
     
-    o.writer->close();
+    return ss.str();
 }
 
-void VAllele::generateR(const FileName &file, const FileName &src, const Stats &stats, const VAllele::Options &o)
+void VAllele::writeCSV(const FileName &file, const Stats &stats, const VAllele::Options &o)
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createLinear(src,
-                                          o.work,
-                                          "Allele Frequency",
-                                          "Expected allele frequency (log2)",
-                                          "Measured allele frequency (log2)",
-                                          "ExpFreq",
-                                          "ObsFreq",
-                                          "input",
-                                          true));
+    o.writer->write(VAllele::generateCSV(stats, o));
     o.writer->close();
 }
 
-void VAllele::generateSummary(const FileName &file, const Stats &stats, const VAllele::Options &o)
+Scripts VAllele::generateRLinear(const FileName &src, const Stats &stats, const VAllele::Options &o)
+{
+    return RWriter::createLinear(src,
+                                 o.work,
+                                 "Allele Frequency",
+                                 "Expected allele frequency (log2)",
+                                 "Measured allele frequency (log2)",
+                                 "ExpFreq",
+                                 "ObsFreq",
+                                 "input",
+                                 true);
+}
+
+void VAllele::writeRLinear(const FileName &file, const FileName &src, const Stats &stats, const VAllele::Options &o)
+{
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(VAllele::generateRLinear(src, stats, o));
+    o.writer->close();
+}
+
+Scripts VAllele::generateSummary(const Stats &stats, const VAllele::Options &o)
+{
+    return "";
+}
+
+void VAllele::writeSummary(const FileName &file, const Stats &stats, const VAllele::Options &o)
 {
     
 }
@@ -103,17 +116,17 @@ void VAllele::report(const FileName &file, const VAllele::Options &o)
      * Generating VarAllele_summary.csv
      */
     
-    VAllele::generateSummary("VarAllele_summary.csv", stats, o);
+    VAllele::writeSummary("VarAllele_summary.csv", stats, o);
     
     /*
      * Generating VarAllele_sequins.csv
      */
 
-    VAllele::generateCSV("VarAllele_sequins.csv", stats, o);
+    VAllele::writeCSV("VarAllele_sequins.csv", stats, o);
     
     /*
      * Generating VarAllele_allele.R
      */
 
-    VAllele::generateR("VarAllele_allele.R", "VarAllele_sequins.csv", stats, o);
+    VAllele::writeRLinear("VarAllele_allele.R", "VarAllele_sequins.csv", stats, o);
 }
