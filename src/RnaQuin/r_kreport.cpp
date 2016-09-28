@@ -143,7 +143,7 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
         fw.close();
 
         // Run differential analysis and save results to sleuth.csv
-        System::runCmd("RScript " + output + "/sleuth.R");
+        System::runCmd("Rscript " + output + "/sleuth.R");
     }
 
     /*
@@ -298,7 +298,7 @@ void RKReport::report(const FileName &file, const Options &o)
         fw.write("library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
         fw.close();
 
-        System::runCmd("cd " + tmp + "; RScript " + tmp + "/r2pdf.R");
+        System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
         System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaKReport_report.pdf");
     }
     
