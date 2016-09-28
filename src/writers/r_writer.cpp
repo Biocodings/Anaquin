@@ -36,6 +36,7 @@ Scripts RWriter::createLogistic(const FileName    &file,
 }
 
 Scripts RWriter::createFold(const FileName    &file,
+                            const Path        &path,
                             const std::string &title,
                             const std::string &xlab,
                             const std::string &ylab,
@@ -49,7 +50,7 @@ Scripts RWriter::createFold(const FileName    &file,
     
     return (boost::format(PlotFold()) % date()
                                       % __full_command__
-                                      % __output__
+                                      % path
                                       % file
                                       % title
                                       % xlab

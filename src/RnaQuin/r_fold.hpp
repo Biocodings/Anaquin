@@ -30,16 +30,6 @@ namespace Anaquin
 {
     struct RFold : public Analyzer
     {
-        template <typename Options> static void generateLODR(const FileName &file,
-                                                             const FileName &csv,
-                                                             const Options &o)
-        {
-            o.generate(file);
-            o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotTLODR()));
-            o.writer->close();
-        }
-
         enum class Metrics
         {
             Gene,
@@ -97,14 +87,26 @@ namespace Anaquin
             std::vector<double> ses;
         };
 
-        static void generateR(const RFold::Stats &, const RFold::Options &);
-        static void generateCSV(const FileName &, const RFold::Stats &, const RFold::Options &);
+        static Scripts generateRFold(const RFold::Stats &, const RFold::Options &);
+        static Scripts generateRROC(const RFold::Stats &, const RFold::Options &);
+        static Scripts generateRLODR(const RFold::Stats &, const RFold::Options &);
         
-        static void generateSummary(const FileName &,
-                                    const FileName &,
-                                    const RFold::Stats &,
-                                    const RFold::Options &,
-                                    const Units &);
+        static Scripts generateCSV(const RFold::Stats &, const RFold::Options &);
+        static Scripts generateSummary(const FileName &,
+                                       const RFold::Stats &,
+                                       const RFold::Options &,
+                                       const Units &);
+
+        static void writeRFold(const FileName &, const RFold::Stats &, const RFold::Options &);
+        static void writeRROC(const FileName &, const RFold::Stats &, const RFold::Options &);
+        static void writeRLODR(const FileName &, const RFold::Stats &, const RFold::Options &);
+
+        static void writeCSV(const FileName &, const RFold::Stats &, const RFold::Options &);
+        static void writeSummary(const FileName &,
+                                 const FileName &,
+                                 const RFold::Stats &,
+                                 const RFold::Options &,
+                                 const Units &);
 
         /*
          * Classify and construct a vector of TP/FP/TN/FN, given the q-values and expected

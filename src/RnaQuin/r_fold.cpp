@@ -207,15 +207,22 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     });
 }
 
-void RFold::generateCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+void RFold::writeCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+{
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(RFold::generateCSV(stats, o));
+    o.writer->close();
+}
+
+Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
-    o.generate(file);
-    o.writer->open(file);
+    std::stringstream ss;
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
-    o.writer->write("ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean");
+    ss << "ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean" << std::endl;
     
     const auto ids = o.metrs == RFold::Metrics::Gene ? r.getGenesSyn() : r.getTransSyn();
 
@@ -245,42 +252,52 @@ void RFold::generateCSV(const FileName &file, const RFold::Stats &stats, const R
         // Undetected or nothing informative detected...
         if (!stats.data.count(id) || isnan(stats.data.at(id).p) || isnan(stats.data.at(id).obs))
         {
-            o.writer->write((boost::format(format) % id
-                                                   % l.length()
-                                                   % "NA"
-                                                   % "NA"
-                                                   % x2ns(fold)
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA").str());
+            ss << (boost::format(format) % id
+                                         % l.length()
+                                         % "NA"
+                                         % "NA"
+                                         % x2ns(fold)
+                                         % "NA"
+                                         % "NA"
+                                         % "NA"
+                                         % "NA"
+                                         % "NA").str() << std::endl;
             continue;
         }
         
         const auto &x = stats.data.at(id);
         assert(fold == x.exp);
         
-        o.writer->write((boost::format(format) % id
-                                               % l.length()
-                                               % x2ns(x.samp1)
-                                               % x2ns(x.samp2)
-                                               % x2ns(fold)
-                                               % x2ns(x.obs)
-                                               % x2ns(x.se)
-                                               % ld2ss(x.p)
-                                               % ld2ss(x.q)
-                                               % x2ns(x.mean)).str());
+        ss << (boost::format(format) % id
+                                     % l.length()
+                                     % x2ns(x.samp1)
+                                     % x2ns(x.samp2)
+                                     % x2ns(fold)
+                                     % x2ns(x.obs)
+                                     % x2ns(x.se)
+                                     % ld2ss(x.p)
+                                     % ld2ss(x.q)
+                                     % x2ns(x.mean)).str() << std::endl;
     }
 
-    o.writer->close();
+    return ss.str();
 }
 
-void RFold::generateSummary(const FileName &file,
+void RFold::writeSummary(const FileName &file,
                             const FileName &src,
                             const RFold::Stats &stats,
                             const RFold::Options &o,
                             const Units &units)
+{
+    o.writer->open(file);
+    o.writer->write(RFold::generateSummary(src, stats, o, units));
+    o.writer->close();
+}
+
+Scripts RFold::generateSummary(const FileName &src,
+                               const RFold::Stats &stats,
+                               const RFold::Options &o,
+                               const Units &units)
 {
     const auto &r = Standard::instance().r_trans;
     const auto lm = stats.linear(false);
@@ -307,82 +324,93 @@ void RFold::generateSummary(const FileName &file,
                          "       SSM:         %13%, DF: %14%\n"
                          "       SSE:         %15%, DF: %16%\n"
                          "       SST:         %17%, DF: %18%\n";
+
+    return (boost::format(summary) % src            // 1
+                                   % countSyn       // 2
+                                   % units          // 3
+                                   % MixRef()       // 4
+                                   % title          // 5
+                                   % stats.countSyn // 6
+                                   % stats.countGen // 7
+                                   % lm.m           // 8
+                                   % lm.r           // 9
+                                   % lm.R2          // 10
+                                   % lm.F           // 11
+                                   % lm.p           // 12
+                                   % lm.SSM         // 13
+                                   % lm.SSM_D       // 14
+                                   % lm.SSE         // 15
+                                   % lm.SSE_D       // 16
+                                   % lm.SST         // 17
+                                   % lm.SST_D       // 18
+                     ).str();
+}
+
+Scripts RFold::generateRFold(const RFold::Stats &stats, const RFold::Options &o)
+{
+    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
+    const auto extra = o.format == Format::DESeq2 ? "" : "";
+
+    return RWriter::createFold("RnaFoldChange_sequins.csv",
+                               o.work,
+                               o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
+                               "Expected fold change (log2)",
+                               "Measured fold change (log2)",
+                               "ExpLFC",
+                               "ObsLFC",
+                               false,
+                               extra);
+}
+
+void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+{
     o.generate(file);
-    o.writer->open(file);
-    o.writer->write((boost::format(summary) % src               // 1
-                                            % countSyn             // 2
-                                            % units             // 3
-                                            % MixRef()          // 4
-                                            % title             // 5
-                                            % stats.countSyn       // 6
-                                            % stats.countGen       // 7
-                                            % lm.m              // 8
-                                            % lm.r              // 9
-                                            % lm.R2             // 10
-                                            % lm.F              // 11
-                                            % lm.p              // 12
-                                            % lm.SSM            // 13
-                                            % lm.SSM_D          // 14
-                                            % lm.SSE            // 15
-                                            % lm.SSE_D          // 16
-                                            % lm.SST            // 17
-                                            % lm.SST_D          // 18
-                     ).str());
+    o.writer->open("RnaFoldChange_fold.R");
+    o.writer->write(RFold::generateRFold(stats, o));
     o.writer->close();
 }
 
-void RFold::generateR(const RFold::Stats &stats, const RFold::Options &o)
+Scripts RFold::generateRROC(const RFold::Stats &stats, const RFold::Options &o)
 {
-    /*
-     * Generating RnaFoldChange_fold.R
-     */
-    
-    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
-    const auto extra = o.format == Format::DESeq2 ? "" : "";
-    
-    o.generate("RnaFoldChange_fold.R");
-    o.writer->open("RnaFoldChange_fold.R");
-    o.writer->write(RWriter::createFold("RnaFoldChange_sequins.csv",
-                                        o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
-                                        "Expected fold change (log2)",
-                                        "Measured fold change (log2)",
-                                        "ExpLFC",
-                                        "ObsLFC",
-                                        false,
-                                        extra));
-    o.writer->close();
-    
-    /*
-     * Generating RnaFoldChange_ROC.R
-     */
-    
-    o.generate("RnaFoldChange_ROC.R");
+    return RWriter::createScript("RnaFoldChange_sequins.csv", PlotTROC());
+}
+
+void RFold::writeRROC(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+{
+    o.generate(file);
     o.writer->open("RnaFoldChange_ROC.R");
-    o.writer->write(RWriter::createScript("RnaFoldChange_sequins.csv", PlotTROC()));
+    o.writer->write(RFold::generateRROC(stats, o));
     o.writer->close();
-    
-    /*
-     * Generating RnaFoldChange_LODR.R
-     */
-    
+}
+
+Scripts RFold::generateRLODR(const RFold::Stats &stats, const RFold::Options &o)
+{
+    return RWriter::createScript("RnaFoldChange_sequins.csv", PlotTLODR());
+}
+
+void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+{
     switch (o.format)
     {
         case Format::Sleuth:
         {
             break;
         }
-            
+
         case Format::edgeR:
         case Format::Cuffdiff:
         {
             o.info("Skip RnaFoldChange_LODR.R because no average counts given");
             break;
         }
-            
+
         case Format::DESeq2:
         case Format::Anaquin:
         {
-            RFold::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
+            o.generate(file);
+            o.writer->open(file);
+            o.writer->write(RFold::generateRLODR(stats, o));
+            o.writer->close();
             break;
         }
     }
@@ -411,17 +439,29 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_summary.stats
      */
 
-    generateSummary("RnaFoldChange_summary.stats", file, stats, o, units);
+    RFold::writeSummary("RnaFoldChange_summary.stats", file, stats, o, units);
 
     /*
      * Generating RnaFoldChange_sequins.csv
      */
 
-    RFold::generateCSV("RnaFoldChange_sequins.csv", stats, o);
+    RFold::writeCSV("RnaFoldChange_sequins.csv", stats, o);
     
     /*
-     * Generate R scripts
+     * Generating RnaFoldChange_fold.R
+     */
+    
+    RFold::writeRFold("RnaFoldChange_fold.R", stats, o);
+    
+    /*
+     * Generating RnaFoldChange_ROC.R
      */
 
-    RFold::generateR(stats, o);
+    RFold::writeRFold("RnaFoldChange_ROC.R", stats, o);
+
+    /*
+     * Generating RnaFoldChange_LODR.R
+     */
+    
+    RFold::writeRLODR("RnaFoldChange_LODR.R", stats, o);
 }
