@@ -151,6 +151,8 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
         
         for (auto &mix : stats.exp.samps)
         {
+            ro.mix = mix.first;
+            
             {
                 ro.metrs = RExpress::Metrics::Isoform;
                 stats.iExpress[mix.first] = RExpress::analyze(stats.tsvs.at(mix.first), ro);
@@ -249,15 +251,18 @@ void RKReport::report(const FileName &file, const Options &o)
 
         for (auto &mix : stats.exp.samps)
         {
-            const auto mixStr = mix.first == Mix_1 ? "Mixture A" : "Mixture B";
+            // Eg: Mix_1? Mix_2?
+            ro.mix = mix.first;
+            
+            const auto str = mix.first == Mix_1 ? "A" : "B";
             
             {
                 // Gene expression for each sample
                 for (auto i = 0; i < mix.second.size(); i++)
                 {
-                    const auto format = "Gene Expression (%1%) for %2%";
-                    geneExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
-                                ((boost::format("RnaKReportGene_%1%.csv") % i).str()),
+                    const auto format = "Gene Expression (Mixture %1%) for %2%";
+                    geneExpress(((boost::format(format) % str % mix.second[i].p1).str()),
+                                ((boost::format("RnaKReportGene_%1%%2%.csv") % str % (i+1)).str()),
                                   std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
                                   std::vector<RExpress::Stats> { stats.gExpress.at(mix.first)[i] });
                 }
@@ -267,26 +272,26 @@ void RKReport::report(const FileName &file, const Options &o)
                 // Isoform expression for each sample
                 for (auto i = 0; i < mix.second.size(); i++)
                 {
-                    const auto format = "Isoform Expression (%1%) for %2%";
-                    isoExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
-                                ((boost::format("RnaKReportIsoform_%1%.csv") % i).str()),
-                                 std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
-                                 std::vector<RExpress::Stats> { stats.iExpress.at(mix.first)[i] });
+                    const auto format = "Isoform Expression (Mixture %1%) for %2%";
+                    isoExpress(((boost::format(format) % str % mix.second[i].p1).str()),
+                                ((boost::format("RnaKReportIsoform_%1%%2%.csv") % str % (i+1)).str()),
+                                  std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
+                                  std::vector<RExpress::Stats> { stats.iExpress.at(mix.first)[i] });
                 }
             }
 
             {
-                const auto format = "Gene Expression (%1%)";
-                geneExpress(((boost::format(format) % mixStr).str()),
-                            "RnaKReportGene.csv",
+                const auto format = "Gene Expression (Mixture %1%)";
+                geneExpress(((boost::format(format) % str).str()),
+                             "RnaKReportGene.csv",
                               stats.tsvs.at(mix.first),
                               stats.gExpress.at(mix.first));
             }
             
             {
-                const auto format = "Isoform Expression (%1%)";
-                isoExpress(((boost::format(format) % mixStr).str()),
-                            "RnaKReportIsoform.csv",
+                const auto format = "Isoform Expression (Mixture %1%)";
+                isoExpress(((boost::format(format) % str).str()),
+                             "RnaKReportIsoform.csv",
                              stats.tsvs.at(mix.first),
                              stats.iExpress.at(mix.first));
             }

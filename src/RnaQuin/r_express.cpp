@@ -43,7 +43,7 @@ template <typename T> void update(RExpress::Stats &stats,
                     if (!isnan(x.abund) && x.abund)
                     {
                         id  = m->id;
-                        exp = m->concent(Mix_1);
+                        exp = m->concent(o.mix);
                         obs = x.abund;
                     }
                 }
@@ -64,7 +64,7 @@ template <typename T> void update(RExpress::Stats &stats,
                     if (!isnan(x.abund) && x.abund)
                     {
                         id  = x.id;
-                        exp = r.concent(x.id);
+                        exp = r.concent(x.id, o.mix);
                         obs = x.abund;
                     }
                 }

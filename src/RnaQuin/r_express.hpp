@@ -32,9 +32,12 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Options() {}
-            
+
             Format format;
 
+            // What mixture to analyze?
+            Mixture mix = Mixture::Mix_1;
+            
             // Gene or isoform?
             Metrics metrs;
         };
