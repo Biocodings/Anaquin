@@ -136,7 +136,7 @@ namespace Anaquin
             std::map<SequinID, double> id2x;
             std::map<SequinID, double> id2y;
         };
-
+        
         inline bool contains(const SequinID &id) const
         {
             return (*this).count(id);
@@ -155,9 +155,6 @@ namespace Anaquin
         
         // Return the x-values and y-values after filtering
         Data data(bool shouldLog) const;
-        
-        // Compute the limit of quantification. By default, this function assumes log-transformation.
-//        LOQModel limitQuant(bool shouldLog = true) const;
         
         // Compute a simple linear regression model. By default, this function assumes log-transformation.
         LinearModel linear(bool shouldLog = true) const;

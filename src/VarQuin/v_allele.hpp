@@ -19,15 +19,25 @@ namespace Anaquin
 
         struct Stats : public LinearStats
         {
-            // Empty Implementation
+            Limit limit;
         };
 
         static Scripts generateCSV(const Stats &, const Options &);
-        static Scripts generateSummary(const Stats &, const Options &);
-        static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
 
+        static Scripts generateSummary(const FileName &,
+                                       const Stats &,
+                                       const Options &);
+
+        static Scripts generateRLinear(const FileName &,
+                                       const Stats &,
+                                       const Options &);
+
+        static void writeSummary(const FileName &,
+                                 const FileName &,
+                                 const Stats &,
+                                 const Options &);
+        
         static void writeCSV(const FileName &, const Stats &, const Options &);
-        static void writeSummary(const FileName &, const Stats &, const Options &);
         static void writeRLinear(const FileName &, const FileName &, const Stats &, const Options &);
 
         static Stats analyze(const FileName &, const Options &o);

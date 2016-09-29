@@ -116,7 +116,7 @@ void VKReport::report(const FileName &file, const Options &o)
         auto alleleFreq = [&](const Title &title,
                               const VAllele::Stats &stats)
         {
-            const auto x = VAllele::generateSummary(stats, ro);
+            const auto x = VAllele::generateSummary(file, stats, ro);
 	        const auto y = VAllele::generateCSV(stats, ro);
             const auto z = VAllele::generateRLinear("/VarKReportAllelle.csv", stats, ro);
             

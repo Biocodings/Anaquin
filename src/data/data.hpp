@@ -94,7 +94,7 @@ namespace Anaquin
     
     struct Limit
     {
-        GenericID id;
+        SequinID id;
         
         // Expected concentration for the sequin
         Concent abund = NAN;

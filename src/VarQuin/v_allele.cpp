@@ -3,6 +3,9 @@
 #include "VarQuin/v_allele.hpp"
 #include "parsers/parser_salmon.hpp"
 
+// Defined in resources.cpp
+extern Anaquin::FileName MixRef();
+
 using namespace Anaquin;
 
 struct SequinAllele
@@ -47,6 +50,12 @@ VAllele::Stats VAllele::analyze(const FileName &file, const VAllele::Options &o)
         const auto exp = r.findAFreq(seq.first);
         const auto obs = seq.second.alt / (seq.second.ref + seq.second.alt);
         stats.add(seq.first, exp, obs);
+        
+        if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+        {
+            stats.limit.id = seq.first;
+            stats.limit.abund = exp;
+        }
     }
 
     return stats;
@@ -98,87 +107,55 @@ void VAllele::writeRLinear(const FileName &file, const FileName &src, const Stat
     o.writer->close();
 }
 
-Scripts VAllele::generateSummary(const Stats &stats, const VAllele::Options &o)
+Scripts VAllele::generateSummary(const FileName &src, const Stats &stats, const VAllele::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_var;
+    const auto ls = stats.linear();
     
-    std::vector<SequinHist>   hists;
-    std::vector<LinearStats>  lStats;
-    std::vector<MappingStats> mStats;
-    
-    // Detection limit for the replicates
-    Limit limit;
-    
-    for (auto i = 0; i < files.size(); i++)
-    {
-        auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[i].isos : stats[i].genes;
-        
-        mStats.push_back(stats[i]);
-        lStats.push_back(ls);
-        
-        // Not every replicate is defined...
-        if (!stats[i].limit.id.empty())
-        {
-            if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
-            {
-                limit = stats[i].limit;
-            }
-        }
-    }
-    
-    assert(!isnan(limit.abund) && !limit.id.empty());
-    
-    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
-    
-    const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
-    
-    // No reference coordinate annotation given here
-    const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
-    
-    const auto format = "-------RnaExpression Output\n\n"
+    const auto format = "-------VarKAllele Output\n\n"
                         "       Summary for input: %1%\n\n"
-                        "-------Reference Transcript Annotations\n\n"
+                        "-------Reference VarQuin Annotations\n\n"
                         "       Synthetic: %2%\n"
                         "       Mixture file: %3%\n\n"
-                        "-------%4%\n\n"
-                        "       Synthetic: %5%\n"
-                        "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
-                        "       Genome: %8%\n\n"
+                        "-------Allele Frequency\n\n"
+                        "       Synthetic: %4%\n"
+                        "       Detection Sensitivity: %5% (attomol/ul) (%6%)\n\n"
                         "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %9%\n"
-                        "       Correlation: %10%\n"
-                        "       R2:          %11%\n"
-                        "       F-statistic: %12%\n"
-                        "       P-value:     %13%\n"
-                        "       SSM:         %14%, DF: %15%\n"
-                        "       SSE:         %16%, DF: %17%\n"
-                        "       SST:         %18%, DF: %19%\n";
+                        "       Slope:       %7%\n"
+                        "       Correlation: %8%\n"
+                        "       R2:          %9%\n"
+                        "       F-statistic: %10%\n"
+                        "       P-value:     %11%\n"
+                        "       SSM:         %12%, DF: %13%\n"
+                        "       SSE:         %14%, DF: %15%\n"
+                        "       SST:         %16%, DF: %17%\n";
     
-    return (boost::format(format) % STRING(ms.files)      // 1
-                                  % rSyn                  // 2
-                                  % MixRef()              // 3
-                                  % title                 // 4
-                                  % STRING(ms.countSyn)   // 5
-                                  % limit.abund           // 6
-                                  % limit.id              // 7
-                                  % STRING(ms.countGen)   // 8
-                                  % STRING(ms.wLog.sl)    // 9
-                                  % STRING(ms.wLog.r)     // 10
-                                  % STRING(ms.wLog.R2)    // 11
-                                  % STRING(ms.wLog.F)     // 12
-                                  % STRING(ms.wLog.p)     // 13
-                                  % STRING(ms.wLog.SSM)   // 14
-                                  % STRING(ms.wLog.SSM_D) // 15
-                                  % STRING(ms.wLog.SSE)   // 16
-                                  % STRING(ms.wLog.SSE_D) // 17
-                                  % STRING(ms.wLog.SST)   // 18
-                                  % STRING(ms.wLog.SST_D) // 19
-                     ).str();	
+    return (boost::format(format) % src                 // 1
+                                  % (r.countSeqs()/2.0) // 2
+                                  % MixRef()            // 3
+                                  % stats.size()        // 4
+                                  % stats.limit.abund   // 5
+                                  % stats.limit.id      // 6
+                                  % ls.m                // 7
+                                  % ls.p                // 8
+                                  % ls.R2               // 9
+                                  % ls.F                // 10
+                                  % ls.p                // 11
+                                  % ls.SSM              // 12
+                                  % ls.SSM_D            // 13
+                                  % ls.SSE              // 14
+                                  % ls.SSE_D            // 15
+                                  % ls.SST              // 16
+                                  % ls.SST_D            // 17
+                     ).str();
 }
 
-void VAllele::writeSummary(const FileName &file, const Stats &stats, const VAllele::Options &o)
+void VAllele::writeSummary(const FileName &src, const FileName &file, const Stats &stats, const VAllele::Options &o)
 {
-    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(VAllele::generateSummary(src, stats, o));
+    o.writer->close();
 }
 
 void VAllele::report(const FileName &file, const VAllele::Options &o)
@@ -189,7 +166,7 @@ void VAllele::report(const FileName &file, const VAllele::Options &o)
      * Generating VarAllele_summary.csv
      */
     
-    VAllele::writeSummary("VarAllele_summary.csv", stats, o);
+    VAllele::writeSummary(file, "VarAllele_summary.csv", stats, o);
     
     /*
      * Generating VarAllele_sequins.csv
