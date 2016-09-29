@@ -139,10 +139,6 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
         System::runCmd("Rscript " + output + "/sleuth.R");
     }
     
-    /*
-     * Kallisto output files are in the output directory. We should analyze those files.
-     */
-    
     {
         RExpress::Options ro;
         

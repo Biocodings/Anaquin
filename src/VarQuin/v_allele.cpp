@@ -137,7 +137,7 @@ Scripts VAllele::generateSummary(const FileName &src, const Stats &stats, const 
                                   % stats.limit.abund   // 5
                                   % stats.limit.id      // 6
                                   % ls.m                // 7
-                                  % ls.p                // 8
+                                  % ls.r                // 8
                                   % ls.R2               // 9
                                   % ls.F                // 10
                                   % ls.p                // 11
