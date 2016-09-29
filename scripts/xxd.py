@@ -27,9 +27,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarDiscover.txt',
           'data/manuals/VarFlip.txt',          
 
-          'scripts/reports.py',
-          'scripts/kReport.py',
-
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
     	  'src/r/plotLogistic.R',
@@ -39,7 +36,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
 
-          'data/RnaQuin/ARN020_v001.gtf',
+          'data/RnaQuin/A.R.1.gtf',
           'data/RnaQuin/MRN027_v001.csv',
           'data/RnaQuin/MRN028_v001.csv',
           'data/RnaQuin/MRN029_v001.csv',          

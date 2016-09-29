@@ -55,7 +55,17 @@ namespace Anaquin
                                   const std::string &,
                                   bool shouldLog,
                                   const std::string &extra = "");
-        
+
+        static Scripts createRLinear(const FileName    &,
+                                     const Path        &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     const std::string &,
+                                     bool showLOQ);
+
         static Scripts createLinear(const FileName    &,
                                     const Path        &,
                                     const std::string &,

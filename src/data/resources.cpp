@@ -34,7 +34,7 @@
 #include "resources/plotTROC.R"
 #include "resources/plotTLODR.R"
 
-#include "resources/ARN020_v001.gtf"
+#include "resources/A.R.1.gtf"
 #include "resources/MRN027_v001.csv"
 #include "resources/MRN028_v001.csv"
 #include "resources/MRN029_v001.csv"
@@ -153,7 +153,7 @@ Scripts PlotTLODR()
 
 Scripts RnaStandGTF()
 {
-    return ToString(data_RnaQuin_ARN020_v001_gtf);
+    return ToString(data_RnaQuin_A_R_1_gtf);
 }
 
 Scripts RnaDataMixA()

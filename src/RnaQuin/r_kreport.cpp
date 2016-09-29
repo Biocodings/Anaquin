@@ -212,7 +212,7 @@ void RKReport::report(const FileName &file, const Options &o)
             
             const auto x = RExpress::generateSummary(files, stats, ro, "genes");
             const auto y = RExpress::generateCSV(stats, ro);
-            const auto z = RExpress::generateRLinear("/RnaKReportGeneExpress.csv", stats, ro);
+            const auto z = RExpress::generateRLinear("RnaKReportGeneExpress.csv", stats, ro);
             
             FileWriter::create(tmp, "RnaKReportGeneExpress.csv", y);
             

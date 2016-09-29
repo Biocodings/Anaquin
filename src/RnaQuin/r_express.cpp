@@ -443,28 +443,27 @@ Scripts RExpress::generateRLinear(const FileName &csv,
 
     if (stats.size() == 1)
     {
-        return RWriter::createLinear(csv,
-                                     o.work,
-                                     title,
-                                     "Input Concentration (log2)",
-                                     measured + " (log2)",
-                                     "InputConcent",
-                                     "Observed",
-                                     "input",
-                                     true);
+        return RWriter::createRLinear(csv,
+                                      o.work,
+                                      title,
+                                      "Input Concentration (log2)",
+                                       measured + " (log2)",
+                                      "log2(data$InputConcent)",
+                                      "log2(data[,3:ncol(data)])",
+                                      "input",
+                                       true);
     }
     else
     {
-        return RWriter::createMultiLinear(csv,
-                                          o.work,
-                                          title,
-                                          "Input Concentration (log2)",
-                                           measured + " (log2)",
-                                          "InputConcent",
-                                          "Observed",
-                                          "input",
-                                           true,
-                                           true);
+        return RWriter::createRLinear(csv,
+                                      o.work,
+                                      title,
+                                      "Input Concentration (log2)",
+                                       measured + " (log2)",
+                                      "log2(data$InputConcent)",
+                                      "log2(data[,3:ncol(data)])",
+                                      "input",
+                                       true);
     }
 }
 
@@ -487,7 +486,7 @@ Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const R
     {
         std::stringstream ss;
         
-        const auto format = "%1%\t%2%\t%3%\t%4%";
+        const auto format = "%1%\t%2%\t%3%\t%4%\n";
         
         ss << (boost::format(format) % "ID"
                                      % "Length"

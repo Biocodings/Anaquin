@@ -90,6 +90,29 @@ Scripts RWriter::createMultiLinear(const FileName    &file,
                                          % extra).str();
 }
 
+Scripts RWriter::createRLinear(const FileName    &file,
+                               const Path        &path,
+                               const std::string &title,
+                               const std::string &xlab,
+                               const std::string &ylab,
+                               const std::string &expected,
+                               const std::string &measured,
+                               const std::string &xname,
+                               bool  showLOQ)
+{
+    return (boost::format(PlotLinear()) % date()
+                                        % __full_command__
+                                        % path
+                                        % file
+                                        % title
+                                        % xlab
+                                        % ylab
+                                        % expected
+                                        % measured
+                                        % xname
+                                        % (showLOQ ? "TRUE" : "FALSE")).str();
+}
+
 Scripts RWriter::createLinear(const FileName    &file,
                               const Path        &path,
                               const std::string &title,

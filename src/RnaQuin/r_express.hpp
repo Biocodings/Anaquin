@@ -77,7 +77,7 @@ namespace Anaquin
         static Scripts generateCSV(const std::vector<RExpress::Stats> &,
                                    const Options &);
 
-        static Scripts generateSummary(const std::vector<FileName > &,
+        static Scripts generateSummary(const std::vector<FileName> &,
                                        const std::vector<Stats> &,
                                        const Options &,
                                        const Units &);
@@ -85,11 +85,11 @@ namespace Anaquin
         static Scripts generateRLinear(const FileName &,
                                        const std::vector<Stats> &,
                                        const Options &);
-        
+
         static void writeCSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
 
         static void writeSummary(const FileName &,
-                                 const std::vector<FileName > &,
+                                 const std::vector<FileName> &,
                                  const std::vector<Stats> &,
                                  const Options &,
                                  const Units &);
