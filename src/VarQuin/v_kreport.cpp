@@ -58,8 +58,8 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
 
     auto runSalmon = [&](const Sample &samp)
     {
-        const auto format = "salmon quant -i %1% -l A -1 %2% -2 %3% -o quant";
-        System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2).str());
+        const auto format = "salmon quant -i %1% -l A -1 %2% -2 %3% -o %4%/salmon";
+        System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2 % output).str());
     };
     
     // Multi-threaded instances
@@ -85,7 +85,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
         ro.writer = o.writer;
         ro.format = VAllele::Format::Salmon;
         
-        stats.allele = VAllele::analyze(output + "/quant/quant.sf", ro);
+        stats.allele = VAllele::analyze(output + "/salmon/quant.sf", ro);
     }
 
     return stats;
