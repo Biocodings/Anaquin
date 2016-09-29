@@ -279,7 +279,7 @@ void RKReport::report(const FileName &file, const Options &o)
             {
                 const auto format = "Gene Expression (Mixture %1%)";
                 geneExpress(((boost::format(format) % str).str()),
-                             "RnaKReportGene.csv",
+                            ((boost::format("RnaKReportGene_%1%.csv") % str).str()),
                               stats.tsvs.at(mix.first),
                               stats.gExpress.at(mix.first));
             }
@@ -287,7 +287,7 @@ void RKReport::report(const FileName &file, const Options &o)
             {
                 const auto format = "Isoform Expression (Mixture %1%)";
                 isoExpress(((boost::format(format) % str).str()),
-                             "RnaKReportIsoform.csv",
+                           ((boost::format("RnaKReportIsoform_%1%.csv") % str).str()),
                              stats.tsvs.at(mix.first),
                              stats.iExpress.at(mix.first));
             }
