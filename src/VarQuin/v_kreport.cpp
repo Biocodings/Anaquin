@@ -19,7 +19,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     }
     
     // Where the analysis files should be saved
-    const auto output = System::tmpFile();
+    const auto output = std::string("/tmp/file1YlM3TrBbnWl"); // TODO System::tmpFile();
     
     std::cout << output << std::endl;
     
@@ -59,7 +59,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     auto runSalmon = [&](const Sample &samp)
     {
         const auto format = "salmon quant -i %1% -l A -1 %2% -2 %3% -o %4%/salmon";
-        System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2 % output).str());
+        // TODO System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2 % output).str());
     };
     
     // Multi-threaded instances
@@ -115,7 +115,7 @@ void VKReport::report(const FileName &file, const Options &o)
                               const VAllele::Stats &stats)
         {
             const auto x = VAllele::generateSummary(stats, ro);
-            const auto y = VAllele::generateCSV(stats, ro);
+	        const auto y = VAllele::generateCSV(stats, ro);
             const auto z = VAllele::generateRLinear("/VarKReportAllelle.csv", stats, ro);
             
             FileWriter::create(tmp, "VarKReportAllelle.csv", y);
