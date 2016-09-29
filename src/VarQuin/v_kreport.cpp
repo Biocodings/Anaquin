@@ -19,7 +19,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     }
     
     // Where the analysis files should be saved
-    const auto output = std::string("/tmp/file1YlM3TrBbnWl"); // TODO System::tmpFile();
+    const auto output = System::tmpFile();
     
     std::cout << output << std::endl;
     
@@ -59,7 +59,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     auto runSalmon = [&](const Sample &samp)
     {
         const auto format = "salmon quant -i %1% -l A -1 %2% -2 %3% -o %4%/salmon";
-        // TODO System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2 % output).str());
+        System::runCmd((boost::format(format) % o.index % samp.p1 % samp.p2 % output).str());
     };
     
     // Multi-threaded instances
@@ -100,6 +100,8 @@ void VKReport::report(const FileName &file, const Options &o)
     
     MarkDown mark;
     
+	std::cout << "----------" << std::endl;
+	
     /*
      * Allele frequency analysis
      */
