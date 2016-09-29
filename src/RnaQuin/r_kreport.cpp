@@ -155,12 +155,12 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
             
             {
                 ro.metrs = RExpress::Metrics::Isoform;
-                stats.iExpress[mix.first] = RExpress::analyze(stats.tsvs.at(mix.first), ro);
+                stats.iExpress[mix.first] = RExpress::analyze(stats.tsvs.at(ro.mix), ro);
             }
-            
+
             {
                 ro.metrs = RExpress::Metrics::Gene;
-                stats.gExpress[mix.first] = RExpress::analyze(stats.tsvs.at(mix.first), ro);
+                stats.gExpress[mix.first] = RExpress::analyze(stats.tsvs.at(ro.mix), ro);
             }
         }
     }

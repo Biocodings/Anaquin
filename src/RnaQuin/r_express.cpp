@@ -250,7 +250,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 
                 for (const auto &i : express)
                 {
-                    const auto input = r.concent(i.first);
+                    const auto input = r.concent(i.first, o.mix);
                     
                     stats.countSyn++;
                     stats.genes.add(i.first, input, i.second);
