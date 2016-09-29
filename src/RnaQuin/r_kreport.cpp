@@ -110,7 +110,7 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     });
 
     /*
-     * Perform sleuth differential analysis (recommended by the Kallisto team)
+     * Perform differential analysis with sleuth (recommended by the Kallisto team)
      */
     
     // Do we have at least two replicates for each mixture?
@@ -205,6 +205,7 @@ void RKReport::report(const FileName &file, const Options &o)
         
         // Gene expression analysis for a mixture
         auto geneExpress = [&](const Title &title,
+                               const FileName &csv,
                                const std::vector<FileName> &files,
                                const std::vector<RExpress::Stats> &stats)
         {
@@ -212,9 +213,10 @@ void RKReport::report(const FileName &file, const Options &o)
             
             const auto x = RExpress::generateSummary(files, stats, ro, "genes");
             const auto y = RExpress::generateCSV(stats, ro);
-            const auto z = RExpress::generateRLinear("RnaKReportGeneExpress.csv", stats, ro);
+            const auto z = RExpress::generateRLinear(csv, stats, ro);
             
-            FileWriter::create(tmp, "RnaKReportGeneExpress.csv", y);
+            // Required for R
+            FileWriter::create(tmp, csv, y);
             
             mark.start(title);
             mark.addText("Summary Statistics", x);
@@ -225,6 +227,7 @@ void RKReport::report(const FileName &file, const Options &o)
         
         // Isoform expression analysis for a mixture
         auto isoExpress = [&](const Title &title,
+                              const FileName &csv,
                               const std::vector<FileName> &files,
                               const std::vector<RExpress::Stats> &stats)
         {
@@ -232,10 +235,10 @@ void RKReport::report(const FileName &file, const Options &o)
             
             const auto x = RExpress::generateSummary(files, stats, ro, "genes");
             const auto y = RExpress::generateCSV(stats, ro);
-            const auto z = RExpress::generateRLinear("RnaKReportIsoformExpress.csv", stats, ro);
+            const auto z = RExpress::generateRLinear(csv, stats, ro);
 
             // Required for R
-            FileWriter::create(tmp, "RnaKReportIsoformExpress.csv", y);
+            FileWriter::create(tmp, csv, y);
             
             mark.start(title);
             mark.addText("Summary Statistics", x);
@@ -243,7 +246,7 @@ void RKReport::report(const FileName &file, const Options &o)
             mark.addRCode("Plot for Isoform Expression", z);
             mark.end();
         };
-        
+
         for (auto &mix : stats.exp.samps)
         {
             const auto mixStr = mix.first == Mix_1 ? "Mixture A" : "Mixture B";
@@ -254,6 +257,7 @@ void RKReport::report(const FileName &file, const Options &o)
                 {
                     const auto format = "Gene Expression (%1%) for %2%";
                     geneExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
+                                ((boost::format("RnaKReportGene_%1%.csv") % i).str()),
                                   std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
                                   std::vector<RExpress::Stats> { stats.gExpress.at(mix.first)[i] });
                 }
@@ -265,6 +269,7 @@ void RKReport::report(const FileName &file, const Options &o)
                 {
                     const auto format = "Isoform Expression (%1%) for %2%";
                     isoExpress(((boost::format(format) % mixStr % mix.second[i].p1).str()),
+                                ((boost::format("RnaKReportIsoform_%1%.csv") % i).str()),
                                  std::vector<FileName> { stats.tsvs.at(mix.first)[i] },
                                  std::vector<RExpress::Stats> { stats.iExpress.at(mix.first)[i] });
                 }
@@ -272,12 +277,18 @@ void RKReport::report(const FileName &file, const Options &o)
 
             {
                 const auto format = "Gene Expression (%1%)";
-                geneExpress(((boost::format(format) % mixStr).str()), stats.tsvs.at(mix.first), stats.gExpress.at(mix.first));
+                geneExpress(((boost::format(format) % mixStr).str()),
+                            "RnaKReportGene.csv",
+                              stats.tsvs.at(mix.first),
+                              stats.gExpress.at(mix.first));
             }
             
             {
                 const auto format = "Isoform Expression (%1%)";
-                isoExpress(((boost::format(format) % mixStr).str()), stats.tsvs.at(mix.first), stats.iExpress.at(mix.first));
+                isoExpress(((boost::format(format) % mixStr).str()),
+                            "RnaKReportIsoform.csv",
+                             stats.tsvs.at(mix.first),
+                             stats.iExpress.at(mix.first));
             }
         }
     }
