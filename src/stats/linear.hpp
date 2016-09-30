@@ -31,62 +31,6 @@ namespace Anaquin
         SCounts SSM_D, SSE_D, SST_D;
     };
     
-    struct SInflectStats
-    {
-        SStrings files;
-
-        // Eg: 2387648 (15.56%)
-        SCounts countSyn, countGen;
-        
-        // Eg: sequins
-        Units units;
-        
-        // Eg: Detected 46 sequins
-        //SCounts n_det;
-        
-        // Optimal break-point
-        SReals b;
-        
-        // Sequin for the break-point
-        SStrings bID;
-        
-        // Regression intercepts
-        SReals lInt, rInt;
-
-        // Regression slopes
-        SReals lSl, rSl;
-        
-        // Regression R2
-        SReals lR2, rR2;
-        
-        // Pearson's correlation
-        SReals lr, rr;
-        
-        // Linear regression with logarithm
-        SLinearStats wLog;
-    };
-
-    struct LOQModel
-    {
-        // Name of the sequin
-        SequinID id;
-        
-        // Pearson's correlation
-        double lr = NAN, rr = NAN;
-        
-        // Coefficient of determination before and after the break-point
-        double lR2 = NAN, rR2 = NAN;
-        
-        // Slope before and after the break-point
-        double lSl = NAN, rSl = NAN;
-        
-        // Intercept before and after the break-point
-        double lInt = NAN, rInt = NAN;
-
-        // The optimal breakpoint
-        double b = NAN;
-    };
-
     /*
      * Represents a simple linear regression fitted by maximum-likehihood estimation.
      *

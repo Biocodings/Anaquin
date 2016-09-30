@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("GTF_Synthetic")
 {
-    const auto r = gtfData(Reader("data/RnaQuin/ARN020_v001.gtf"));
+    const auto r = gtfData(Reader("data/RnaQuin/A.R.1.gtf"));
     const auto i = r.gIntervals(ChrIS);
     
     REQUIRE(i.size() == 78);

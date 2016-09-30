@@ -17,13 +17,6 @@ namespace Anaquin
 {
     class MappingStats;
     
-    struct StatsWriter
-    {
-        static SInflectStats multiInfect(const std::vector<FileName>     &,
-                                         const std::vector<MappingStats> &,
-                                         const std::vector<LinearStats>  &);
-    };
-    
     struct RWriter
     {
         static Scripts createLogistic(const FileName    &,

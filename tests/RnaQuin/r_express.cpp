@@ -4,6 +4,94 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TExpress_Multiple_Kallisto_2")
+{
+    Test::transA();
+    
+    auto o = RExpress::Options();
+    
+    o.metrs  = RExpress::Metrics::Isoform;
+    o.format = RExpress::Format::Kallisto;
+    
+    auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.tsv", "tests/data/A2.tsv", "tests/data/A3.tsv" }, o);
+    
+    REQUIRE(r.size() == 3);
+    
+    REQUIRE(r[0].countNA  == 0);
+    REQUIRE(r[0].countGen == 0);
+    REQUIRE(r[0].countSyn == 132);
+    REQUIRE(r[0].isos.size() == 132);
+    REQUIRE(r[0].genes.size() == 0);
+    REQUIRE(r[0].limit.id == "R2_53_1");
+    REQUIRE(r[0].limit.abund == Approx(0.0168596));
+    REQUIRE(r[0].isos["R2_66_1"].x == Approx(937.5));
+    REQUIRE(r[0].isos["R2_66_1"].y == Approx(6102.24));
+    
+    REQUIRE(r[1].countNA  == 0);
+    REQUIRE(r[1].countGen == 0);
+    REQUIRE(r[1].countSyn == 127);
+    REQUIRE(r[1].isos.size() == 127);
+    REQUIRE(r[1].genes.size() == 0);
+    REQUIRE(r[1].limit.id == "R2_45_1");
+    REQUIRE(r[1].limit.abund == Approx(0.031471252));
+    REQUIRE(r[1].isos["R2_66_1"].x == Approx(937.5));
+    REQUIRE(r[1].isos["R2_66_1"].y == Approx(5513.49));
+    
+    REQUIRE(r[2].countNA  == 0);
+    REQUIRE(r[2].countGen == 0);
+    REQUIRE(r[2].countSyn == 136);
+    REQUIRE(r[2].isos.size() == 136);
+    REQUIRE(r[2].genes.size() == 0);
+    REQUIRE(r[2].limit.id == "R1_91_1");
+    REQUIRE(r[2].limit.abund == Approx(0.0143051147));
+    REQUIRE(r[2].isos["R2_66_1"].x == Approx(937.5));
+    REQUIRE(r[2].isos["R2_66_1"].y == Approx(6297.6));
+}
+
+TEST_CASE("TExpress_Multiple_Kallisto_1")
+{
+    Test::transA();
+    
+    auto o = RExpress::Options();
+    
+    o.metrs  = RExpress::Metrics::Gene;
+    o.format = RExpress::Format::Kallisto;
+    
+    auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.tsv", "tests/data/A2.tsv", "tests/data/A3.tsv" }, o);
+    
+    REQUIRE(r.size() == 3);
+    
+    REQUIRE(r[0].countNA  == 0);
+    REQUIRE(r[0].countGen == 0);
+    REQUIRE(r[0].countSyn == 74);
+    REQUIRE(r[0].isos.size() == 132);
+    REQUIRE(r[0].genes.size() == 74);
+    REQUIRE(r[0].limit.id == "R1_33");
+    REQUIRE(r[0].limit.abund == Approx(0.118017));
+    REQUIRE(r[0].genes["R2_66"].x == Approx(30937.5));
+    REQUIRE(r[0].genes["R2_66"].y == Approx(240335.2));
+    
+    REQUIRE(r[1].countNA  == 0);
+    REQUIRE(r[1].countGen == 0);
+    REQUIRE(r[1].countSyn == 73);
+    REQUIRE(r[1].isos.size() == 127);
+    REQUIRE(r[1].genes.size() == 73);
+    REQUIRE(r[1].limit.id == "R1_33");
+    REQUIRE(r[1].limit.abund == Approx(0.118017));
+    REQUIRE(r[1].genes["R2_66"].x == Approx(30937.5));
+    REQUIRE(r[1].genes["R2_66"].y == Approx(240734.5));
+    
+    REQUIRE(r[2].countNA  == 0);
+    REQUIRE(r[2].countGen == 0);
+    REQUIRE(r[2].countSyn == 72);
+    REQUIRE(r[2].isos.size() == 136);
+    REQUIRE(r[2].genes.size() == 72);
+    REQUIRE(r[2].limit.id == "R1_33");
+    REQUIRE(r[2].limit.abund == Approx(0.118017));
+    REQUIRE(r[2].genes["R2_66"].x == Approx(30937.5));
+    REQUIRE(r[2].genes["R2_66"].y == Approx(235537.6));
+}
+
 TEST_CASE("TExpress_Guided_Invalid")
 {
     Test::transA();
@@ -34,13 +122,13 @@ TEST_CASE("TExpress_Replicates")
     
     auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.gtf", "tests/data/A2.gtf", "tests/data/A3.gtf" }, o);
 
-    REQUIRE(r[0].countSyn   == 170);
+    REQUIRE(r[0].countSyn   == 136);
     REQUIRE(r[0].countGen   == 0);
     REQUIRE(r[0].dilution() == 1.0);
-    REQUIRE(r[1].countSyn   == 3);
+    REQUIRE(r[1].countSyn   == 0);
     REQUIRE(r[1].countGen   == 0);
-    REQUIRE(r[1].dilution() == 1.0);
-    REQUIRE(r[2].countSyn   == 170);
+    REQUIRE(isnan(r[1].dilution()));
+    REQUIRE(r[2].countSyn   == 127);
     REQUIRE(r[2].countGen   == 0);
     REQUIRE(r[2].dilution() == 1.0);
 
@@ -270,7 +358,7 @@ TEST_CASE("TExpress_Guided_Isoforms")
     
     auto r = RExpress::analyze("tests/data/guided.gtf", o);
     
-    REQUIRE(r.countSyn == 214);
+    REQUIRE(r.countSyn == 149);
     REQUIRE(r.countGen == 0);
     REQUIRE(r.dilution() == 1.0);
     

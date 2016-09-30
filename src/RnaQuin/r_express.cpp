@@ -7,6 +7,17 @@
 
 using namespace Anaquin;
 
+struct MultiStats
+{
+    SStrings files;
+    
+    // Eg: 2387648 (15.56%)
+    SCounts countSyn, countGen;
+    
+    // Linear regression with logarithm
+    SLinearStats stats;
+};
+
 // Defined in resources.cpp
 extern FileName MixRef();
 
@@ -23,11 +34,10 @@ template <typename T> void update(RExpress::Stats &stats,
                                   RExpress::Metrics metrs,
                                   const RExpress::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+    
     if (Standard::isSynthetic(x.cID))
     {
-        stats.countSyn++;
-        const auto &r = Standard::instance().r_trans;
-        
         SequinID id;
         Concent  exp = NAN;
         Measured obs = NAN;
@@ -45,6 +55,10 @@ template <typename T> void update(RExpress::Stats &stats,
                         id  = m->id;
                         exp = m->concent(o.mix);
                         obs = x.abund;
+                    }
+                    else
+                    {
+                        o.logWarn((boost::format("Zero or invalid for %1%.") % x.id).str());
                     }
                 }
                 else
@@ -67,6 +81,10 @@ template <typename T> void update(RExpress::Stats &stats,
                         exp = r.concent(x.id, o.mix);
                         obs = x.abund;
                     }
+                    else
+                    {
+                        o.logWarn((boost::format("Zero or invalid for %1%.") % x.id).str());
+                    }
                 }
                 else
                 {
@@ -76,7 +94,16 @@ template <typename T> void update(RExpress::Stats &stats,
                 break;
             }
         }
+
+        /*
+         * A sequin that has zero or invalid measurement is equivalenet being undetected.
+         */
         
+        if (!isnan(exp))
+        {
+            stats.countSyn++;
+        }
+
         if (!id.empty())
         {
             auto &ls = metrs == RExpress::Metrics::Isoform ? stats.isos : stats.genes;
@@ -261,8 +288,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                         stats.limit.abund = input;
                     }
                 }
-
-                o.logInfo("Sequin isoform expressions added for genes: " + std::to_string(stats.genes.size()));
             }
         }
     });
@@ -333,6 +358,39 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     return ss.str();
 }
 
+static MultiStats multiStats(const std::vector<FileName>     &files,
+                             const std::vector<MappingStats> &mStats,
+                             const std::vector<LinearStats>  &lstats)
+{
+    A_ASSERT(files.size()  == mStats.size());
+    A_ASSERT(mStats.size() == lstats.size());
+
+    MultiStats r;
+    
+    for (auto i = 0; i < lstats.size(); i++)
+    {
+        const auto lm = lstats[i].linear();
+        
+        r.countSyn.add(mStats[i].countSyn);
+        r.countGen.add(mStats[i].countGen);
+        
+        r.files.add(files[i]);
+        r.stats.p.add(lm.p);
+        r.stats.r.add(lm.r);
+        r.stats.F.add(lm.F);
+        r.stats.sl.add(lm.m);
+        r.stats.R2.add(lm.R2);
+        r.stats.SSM.add(lm.SSM);
+        r.stats.SSE.add(lm.SSE);
+        r.stats.SST.add(lm.SST);
+        r.stats.SSM_D.add(lm.SSM_D);
+        r.stats.SSE_D.add(lm.SSE_D);
+        r.stats.SST_D.add(lm.SST_D);
+    }
+    
+    return r;
+}
+
 Scripts RExpress::generateSummary(const std::vector<FileName> &files,
                                   const std::vector<RExpress::Stats> &stats,
                                   const RExpress::Options &o,
@@ -368,7 +426,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &files,
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
-    const auto ms = StatsWriter::multiInfect(files, mStats, lStats);
+    const auto ms = multiStats(files, mStats, lStats);
     
     // No reference coordinate annotation given here
     const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.countGeneSeqs() : r.countSeqs();
@@ -376,41 +434,42 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &files,
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference Transcript Annotations\n\n"
-                        "       Synthetic: %2%\n"
-                        "       Mixture file: %3%\n\n"
-                        "-------%4%\n\n"
-                        "       Synthetic: %5%\n"
-                        "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
-                        "       Genome: %8%\n\n"
+                        "       Synthetic: %2% %3%\n"
+                        "       Mixture file: %4%\n\n"
+                        "-------%5%\n\n"
+                        "       Synthetic: %6%\n"
+                        "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                        "       Genome: %9%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %9%\n"
-                        "       Correlation: %10%\n"
-                        "       R2:          %11%\n"
-                        "       F-statistic: %12%\n"
-                        "       P-value:     %13%\n"
-                        "       SSM:         %14%, DF: %15%\n"
-                        "       SSE:         %16%, DF: %17%\n"
-                        "       SST:         %18%, DF: %19%\n";
+                        "       Slope:       %10%\n"
+                        "       Correlation: %11%\n"
+                        "       R2:          %12%\n"
+                        "       F-statistic: %13%\n"
+                        "       P-value:     %14%\n"
+                        "       SSM:         %15%, DF: %16%\n"
+                        "       SSE:         %17%, DF: %18%\n"
+                        "       SST:         %19%, DF: %20%\n";
     
-    return (boost::format(format) % STRING(ms.files)      // 1
-                                  % rSyn                  // 2
-                                  % MixRef()              // 3
-                                  % title                 // 4
-                                  % STRING(ms.countSyn)   // 5
-                                  % limit.abund           // 6
-                                  % limit.id              // 7
-                                  % STRING(ms.countGen)   // 8
-                                  % STRING(ms.wLog.sl)    // 9
-                                  % STRING(ms.wLog.r)     // 10
-                                  % STRING(ms.wLog.R2)    // 11
-                                  % STRING(ms.wLog.F)     // 12
-                                  % STRING(ms.wLog.p)     // 13
-                                  % STRING(ms.wLog.SSM)   // 14
-                                  % STRING(ms.wLog.SSM_D) // 15
-                                  % STRING(ms.wLog.SSE)   // 16
-                                  % STRING(ms.wLog.SSE_D) // 17
-                                  % STRING(ms.wLog.SST)   // 18
-                                  % STRING(ms.wLog.SST_D) // 19
+    return (boost::format(format) % STRING(ms.files)       // 1
+                                  % rSyn                   // 2
+                                  % units                  // 3
+                                  % MixRef()               // 4
+                                  % title                  // 5
+                                  % STRING(ms.countSyn)    // 6
+                                  % limit.abund            // 7
+                                  % limit.id               // 8
+                                  % STRING(ms.countGen)    // 9
+                                  % STRING(ms.stats.sl)    // 10
+                                  % STRING(ms.stats.r)     // 11
+                                  % STRING(ms.stats.R2)    // 12
+                                  % STRING(ms.stats.F)     // 13
+                                  % STRING(ms.stats.p)     // 14
+                                  % STRING(ms.stats.SSM)   // 15
+                                  % STRING(ms.stats.SSM_D) // 16
+                                  % STRING(ms.stats.SSE)   // 17
+                                  % STRING(ms.stats.SSE_D) // 18
+                                  % STRING(ms.stats.SST)   // 19
+                                  % STRING(ms.stats.SST_D) // 20
                      ).str();
 }
 
