@@ -310,9 +310,9 @@ void RKReport::report(const FileName &file, const Options &o)
         auto geneFold = [&](const Title &title,
                             const RFold::Stats &stats)
         {
-            ro.metrs = RFold::Metrics::Gene;
+            ro.metrs = RFold::Metrics::Isoform;
             
-            const auto x = RFold::generateSummary(src, stats, ro, "genes");
+            const auto x = RFold::generateSummary(src, stats, ro, "isoforms");
             const auto y = RFold::generateCSV(stats, ro);
             const auto z = RFold::generateRFold(stats, ro);
             
@@ -326,7 +326,7 @@ void RKReport::report(const FileName &file, const Options &o)
             mark.end();
         };
         
-        geneFold("Differential Gene", stats.gFold);
+        geneFold("Differential Isoform", stats.gFold);
     }
     
     /*
