@@ -326,7 +326,7 @@ void RKReport::report(const FileName &file, const Options &o)
             mark.end();
         };
         
-        geneFold("Differential Isoform", stats.gFold);
+        geneFold("Differential Isoform", stats.iFold);
     }
     
     /*
