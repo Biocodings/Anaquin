@@ -34,7 +34,7 @@ template <typename T> void update(RExpress::Stats &stats,
                                   RExpress::Metrics metrs,
                                   const RExpress::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     
     if (Standard::isSynthetic(x.cID))
     {
@@ -255,7 +255,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
         
         if (shouldAggregate(o))
         {
-            const auto &r = Standard::instance().r_trans;
+            const auto &r = Standard::instance().r_rna;
 
             if (stats.genes.empty() && !stats.isos.empty())
             {
@@ -295,7 +295,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
 
 static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics metrs)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     
     std::set<SequinID> seqs;
     
@@ -396,7 +396,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &files,
                                   const RExpress::Options &o,
                                   const Units &units)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     
     std::vector<SequinHist>   hists;
     std::vector<LinearStats>  lStats;
@@ -539,7 +539,7 @@ void RExpress::writeRLinear(const FileName &file,
 
 Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     
     if (stats.size() == 1)
     {

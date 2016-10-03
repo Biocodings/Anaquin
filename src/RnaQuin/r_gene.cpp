@@ -7,7 +7,7 @@ using namespace Anaquin;
 
 RGene::Stats RGene::stats(const RGene::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     
     RGene::Stats stats;
     

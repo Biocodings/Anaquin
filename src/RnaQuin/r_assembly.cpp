@@ -120,7 +120,7 @@ static void readRefGTF(const FileName &file)
 
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     RAssembly::Stats stats;
 
@@ -134,7 +134,7 @@ static RAssembly::Stats init(const RAssembly::Options &o)
 
 RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     auto stats = init(o);
     __Stats__ = &stats;
@@ -284,7 +284,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 
 static void generateQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     const auto format = "%1%\t%2%\t%3%\t%4%";
 
     o.generate(file);

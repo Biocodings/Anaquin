@@ -63,7 +63,7 @@ namespace Anaquin
         
         template <typename F> static void parse(const FileName &file, F f)
         {
-            const auto &r = Standard::instance().r_trans;
+            const auto &r = Standard::instance().r_rna;
             
             Reader rr(file);
             ParserProgress p;

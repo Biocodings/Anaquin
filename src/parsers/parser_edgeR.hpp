@@ -46,7 +46,7 @@ namespace Anaquin
             std::vector<std::string> toks;
             
             // We'll need it for checking sequin genes
-            const auto &s = Standard::instance().r_trans;
+            const auto &s = Standard::instance().r_rna;
             
             while (r.nextLine(line))
             {

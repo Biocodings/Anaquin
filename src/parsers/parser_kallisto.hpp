@@ -60,7 +60,7 @@ namespace Anaquin
         {
             protectParse("Kallisto format", [&]()
             {
-                const auto &r = Standard::instance().r_trans;
+                const auto &r = Standard::instance().r_rna;
 
                 Data d;
                 ParserProgress p;

@@ -50,7 +50,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         return;
     }
     
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     auto f = [&](const SequinID &id, Concent exp)
     {
@@ -69,6 +69,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         if (!isnan(exp) && !isnan(t.logF_) && std::isfinite(t.logF_))
         {
             stats.add(id, exp, t.logF_);
+            stats.countSyn++;
         }
     };
     
@@ -118,7 +119,6 @@ template <typename T> void update(RFold::Stats &stats, const T &x, const RFold::
     
     if (Standard::isSynthetic(x.cID))
     {
-        stats.countSyn++;
         classifySyn(stats, x, o);
     }
     else
@@ -129,7 +129,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, const RFold::
 
 template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Functor f)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     RFold::Stats stats;
 
@@ -217,7 +217,7 @@ void RFold::writeCSV(const FileName &file, const RFold::Stats &stats, const RFol
 
 Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     std::stringstream ss;
     
@@ -299,7 +299,7 @@ Scripts RFold::generateSummary(const FileName &src,
                                const RFold::Options &o,
                                const Units &units)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     const auto lm = stats.linear(false);
     
     // No reference coordinate annotation given here

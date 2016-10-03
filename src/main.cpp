@@ -1098,7 +1098,7 @@ void parse(int argc, char ** argv)
                     }
                 }
 
-                s.r_trans.finalize();
+                s.r_rna.finalize();
             }
 
             switch (_p.tool)

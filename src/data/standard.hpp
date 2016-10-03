@@ -49,7 +49,7 @@ namespace Anaquin
             void addTMix(const Reader &);
             void addTDMix(const Reader &);
 
-            RnaRef r_trans;
+            RnaRef r_rna;
 
             /*
              * ---------------- Variant analysis ----------------

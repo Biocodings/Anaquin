@@ -30,7 +30,7 @@ static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 
 static RAlign::Stats init()
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     RAlign::Stats stats;
 
@@ -81,7 +81,7 @@ static RAlign::Stats init()
 
 RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::Stats &)> f)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     auto stats = init();
 
@@ -407,7 +407,7 @@ static void generateSummary(const FileName &file,
                             const RAlign::Stats &stats,
                             const RAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
     const auto hasGeno = stats.data.size() > 1;
     
     #define G(x) (hasGeno ? toString(x) : "-")
@@ -513,7 +513,7 @@ static void writeQuins(const FileName &file,
                        const RAlign::Stats &stats,
                        const RAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_rna;
 
     const auto h2g = r.histGene();
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
