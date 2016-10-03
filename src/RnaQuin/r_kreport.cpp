@@ -307,8 +307,9 @@ void RKReport::report(const FileName &file, const Options &o)
         
         const auto src = tmp + "/sleuth.csv";
         
-        auto geneFold = [&](const Title &title,
-                            const RFold::Stats &stats)
+        auto isoFold = [&](const Title &title,
+                           const FileName &csv,
+                           const RFold::Stats &stats)
         {
             ro.metrs = RFold::Metrics::Isoform;
             
@@ -317,7 +318,7 @@ void RKReport::report(const FileName &file, const Options &o)
             const auto z = RFold::generateRFold(stats, ro);
             
             // Required for R
-            FileWriter::create(tmp, "RnaFoldChange_sequins.csv", y);
+            FileWriter::create(tmp, csv, y);
 
             mark.start(title);
             mark.addText("Summary Statistics", x);
@@ -325,8 +326,29 @@ void RKReport::report(const FileName &file, const Options &o)
             mark.addRCode("Plot for Fold Change", z);            
             mark.end();
         };
+
+        auto geneFold = [&](const Title &title,
+                            const FileName &csv,
+                            const RFold::Stats &stats)
+        {
+            ro.metrs = RFold::Metrics::Gene;
+            
+            const auto x = RFold::generateSummary(src, stats, ro, "genes");
+            const auto y = RFold::generateCSV(stats, ro);
+            const auto z = RFold::generateRFold(stats, ro);
+            
+            // Required for R
+            FileWriter::create(tmp, csv, y);
+            
+            mark.start(title);
+            mark.addText("Summary Statistics", x);
+            mark.addText("Sequin Statistics",  y);
+            mark.addRCode("Plot for Fold Change", z);
+            mark.end();
+        };
         
-        geneFold("Differential Isoform", stats.iFold);
+        isoFold ("Differential Isoform", "RnaFoldChange_isoforms.csv", stats.iFold);
+        geneFold("Differential Gene", "RnaFoldChange_genes.csv", stats.gFold);
     }
     
     /*
