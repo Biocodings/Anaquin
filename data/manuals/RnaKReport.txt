@@ -1,34 +1,35 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-     RnaAlign - Assess spliced-read alignments to the in silico chromosome
+     RnaKReport - Create PDF report with RnaQuin sequins by k-mer quantification
 
 <b>DESCRIPTION</b>
-    RnaAlign can be used to assess the alignment of sequins-derived reads to the in silico chromosome and calculates
-    several useful statistics to describe alignment performance, including:
-    a) Dilution indicates fraction of reads that align to the in silico chromosome, relative to the accompanying genome. 
-    b) Sensitivity indicates the fraction of annotated regions covered by alignments. 
-    c) Precision indicates the accuracy of alignments.
-    These statistics are calculated at a nucleotide, exon and intron level. 
+    Kallisto is a popular k-mer quantification tool specifically designed for RNA-Seq. We can use it to
+    build k-mer index for sequins, which will allow us to quantify an RNA-Seq experiment without alignments.
+    K-mer quantification is much quicker than read alignments.
+
+    This tool uses Kallisto to quantify sequin expression. It builds a linear model between
+    the input concentration and transcripts per million. The output is a PDF file with statistics and plots for gene
+    and isoform expression analysis. The statistics include correlation, coefficient of determination and regression
+    coefficients.
 
 <b>SUPPORT SOFTWARE</b>
-     Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
+     The tool requires trimmed paired-end RNA-Seq sequence files.
 
 <b>USAGE EXAMPLE</b>
-     anaquin RnaAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin RnaKReport –rind kallisto.index –m mixture.csv –ufiles experiment.txt
 
 <b>ADDITIONAL INFORMATION</b>
-     The runtime is linearly proportional to the number of alignments in the input file, with long run times expected for
-     large alignment files.
+     The tool requires prerequisites be installed. Please consult <b>Section 7</b> in the user guide for details.
 
 <b>TOOL OPTIONS</b>
      Required:
-        -rgtf        Reference transcriptome annotation file in GTF format
-        -ufiles      User-generated alignment files in SAM/BAM format
+        -rind        Reference Kallisto index file in Kallisto indexing format
+        -m           RnaQuin RnaQuin mixture file in CSV format
+        -ufiles      Text file for the experimental metadata in CSV format. <b>Section 7.2.2</b> in the user guide has the details.
 
      Optional:
         -o = output  Directory in which the output files are written to
 
 <b>OUTPUTS</b>
-     RnaAlign_summary.stats - provides statistics to describe to describe the global alignment profile
-     RnaAlign_sequins.csv   - gives detailed statistics for each individual sequin gene
+     RnaKReport_report.pdf  - generated report in PDF format
