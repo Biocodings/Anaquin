@@ -19,11 +19,12 @@ namespace Anaquin
         static void clear();
 
         /*
-         * Transcriptome analayis
+         * RnaQuin analayis
          */
         
         static void transA();
-        static void transB();
+        static void RnaQuin_B();
+        static void RnaQuin_AB();
         static void RnaFoldChange();
 
         /*

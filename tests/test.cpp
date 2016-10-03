@@ -31,22 +31,30 @@ void Test::transA()
     Test::clear();
     Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
     Standard::instance().addTMix(Reader(RnaDataMixA(), DataMode::String));
-    Standard::instance().r_trans.finalize();
+    Standard::instance().r_rna.finalize();
 }
 
-void Test::transB()
+void Test::RnaQuin_B()
 {
     Test::clear();
     Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
     Standard::instance().addTMix(Reader(RnaDataMixB(), DataMode::String));
-    Standard::instance().r_trans.finalize();
+    Standard::instance().r_rna.finalize();
+}
+
+void Test::RnaQuin_AB()
+{
+    Test::clear();
+    Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
+    Standard::instance().addTDMix(Reader(RnaDataMixAB(), DataMode::String));
+    Standard::instance().r_rna.finalize();
 }
 
 void Test::RnaFoldChange()
 {
     Test::clear();
     Standard::instance().addTDMix(Reader(RnaDataMixAB(), DataMode::String));
-    Standard::instance().r_trans.finalize();
+    Standard::instance().r_rna.finalize();
 }
 
 void Test::VarQuinBed()

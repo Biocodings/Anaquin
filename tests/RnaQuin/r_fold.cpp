@@ -4,6 +4,20 @@
 
 using namespace Anaquin;
 
+TEST_CASE("RnaFoldChange_Sleuth")
+{
+    Test::RnaQuin_AB();
+    
+    auto o = RFold::Options();
+    
+    o.format = RFold::Format::Sleuth;
+    o.metrs  = RFold::Metrics::Isoform;
+    
+    auto r = RFold::analyze("tests/data/sleuth.csv", o);
+    
+    REQUIRE(r.data.size() == 105);
+}
+
 TEST_CASE("RnaFoldChange_Guide")
 {
     Test::clear();
