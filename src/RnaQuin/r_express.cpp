@@ -495,9 +495,9 @@ Scripts RExpress::generateRLinear(const FileName &csv,
     
     switch (o.format)
     {
-        case RExpress::Format::GTF:      { measured = "FPKM";         break; }
-        case RExpress::Format::Text:     { measured = "FPKM";         break; }
-        case RExpress::Format::Kallisto: { measured = "K-mer Counts"; break; }
+        case RExpress::Format::GTF:      { measured = "FPKM"; break; }
+        case RExpress::Format::Text:     { measured = "FPKM"; break; }
+        case RExpress::Format::Kallisto: { measured = "Transcripts per million"; break; }
     }
 
     if (stats.size() == 1)
