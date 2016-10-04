@@ -1055,11 +1055,11 @@ void parse(int argc, char ** argv)
                     {
                         try
                         {
-                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                            addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         }
                         catch (...)
                         {
-                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                            addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         }
 
                         break;
@@ -1067,33 +1067,33 @@ void parse(int argc, char ** argv)
 
                     case TOOL_R_ALIGN:
                     {
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                        addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_R_FOLD:
                     {
-                        addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
-                     
+
                     case TOOL_R_EXPRESS:
                     case TOOL_R_ASSEMBLY:
                     {
-                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
-                        
+
                     case TOOL_R_KREPORT:
                     {
-                        addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
-                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
                 }

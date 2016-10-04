@@ -164,19 +164,19 @@ void Standard::addVMix(const Reader &r)
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
 }
 
-void Standard::addTRef(const Reader &r)
+void Standard::addRRef(const Reader &r)
 {
     r_rna.readRef(r);
 }
 
-void Standard::addTMix(const Reader &r)
+void Standard::addRMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
 
     readMixture(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
 }
 
-void Standard::addTDMix(const Reader &r)
+void Standard::addRDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     

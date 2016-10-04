@@ -29,31 +29,31 @@ void Test::clear()
 void Test::transA()
 {
     Test::clear();
-    Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(RnaDataMixA(), DataMode::String));
+    Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
+    Standard::instance().addRMix(Reader(RnaDataMixA(), DataMode::String));
     Standard::instance().r_rna.finalize();
 }
 
 void Test::RnaQuin_B()
 {
     Test::clear();
-    Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(RnaDataMixB(), DataMode::String));
+    Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
+    Standard::instance().addRMix(Reader(RnaDataMixB(), DataMode::String));
     Standard::instance().r_rna.finalize();
 }
 
 void Test::RnaQuin_AB()
 {
     Test::clear();
-    Standard::instance().addTRef(Reader(RnaStandGTF(), DataMode::String));
-    Standard::instance().addTDMix(Reader(RnaDataMixAB(), DataMode::String));
+    Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
+    Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
     Standard::instance().r_rna.finalize();
 }
 
 void Test::RnaFoldChange()
 {
     Test::clear();
-    Standard::instance().addTDMix(Reader(RnaDataMixAB(), DataMode::String));
+    Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
     Standard::instance().r_rna.finalize();
 }
 
