@@ -409,15 +409,8 @@ namespace Anaquin
 
             GeneID s2g(const SequinID &) const;
         
-            inline std::set<GeneID>  getGenesSyn() const
-            {
-                return getGenes(ChrIS);
-            }
-
-            inline std::set<TransID> getTransSyn() const
-            {
-                return getTrans(ChrIS);
-            }
+            inline std::set<GeneID> geneIDs() const { return getGenes(ChrIS); }
+            inline std::set<IsoformID> isoformIDs() const { return getTrans(ChrIS); }
 
             std::set<GeneID>  getGenes(const ChrID &) const;
             std::set<TransID> getTrans(const ChrID &) const;

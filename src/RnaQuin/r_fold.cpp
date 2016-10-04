@@ -257,13 +257,21 @@ void RFold::writeCSV(const FileName &file, const RFold::Stats &stats, const RFol
 Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
     std::stringstream ss;
+    ss << (boost::format(format) % "ID"
+                                 % "Length"
+                                 % "Sample1"
+                                 % "Sample2"
+                                 % "ExpLFC"
+                                 % "ObsLFC"
+                                 % "SD"
+                                 % "Pval"
+                                 % "Qval"
+                                 % "Mean").str();
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
-    ss << "ID\tLength\tSample1\tSample2\tExpLFC\tObsLFC\tSD\tPval\tQval\tMean" << std::endl;
-    
-    const auto ids = o.metrs == RFold::Metrics::Gene ? r.getGenesSyn() : r.getTransSyn();
+    const auto ids = o.metrs == RFold::Metrics::Gene ? r.geneIDs() : r.isoformIDs();
 
     // For each sequin gene or isoform...
     for (const auto id : ids)
@@ -288,8 +296,8 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
             }
         }
 
-        // Undetected or nothing informative detected...
-        if (!stats.data.count(id) || isnan(stats.data.at(id).p) || isnan(stats.data.at(id).obs))
+        // Undetected or nothing informative ...
+        if (!stats.data.count(id) || isnan(stats.data.at(id).obs))
         {
             ss << (boost::format(format) % id
                                          % l.length()
@@ -305,7 +313,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         }
         
         const auto &x = stats.data.at(id);
-        //assert(fold == x.exp);
+        A_ASSERT(fold == x.exp);
         
         ss << (boost::format(format) % id
                                      % l.length()
