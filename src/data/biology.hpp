@@ -5,17 +5,18 @@
 
 namespace Anaquin
 {
-    template <typename T> void complement(T &s)
+    template <typename T> void complement(T &str)
     {
         std::map<char, char> m = { { 'A', 'T' },
                                    { 'T', 'A' },
                                    { 'G', 'C' },
-                                   { 'C', 'G' } };
-        for (auto &i : s)
+                                   { 'C', 'G' },
+                                   { 'N', 'N' } };
+        for (auto &i : str)
         {
             if (!m.count(i))
             {
-                throw std::runtime_error("Unknown DNA base: " + std::to_string(i));
+                throw std::runtime_error("Unknown DNA base: " + str);
             }
             
             i = m[i];
