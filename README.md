@@ -1,6 +1,6 @@
 # Anaquin
 
-**Anaquin** is a C++/R bioinformatics framework for qualitative and quantitative controls in next-generation sequencing experiments. 
+**Anaquin** is a C++/R bioinformatics framework for quantitative controls in next-generation sequencing experiments. 
 
 Respository for the R-package is hosted by Bioconductor and available at: https://github.com/Bioconductor-mirror/Anaquin.
 
