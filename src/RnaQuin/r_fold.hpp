@@ -88,7 +88,7 @@ namespace Anaquin
             std::vector<double> ses;
         };
 
-        static Scripts generateRFold(const RFold::Stats &, const RFold::Options &);
+        static Scripts generateRFold(const RFold::Stats &, const FileName &, const RFold::Options &);
         static Scripts generateRROC(const RFold::Stats &, const RFold::Options &);
         static Scripts generateRLODR(const RFold::Stats &, const RFold::Options &);
         

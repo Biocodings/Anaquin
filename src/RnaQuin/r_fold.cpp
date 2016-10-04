@@ -385,12 +385,12 @@ Scripts RFold::generateSummary(const FileName &src,
                      ).str();
 }
 
-Scripts RFold::generateRFold(const RFold::Stats &stats, const RFold::Options &o)
+Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, const RFold::Options &o)
 {
     //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
     const auto extra = o.format == Format::DESeq2 ? "" : "";
 
-    return RWriter::createFold("RnaFoldChange_sequins.csv",
+    return RWriter::createFold(csv,
                                o.work,
                                o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
                                "Expected fold change (log2)",
@@ -405,7 +405,7 @@ void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RF
 {
     o.generate(file);
     o.writer->open("RnaFoldChange_fold.R");
-    o.writer->write(RFold::generateRFold(stats, o));
+    o.writer->write(RFold::generateRFold(stats, "RnaFoldChange_sequins.csv", o));
     o.writer->close();
 }
 

@@ -315,7 +315,7 @@ void RKReport::report(const FileName &file, const Options &o)
             
             const auto x = RFold::generateSummary(src, stats, ro, "isoforms");
             const auto y = RFold::generateCSV(stats, ro);
-            const auto z = RFold::generateRFold(stats, ro);
+            const auto z = RFold::generateRFold(stats, "RnaFoldChange_isos.csv", ro);
             
             // Required for R
             FileWriter::create(tmp, csv, y);
@@ -335,7 +335,7 @@ void RKReport::report(const FileName &file, const Options &o)
             
             const auto x = RFold::generateSummary(src, stats, ro, "genes");
             const auto y = RFold::generateCSV(stats, ro);
-            const auto z = RFold::generateRFold(stats, ro);
+            const auto z = RFold::generateRFold(stats, "RnaFoldChange_genes.csv", ro);
             
             // Required for R
             FileWriter::create(tmp, csv, y);
