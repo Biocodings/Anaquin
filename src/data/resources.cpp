@@ -138,7 +138,7 @@ Scripts VarKReport()
 }
 
 /*
- * Transcriptome Resources
+ * RnaSeq Resources
  */
 
 Scripts PlotTROC()

@@ -1,8 +1,8 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 
-#include <string>
 #include <cmath>
+#include <string>
 
 namespace Anaquin
 {
@@ -27,7 +27,6 @@ namespace Anaquin
     
     typedef double Fold;
     typedef double LogFold;
-    typedef double Express;
     typedef double Proportion;
     typedef long double Probability;
     

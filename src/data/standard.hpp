@@ -44,10 +44,10 @@ namespace Anaquin
              */
 
             // Add a reference annotation
-            void addTRef(const Reader &);
+            void addRRef(const Reader &);
 
-            void addTMix(const Reader &);
-            void addTDMix(const Reader &);
+            void addRMix(const Reader &);
+            void addRDMix(const Reader &);
 
             RnaRef r_rna;
 

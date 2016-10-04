@@ -62,8 +62,8 @@ namespace Anaquin
                 // Measured log-fold ratio
                 Concent obs;
                 
-                Express samp1 = NAN;
-                Express samp2 = NAN;
+                Measured samp1 = NAN;
+                Measured samp2 = NAN;
                 
                 // Standard deviation
                 double se = NAN;

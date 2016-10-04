@@ -19,8 +19,8 @@ namespace Anaquin
         GeneID gID;
         IsoformID iID;
         
-        Express samp1 = NAN;
-        Express samp2 = NAN;
+        Measured samp1 = NAN;
+        Measured samp2 = NAN;
         
         // Log-fold ratio
         LogFold logF_;
