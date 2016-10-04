@@ -66,12 +66,13 @@ namespace Anaquin
                 Express samp2 = NAN;
                 
                 // Standard deviation
-                double se;
+                double se = NAN;
                 
                 // Base mean
-                double mean;
+                double mean = NAN;
                 
-                Probability p, q;
+                Probability p = NAN;
+                Probability q = NAN;
             };
             
             std::map<SequinID, Data> data;

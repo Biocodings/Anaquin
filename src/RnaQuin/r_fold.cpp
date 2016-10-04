@@ -19,6 +19,11 @@ extern Scripts PlotTROC();
 
 typedef RFold::Metrics Metrics;
 
+static bool shouldAggregate(const RFold::Options &o)
+{
+    return o.metrs == Metrics::Gene && o.format == RFold::Format::Sleuth;
+}
+
 std::vector<std::string> RFold::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
@@ -43,7 +48,7 @@ std::vector<std::string> RFold::classify(const std::vector<double> &qs, const st
     return r;
 }
 
-template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RFold::Options &o)
+template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics metrs, const RFold::Options &o)
 {
     if (t.status == DiffTest::Status::NotTested)
     {
@@ -73,7 +78,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
         }
     };
     
-    switch (o.metrs)
+    switch (metrs)
     {
         case Metrics::Gene:
         {
@@ -100,7 +105,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
             
             if (match)
             {
-                stats.hist.at(t.cID).at(t.iID)++;
+                //stats.hist.at(t.cID).at(t.iID)++;
                 f(t.iID, r.logFoldSeq(t.iID));
             }
             else
@@ -113,13 +118,13 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, const RF
     }
 }
 
-template <typename T> void update(RFold::Stats &stats, const T &x, const RFold::Options &o)
+template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs, const RFold::Options &o)
 {
     typedef DiffTest::Status Status;
     
     if (Standard::isSynthetic(x.cID))
     {
-        classifySyn(stats, x, o);
+        classifySyn(stats, x, metrs, o);
     }
     else
     {
@@ -158,7 +163,15 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 ParserSleuth::parse(file, [&](const ParserSleuth::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    // Should we aggregate because this is at the gene level?
+                    if (shouldAggregate(o))
+                    {
+                        update(stats, x, RFold::Metrics::Isoform, o);
+                    }
+                    else
+                    {
+                        update(stats, x, o.metrs, o);
+                    }
                 });
 
                 break;
@@ -168,7 +181,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    update(stats, x, o.metrs, o);
                 });
 
                 break;
@@ -178,7 +191,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 ParserDESeq2::parse(file, [&](const ParserDESeq2::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    update(stats, x, o.metrs, o);
                 });
                 
                 break;
@@ -188,7 +201,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 ParserEdgeR::parse(file, [&](const ParserEdgeR::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    update(stats, x, o.metrs, o);
                 });
                 
                 break;
@@ -198,10 +211,36 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 ParserCDiff::parse(file, [&](const ParserCDiff::Data &x, const ParserProgress &)
                 {
-                    update(stats, x, o);
+                    update(stats, x, o.metrs, o);
                 });
-                
+
                 break;
+            }
+        }
+        
+        if (shouldAggregate(o))
+        {
+            const auto &r = Standard::instance().r_rna;
+
+            std::map<GeneID, Fold> g2f;
+            
+            for (const auto &i : stats.data)
+            {
+                const auto m = r.findTrans(ChrIS, i.first);
+                
+                // We should always find the gene identifier
+                A_ASSERT(m);
+                
+                g2f[m->gID] += i.second.obs;
+            }
+            
+            stats = RFold::Stats();
+            
+            for (const auto &i : g2f)
+            {
+                stats.countSyn++;
+                stats.data[i.first].obs = i.second;
+                stats.data[i.first].exp = r.logFoldGene(i.first);
             }
         }
     });
@@ -266,7 +305,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         }
         
         const auto &x = stats.data.at(id);
-        assert(fold == x.exp);
+        //assert(fold == x.exp);
         
         ss << (boost::format(format) % id
                                      % l.length()
