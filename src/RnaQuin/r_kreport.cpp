@@ -342,7 +342,7 @@ void RKReport::report(const FileName &file, const Options &o)
             
             mark.start(title);
             mark.addText("Summary Statistics", x);
-            mark.addText("Sequin Statistics",  y);
+            //mark.addText("Sequin Statistics",  y);
             mark.addRCode("Plot for Fold Change", z);
             mark.end();
         };

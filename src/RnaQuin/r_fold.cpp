@@ -240,7 +240,8 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 stats.countSyn++;
                 stats.data[i.first].obs = i.second;
-                stats.data[i.first].exp = r.logFoldGene(i.first);
+                stats.data[i.first].exp = r.logFoldGene(i.first);                
+                stats.add(i.first, i.second, r.logFoldGene(i.first));
             }
         }
     });
