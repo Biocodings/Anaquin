@@ -52,6 +52,14 @@ namespace Anaquin
             RnaRef r_rna;
 
             /*
+             * ---------------- Metagenomic analysis ----------------
+             */
+
+            void addMMix(const Reader &);
+        
+            MetaRef r_meta;
+        
+            /*
              * ---------------- Variant analysis ----------------
              */
 

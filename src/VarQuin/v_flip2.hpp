@@ -4,14 +4,14 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef V_FLIP_HPP
-#define V_FLIP_HPP
+#ifndef V_FLIP_2_HPP
+#define V_FLIP_2_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VFlip
+    struct VFlip2
     {
         typedef AnalyzerOptions Options;
         
@@ -32,12 +32,9 @@ namespace Anaquin
 
         static bool isReverse(const std::set<ReadName> &, const ReadName &);
 
-        static Stats analyze(const FileName &,
-                             const FileName &,
-                             const FileName &,
-                             const Options &o);
+        static Stats analyze(const FileName &, const Options &o);
 
-        static void report (const std::vector<FileName> &, const Options &o = Options());
+        static void report (const FileName &, const Options &o = Options());
     };
 }
 

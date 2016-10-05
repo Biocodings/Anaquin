@@ -413,6 +413,15 @@ void RnaRef::validate()
 }
 
 /*
+ * ------------------------- Metagenomic Analysis -------------------------
+ */
+
+void MetaRef::validate()
+{
+    
+}
+
+/*
  * ------------------------- Variant Analysis -------------------------
  */
 

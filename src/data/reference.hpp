@@ -1,8 +1,6 @@
 #ifndef REFERENCE_HPP
 #define REFERENCE_HPP
 
-#include <set>
-#include "data/data.hpp"
 #include "data/hist.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
@@ -268,6 +266,24 @@ namespace Anaquin
     };
 
     /*
+     * -------------------- Metagenomic Analysis --------------------
+     */
+    
+    class MetaRef : public Reference<SequinData, DefaultStats>
+    {
+        public:
+        
+        protected:
+        
+            void validate() override;
+        
+        private:
+
+            struct MetaRefImpl;
+            std::shared_ptr<MetaRefImpl> _impl;
+    };
+
+    /*
      * -------------------- Variant Analysis --------------------
      */
     
@@ -350,8 +366,6 @@ namespace Anaquin
 
             std::shared_ptr<VarRefImpl> _impl;
     };
-    
-    class Reader;
     
     /*
      * -------------------- Transcriptome Analysis --------------------
