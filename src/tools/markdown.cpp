@@ -12,7 +12,7 @@ Scripts MarkDown::RItem::generate() const
     ss << "\n## ";
     ss << _title;
     ss << "\n\n";
-    ss << "```{r results='hide', message=FALSE, warning=FALSE, echo=FALSE}\n";
+    ss << "```{r results='hide', message=FALSE, warning=FALSE, echo=FALSE, fig.align='center', fig.height=49}\n";
     ss << _txt;
     ss << "\n```\n\n" << std::endl;
 
