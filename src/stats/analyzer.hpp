@@ -98,17 +98,17 @@ namespace Anaquin
 
         inline Proportion propNA() const
         {
-            return total() ? static_cast<Proportion>(countNA) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * countNA) / total() : NAN;
         }
         
         inline Proportion propGen() const
         {
-            return total() ? static_cast<Proportion>(countGen) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * countGen) / total() : NAN;
         }
 
         inline Proportion propSyn() const
         {
-            return total() ? static_cast<Proportion>(countSyn) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * countSyn) / total() : NAN;
         }
 
         inline Proportion dilution() const

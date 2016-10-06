@@ -32,6 +32,8 @@ VFlip2::Stats VFlip2::analyze(const FileName &align, const Options &o)
         
         if (isReverseGenome(x.cID))
         {
+            stats.countSyn++;
+            
             if (!x.isPassed || x.isSecondary)
             {
                 return;
@@ -84,15 +86,15 @@ static void writeSummary(const FileName &file,
 {
     const auto summary = "-------VarFlip Output Results\n\n"
                          "-------VarFlip Inputs\n\n"
-                         "       Alignment file:     %1%\n\n"
+                         "       Alignment file:    %1%\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Sequin alignments:  %2%\n"
-                         "                           %3%\n\n"
+                         "       Sequin alignments: %2%\n"
+                         "                          %3%\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped: %4% (%5%%%)\n"
                          "       Forward:  %6% (%7%%%)\n"
                          "       Reverse:  %8% (%9%%%)\n"
-                         "       Dilution: %10$.4f\n\n";
+                         "       Dilution: %10$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
