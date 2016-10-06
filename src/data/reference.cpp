@@ -568,31 +568,39 @@ Counts VarRef::countGeneGen() const
 
 void VarRef::validate()
 {
+    // Do we have a BED reference? If no, let's try mixture reference.
     if (!_impl->bData.countBase())
     {
         merge(_rawMIDs, _rawMIDs);
     }
     else
     {
-        A_CHECK(_impl->bData.countBase(), "Failed to find VarQuin sequins in the annotation file");
-        
         std::set<SequinID> seqIDs;
         
         for (const auto &i : _impl->bData)
         {
+            const auto &chrID = i.first;
+            A_ASSERT(!chrID.empty());
+            
             for (const auto &j : i.second.r2d)
             {
-                seqIDs.insert(j.first);
+                A_ASSERT(!j.first.empty());
+
+                // Region represented by the sequins?
+                if (isVarQuin(j.first))
+                {
+                    seqIDs.insert(j.first);
+                }
             }
         }
         
-        A_CHECK(seqIDs.size() > 1, "Found sequins: " + std::to_string(seqIDs.size()));
+        A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
         
         merge(seqIDs);
     }
 
     /*
-     * Constructing allele frequency for the variants
+     * Building allele frequency for the variants
      */
 
     for (const auto &i : _mixes)

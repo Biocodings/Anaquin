@@ -1,6 +1,7 @@
 #ifndef VARQUIN_HPP
 #define VARQUIN_HPP
 
+#include "data/data.hpp"
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_variants.hpp"
@@ -32,6 +33,7 @@ namespace Anaquin
         bool ref;
     };
 
+    // Eg: chrev1, chrev10 etc...
     inline bool isReverseGenome(const ChrID &cID)
     {
         A_ASSERT(!cID.empty());
@@ -41,6 +43,29 @@ namespace Anaquin
             return true;
         }
         
+        return false;
+    }
+    
+    // Eg: ST_007_R, GS_047 etc...
+    inline bool isVarQuin(const SequinID &id)
+    {
+        if (id.find("GS_") != std::string::npos)
+        {
+            return true;
+        }
+        else if (id.find("GI_") != std::string::npos)
+        {
+            return true;
+        }
+        else if (id.find("_R") != std::string::npos)
+        {
+            return true;
+        }
+        else if (id.find("_V") != std::string::npos)
+        {
+            return true;
+        }
+
         return false;
     }
 

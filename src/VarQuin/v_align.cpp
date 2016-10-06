@@ -22,7 +22,7 @@ static VAlign::Stats init()
     VAlign::Stats stats;
     
     stats.inters = r.mInters();
-    assert(!stats.inters.empty());
+    A_ASSERT(!stats.inters.empty());
 
     for (const auto &i : stats.inters)
     {
@@ -202,9 +202,9 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             o.warn(x.cID);
         }
     };
-    
+
     /*
-     * 1: Analyzing genomic alignments
+     * Analyzing genomic alignments
      */
     
     o.analyze(gen);
@@ -217,16 +217,16 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             classify(align, info);
         }
     });
-
+    
     /*
-     * 2: Analyzing sequin alignments (also in the forward genome)
+     * Analyzing sequin alignments (also in the forward genome)
      */
     
     o.analyze(seqs);
     
     ParserSAM::parse(seqs, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
-        // Eg: fron chr2 to chrev2
+        // Eg: chr2 to chrev2
         boost::replace_all(align.cID, "chr", "chrev");
 
         if (Standard::isSynthetic(align.cID))

@@ -117,6 +117,8 @@ ChrID Standard::toReverse(const ChrID &cID)
     // Eg; chr2 to chrev2
     boost::replace_all(x, "chr", "chrev");
 
+    A_ASSERT(!x.empty());
+    
     return x;
 }
 

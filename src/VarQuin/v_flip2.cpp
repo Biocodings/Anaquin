@@ -86,7 +86,7 @@ static void writeSummary(const FileName &file,
 {
     const auto summary = "-------VarFlip Output Results\n\n"
                          "-------VarFlip Inputs\n\n"
-                         "       Alignment file:    %1%\n\n"
+                         "       Alignment file: %1%\n\n"
                          "-------VarFlip Outputs\n\n"
                          "       Sequin alignments: %2%\n"
                          "                          %3%\n\n"
