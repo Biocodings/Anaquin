@@ -144,13 +144,31 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
             align.isForw = !bam_is_rev(t);
             align.cigar  = hasCID ? bam2cigar(t) : "*";
             align.tlen   = hasCID ? t->core.isize : 0;
-            align.rnext  = hasCID ? bam2rnext(h, t) : "*";
             align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
+            align.rnext  = hasCID ? bam2rnext(h, t) : "*";
+            
+            if (align.rnext == "=")
+            {
+                align.rnext = align.cID;
+            }
         }
+
+        #define isFirstPair(b) (((b)->core.flag&0x40)  != 0)
+        #define isPrimary(b)   (((b)->core.flag&0x900) == 0)
+        #define isFailed(b)    (((b)->core.flag&0x200) != 0)
+        #define isSecondary(b) (((b)->core.flag&0x100) != 0)
+
+        // First segment in the template?
+        align.isFirstPair = isFirstPair(t);
+
+        // Primary alignment?
+        align.isPrim = isPrimary(t);
+
+        // Passed quality control?
+        align.isPassed = !isFailed(t);
         
-        #define bam_is_primary(b) (((b)->core.flag&0x900) == 0)
-        
-        align.isPrim = bam_is_primary(t);
+        // Mutli-mapped alignment?
+        align.isSecondary = isSecondary(t);
 
         if (hasCID)
         {

@@ -15,7 +15,7 @@
 #include "RnaQuin/r_kreport.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
-#include "VarQuin/v_flip.hpp"
+#include "VarQuin/v_flip2.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_kreport.hpp"
@@ -726,7 +726,7 @@ static void fixInputs(int argc, char ** argv)
             
             auto invalid = [&](char c)
             {
-                return !(c>=0 && c <128);
+                return !(c>=0 && c<128);
             };
             
             tmp.erase(remove_if(tmp.begin(), tmp.end(), invalid), tmp.end());
@@ -1293,6 +1293,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
+                case TOOL_V_FLIP:  { analyze_1<VFlip2>(OPT_U_FILES); break; }
                 case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
 
                 case TOOL_V_ALLELE:
@@ -1300,17 +1301,6 @@ void parse(int argc, char ** argv)
                     VAllele::Options o;
                     o.format = VAllele::Format::Salmon;
                     analyze_1<VAllele>(OPT_U_FILES, o);
-                    break;
-                }
-
-                case TOOL_V_FLIP:
-                {
-                    if (_p.inputs.size() != 3)
-                    {
-                        throw TooManyOptionsError("Too many options specified. Usage: anaquin VarFlip -ufiles <seq1.fq> -ufiles <seq2.fq> -ufiles aligned.bam ");
-                    }
-
-                    analyze_n<VFlip>();
                     break;
                 }
 

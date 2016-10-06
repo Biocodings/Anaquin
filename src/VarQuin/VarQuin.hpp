@@ -6,9 +6,6 @@
 #include "parsers/parser_variants.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
-// Defined in main.cpp
-extern Anaquin::Scripts mixture();
-
 namespace Anaquin
 {
     struct VariantStats
@@ -34,6 +31,18 @@ namespace Anaquin
         // Matched by reference allele? Only if position is matched.
         bool ref;
     };
+
+    inline bool isReverseGenome(const ChrID &cID)
+    {
+        A_ASSERT(!cID.empty());
+        
+        if (cID.find("rev") != std::string::npos)
+        {
+            return true;
+        }
+        
+        return false;
+    }
 
     inline std::string type2str(Mutation type)
     {

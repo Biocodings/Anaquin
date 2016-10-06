@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2016 - Garvan Institute of Medical Research
- *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
- */
-
-#include <fstream>
 #include <algorithm>
 #include "data/biology.hpp"
 #include "VarQuin/v_flip2.hpp"
-#include "parsers/parser_fq.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/file_writer.hpp"
 
@@ -16,26 +9,6 @@ using namespace Anaquin;
 
 static const FileName o1 = "VarFlip_sequins_1.fq";
 static const FileName o2 = "VarFlip_sequins_2.fq";
-
-bool VFlip2::isReverse(const std::set<ReadName> &refs, const ReadName &x)
-{
-    auto n1 = x;
-    auto n2 = n1;
-    
-    if (n1.length() >= 2 &&
-        ((n1[n1.length()-1] == '1' && n1[n1.length()-2] == '/') ||
-         (n1[n1.length()-1] == '2' && n1[n1.length()-2] == '/')))
-    {
-        n1 = n1.substr(0, n1.size()-2);
-    }
-    
-    if (n1[0] == '@')
-    {
-        n2 = n1.substr(1, n1.size()-1);
-    }
-    
-    return (refs.count(n1) || refs.count(n2));
-}
 
 VFlip2::Stats VFlip2::analyze(const FileName &align, const Options &o)
 {
@@ -47,7 +20,8 @@ VFlip2::Stats VFlip2::analyze(const FileName &align, const Options &o)
     f1.open(o1);
     f2.open(o2);
 
-    FileWriter *f;
+    // Required for pooling paired-end reads
+    std::map<ReadName, ParserSAM::Data> seenMates;
     
     ParserSAM::parse(align, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
@@ -56,21 +30,38 @@ VFlip2::Stats VFlip2::analyze(const FileName &align, const Options &o)
             o.wait(std::to_string(info.p.i));
         }
         
-        if (!x.mapped)
+        if (isReverseGenome(x.cID))
+        {
+            if (!x.isPassed || x.isSecondary)
+            {
+                return;
+            }
+            else if (!seenMates.count(x.name))
+            {
+                seenMates[x.name] = x;
+            }
+            else
+            {
+                const auto &seen  = seenMates[x.name];
+                const auto first  = seen.isFirstPair ? &seen : &x;
+                const auto second = seen.isFirstPair ? &x : &seen;
+                
+                f1.write("@" + first->name + "/1");
+                f1.write(first->seq);
+                f1.write("+");
+                f1.write(first->qual);
+
+                f2.write("@" + second->name + "/2");
+                f2.write(second->seq);
+                f2.write("+");
+                f2.write(second->qual);
+                
+                seenMates.erase(x.name);
+            }
+        }
+        else if (!x.mapped)
         {
             stats.countNA++;
-        }
-        else if (Standard::isSynthetic(x.cID))
-        {
-            // Compute the reverse complement
-            complement(x.seq);
-            
-            f = x.isPrim ? &f1 : &f2;
-            
-            f->write(x.name);
-            f->write(x.seq);
-            f->write("+");
-            f->write(x.qual);
         }
         else
         {
@@ -125,7 +116,7 @@ void VFlip2::report(const FileName &file, const Options &o)
     /*
      * Generating VarFlip_summary.stats
      */
-    
+
     writeSummary("VarFlip_summary.stats",
                  file,
                  o1,
