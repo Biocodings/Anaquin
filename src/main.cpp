@@ -22,6 +22,9 @@
 #include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
 
+#include "MetaQuin/m_align.hpp"
+#include "MetaQuin/m_assembly.hpp"
+
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_cdiff.hpp"
@@ -63,6 +66,8 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_ALLELE    276
+#define TOOL_M_ALIGN     277
+#define TOOL_M_ASSEMBLY  278
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_R_SUBSAMPLE 281
 #define TOOL_V_FLIP      305
@@ -153,12 +158,15 @@ static std::map<Value, Tool> _tools =
     { "VarKReport",     TOOL_V_KREPORT   },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
+    
+    { "MetaAlign",      TOOL_M_ALIGN     },
+    { "MetaAssembly",   TOOL_M_ASSEMBLY  },
 };
 
 static std::map<Tool, std::set<Option>> _required =
 {
     /*
-     * Transcriptome Analysis
+     * RnaQuin Analysis
      */
     
     { TOOL_R_SUBSAMPLE, { OPT_U_FILES, OPT_METHOD } },
@@ -170,7 +178,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
 
     /*
-     * Variant Analysis
+     * VarQuin Analysis
      */
 
     { TOOL_V_FLIP,      { OPT_U_FILES } },
@@ -179,6 +187,13 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
     { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
+
+    /*
+     * MetaQuin Analysis
+     */
+
+    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_U_FILES } },
 };
 
 /*
@@ -1210,6 +1225,32 @@ void parse(int argc, char ** argv)
             break;
         }
 
+        case TOOL_M_ALIGN:
+        case TOOL_M_ASSEMBLY:
+        {
+            switch (_p.tool)
+            {
+                case TOOL_M_ALIGN:
+                {
+                    applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
+                    break;
+                }
+                    
+                default: { break; }
+            }
+            
+            Standard::instance().r_meta.finalize();
+            
+            switch (_p.tool)
+            {
+                case TOOL_M_ALIGN: { analyze_n<MAlign>(); break; }
+
+                default: { break; }
+            }
+
+            break;
+        }
+    
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:

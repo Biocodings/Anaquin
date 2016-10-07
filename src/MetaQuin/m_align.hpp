@@ -86,9 +86,21 @@ namespace Anaquin
             // Sequins to sensitivity
             std::map<GeneID, Proportion> g2s;
         };
-        
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
-        static void  report (const FileName &, const FileName &, const Options &o = Options());
+
+        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
+        {
+            std::vector<Stats> stats;
+            
+            for (const auto &file : files)
+            {
+                stats.push_back(analyze(file, o));
+            }
+            
+            return stats;
+        }
+
+        static Stats analyze(const FileName &, const Options &o);
+        static void  report (const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

@@ -22,13 +22,9 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     
     o.analyze(fasta);
     
-    /*
-     * Constructing mapping involving contigs and sequins. However, how this is constructed is tool specific.
-     */
-    
-    switch (o.aligner)
+    switch (o.format)
     {
-        case MAligner::Blat:
+        case Format::Blat:
         {
             const auto x = MBlat::analyze(align);
             
@@ -68,23 +64,23 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             break;
         }
             
-        case MAligner::MetaQuast:
+        case Format::MetaQuast:
         {
             ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
                                                        const ParserProgress &)
-                                    {
-                                        for (const auto &c : x.contigs)
-                                        {
-                                            // Contigs.fasta doesn't have "_"
-                                            auto t = c;
-                                            
-                                            // Eg: contig-1056000000 2818 nucleotides
-                                            boost::replace_all(t, "_", " ");
-                                            
-                                            stats.c2s[t] = x.id;
-                                            stats.s2c[x.id].push_back(t);
-                                        }
-                                    });
+            {
+                for (const auto &c : x.contigs)
+                {
+                    // Contigs.fasta doesn't have "_"
+                    auto t = c;
+                    
+                    // Eg: contig-1056000000 2818 nucleotides
+                    boost::replace_all(t, "_", " ");
+                    
+                    stats.c2s[t] = x.id;
+                    stats.s2c[x.id].push_back(t);
+                }
+            });
             
             // Eg: genome_info.txt
             const auto genome = files[2];
@@ -113,8 +109,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     assert(!stats.c2s.empty());
     assert(!stats.s2c.empty());
     
-    stats.soft = o.soft;
-    stats.aligner = o.aligner;
+    stats.format = o.format;
     
     // Calculate statistics such as N50 and proportion asssembled
     stats.dnovo = DAsssembly::analyze(fasta, &stats);
@@ -129,23 +124,18 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
         {
             for (const auto &c : stats.s2c.at(seq.first))
             {
-                switch (o.aligner)
+                switch (o.format)
                 {
-                    case MAligner::Blat:
+                    case Format::Blat:
                     {
                         stats.match += stats.c2a.at(c);
                         stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
                         break;
                     }
                         
-                    case MAligner::MetaQuast:
+                    case Format::MetaQuast:
                     {
                         break;
-                    }
-                        
-                    case MAligner::Kallisto:
-                    {
-                        throw "Not Implemented";
                     }
                 }
             }
@@ -160,30 +150,30 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
     const auto &r = Standard::instance().r_meta;
     
     const auto summary = "Summary for input: %1%\n\n"
-    "   Synthetic: %2%\n"
-    "   Community: %3%\n\n"
-    "   Contigs:   %4%\n\n"
-    "   ***\n"
-    "   *** Reference annotation (Synthetic)\n"
-    "   ***\n\n"
-    "   File: %6%\n\n"
-    "   Synthetic: %7% sequins\n"
-    "   Contigs: %5%\n\n"
-    "   ***\n"
-    "   *** The following statistics are computed on the synthetic community\n"
-    "   ***\n\n"
-    "   N20:  %8%\n"
-    "   N50:  %9%\n"
-    "   N80:  %10%\n"
-    "   Min:  %11%\n"
-    "   Mean: %12%\n"
-    "   Max:  %13%\n\n"
-    "   ***\n"
-    "   *** The following overlapping statistics are computed as proportion\n"
-    "   ***\n\n"
-    "   Match:    %14%\n"
-    "   Mismatch: %15%\n"
-    "   Covered:  %16%\n";
+                         "   Synthetic: %2%\n"
+                         "   Community: %3%\n\n"
+                         "   Contigs:   %4%\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %6%\n\n"
+                         "   Synthetic: %7% sequins\n"
+                         "   Contigs: %5%\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed on the synthetic community\n"
+                         "   ***\n\n"
+                         "   N20:  %8%\n"
+                         "   N50:  %9%\n"
+                         "   N80:  %10%\n"
+                         "   Min:  %11%\n"
+                         "   Mean: %12%\n"
+                         "   Max:  %13%\n\n"
+                         "   ***\n"
+                         "   *** The following overlapping statistics are computed as proportion\n"
+                         "   ***\n\n"
+                         "   Match:    %14%\n"
+                         "   Mismatch: %15%\n"
+                         "   Covered:  %16%\n";
     
     const auto &dn = stats.dnovo;
     
@@ -225,9 +215,9 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
         {
             for (const auto &c : stats.s2c.at(seq.first))
             {
-                switch (o.aligner)
+                switch (o.format)
                 {
-                    case MAligner::Blat:
+                    case MAssembly::Format::Blat:
                     {
                         const auto total = stats.c2l.at(c);
                         const auto align = stats.c2a.at(c);
@@ -235,14 +225,14 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                         assert(total >= align);
                         
                         ss << ((boost::format(format) % seq.first
-                                % seq.second.concent()
-                                % c
-                                % align
-                                % (total - align)).str()) << std::endl;
+                                                      % seq.second.concent()
+                                                      % c
+                                                      % align
+                                                      % (total - align)).str()) << std::endl;
                         break;
                     }
                         
-                    case MAligner::MetaQuast:
+                    case MAssembly::Format::MetaQuast:
                     {
                         /*
                          * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned
@@ -250,16 +240,11 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                          */
                         
                         ss << ((boost::format(format) % seq.first
-                                % seq.second.concent()
-                                % c
-                                % "-"
-                                % "-").str()) << std::endl;
+                                                      % seq.second.concent()
+                                                      % c
+                                                      % "-"
+                                                      % "-").str()) << std::endl;
                         break;
-                    }
-                        
-                    case MAligner::Kallisto:
-                    {
-                        throw "Not Implemented";
                     }
                 }
                 

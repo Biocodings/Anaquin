@@ -273,6 +273,12 @@ namespace Anaquin
     {
         public:
         
+            MetaRef();
+
+            void readBed(const Reader &);
+
+            MC2Intervals mInters() const;
+
         protected:
         
             void validate() override;
@@ -332,9 +338,7 @@ namespace Anaquin
             ID2Intervals dIntersSyn() const;
             C2Intervals  dIntersGen() const;
 
-            MC2Intervals mInters()  const;
-            MC2Intervals msInters() const;
-            MC2Intervals mgInters() const;
+            MC2Intervals mInters() const;
         
             // Do we have the chromosome in the reference?
             bool hasInters(const ChrID &) const;

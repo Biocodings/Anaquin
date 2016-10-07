@@ -8,20 +8,11 @@
 
 namespace Anaquin
 {
-    enum class MSoftware
+    inline bool isMetaQuin(const SequinID &id)
     {
-        Velvet,
-        RayMeta,
-        Kallisto,
-    };
-    
-    enum class MAligner
-    {
-        MetaQuast,
-        Blat,
-        Kallisto,
-    };
-    
+        return true;
+    }
+
     struct DAsssembly
     {
         template <typename T> struct Stats : public MappingStats

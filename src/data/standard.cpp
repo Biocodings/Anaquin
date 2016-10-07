@@ -98,18 +98,6 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
-void Standard::addGenomic(const ChrID &cID)
-{
-    assert(!cID.empty());
-    Standard::genoIDs.insert(cID);
-}
-
-bool Standard::isGenomic(const ChrID &cID)
-{
-    assert(!cID.empty());
-    return Standard::genoIDs.count(cID);
-}
-
 ChrID Standard::toReverse(const ChrID &cID)
 {
     auto x = cID;
@@ -151,24 +139,9 @@ bool Standard::isSynthetic(const ChrID &cID)
     return false;
 }
 
-void Standard::addVStd(const Reader &r)
-{
-    r_var.readBRef(r);
-}
-
-void Standard::addVVar(const Reader &r)
-{
-    r_var.readVRef(r);
-}
-
 void Standard::addVMix(const Reader &r)
 {
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
-}
-
-void Standard::addRRef(const Reader &r)
-{
-    r_rna.readRef(r);
 }
 
 void Standard::addRMix(const Reader &r)

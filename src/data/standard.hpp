@@ -34,17 +34,25 @@ namespace Anaquin
             static bool isSynthetic(const ChrID &);
 
             // Whether the chromosome is genomic
-            static bool isGenomic(const ChrID &);
-        
+            static bool isGenomic(const ChrID &cID)
+            {
+                A_ASSERT(!cID.empty());
+                return Standard::genoIDs.count(cID);
+            }
+
             // Add genomic chromosome, which can be checked by isGenomic()
-            static void addGenomic(const ChrID &);
-        
+            static void addGenomic(const ChrID &cID)
+            {
+                A_ASSERT(!cID.empty());
+                Standard::genoIDs.insert(cID);
+            }
+
             /*
-             * ---------------- Transcriptome analysis ----------------
+             * ---------------- RnaQuin analysis ----------------
              */
 
-            // Add a reference annotation
-            void addRRef(const Reader &);
+            // Add reference annotation for RnaQuin in GTF format
+            inline void addRRef(const Reader &r) { r_rna.readRef(r); }
 
             void addRMix(const Reader &);
             void addRDMix(const Reader &);
@@ -52,26 +60,30 @@ namespace Anaquin
             RnaRef r_rna;
 
             /*
-             * ---------------- Metagenomic analysis ----------------
+             * ---------------- MetaQuin analysis ----------------
              */
 
+            // Add reference mixture for MetaQuin
             void addMMix(const Reader &);
-        
+
+            // Add reference annotation for MetaQuin in BED format
+            inline void addMBed(const Reader &r) { r_meta.readBed(r); }
+
             MetaRef r_meta;
         
             /*
-             * ---------------- Variant analysis ----------------
+             * ---------------- VarQuin analysis ----------------
              */
 
             // Add reference mixture for VarQuin
             void addVMix(const Reader &);
         
-            // Add reference variants for VarQuin (synthetic and genomic/user)
-            void addVVar(const Reader &);
+            // Add reference variants for VarQuin in VCF format
+            inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 
-            // Add reference standards for VarQuin
-            void addVStd(const Reader &);
-
+            // Add reference annotation for VarQuin in BED format
+            inline void addVStd(const Reader &r) { r_var.readBRef(r); }
+            
             VarRef r_var;
 
         private:

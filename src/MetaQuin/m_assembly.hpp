@@ -9,13 +9,19 @@ namespace Anaquin
 {
     struct MAssembly
     {
+        enum class Format
+        {
+            Blat,
+            MetaQuast,
+        };
+
         struct Stats : public LinearStats, public DAsssembly::DenoAssemblyImpl
         {
             inline SequinID findSeq(const ContigID &cID) const
             {
                 auto x = cID;
                 
-                if (soft == MSoftware::RayMeta && aligner == MAligner::Blat)
+                //if (soft == Software::RayMeta && format == Format::Blat)
                 {
                     /*
                      * BLAT doesn't do spacing. For example, "contig-0 52976 nucleotides"
@@ -33,12 +39,7 @@ namespace Anaquin
                 return static_cast<Proportion>(match) / (match + mismatch);
             }
             
-            /*
-             * Usually, they're not needed but we need them here to check for special cases.
-             */
-            
-            MAligner aligner;
-            MSoftware soft;
+            Format format;
             
             // Total mismatching bases
             Base mismatch = 0;
@@ -65,11 +66,10 @@ namespace Anaquin
         {
             Options() {}
             
-            MAligner aligner;
-            MSoftware soft;
+            Format format;
         };
         
-        static Stats analyze(const std::vector<FileName> &, const Options &o = Options());
+        static Stats analyze(const std::vector<FileName> &, const Options &o);
         static void  report (const std::vector<FileName> &, const Options &o = Options());
     };
 }

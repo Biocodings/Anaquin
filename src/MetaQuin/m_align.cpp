@@ -1,4 +1,5 @@
 #include "MetaQuin/m_align.hpp"
+#include "MetaQuin/MetaQuin.hpp"
 #include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
@@ -17,7 +18,7 @@ static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 
 static MAlign::Stats init()
 {
-    const auto &r = Standard::instance().r_var;
+    const auto &r = Standard::instance().r_meta;
     
     MAlign::Stats stats;
     
@@ -130,7 +131,7 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
                 
                 writeBase(align.cID, l, "FP");
             }
-            else if (Standard::isSynthetic(align.cID))
+            else if (isMetaQuin(align.cID))
             {
                 stats.data[align.cID].fp++;
                 
@@ -154,15 +155,9 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
     }
 }
 
-MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const Options &o)
+MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 {
     auto stats = init();
-    
-    o.info(std::to_string(stats.inters.size()) + " chromosomes in the reference");
-    
-#ifdef DEBUG_MAlign
-    __bWriter__.open(o.work + "/MetaAlign_qbase.stats");
-#endif
     
     auto classify = [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
@@ -189,7 +184,7 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
             return;
         }
         
-        if (Standard::isSynthetic(x.cID))
+        if (isMetaQuin(x.cID))
         {
             classifyAlign(stats, x);
         }
@@ -203,45 +198,12 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
         }
     };
     
-    /*
-     * Analyzing genomic alignments
-     */
+    o.analyze(file);
     
-    o.analyze(gen);
-    
-    ParserSAM::parse(gen, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
-                     {
-                         // Ignore alignments mapped to the reverse genome
-                         if (!Standard::isSynthetic(align.cID))
-                         {
-                             classify(align, info);
-                         }
-                     });
-    
-    /*
-     * Analyzing sequin alignments (also in the forward genome)
-     */
-    
-    o.analyze(seqs);
-    
-    ParserSAM::parse(seqs, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
-                     {
-                         // Eg: chr2 to chrev2
-                         boost::replace_all(align.cID, "chr", "chrev");
-                         
-                         if (Standard::isSynthetic(align.cID))
-                         {
-                             classify(align, info);
-                         }
-                         else
-                         {
-                             o.logInfo("Invalid chromosome for sequins: " + align.cID + "." + align.name);
-                         }
-                     });
-    
-#ifdef DEBUG_MAlign
-    __bWriter__.close();
-#endif
+    ParserSAM::parse(file, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    {
+        classify(align, info);
+    });
     
     o.info("Alignments analyzed. Generating statistics.");
     
@@ -265,10 +227,10 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
         for (const auto &j : i.second.data())
         {
             const auto &rID  = j.first;
-            const auto isSyn = Standard::isSynthetic(cID);
+            const auto isSyn = isMetaQuin(cID);
             
             const auto m = stats.inters.at(cID).find(rID);
-            assert(m);
+            A_ASSERT(m);
             
             // Statistics for the region
             const auto rs = m->stats();
@@ -292,8 +254,8 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
                 stats.g2s[rID] = static_cast<Proportion>(stats.g2c.at(rID)) / stats.g2l.at(rID);
             }
             
-            assert(stats.s2c[rID] <= stats.s2l[rID]);
-            assert(stats.g2c[rID] <= stats.g2l[rID]);
+            A_ASSERT(stats.s2c[rID] <= stats.s2l[rID]);
+            A_ASSERT(stats.g2c[rID] <= stats.g2l[rID]);
             
             if (!stats.data.count(cID))
             {
@@ -317,7 +279,7 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
                 
                 assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
                 
-                if (Standard::isSynthetic(cID))
+                if (isMetaQuin(cID))
                 {
                     stp += btp;
                     sfp += bfp;
@@ -344,7 +306,7 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
         const auto atp = x.aLvl.m.tp();
         const auto afp = x.aLvl.m.fp();
         
-        if (Standard::isSynthetic(cID))
+        if (isMetaQuin(cID))
         {
             stats.sa.tp() += atp;
             stats.sa.fp() += afp;
@@ -365,7 +327,7 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
         // Statistics for the non-reference region (FP)
         const auto fs = x.bLvl.fp->stats();
         
-        if (Standard::isSynthetic(cID))
+        if (isMetaQuin(cID))
         {
             stats.sb.tp() += ts.nonZeros;
             stats.sb.fp() += fs.nonZeros;
@@ -379,26 +341,23 @@ MAlign::Stats MAlign::analyze(const FileName &gen, const FileName &seqs, const O
         }
     }
     
-    //assert(!stats.g2r.empty());
-    assert(!stats.g2s.empty());
-    assert(!stats.s2l.empty());
-    assert(!stats.s2c.empty());
+    A_ASSERT(!stats.g2s.empty());
+    A_ASSERT(!stats.s2l.empty());
+    A_ASSERT(!stats.s2c.empty());
     
-    assert(stats.s2l.size() == stats.s2c.size());
-    //assert(stats.g2r.size() == stats.g2s.size());
+    A_ASSERT(stats.s2l.size() == stats.s2c.size());
     
-    assert(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
-    assert(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
+    A_ASSERT(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
+    A_ASSERT(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
     
-    assert(stats.sb.sn() >= 0.0 && stats.sb.sn() <= 1.0);
-    assert(isnan(stats.gb.sn()) || (stats.gb.sn() >= 0.0 && stats.gb.sn() <= 1.0));
+    A_ASSERT(stats.sb.sn() >= 0.0 && stats.sb.sn() <= 1.0);
+    A_ASSERT(isnan(stats.gb.sn()) || (stats.gb.sn() >= 0.0 && stats.gb.sn() <= 1.0));
     
     return stats;
 }
 
-static void writeSummary(const FileName &file,
-                         const FileName &gen,
-                         const FileName &seq,
+static void writeSummary(const FileName &src,
+                         const FileName &file,
                          const MAlign::Stats &stats,
                          const MAlign::Options &o)
 {
@@ -415,65 +374,65 @@ static void writeSummary(const FileName &file,
     assert(sumg2l >= sumg2c);
     
     const auto summary = "-------MetaAlign Summary Statistics\n\n"
-    "       Reference annotation file: %1%\n"
-    "       Genome alignment file: %2%\n"
-    "       Synthetic alignment file: %3%\n\n"
-    "-------Alignments\n\n"
-    "       Synthetic: %4% (%5%)\n"
-    "       Genome:    %6% (%7%)\n"
-    "       Dilution:  %8$.2f\n\n"
-    "-------Reference annotation (Synthetic)\n\n"
-    "       Synthetic: %9% regions\n"
-    "       Synthetic: %10% bases\n\n"
-    "-------Reference annotation (Genome)\n\n"
-    "       Genome: %11% regions\n"
-    "       Genome: %12% bases\n\n"
-    "-------Comparison of alignments to annotation (Synthetic)\n\n"
-    "       *Alignment level\n"
-    "       Correct:     %13%\n"
-    "       Incorrect:   %14%\n\n"
-    "       Precision:   %15$.4f\n\n"
-    "       *Nucleotide level\n"
-    "       Covered:     %16%\n"
-    "       Uncovered:   %17%\n"
-    "       Erroneous:   %18%\n"
-    "       Total:       %19%\n\n"
-    "       Sensitivity: %20$.4f\n"
-    "       Precision:   %21$.4f\n\n"
-    "-------Comparison of alignments to annotation (Genome)\n\n"
-    "       *Nucleotide level\n"
-    "       Covered:     %22%\n"
-    "       Uncovered:   %23%\n"
-    "       Total:       %24%\n\n"
-    "       Sensitivity: %25$.4f\n";
+                         "       Reference annotation file: %1%\n"
+                         "       Genome alignment file: %2%\n"
+                         "       Synthetic alignment file: %3%\n\n"
+                         "-------Alignments\n\n"
+                         "       Synthetic: %4% (%5%)\n"
+                         "       Genome:    %6% (%7%)\n"
+                         "       Dilution:  %8$.2f\n\n"
+                         "-------Reference annotation (Synthetic)\n\n"
+                         "       Synthetic: %9% regions\n"
+                         "       Synthetic: %10% bases\n\n"
+                         "-------Reference annotation (Genome)\n\n"
+                         "       Genome: %11% regions\n"
+                         "       Genome: %12% bases\n\n"
+                         "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                         "       *Alignment level\n"
+                         "       Correct:     %13%\n"
+                         "       Incorrect:   %14%\n\n"
+                         "       Precision:   %15$.4f\n\n"
+                         "       *Nucleotide level\n"
+                         "       Covered:     %16%\n"
+                         "       Uncovered:   %17%\n"
+                         "       Erroneous:   %18%\n"
+                         "       Total:       %19%\n\n"
+                         "       Sensitivity: %20$.4f\n"
+                         "       Precision:   %21$.4f\n\n"
+                         "-------Comparison of alignments to annotation (Genome)\n\n"
+                         "       *Nucleotide level\n"
+                         "       Covered:     %22%\n"
+                         "       Uncovered:   %23%\n"
+                         "       Total:       %24%\n\n"
+                         "       Sensitivity: %25$.4f\n";
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
-                     % gen                     // 2
-                     % seq                     // 3
-                     % stats.countSyn          // 4
-                     % (100 * stats.propSyn()) // 5
-                     % stats.countGen          // 6
-                     % (100 * stats.propGen()) // 7
-                     % stats.dilution()        // 8
-                     % r.countGeneSyn()        // 9
-                     % r.countBaseSyn()        // 10
-                     % r.countGeneGen()        // 11
-                     % r.countBaseGen()        // 12
-                     % stats.sa.tp()           // 13
-                     % stats.sa.fp()           // 14
-                     % stats.sa.pc()           // 15
-                     % stats.sb.tp()           // 16
-                     % stats.sb.fn()           // 17
-                     % stats.sb.fp()           // 18
-                     % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 19
-                     % stats.sb.sn()                   // 20
-                     % stats.sb.pc()                   // 21
-                     % stats.gb.tp()                   // 22
-                     % stats.gb.fn()                   // 23
-                     % (stats.gb.tp() + stats.gb.fn()) // 24
-                     % stats.gb.sn()                   // 25
+                                            % file                     // 2
+                                            % file                     // 3
+                                            % stats.countSyn          // 4
+                                            % (100 * stats.propSyn()) // 5
+                                            % stats.countGen          // 6
+                                            % (100 * stats.propGen()) // 7
+                                            % stats.dilution()        // 8
+                                            % r.countGeneSyn()        // 9
+                                            % r.countBaseSyn()        // 10
+                                            % r.countGeneGen()        // 11
+                                            % r.countBaseGen()        // 12
+                                            % stats.sa.tp()           // 13
+                                            % stats.sa.fp()           // 14
+                                            % stats.sa.pc()           // 15
+                                            % stats.sb.tp()           // 16
+                                            % stats.sb.fn()           // 17
+                                            % stats.sb.fp()           // 18
+                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 19
+                                            % stats.sb.sn()                   // 20
+                                            % stats.sb.pc()                   // 21
+                                            % stats.gb.tp()                   // 22
+                                            % stats.gb.fn()                   // 23
+                                            % (stats.gb.tp() + stats.gb.fn()) // 24
+                                            % stats.gb.sn()                   // 25
                      ).str());
     o.writer->close();
 }
@@ -535,7 +494,7 @@ static void writeQuins(const FileName &file, const MAlign::Stats &stats, const M
         const auto &cID = i.first;
         
         // Only the synthetic chromosome...
-        if (Standard::isSynthetic(cID))
+        if (isMetaQuin(cID))
         {
             // For each sequin region...
             for (const auto &j : i.second.data())
@@ -571,7 +530,7 @@ static void writeQueries(const FileName &file, const MAlign::Stats &stats, const
     
     for (const auto &i : stats.data)
     {
-        if (Standard::isSynthetic(i.first))
+        if (isMetaQuin(i.first))
         {
             for (const auto &j : i.second.afp)
             {
@@ -584,9 +543,9 @@ static void writeQueries(const FileName &file, const MAlign::Stats &stats, const
 #endif
 }
 
-void MAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
+void MAlign::report(const std::vector<FileName> &files, const Options &o)
 {
-    const auto stats = analyze(gen, seqs, o);
+    const auto stats = analyze(files, o);
     
     o.info("Generating statistics");
     
@@ -594,33 +553,23 @@ void MAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      * Generating MetaAlign_summary.stats
      */
     
-    writeSummary("MetaAlign_summary.stats", gen, seqs, stats, o);
+    writeSummary("MetaAlign_summary.stats", files[0], stats[0], o);
     
     /*
      * Generating MetaAlign_quins.stats
      */
-    
-    writeQuins("MetaAlign_sequins.csv", stats, o);
+
+    writeQuins("MetaAlign_sequins.csv", stats[0], o);
     
     /*
      * Generating MetaAlign_queries.stats (for debugging)
      */
-    
-    writeQueries("MetaAlign_queries.stats", stats, o);
+
+    writeQueries("MetaAlign_queries.stats", stats[0], o);
     
     /*
      * Generating MetaAlign_rbase.stats (for debugging)
      */
-    
-    writeBQuins("MetaAlign_rbase.stats", stats, o);
-    
-    /*
-     * Generating MetaAlign_report.pdf
-     */
-    
-    o.report->open("MetaAlign_report.pdf");
-    o.report->addTitle("MetaAlign");
-    o.report->addFile("MetaAlign_summary.stats");
-    o.report->addFile("MetaAlign_sequins.csv");
-    o.report->addFile("MetaAlign_queries.stats");
+
+    writeBQuins("MetaAlign_rbase.stats", stats[0], o);
 }

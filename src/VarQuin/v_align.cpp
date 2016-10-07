@@ -76,9 +76,9 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             stats.data[align.cID].lGaps[m->name()] += rGaps;
             stats.data[align.cID].align[m->name()] += covered;
             
-            assert(covered >= 0);
-            assert(l.length() > lGaps);
-            assert(l.length() > rGaps);
+            A_ASSERT(covered >= 0);
+            A_ASSERT(l.length() > lGaps);
+            A_ASSERT(l.length() > rGaps);
         };
         
         // Does the read aligned within a region?
@@ -107,7 +107,7 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             if (m)
             {
                 f(m);
-                assert(lGaps != 0 || rGaps != 0);
+                A_ASSERT(lGaps != 0 || rGaps != 0);
                 
                 // Gap to the left?
                 if (l.start < m->l().start)
@@ -131,7 +131,7 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
                 
                 writeBase(align.cID, l, "FP");
             }
-            else if (Standard::isSynthetic(align.cID))
+            else if (isVarQuin(align.cID))
             {
                 stats.data[align.cID].fp++;
                 
@@ -190,7 +190,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             return;
         }
         
-        if (Standard::isSynthetic(x.cID))
+        if (isVarQuin(x.cID))
         {
             classifyAlign(stats, x);
         }
@@ -213,7 +213,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     ParserSAM::parse(gen, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
         // Ignore alignments mapped to the reverse genome
-        if (!Standard::isSynthetic(align.cID))
+        if (!isVarQuin(align.cID))
         {
             classify(align, info);
         }
@@ -230,7 +230,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
         // Eg: chr2 to chrev2
         boost::replace_all(align.cID, "chr", "chrev");
 
-        if (Standard::isSynthetic(align.cID))
+        if (isVarQuin(align.cID))
         {
             classify(align, info);
         }
@@ -536,7 +536,7 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
         const auto &cID = i.first;
         
         // Only the synthetic chromosome...
-        if (Standard::isSynthetic(cID))
+        if (isVarQuin(cID))
         {
             // For each sequin region...
             for (const auto &j : i.second.data())
@@ -572,7 +572,7 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
 
     for (const auto &i : stats.data)
     {
-        if (Standard::isSynthetic(i.first))
+        if (isVarQuin(i.first))
         {
             for (const auto &j : i.second.afp)
             {

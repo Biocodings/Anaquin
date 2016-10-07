@@ -5,6 +5,7 @@
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "RnaQuin/RnaQuin.hpp"
+#include "MetaQuin/MetaQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -416,9 +417,55 @@ void RnaRef::validate()
  * ------------------------- Metagenomic Analysis -------------------------
  */
 
+struct MetaRef::MetaRefImpl
+{
+    BedData bData;
+};
+
+MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
+
+void MetaRef::readBed(const Reader &r)
+{
+    for (const auto &i : (_impl->bData = bedData(r)))
+    {
+        if (!isMetaQuin(i.first))
+        {
+            Standard::addGenomic(i.first);
+        }
+    }
+}
+
+MC2Intervals MetaRef::mInters() const
+{
+    return _impl->bData.minters();
+}
+
 void MetaRef::validate()
 {
-    
+    // Do we have a BED reference? If no, let's try mixture reference.
+    if (!_impl->bData.countBase())
+    {
+        merge(_rawMIDs, _rawMIDs);
+    }
+    else
+    {
+        std::set<SequinID> seqIDs;
+        
+        for (const auto &i : _impl->bData)
+        {
+            const auto &chrID = i.first;
+            A_ASSERT(!chrID.empty());
+            
+            if (isMetaQuin(chrID))
+            {
+                seqIDs.insert(chrID);
+            }
+        }
+
+        A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
+        
+        merge(seqIDs);
+    }
 }
 
 /*
@@ -466,9 +513,7 @@ void VarRef::readVRef(const Reader &r)
 C2Intervals  VarRef::dInters()    const { return _impl->bData.inters();    }
 ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(); }
 
-MC2Intervals VarRef::mInters()  const { return _impl->bData.minters();    }
-MC2Intervals VarRef::msInters() const { return _impl->bData.mintersSyn(); }
-MC2Intervals VarRef::mgInters() const { return _impl->bData.mintersGen(); }
+MC2Intervals VarRef::mInters()  const { return _impl->bData.minters(); }
 
 MergedIntervals<> VarRef::mInters(const ChrID &cID) const
 {
