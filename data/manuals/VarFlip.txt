@@ -5,23 +5,17 @@
 
 <b>DESCRIPTION</b>
     VarFlip is designed to compute reverse complement of sequin reads aligned to the reverse
-    synthetic genome. It takes raw sequence files and its alignment files for inputs. The tool
-    extracts all reads aligned to the reverse genome, compute their reverse complement and generate
-    a new set of pair-ended sequence files for the sequin reads.
+    synthetic genome. The tool extracts all reads aligned to the reverse genome, compute their
+	reverse complement and generate a new set of pair-ended sequence files for the sequin reads.
 
-    Filters can be applied to filter our low quality reads aligned to the reverse genome. Users are
-    expected to realign the generated sequin pair-ended sequence files against the human genome.
-
-<b>SUPPORT SOFTWARE</b>
+s<b>SUPPORT SOFTWARE</b>
      VarFlip takes the standard SAM/BAM file that is supported by all popular alignment softwares.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarFlip –ufiles seq_1.fq –ufiles seq_2.fq –ufiles aligned.bam
+     anaquin VarFlip –ufiles aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -ufiles      First pair for the input sequence file in FASTQ format
-        -ufiles      Second pair for the input sequence file in FASTQ format
         -ufiles      Generated forward/reverse  alignment file in SAM/BAM format
 
      Optional:
@@ -29,9 +23,6 @@
 
 <b>OUTPUTS</b>
      VarFlip_summary.stats - gives the summary statistics
-     VarFlip_genome.1.fq   - is the first paired-end sequence file containing reads from the inputs
-                             that are aligned to the hg38 genome
-     VarFlip_genome.2.fq   - is the second paired-end for VarFlip_genome.1.fq
      VarFlip_sequins.1.fq  - is the first paired-end sequence file with reads from the inputs that
-                             are aligned to the reverse genome.
+                             are aligned to reverse genome.
      VarFlip_sequins.2.fq  - is the second paired-end for VarFlip_sequins_1.fq
