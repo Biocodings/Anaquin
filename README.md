@@ -4,7 +4,7 @@
 
 Respository for the R-package is hosted by Bioconductor and available at: https://github.com/Bioconductor-mirror/Anaquin.
 
-The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute.
+The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute of Medical Research.
 
 This is a beta software as we are trying to work with the bioinformatics community. Please send us your suggestions (eg. what do you want Anaquin to do?). Detailed workflow guide is avaialble for download at www.sequin.xyz.
 
