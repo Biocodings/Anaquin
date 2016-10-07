@@ -44,10 +44,13 @@ VFlip2::Stats VFlip2::analyze(const FileName &align, const Options &o)
             }
             else
             {
-                const auto &seen  = seenMates[x.name];
-                const auto first  = seen.isFirstPair ? &seen : &x;
-                const auto second = seen.isFirstPair ? &x : &seen;
-                
+                auto &seen  = seenMates[x.name];
+                auto first  = seen.isFirstPair ? &seen : &x;
+                auto second = seen.isFirstPair ? &x : &seen;
+
+                complement(first->seq);
+                complement(second->seq);
+
                 f1.write("@" + first->name + "/1");
                 f1.write(first->seq);
                 f1.write("+");
