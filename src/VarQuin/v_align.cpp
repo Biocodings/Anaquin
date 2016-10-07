@@ -1,3 +1,4 @@
+#include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_align.hpp"
 #include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string/replace.hpp>
@@ -80,7 +81,7 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
             assert(l.length() > rGaps);
         };
         
-        // Does the read aligned within a region (eg: gene)?
+        // Does the read aligned within a region?
         const auto m = stats.inters.at(align.cID).contains(l);
 
         if (m)
@@ -265,10 +266,10 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
         for (const auto &j : i.second.data())
         {
             const auto &rID  = j.first;
-            const auto isSyn = Standard::isSynthetic(cID);
+            const auto isSyn = isReverseGenome(cID);
 
             const auto m = stats.inters.at(cID).find(rID);
-            assert(m);
+            A_ASSERT(m);
 
             // Statistics for the region
             const auto rs = m->stats();
@@ -317,7 +318,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
                 
                 assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
                 
-                if (Standard::isSynthetic(cID))
+                if (isSyn)
                 {
                     stp += btp;
                     sfp += bfp;
@@ -344,7 +345,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
         const auto atp = x.aLvl.m.tp();
         const auto afp = x.aLvl.m.fp();
         
-        if (Standard::isSynthetic(cID))
+        if (isReverseGenome(cID))
         {
             stats.sa.tp() += atp;
             stats.sa.fp() += afp;
@@ -365,7 +366,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
         // Statistics for the non-reference region (FP)
         const auto fs = x.bLvl.fp->stats();
         
-        if (Standard::isSynthetic(cID))
+        if (isReverseGenome(cID))
         {
             stats.sb.tp() += ts.nonZeros;
             stats.sb.fp() += fs.nonZeros;
@@ -380,18 +381,18 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     }
 
     //assert(!stats.g2r.empty());
-    assert(!stats.g2s.empty());
-    assert(!stats.s2l.empty());
-    assert(!stats.s2c.empty());
+    A_ASSERT(!stats.g2s.empty());
+    A_ASSERT(!stats.s2l.empty());
+    A_ASSERT(!stats.s2c.empty());
 
-    assert(stats.s2l.size() == stats.s2c.size());
+    A_ASSERT(stats.s2l.size() == stats.s2c.size());
     //assert(stats.g2r.size() == stats.g2s.size());
 
-    assert(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
-    assert(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
+    A_ASSERT(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
+    A_ASSERT(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
 
-    assert(stats.sb.sn() >= 0.0 && stats.sb.sn() <= 1.0);
-    assert(isnan(stats.gb.sn()) || (stats.gb.sn() >= 0.0 && stats.gb.sn() <= 1.0));
+    A_ASSERT(stats.sb.sn() >= 0.0 && stats.sb.sn() <= 1.0);
+    A_ASSERT(isnan(stats.gb.sn()) || (stats.gb.sn() >= 0.0 && stats.gb.sn() <= 1.0));
     
     return stats;
 }
