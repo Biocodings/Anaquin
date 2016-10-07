@@ -6,7 +6,7 @@
 <b>DESCRIPTION</b>
     VarFlip is designed to compute reverse complement of sequin reads aligned to the reverse
     synthetic genome. The tool extracts all reads aligned to the reverse genome, compute their
-	reverse complement and generate a new set of pair-ended sequence files for the sequin reads.
+    reverse complement and generate a new set of pair-ended sequence files for the sequin reads.
 
 s<b>SUPPORT SOFTWARE</b>
      VarFlip takes the standard SAM/BAM file that is supported by all popular alignment softwares.
