@@ -50,6 +50,7 @@ namespace Anaquin
     typedef std::string Units;
     typedef std::string Command;
     typedef std::string Scripts;
+    typedef std::string ContigID;
     typedef std::string FileName;
     typedef std::string ReadName;
     
