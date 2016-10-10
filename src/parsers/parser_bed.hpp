@@ -3,7 +3,6 @@
 
 #include "data/locus.hpp"
 #include "data/reader.hpp"
-#include "data/biology.hpp"
 #include "parsers/parser.hpp"
 #include <boost/algorithm/string.hpp>
 

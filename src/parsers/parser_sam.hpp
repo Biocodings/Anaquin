@@ -55,6 +55,12 @@ namespace Anaquin
         };
         
         typedef std::function<void (Data &, const Info &)> Functor;
+        
+        /*
+         * In order to improve the efficiency, not everything is computed. Set the last
+         * argument to true will force it to happen.
+         */
+
         static void parse(const FileName &, Functor, bool details = false);
     };
 }

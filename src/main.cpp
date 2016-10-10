@@ -15,7 +15,7 @@
 #include "RnaQuin/r_kreport.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
-#include "VarQuin/v_flip2.hpp"
+#include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_kreport.hpp"
@@ -1334,7 +1334,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_FLIP:  { analyze_1<VFlip2>(OPT_U_FILES); break; }
+                case TOOL_V_FLIP:  { analyze_1<VFlip>(OPT_U_FILES); break; }
                 case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
 
                 case TOOL_V_ALLELE:

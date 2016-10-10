@@ -9,6 +9,9 @@ namespace Anaquin
     {
         operator const Locus &() const { return l; }
 
+        // Eg: B7_591:6:155:12:674
+        ReadID name;
+
         // Primary alignment
         ChrID cID;
 
@@ -24,37 +27,39 @@ namespace Anaquin
         // Mapping quality
         int mapq;
 
-        // First paired? Only defined for paired-end alignments
-        bool isFirstPair;
+        // Bitwise FLAG
+        int flag;
+
+        /*
+         * SAM flag fields
+         */
         
-        // Primary alignment?
-        bool isPrim;
+        bool isPaired;
+        bool isAllAligned;
+        bool isAligned;
+        bool isMateAligned;
+        bool isForward;
+        bool isMateReverse;
+        bool isFirstPair;
+        bool isSecondPair;
+        bool isDuplicate;
+        bool isPrimary;
+        bool isSupplement;        
+        bool isPassed;
         
         // Secondary alignment? Typically used for alternative mappings when multiple mappings are presented
         bool isSecondary;
-
+        
         /*
          * Optional fields
          */
         
-        // Eg: B7_591:6:155:12:674
-        std::string name;
-
         // Signed observed template length
         Base tlen;
         
         // Cigar string
         std::string cigar;
 
-        // Bitwise FLAG
-        int flag;
-
-        // Passsing filters, such as platform/quality control?
-        bool isPassed;
-        
-        // Is this mapped to forward strand?
-        bool isForw;
-        
         // Reference sequence name of the primary alignment
         ChrID rnext;
         

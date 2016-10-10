@@ -30,7 +30,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         }
         
         // Don't count for multiple alignments
-        if (x.isPrim)
+        if (x.isPrimary)
         {
             if (Standard::isSynthetic(x.cID))
             {

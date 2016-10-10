@@ -23,7 +23,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         
         const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
 
-        if (x.isPrim)
+        if (x.isPrimary)
         {
             if (Standard::isSynthetic(x.cID))
             {
@@ -50,7 +50,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
                 }
             }
             
-            if (x.isPrim && Standard::isSynthetic(x.cID))
+            if (x.isPrimary && Standard::isSynthetic(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);

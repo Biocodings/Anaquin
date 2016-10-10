@@ -131,17 +131,15 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
         align._b  = t;
         align._h  = h;
 
-        // Mapping quality
         align.mapq = t->core.qual;
+        align.flag = t->core.flag;
         
         const auto hasCID = t->core.tid >= 0;
         
         if (details)
         {
-            align.flag   = t->core.flag;
             align.seq    = bam2seq(t);
             align.qual   = bam2qual(t);
-            align.isForw = !bam_is_rev(t);
             align.cigar  = hasCID ? bam2cigar(t) : "*";
             align.tlen   = hasCID ? t->core.isize : 0;
             align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
@@ -153,22 +151,33 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
             }
         }
 
-        #define isFirstPair(b) (((b)->core.flag&0x40)  != 0)
-        #define isPrimary(b)   (((b)->core.flag&0x900) == 0)
-        #define isFailed(b)    (((b)->core.flag&0x200) != 0)
-        #define isSecondary(b) (((b)->core.flag&0x100) != 0)
+        #define isPairedEnd(b)    (((b)->core.flag&0x1)   != 0)
+        #define isAllAligned(b)   (((b)->core.flag&0x2)   != 0)
+        #define isUnmapped(b)     (((b)->core.flag&0x4)   != 0)
+        #define isMateUnmapped(b) (((b)->core.flag&0x8)   != 0)
+        #define isReversed(b)     (((b)->core.flag&0x10)  != 0)
+        #define isMateReversed(b) (((b)->core.flag&0x20)  != 0)
+        #define isFirstPair(b)    (((b)->core.flag&0x40)  != 0)
+        #define isLastPair(b)     (((b)->core.flag&0x80)  != 0)
+        #define isSecondary(b)    (((b)->core.flag&0x100) != 0)
+        #define isFailed(b)       (((b)->core.flag&0x200) != 0)
+        #define isDuplicate(b)    (((b)->core.flag&0x400) != 0)
+        #define isSupplement(b)   (((b)->core.flag&0x800) != 0)
+        #define isPrimary(b)      (((b)->core.flag&0x900) == 0)
 
-        // First segment in the template?
-        align.isFirstPair = isFirstPair(t);
-
-        // Primary alignment?
-        align.isPrim = isPrimary(t);
-
-        // Passed quality control?
-        align.isPassed = !isFailed(t);
-        
-        // Mutli-mapped alignment?
-        align.isSecondary = isSecondary(t);
+        align.isPaired      = isPairedEnd(t);
+        align.isAllAligned  = isAllAligned(t);
+        align.isAligned     = !isUnmapped(t);
+        align.isMateAligned = !isMateUnmapped(t);
+        align.isForward     = !isReversed(t);
+        align.isMateReverse = isMateReversed(t);
+        align.isFirstPair   = isFirstPair(t);
+        align.isSecondPair  = isLastPair(t);
+        align.isPassed      = !isFailed(t);
+        align.isDuplicate   = isDuplicate(t);
+        align.isSupplement  = isSupplement(t);
+        align.isPrimary     = isPrimary(t);
+        align.isSecondary   = isSecondary(t);
 
         if (hasCID)
         {

@@ -4,10 +4,12 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef V_FLIP_HPP
-#define V_FLIP_HPP
+#ifndef V_FLIP_2_HPP
+#define V_FLIP_2_HPP
 
 #include "stats/analyzer.hpp"
+#include "VarQuin/VarQuin.hpp"
+#include "parsers/parser_sam.hpp"
 
 namespace Anaquin
 {
@@ -17,27 +19,32 @@ namespace Anaquin
         
         struct Stats : public MappingStats
         {
-            /*
-             * Filter for mapping quality
-             */
+            // Number of paired-end reads
+            Counts countPaired = 0;
             
-            Quality mFilter = 10;
+            // Number of unpaired reads
+            Counts countUnpaired = 0;
             
-            // Number of reads filtered by mapping quality
-            Counts mCounts = 0;
-            
-            // Proportion of reads filtered by mapping quality
-            Proportion mProp;
+            // Unknown paired-end reads
+            Counts countNAPaired = 0;
         };
 
-        static bool isReverse(const std::set<ReadName> &, const ReadName &);
+        struct Impl
+        {
+            virtual bool isReverse(const ChrID &) = 0;
+            
+            // Paired-end reads both mapped and complemented
+            virtual void paired(const ParserSAM::Data &, const ParserSAM::Data &) = 0;
+            
+            // Non paired-end reads
+            virtual void nonPaired(const ParserSAM::Data &) = 0;
 
-        static Stats analyze(const FileName &,
-                             const FileName &,
-                             const FileName &,
-                             const Options &o);
+            // Paired-end reads that the other mate not found
+            virtual void unknownPaired(const ParserSAM::Data &) = 0;
+        };
 
-        static void report (const std::vector<FileName> &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &, Impl &);
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

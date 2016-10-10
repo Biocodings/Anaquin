@@ -338,7 +338,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             }
 
             // Don't count for multiple alignments
-            if (!x.mapped || x.isPrim)
+            if (!x.mapped || x.isPrimary)
             {
 #ifdef ANAQUIN_DEBUG
                 if (x.mapped && x.cID != ChrIS)
