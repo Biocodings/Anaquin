@@ -33,12 +33,14 @@ namespace Anaquin
         /*
          * SAM flag fields
          */
+
+        // Forward strand?
+        bool isForward;
         
         bool isPaired;
         bool isAllAligned;
         bool isAligned;
         bool isMateAligned;
-        bool isForward;
         bool isMateReverse;
         bool isFirstPair;
         bool isSecondPair;
