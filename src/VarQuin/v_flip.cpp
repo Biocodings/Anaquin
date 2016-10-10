@@ -46,12 +46,24 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
                     auto &seen  = seenMates[x.name];
                     auto first  = seen.isFirstPair ? &seen : &x;
                     auto second = seen.isFirstPair ? &x : &seen;
+
+                    if (first->isForward)
+                    {
+                        complement(first->seq);
+                    }
+                    else
+                    {
+                        std::reverse(first->seq.begin(), first->seq.end());
+                    }
                     
-                    complement(first->seq);
-                    //complement(second->seq);
-                    
-                    // Compute reverse complement
-                    std::reverse(second->seq.begin(), second->seq.end());
+                    if (second->isForward)
+                    {
+                        complement(second->seq);
+                    }
+                    else
+                    {
+                        std::reverse(second->seq.begin(), second->seq.end());
+                    }
                     
                     impl.paired(*first, *second);
                     seenMates.erase(x.name);
