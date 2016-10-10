@@ -48,7 +48,7 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
                     auto second = seen.isFirstPair ? &x : &seen;
                     
                     complement(first->seq);
-                    complement(second->seq);
+                    //complement(second->seq);
                     
                     // Compute reverse complement
                     std::reverse(second->seq.begin(), second->seq.end());
