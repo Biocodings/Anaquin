@@ -123,7 +123,7 @@ static void writeSummary(const FileName &file,
                          "-------VarFlip Outputs\n\n"
                          "       Paired-end alignments: %2%\n"
                          "                              %3%\n"
-                         "       Hanging alignments: %4%\n"
+                         "       Hanging alignments:    %4%\n"
                          "       Single-end alignments: %5%\n\n"
                          "-------Alignments\n\n"
                          "       Paired:   %6% (%7%%%)\n"
