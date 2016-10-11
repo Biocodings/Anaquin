@@ -252,7 +252,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     __bWriter__.close();
 #endif
 
-    o.info("Alignments analyzed. Generating statistics.");
+    o.info("Alignments analyzed. Generating statistics...");
     
     /*
      * -------------------- Calculating statistics --------------------
@@ -318,13 +318,13 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
                                                 +
                                  (stats.data.at(i.first).rGaps.count(rID) ? stats.data.at(i.first).rGaps.at(rID) : 0);
                 
-                assert(!isnan(btp) && btp >= 0);
-                assert(!isnan(bfp) && bfp >= 0);
+                A_ASSERT(!isnan(btp) && btp >= 0);
+                A_ASSERT(!isnan(bfp) && bfp >= 0);
                 
                 // Precision at the base level
                 const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
                 
-                assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
+                A_ASSERT(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
                 
                 if (isSyn)
                 {
@@ -340,8 +340,8 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
                 stats.g2p[rID] = bpc;
             }
             
-            assert(stp >= 0);
-            assert(sfp >= 0);
+            A_ASSERT(stp >= 0);
+            A_ASSERT(sfp >= 0);
         }
 
         auto &x = stats.data.at(cID);
@@ -420,8 +420,8 @@ static void writeSummary(const FileName &file,
     const auto sumg2c = sum(stats.g2c);
     const auto sumg2l = sum(stats.g2l);
     
-    assert(sums2l >= sums2c);
-    assert(sumg2l >= sumg2c);
+    A_ASSERT(sums2l >= sums2c);
+    A_ASSERT(sumg2l >= sumg2c);
 
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"

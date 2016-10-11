@@ -204,10 +204,10 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
     
     std::stringstream ss;
     ss << ((boost::format(format) % "ID"
-            % "input"
-            % "contig"
-            % "match"
-            % "mismatch")) << std::endl;
+                                  % "input"
+                                  % "contig"
+                                  % "match"
+                                  % "mismatch")) << std::endl;
     
     for (const auto &seq : r.data())
     {

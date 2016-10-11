@@ -35,7 +35,7 @@ static ReaderBam::Stats sample(const FileName &file,
         }
     }
 
-    assert(select.size() == norms.size());
+    A_ASSERT(select.size() == norms.size());
 
     o.info("Sampling: " + file);
     
@@ -45,7 +45,7 @@ static ReaderBam::Stats sample(const FileName &file,
     // Subsampling regions
     const auto sampled = Standard::instance().r_var.dInters();
     
-    return ReaderBam::stats(file, sampled, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    return ReaderBam::stats(file, sampled, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -84,10 +84,10 @@ static ReaderBam::Stats sample(const FileName &file,
             // Write SAM read to console
             writer.write(x);
             
-            return true;
+            return ReaderBam::Response::OK;
         }
 
-        return false;
+        return ReaderBam::Response::SKIP_EVERYTHING;
     });
 }
 
@@ -112,6 +112,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     o.analyze(gen);
     o.analyze(seq);
 
+    o.logInfo("Edge: " + std::to_string(o.edge));
+    
     const auto &r = Standard::instance().r_var;
     
     VSample::Stats stats;
@@ -121,8 +123,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     A_CHECK(!refs.empty(), "Empty reference sampling regions");
     
-    // Checking genomic alignments before subsampling
-    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    // Checking genomic alignments before sampling
+    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -134,11 +136,11 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             stats.totBefore.countGen++;
         }
         
-        return true;
+        return ReaderBam::Response::OK;
     });
     
-    // Checking synthetic alignments before subsampling
-    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    // Checking synthetic alignments before sampling
+    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -150,7 +152,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             stats.totBefore.countSyn++;
         }
         
-        return true;
+        return ReaderBam::Response::OK;
     });
     
     // Normalization for each region
@@ -166,7 +168,6 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     // For each chromosome...
     for (auto &i : refs)
     {
-        // Eg: chr1
         const auto cID = i.first;
 
         // For each region...
@@ -410,15 +411,15 @@ static void generateSummary(const FileName &file,
     o.writer->close();
 }
 
-void VSample::report(const std::vector<FileName> &files, const Options &o)
+void VSample::report(const FileName &gen, const FileName &seqs, const Options &o)
 {
-    const auto stats = analyze(files[0], files[1], o);
+    const auto stats = analyze(gen, seqs, o);
     
     /*
      * Generating VarSubsample_summary.stats
      */
     
-    generateSummary("VarSubsample_summary.stats", files[0], files[1], stats, o);
+    generateSummary("VarSubsample_summary.stats", gen, seqs, stats, o);
 
     /*
      * Generating VarSubsample_sequins.csv

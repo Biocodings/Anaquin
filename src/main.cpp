@@ -95,6 +95,7 @@ typedef std::set<Value> Range;
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 #define OPT_U_FILES 909
+#define OPT_EDGE    910
 
 using namespace Anaquin;
 
@@ -220,8 +221,6 @@ struct Parsing
     // How Anaquin is invoked
     std::string command;
 
-    unsigned fuzzy = 0;
-    
     Proportion sampled = NAN;
     
     Tool tool = 0;
@@ -334,7 +333,8 @@ static const struct option long_options[] =
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
     { "rind",    required_argument, 0, OPT_R_IND  },
 
-    { "fuzzy",   required_argument, 0, OPT_FUZZY },
+    { "edge",    required_argument, 0, OPT_EDGE   },
+    { "fuzzy",   required_argument, 0, OPT_FUZZY  },
     
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
@@ -706,6 +706,11 @@ template <typename Analyzer> void analyze_2(Option x, typename Analyzer::Options
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
+        if (_p.inputs.size() != 2)
+        {
+            throw InvalidOptionException("-ufiles need to be specified twice.");
+        }
+
         Analyzer::report(_p.inputs[0], _p.inputs[1], o);
     }, o);
 }
@@ -906,8 +911,22 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
-            case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
-            
+            case OPT_EDGE:
+            case OPT_FUZZY:
+            {
+                try
+                {
+                    stoi(val);
+                    _p.opts[opt] = val;
+                }
+                catch (...)
+                {
+                    throw std::runtime_error(val + " is not an integer. Please check and try again.");
+                }
+
+                break;
+            }
+
             case OPT_METHOD:
             {
                 switch (_p.tool)
@@ -950,16 +969,11 @@ void parse(int argc, char ** argv)
                 break;
             }
              
-            case OPT_MIXTURE:
-            {
-                checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
-                break;
-            }
-
             case OPT_R_IND:
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
+            case OPT_MIXTURE:
             {
                 checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
                 break;
@@ -1392,7 +1406,12 @@ void parse(int argc, char ** argv)
                         throw std::runtime_error("Unknown method: " + meth);
                     }
 
-                    analyze_n<VSample>(o);
+                    if (_p.opts.count(OPT_EDGE))
+                    {
+                        o.edge = stoi(_p.opts[OPT_EDGE]);
+                    }
+
+                    analyze_2<VSample>(OPT_U_FILES, o);
                     break;
                 }
             }

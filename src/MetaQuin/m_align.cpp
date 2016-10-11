@@ -5,17 +5,6 @@
 
 using namespace Anaquin;
 
-#ifdef DEBUG_MAlign
-static std::ofstream __bWriter__;
-#endif
-
-static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
-{
-#ifdef DEBUG_MAlign
-    __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
-#endif
-}
-
 static MAlign::Stats init()
 {
     const auto &r = Standard::instance().r_meta;
@@ -30,13 +19,12 @@ static MAlign::Stats init()
         const auto &cID = i.first;
         
         /*
-         * We'd like to know the length of the chromosome but we don't have the information.
+         * We'd like to know the length of the genome but we don't have the information.
          * It doesn't matter because we can simply initalize it to the the maximum possible.
-         * The data structure in MergedInterval will be efficient not to waste memory.
          */
         
-        MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
-        stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
+        stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>
+                    (new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max())));
     }
     
     return stats;
@@ -76,9 +64,9 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
             stats.data[align.cID].lGaps[m->name()] += rGaps;
             stats.data[align.cID].align[m->name()] += covered;
             
-            assert(covered >= 0);
-            assert(l.length() > lGaps);
-            assert(l.length() > rGaps);
+            A_ASSERT(covered >= 0);
+            A_ASSERT(l.length() > lGaps);
+            A_ASSERT(l.length() > rGaps);
         };
         
         // Does the read aligned within a region (eg: gene)?
@@ -107,7 +95,7 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
             if (m)
             {
                 f(m);
-                assert(lGaps != 0 || rGaps != 0);
+                A_ASSERT(lGaps != 0 || rGaps != 0);
                 
                 // Gap to the left?
                 if (l.start < m->l().start)
@@ -115,7 +103,6 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
                     const auto gap = Locus(l.start, m->l().start-1);
                     
                     x.bLvl.fp->map(gap);
-                    writeBase(align.cID, gap, "FP");
                 }
                 
                 // Gap to the right?
@@ -124,23 +111,13 @@ static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
                     const auto gap = Locus(m->l().end+1, l.end);
                     
                     x.bLvl.fp->map(gap);
-                    writeBase(align.cID, gap, "FP");
                 }
                 
                 stats.data[align.cID].fp++;
-                
-                writeBase(align.cID, l, "FP");
             }
             else if (isMetaQuin(align.cID))
             {
                 stats.data[align.cID].fp++;
-                
-                /*
-                 * The read is not aligned within the reference regions. We don't know whether this is
-                 * a TP or FP.
-                 */
-                
-                writeBase(align.cID, l, "FP");
             }
         }
     }
@@ -205,8 +182,6 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         classify(align, info);
     });
     
-    o.info("Alignments analyzed. Generating statistics.");
-    
     /*
      * -------------------- Calculating statistics --------------------
      */
@@ -216,9 +191,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     Base gtp = 0;
     Base gfp = 0;
     
-    o.info("Analyzing " + std::to_string(stats.inters.size()) + " chromsomes");
-    
-    // For each chromosome...
+    // For each genome...
     for (const auto &i : stats.inters)
     {
         const auto &cID = i.first;
@@ -293,8 +266,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
                 stats.g2p[rID] = bpc;
             }
             
-            assert(stp >= 0);
-            assert(sfp >= 0);
+            A_ASSERT(stp >= 0);
+            A_ASSERT(sfp >= 0);
         }
         
         auto &x = stats.data.at(cID);
