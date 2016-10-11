@@ -5,8 +5,8 @@
 
 using namespace Anaquin;
 
+static const FileName SINGLE   = "VarFlip_single.fq";
 static const FileName HANGING  = "VarFlip_hanging.fq";
-static const FileName UNPAIRED = "VarFlip_unpaired.fq";
 static const FileName PAIRED_1 = "VarFlip_paired_1.fq";
 static const FileName PAIRED_2 = "VarFlip_paired_2.fq";
 
@@ -121,13 +121,14 @@ static void writeSummary(const FileName &file,
                          "-------VarFlip Inputs\n\n"
                          "       Alignment file: %1%\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Paired-end alignments: %2% and %3%\n"
+                         "       Paired-end alignments: %2%\n"
+                         "                              %3%\n"
                          "       Hanging alignments: %4%\n"
                          "       Single-end alignments: %5%\n\n"
                          "-------Alignments\n\n"
                          "       Paired:   %6% (%7%%%)\n"
                          "       Hanging:  %8% (%9%%%)\n"
-                         "       Unpaired: %10% (%11%%%)\n"
+                         "       Unpaired: %10% (%11%%%)\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped: %12% (%13%%%)\n"
                          "       Forward:  %14% (%15%%%)\n"
@@ -140,7 +141,7 @@ static void writeSummary(const FileName &file,
                                             % PAIRED_1         // 2
                                             % PAIRED_2         // 3
                                             % HANGING          // 4
-                                            % UNPAIRED         // 5
+                                            % SINGLE           // 5
                                             % stats.nPaired    // 6
                                             % stats.pPaired    // 7
                                             % stats.nHanging   // 8
@@ -168,8 +169,8 @@ void VFlip::report(const FileName &file, const Options &o)
             p2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
+            up->open(SINGLE);
             hg->open(HANGING);
-            up->open(UNPAIRED);
             p1->open(PAIRED_1);
             p2->open(PAIRED_2);
         }
