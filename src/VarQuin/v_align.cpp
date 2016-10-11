@@ -190,7 +190,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             return;
         }
         
-        if (isVarQuin(x.cID))
+        if (isReverseGenome(x.cID))
         {
             classifyAlign(stats, x);
         }
@@ -212,8 +212,11 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     
     ParserSAM::parse(gen, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
-        // Ignore alignments mapped to the reverse genome
-        if (!isVarQuin(align.cID))
+        /*
+         * Our workflow allows reads to the reverse genome, but they're simply ignored.
+         */
+        
+        if (!isReverseGenome(align.cID))
         {
             classify(align, info);
         }
@@ -227,10 +230,15 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     
     ParserSAM::parse(seqs, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
+        /*
+         * Important: the aligments will be on the forward genome. We must convert the reads
+         *            to reverse genome explicitly.
+         */
+        
         // Eg: chr2 to chrev2
         boost::replace_all(align.cID, "chr", "chrev");
 
-        if (isVarQuin(align.cID))
+        if (isReverseGenome(align.cID))
         {
             classify(align, info);
         }
@@ -293,8 +301,8 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
                 stats.g2s[rID] = static_cast<Proportion>(stats.g2c.at(rID)) / stats.g2l.at(rID);
             }
             
-            assert(stats.s2c[rID] <= stats.s2l[rID]);
-            assert(stats.g2c[rID] <= stats.g2l[rID]);
+            A_ASSERT(stats.s2c[rID] <= stats.s2l[rID]);
+            A_ASSERT(stats.g2c[rID] <= stats.g2l[rID]);
 
             if (!stats.data.count(cID))
             {
@@ -614,14 +622,4 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      */
     
     writeBQuins("VarAlign_rbase.stats", stats, o);
-    
-    /*
-     * Generating VarAlign_report.pdf
-     */
-
-    o.report->open("VarAlign_report.pdf");
-    o.report->addTitle("VarAlign");
-    o.report->addFile("VarAlign_summary.stats");
-    o.report->addFile("VarAlign_sequins.csv");
-    o.report->addFile("VarAlign_queries.stats");
 }

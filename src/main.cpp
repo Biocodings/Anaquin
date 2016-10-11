@@ -94,9 +94,7 @@ typedef std::set<Value> Range;
 #define OPT_FUZZY   807
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
-
 #define OPT_U_FILES 909
-#define OPT_REPORT  911
 
 using namespace Anaquin;
 
@@ -227,9 +225,6 @@ struct Parsing
     Proportion sampled = NAN;
     
     Tool tool = 0;
-    
-    // Generate a PDF report?
-    bool pdf = false;
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -325,7 +320,8 @@ static const char *short_options = ":";
 
 static const struct option long_options[] =
 {
-    { "v", no_argument, 0, OPT_VERSION },
+    { "v",       no_argument, 0, OPT_VERSION },
+    { "version", no_argument, 0, OPT_VERSION },
 
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
@@ -343,8 +339,6 @@ static const struct option long_options[] =
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
 
-    { "report",  required_argument, 0, OPT_REPORT },
-    
     {0, 0, 0, 0 }
 };
 
@@ -658,8 +652,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     
     system(("mkdir -p " + path).c_str());
     
-    o.work   = path;
-    o.report = std::shared_ptr<PDFWriter>(new PDFWriter());
+    o.work  = path;
     
     auto t  = std::time(nullptr);
     auto tm = *std::localtime(&t);
@@ -680,11 +673,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
 #ifndef DEBUG
     o.logger->close();
 #endif
-
-    if (_p.pdf)
-    {
-        o.report->create(o.work);
-    }
 }
 
 /*
@@ -918,21 +906,7 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
-            case OPT_REPORT:
-            {
-                if (val == "pdf")
-                {
-                    _p.pdf = true;
-                }
-                else
-                {
-                    throw InvalidValueException("-report", val);
-                }
-
-                break;
-            }
-
-            case OPT_FUZZY:  { parseInt(val, _p.fuzzy); break; }
+            case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
             
             case OPT_METHOD:
             {

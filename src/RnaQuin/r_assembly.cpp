@@ -462,14 +462,4 @@ void RAssembly::report(const FileName &file, const Options &o)
                                             "Sn",
                                             true));
     o.writer->close();
-    
-    /*
-     * Generating RnaAssembly_report.pdf
-     */
-    
-    o.report->open("RnaAssembly_report.pdf");
-    o.report->addTitle("RnaAssembly");
-    o.report->addFile("RnaAssembly_summary.stats");
-    o.report->addFile("RnaAssembly_sequins.csv");
-    o.report->addFile("RnaAssembly_assembly.R");
 }

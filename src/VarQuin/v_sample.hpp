@@ -68,6 +68,8 @@ namespace Anaquin
             
             Method meth = Method::Mean;
             
+            Base edge = 0;
+
             // Defined only if meth==Prop
             Proportion p = NAN;
             

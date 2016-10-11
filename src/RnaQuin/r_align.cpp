@@ -655,13 +655,4 @@ void RAlign::report(const FileName &file, const Options &o)
      */
     
     writeBQuins("RnaAlign_rbase.txt", file, stats, o);
-    
-    /*
-     * Generating RnaAlign_report.pdf
-     */
-    
-    o.report->open("RnaAlign_report.pdf");
-    o.report->addTitle("RnaAlign");
-    o.report->addFile("RnaAlign_summary.stats");
-    o.report->addFile("RnaAlign_sequins.csv");
 }
