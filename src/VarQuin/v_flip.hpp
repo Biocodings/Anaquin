@@ -19,14 +19,13 @@ namespace Anaquin
         
         struct Stats : public MappingStats
         {
-            // Number of paired-end reads
-            Counts countPaired = 0;
-            
-            // Number of unpaired reads
-            Counts countUnpaired = 0;
-            
-            // Unknown paired-end reads
-            Counts countNAPaired = 0;
+            Counts nPaired = 0;
+            Counts nSingle = 0;
+            Counts nHanging = 0;
+
+            Proportion pPaired;
+            Proportion pSingle;
+            Proportion pHanging;
         };
 
         struct Impl

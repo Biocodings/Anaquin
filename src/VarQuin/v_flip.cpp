@@ -5,7 +5,7 @@
 
 using namespace Anaquin;
 
-static const FileName UNKNOWN  = "VarFlip_unknown.fq";
+static const FileName HANGING  = "VarFlip_hanging.fq";
 static const FileName UNPAIRED = "VarFlip_unpaired.fq";
 static const FileName PAIRED_1 = "VarFlip_paired_1.fq";
 static const FileName PAIRED_2 = "VarFlip_paired_2.fq";
@@ -35,7 +35,7 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
             
             if (x.isPaired)
             {
-                stats.countPaired++;
+                stats.nPaired++;
                 
                 if (!seenMates.count(x.name))
                 {
@@ -71,7 +71,7 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
             }
             else
             {
-                stats.countUnpaired++;
+                stats.nSingle++;
                 
                 // Compute the complement (but not reverse)
                 complement(x.seq);
@@ -101,8 +101,14 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
         impl.unknownPaired(i.second);
     }
 
-    stats.countNAPaired = seenMates.size();
+    stats.nHanging = seenMates.size();
     
+    const auto total = stats.nPaired + stats.nSingle + stats.nHanging;
+    
+    stats.pPaired  = static_cast<Proportion>(stats.nPaired)  / total;
+    stats.pSingle  = static_cast<Proportion>(stats.nSingle)  / total;
+    stats.pHanging = static_cast<Proportion>(stats.nHanging) / total;
+
     return stats;
 }
 
@@ -116,28 +122,38 @@ static void writeSummary(const FileName &file,
                          "       Alignment file: %1%\n\n"
                          "-------VarFlip Outputs\n\n"
                          "       Paired-end alignments: %2% and %3%\n"
-                         "       Paired-end (mate not found): %4%\n"
+                         "       Hanging alignments: %4%\n"
                          "       Single-end alignments: %5%\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %6% (%7%%%)\n"
-                         "       Forward:  %8% (%9%%%)\n"
-                         "       Reverse:  %10% (%11%%%)\n"
-                         "       Dilution: %12$.4f\n";
+                         "       Paired:   %6% (%7%%%)\n"
+                         "       Hanging:  %8% (%9%%%)\n"
+                         "       Unpaired: %10% (%11%%%)\n"
+                         "-------Alignments\n\n"
+                         "       Unmapped: %12% (%13%%%)\n"
+                         "       Forward:  %14% (%15%%%)\n"
+                         "       Reverse:  %16% (%17%%%)\n"
+                         "       Dilution: %18$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
                                             % PAIRED_1         // 2
                                             % PAIRED_2         // 3
-                                            % UNKNOWN          // 4
+                                            % HANGING          // 4
                                             % UNPAIRED         // 5
-                                            % stats.countNA    // 6
-                                            % stats.propNA()   // 7
-                                            % stats.countGen   // 8
-                                            % stats.propGen()  // 9
-                                            % stats.countSyn   // 10
-                                            % stats.propSyn()  // 11
-                                            % stats.dilution() // 12
+                                            % stats.nPaired    // 6
+                                            % stats.pPaired    // 7
+                                            % stats.nHanging   // 8
+                                            % stats.pHanging   // 9
+                                            % stats.nSingle    // 10
+                                            % stats.pSingle    // 11
+                                            % stats.countNA    // 12
+                                            % stats.propNA()   // 13
+                                            % stats.countGen   // 14
+                                            % stats.propGen()  // 15
+                                            % stats.countSyn   // 16
+                                            % stats.propSyn()  // 17
+                                            % stats.dilution() // 18
                      ).str());
 }
     
@@ -150,9 +166,9 @@ void VFlip::report(const FileName &file, const Options &o)
             up = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             p1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             p2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            un = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
-            un->open(UNKNOWN);
+            hg->open(HANGING);
             up->open(UNPAIRED);
             p1->open(PAIRED_1);
             p2->open(PAIRED_2);
@@ -163,7 +179,7 @@ void VFlip::report(const FileName &file, const Options &o)
             up->close();
             p1->close();
             p2->close();
-            un->close();
+            hg->close();
         }
         
         bool isReverse(const ChrID &cID)
@@ -195,19 +211,19 @@ void VFlip::report(const FileName &file, const Options &o)
         {
             if (x.isFirstPair)
             {
-                un->write("@" + x.name + "/1");
+                hg->write("@" + x.name + "/1");
             }
             else
             {
-                un->write("@" + x.name + "/2");
+                hg->write("@" + x.name + "/2");
             }
             
-            un->write(x.seq);
-            un->write("+");
-            un->write(x.qual);
+            hg->write(x.seq);
+            hg->write("+");
+            hg->write(x.qual);
         }
         
-        std::shared_ptr<FileWriter> p1, p2, up, un;
+        std::shared_ptr<FileWriter> p1, p2, up, hg;
     };
     
     Impl impl(o);
