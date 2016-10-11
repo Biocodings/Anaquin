@@ -115,28 +115,29 @@ static void writeSummary(const FileName &file,
                          "-------VarFlip Inputs\n\n"
                          "       Alignment file: %1%\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Sequin alignments: %2%\n"
-                         "                          %3%\n\n"
-                         "                          %4%\n\n"
+                         "       Paired-end alignments: %2% and %3%\n"
+                         "       Paired-end (mate not found): %4\n"
+                         "       Single-end alignments: %5\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %5% (%6%%%)\n"
-                         "       Forward:  %7% (%8%%%)\n"
-                         "       Reverse:  %9% (%10%%%)\n"
-                         "       Dilution: %11$.4f\n";
+                         "       Unmapped: %6% (%7%%%)\n"
+                         "       Forward:  %8% (%9%%%)\n"
+                         "       Reverse:  %10% (%11%%%)\n"
+                         "       Dilution: %12$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
-                                            % UNPAIRED         // 2
-                                            % PAIRED_1         // 3
-                                            % PAIRED_2         // 4
-                                            % stats.countNA    // 5
-                                            % stats.propNA()   // 6
-                                            % stats.countGen   // 7
-                                            % stats.propGen()  // 8
-                                            % stats.countSyn   // 9
-                                            % stats.propSyn()  // 10
-                                            % stats.dilution() // 11
+                                            % PAIRED_1         // 2
+                                            % PAIRED_2         // 3
+                                            % UNKNOWN          // 4
+                                            % UNPAIRED         // 5
+                                            % stats.countNA    // 6
+                                            % stats.propNA()   // 7
+                                            % stats.countGen   // 8
+                                            % stats.propGen()  // 9
+                                            % stats.countSyn   // 10
+                                            % stats.propSyn()  // 11
+                                            % stats.dilution() // 12
                      ).str());
 }
     
