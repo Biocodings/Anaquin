@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "test.hpp"
-#include "VarQuin/v_sample2.hpp"
+#include "VarQuin/v_sample.hpp"
 
 using namespace Anaquin;
 
@@ -18,11 +18,11 @@ TEST_CASE("VSubsample_Read_10")
     
     Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
     
-    VSample2::Options o;
-    o.meth = VSample2::Method::Reads;
+    VSample::Options o;
+    o.meth  = VSample::Method::Reads;
     o.reads = 10;
     
-    auto r = VSample2::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
     REQUIRE(r.count    == 4);
     REQUIRE(r.noGAlign == 2);
@@ -74,11 +74,11 @@ TEST_CASE("VSubsample_ZeroProp")
     
     Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
     
-    VSample2::Options o;
-    o.meth = VSample2::Method::Prop;
+    VSample::Options o;
+    o.meth = VSample::Method::Prop;
     o.p = 0;
     
-    auto r = VSample2::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
     REQUIRE(r.count    == 4);
     REQUIRE(r.noGAlign == 2);
@@ -130,10 +130,10 @@ TEST_CASE("VSubsample_Median")
     
     Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
     
-    VSample2::Options o;
-    o.meth = VSample2::Method::Median;
+    VSample::Options o;
+    o.meth = VSample::Method::Median;
     
-    auto r = VSample2::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
     REQUIRE(r.count    == 4);
     REQUIRE(r.noGAlign == 2);
@@ -185,10 +185,10 @@ TEST_CASE("VSubsample_Mean")
 
     Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
 
-    VSample2::Options o;
-    o.meth = VSample2::Method::Mean;
+    VSample::Options o;
+    o.meth = VSample::Method::Mean;
     
-    auto r = VSample2::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
     REQUIRE(r.count    == 4);
     REQUIRE(r.noGAlign == 2);

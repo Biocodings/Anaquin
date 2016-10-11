@@ -1,472 +1,428 @@
-#include <klib/khash.h>
+#include <ss/stats.hpp>
+#include "tools/random.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "writers/writer_sam.hpp"
+#include "readers/reader_bam.hpp"
 
 // Defined in main.cpp
 extern Anaquin::FileName BedRef();
 
 using namespace Anaquin;
 
-class SamplingTool
-{
-    public:
-    
-        SamplingTool(double prob) : _prob(prob)
-        {
-            assert(prob >= 0.0);
-            _seed = rand();
-        }
-    
-        inline bool select(const std::string &hash) const
-        {
-            const uint32_t k = __ac_Wang_hash(__ac_X31_hash_string(hash.c_str()) ^ _seed);
-            return ((double)(k&0xffffff) / 0x1000000 >= _prob);
-        }
-    
-    private:
-    
-        // Random seed
-        int _seed;
-    
-        // The probability of selection
-        const double _prob;
-};
+typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
-struct Subsampler
+static ReaderBam::Stats sample(const FileName &file,
+                               const NormFactors &norms,
+                               VSample::Stats &stats,
+                               const VSample::Options &o)
 {
-    template <typename Options> static VSample::Stats stats(const FileName &file, const Options &o)
+    typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
+    
+    /*
+     * Initalize independnet random generators for every sampling region
+     */
+    
+    Selection select;
+    
+    for (const auto &i : norms)
     {
-        const auto &r = Standard::instance().r_var;
-        
-        o.analyze(file);
-        
-        VSample::Stats stats;
-        
-        // Reference regions for synthetic and genome
-        auto inters = r.dInters();
-        
-        // There must be at least synthetic and genome
-        assert(inters.size() >= 2);
-        
-        // Statistics for alignments mapped to the selected regions
-        const auto rr = CoverageTool::stats(file, inters);
-        
-        // Number of alignments within the sampling regions for synthetic
-        auto s_syn = 0;
-        
-        // Number of alignments within the sampling regions for genome
-        auto s_gen = 0;
-        
-        // For each chromsome within the sampling regions...
-        for (const auto &i : rr.hist)
+        for (const auto &j : i.second)
         {
-            if (Standard::isSynthetic(i.first))
+            assert(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
+            
+            // Create independent random generator for each region
+            select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
+        }
+    }
+
+    assert(select.size() == norms.size());
+
+    o.info("Sampling: " + file);
+    
+    WriterSAM writer;
+    writer.openTerm();
+
+    // Subsampling regions
+    const auto sampled = Standard::instance().r_var.dInters();
+    
+    return ReaderBam::stats(file, sampled, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    {
+        if (info.p.i && !(info.p.i % 1000000))
+        {
+            o.logInfo(std::to_string(info.p.i));
+        }
+        
+        auto shouldSampled = !x.mapped;
+        
+        if (!shouldSampled)
+        {
+            Interval *inter;
+            
+            /*
+             * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
+             * into the regions still give valuable information and sequencing depth.
+             */
+
+            if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
             {
-                s_syn += i.second;
+                if (select.at(x.cID).at(inter->l())->select(x.name))
+                {
+                    shouldSampled = true;
+                }
             }
             else
             {
-                s_gen += i.second;
+                // Never sample for reads outside the regions
+                shouldSampled = true;
             }
         }
         
-        stats.tot.syn  = rr.countSyn;
-        stats.tot.gen  = rr.countGen;
-        stats.samp.syn = s_syn;
-        stats.samp.gen = s_gen;
-        
-        assert(stats.samp.syn <= stats.tot.syn);
-        assert(stats.samp.gen <= stats.tot.gen);
-        
-        if (!stats.samp.syn)
+        if (shouldSampled)
         {
-            throw std::runtime_error("No alignment found within synthetic regions");
-        }
-        
-        if (!stats.samp.gen)
-        {
-            throw std::runtime_error("No alignment found within genomic regions");
-        }
-        
-        o.logInfo(toString(stats.tot.syn) + " total alignments to synthetic");
-        o.logInfo(toString(stats.tot.gen) + " total alignments to genome");
-        o.logInfo(toString(stats.tot.syn + stats.tot.gen) + " total alignments in total");
-
-        o.logInfo(toString(stats.samp.syn) + " alignments (within sampling regions) to synthetic");
-        o.logInfo(toString(stats.samp.gen) + " alignments (within sampling regions)to genome");
-        o.logInfo(toString(stats.samp.syn + stats.samp.gen) + " alignments (within sampling regions) in total");
-        
-        /*
-         * Calculate statistics for both synthetic and genome
-         */
-        
-        for (const auto &i : inters)
-        {
-            const auto &cID = i.first;
+            stats.totAfter.countSyn++;
             
-            if (Standard::isSynthetic(cID))
-            {
-                stats.syn.add(cID, i.second);
-            }
-            else if (Standard::isGenomic(cID))
-            {
-                stats.gen.add(cID, i.second);
-            }
-        }
-        
-        assert(!stats.syn.empty());
-        assert(!stats.gen.empty());
-        
-        o.info(std::to_string(stats.syn.size()) + " reference synthetic regions");
-        o.info(std::to_string(stats.gen.size()) + " reference genomic regions");
-        
-        const auto gs = stats.gen.stats();
-        const auto ss = stats.syn.stats();
-        
-        assert(ss.mean && gs.mean);
-        
-        o.info("Calculating coverage for the synthetic and genome");
-        
-        /*
-         * Now we have the data, we'll need to compare the coverage and determine the fraction that
-         * the synthetic alignments needs to be sampled.
-         */
-        
-        switch (o.meth)
-        {
-            case VSample::Method::Mean:
-            {
-                stats.synC = ss.mean;
-                stats.genC = gs.mean;
-                break;
-            }
-                
-            case VSample::Method::Median:
-            {
-                stats.synC = ss.p50;
-                stats.genC = gs.p50;
-                break;
-            }
-                
-            case VSample::Method::Prop:
-            {
-                stats.synC = stats.samp.syn;
-                stats.genC = stats.samp.gen;
-                break;
-            }
-
-            case VSample::Method::Reads:
-            {
-                stats.synC = s_syn;
-                stats.genC = s_gen;
-                break;
-            }
-        }
-        
-        assert(stats.synC && stats.genC);
-        
-        o.info("Synthetic coverage: " + std::to_string(stats.synC));
-        o.info("Genomic coverage: " + std::to_string(stats.genC));
-        
-        return stats;
-    }
-    
-    struct SampleStats
-    {
-        // Sequence coverage after subsampling (synthetic only)
-        Coverage cov = NAN;
-        
-        SynGenAligns tot;
-        SynGenAligns samp;
-    };
-    
-    template <typename Options> static SampleStats sample(const FileName &src,
-                                                          const FileName &dst,
-                                                          Proportion prop,
-                                                          ID2Intervals &inters,
-                                                          const Options &o)
-    {
-        assert(prop > 0 && prop <= 1.0);
-        assert(!src.empty() && !dst.empty());
-        
-        o.info("Subsampling: " + std::to_string(prop));
-        
-        /*
-         * Subsampling alignments. It's expected that coverage would roughly match between
-         * the genome and synthetic chromosome.
-         */
-        
-        o.info("Sampling the alignments");
-        
-        WriterSAM writ;
-        writ.openTerm();
-        
-        if (prop == 0.0)
-        {
-            o.warn("Sampling proportion is zero. This could be an error in the inputs.");
-        }
-        else if (prop == 1.0)
-        {
-            o.warn("Sampling proportion is one. This could be an error in the inputs.");
-        }
-        
-        SamplingTool sampler(1.0 - prop);
-        SampleStats r;
-        
-        /*
-         * Subsample the input alignment file
-         */
-        
-        ParserSAM::parse(src, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
-        {
-            if (info.p.i && !(info.p.i % 1000000))
-            {
-                o.logInfo(std::to_string(info.p.i));
-            }
+            // Write SAM read to console
+            writer.write(x);
             
-            const auto isSyn = Standard::isSynthetic(x.cID);
-            const auto isGen = !isSyn;
-            
-            const auto shouldWrite = !x.mapped || !isSyn;
-            
-            // This is the key, randomly write the reads with certain probability
-            if (shouldWrite || sampler.select(x.name))
-            {
-                // Within sampling regions?
-                const auto inRegion = inters.count(x.cID) ? (bool) inters.at(x.cID).contains(x.l) : false;
-
-                if (x.mapped && isSyn)
-                {
-                    assert(Standard::isSynthetic(x.cID));
-                    const auto m = inters.at(x.cID).contains(x.l);
-                    
-                    if (m)
-                    {
-                        m->map(x.l);
-                    }
-                }
-                
-                if (x.cID != "*")
-                {
-                    if (isSyn) { r.tot.syn++; }
-                    if (isGen) { r.tot.gen++; }
-                    
-                    if (inRegion)
-                    {
-                        if (isSyn) { r.samp.syn++; }
-                        if (isGen) { r.samp.gen++; }
-                    }
-                }
-                
-                if (!shouldWrite)
-                {
-                    o.logInfo("Sampled " + x.name);
-                }
-                
-                // Print the SAM line
-                writ.write(x);
-            }
-        }, true);
-        
-        writ.close();
-        
-        /*
-         * Calculating sequence coverage on the in-silico chromosome after subsampling
-         */
-        
-        switch (o.meth)
-        {
-            case VSample::Method::Prop:   { r.cov = r.tot.syn;           break; }
-            case VSample::Method::Mean:   { r.cov = inters.stats().mean; break; }
-            case VSample::Method::Median: { r.cov = inters.stats().p50;  break; }
-                
-            /*
-             * Total synthetic alignments within the sampling regions after subsampling.
-             * For example, we might subsample from 100 million alignments down to 2 million
-             * alignments (this implies the genomic regions have 2 million alignments).
-             */
-
-            case VSample::Method::Reads:  { r.cov = r.samp.syn; break; }
-        }
-        
-        assert(!isnan(r.cov));
-        return r;
-    }
-
-    template <typename Options> static void report(const FileName &file, const Options &o)
-    {
-        auto meth2Str = [&]()
-        {
-            switch (o.meth)
-            {
-                case VSample::Method::Mean:   { return "Mean";       }
-                case VSample::Method::Median: { return "Median";     }
-                case VSample::Method::Reads:  { return "Reads";      }
-                case VSample::Method::Prop:   { return "Proportion"; }
-            }
-        };
-        
-        o.info(meth2Str());
-        
-        const auto sampled = "VarSubsample_sampled.sam";
-        
-        // Statistics before sampling
-        const auto before = Subsampler::stats(file, o);
-
-        switch (o.meth)
-        {
-            case VSample::Method::Mean:
-            case VSample::Method::Median:
-            {
-                if (before.genC > before.synC)
-                {
-                    throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
-                }
-                
-                break;
-            }
-                
-            case VSample::Method::Reads:
-            {
-                if (before.genC > before.synC)
-                {
-                    throw std::runtime_error("Anaquin is not able to subsample because there are more alignments in the genomic regions than the in-silico regions. Genomic alignments: " + std::to_string(before.genC) + ". Synthetic alignments: " + std::to_string(before.synC));
-                }
-                
-                break;
-            }
-
-            default: { break; }
-        }
-        
-        const auto &r = Standard::instance().r_var;
-        
-        // Reference regions for synthetic chromosomes
-        auto inters = r.dIntersSyn();
-        
-        // Proportion of reads be sampled
-        Proportion norm;
-        
-        switch (o.meth)
-        {
-            case VSample::Method::Prop:
-            {
-                norm = o.p;
-                break;
-            }
-
-            default:
-            {
-                norm = before.genC / before.synC;
-                break;
-            }
+            return true;
         }
 
-        assert(norm > 0 && norm < 1.0);
-        
-        o.info("Normalization: " + std::to_string(norm));
-
-        o.info("Coverage (before): " + std::to_string(before.synC));
-        o.info("Coverage (before): " + std::to_string(before.genC));
-        
-#ifdef DEBUG_VSAMPLE
-        auto pre2 = CoverageTool::CoverageBedGraphOptions();
-        
-        pre2.writer = o.writer;
-        pre2.file   = "VarSubsampleGen_before.bedgraph";
-        
-        CoverageTool::bedGraph(before.gen, pre2);
-        
-        auto pre1 = CoverageTool::CoverageBedGraphOptions();
-        
-        pre1.writer = o.writer;
-        pre1.file   = "VarSubsampleSyn_before.bedgraph";
-        
-        CoverageTool::bedGraph(before.syn, pre1);
-#endif
-
-        // Subsample the alignments
-        const auto after = Subsampler::sample(file, o.work + "/" + sampled, norm, inters, o);
-        
-        o.info("Coverage (after): " + std::to_string(after.cov));
-        o.info("Coverage (after): " + std::to_string(before.genC));
-        
-#ifdef DEBUG_VSAMPLE
-        auto post = CoverageTool::CoverageBedGraphOptions();
-        
-        post.writer = o.writer;
-        post.file   = "VarSubsample_after.bedgraph";
-        
-        CoverageTool::bedGraph(inters, post);
-#endif
-        
-        /*
-         * Reproduce %6%: samtools view sampled.bam | cut -f3,6 | grep chrIS | grep -v '*' | wc
-         * Reprodcue %7%: samtools view sampled.bam | cut -f3,6 | grep -v chrIS | grep -v '*' | wc
-         */
-        
-        /*
-         * Generating VarSubsample_summary.stats
-         */
-        
-        const auto summary = "-------VarSubsample Summary Statistics\n\n"
-                             "       Reference annotation file: %1%\n"
-                             "       User alignment file: %2%\n\n"
-                             "-------Reference regions\n\n"
-                             "       Synthetic regions: %3%\n"
-                             "       Genomic regions:   %4%\n\n"
-                             "       Method: %5%\n\n"
-                             "-------Total alignments (before subsampling)\n\n"
-                             "       Synthetic: %6%\n"
-                             "       Genome:    %7%\n\n"
-                             "-------Total alignments (after subsampling)\n\n"
-                             "       Synthetic: %8%\n"
-                             "       Genome:    %9%\n\n"
-                             "-------Alignments within sampling regions (before subsampling)\n\n"
-                             "       Synthetic: %10%\n"
-                             "       Genome:    %11%\n\n"
-                             "-------Alignments within sampling regions (after subsampling)\n\n"
-                             "       Synthetic: %12%\n"
-                             "       Genome:    %13%\n\n"
-                             "       Normalization: %14%\n\n"
-                             "-------Before subsampling (within sampling regions)\n\n"
-                             "       Synthetic coverage: %15%\n"
-                             "       Genome coverage:    %16%\n\n"
-                             "-------After subsampling (within sampling regions)\n\n"
-                             "       Synthetic coverage: %17%\n"
-                             "       Genome coverage:    %18%\n";
-        
-        o.generate("VarSubsample_summary.stats");
-        o.writer->open("VarSubsample_summary.stats");
-        o.writer->write((boost::format(summary) % BedRef()                 // 1
-                                                % file                     // 2
-                                                % before.syn.countInters() // 3
-                                                % before.gen.countInters() // 4
-                                                % meth2Str()               // 5
-                                                % before.tot.syn           // 6
-                                                % before.tot.gen           // 7
-                                                % after.tot.syn            // 8
-                                                % after.tot.gen            // 9
-                                                % before.samp.syn          // 10
-                                                % before.samp.gen          // 11
-                                                % after.samp.syn           // 12
-                                                % before.samp.gen          // 13
-                                                % norm                     // 14
-                                                % before.synC              // 15
-                                                % before.genC              // 16
-                                                % after.cov                // 17
-                                                % before.genC              // 18
-                         ).str());
-        o.writer->close();
-    }
-};
-
-VSample::Stats VSample::stats(const FileName &file, const Options &o)
-{
-    return Subsampler::stats(file, o);
+        return false;
+    });
 }
 
-void VSample::report(const FileName &file, const Options &o)
+template <typename Stats> Coverage stats2cov(const VSample::Method meth, const Stats &stats)
 {
-    Subsampler::report(file, o);
+    switch (meth)
+    {
+        case VSample::Method::Mean:   { return stats.mean; }
+        case VSample::Method::Median: { return stats.p50;  }
+
+        /*
+         * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure to report coverage.
+         */
+
+        case VSample::Method::Prop:
+        case VSample::Method::Reads: { return stats.mean; }
+    }
+}
+
+VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
+{
+    o.analyze(gen);
+    o.analyze(seq);
+
+    const auto &r = Standard::instance().r_var;
+    
+    VSample::Stats stats;
+    
+    // Regions to subsample
+    const auto refs = r.dInters();
+    
+    A_CHECK(!refs.empty(), "Empty reference sampling regions");
+    
+    // Checking genomic alignments before subsampling
+    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    {
+        if (info.p.i && !(info.p.i % 1000000))
+        {
+            o.logWait(std::to_string(info.p.i));
+        }
+        
+        if (x.mapped)
+        {
+            stats.totBefore.countGen++;
+        }
+        
+        return true;
+    });
+    
+    // Checking synthetic alignments before subsampling
+    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    {
+        if (info.p.i && !(info.p.i % 1000000))
+        {
+            o.logWait(std::to_string(info.p.i));
+        }
+        
+        if (x.mapped)
+        {
+            stats.totBefore.countSyn++;
+        }
+        
+        return true;
+    });
+    
+    // Normalization for each region
+    NormFactors norms;
+
+    // Required for summary statistics
+    std::vector<double> allNorms;
+
+    std::vector<double> allAfterSynC;
+    std::vector<double> allBeforeGenC;
+    std::vector<double> allBeforeSynC;
+    
+    // For each chromosome...
+    for (auto &i : refs)
+    {
+        // Eg: chr1
+        const auto cID = i.first;
+
+        // For each region...
+        for (auto &j : i.second.data())
+        {
+            const auto &l = j.second.l();
+            
+            // Genomic statistics within the region
+            const auto gs = gStats.inters.at(cID).find(l.key())->stats();
+            
+            // Synthetic statistics within the region
+            const auto ss = sStats.inters.at(cID).find(l.key())->stats();
+            
+            o.info("Calculating coverage for the synthetic and genome");
+            
+            /*
+             * Now we have the data, we'll need to compare the coverage and determine the fraction that
+             * the synthetic alignments needs to be sampled.
+             */
+            
+            const auto synC = stats2cov(o.meth, ss);
+            const auto genC = stats2cov(o.meth, gs);
+
+            Proportion norm = NAN;
+
+            switch (o.meth)
+            {
+                case VSample::Method::Mean:
+                case VSample::Method::Median: { norm = synC ? std::min(genC / synC, 1.0) : NAN; break; }
+                case VSample::Method::Prop:
+                {
+                    A_ASSERT(!isnan(o.p));
+                    norm = o.p;
+                    break;
+                }
+
+                case VSample::Method::Reads:
+                {
+                    A_ASSERT(!isnan(o.reads));
+
+                    // Number of reads in the region
+                    const auto aligns = ss.aligns;
+
+                    // Try to keep subsample the fixed number of reads
+                    norm = o.reads >= aligns ? 1.0 : ((Proportion) o.reads) / aligns;
+
+                    break;
+                }
+            }
+            
+            allBeforeGenC.push_back(genC);
+            allBeforeSynC.push_back(synC);
+            
+            if (isnan(norm))
+            {
+                o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
+                                                                              % l.start
+                                                                              % l.end).str());
+                
+                // We can't just use NAN...
+                norm = 0.0;
+            }
+            else if (norm == 1.0)
+            {
+                o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
+                                                                            % l.start
+                                                                            % l.end).str());
+            }
+            else
+            {
+                o.logInfo((boost::format("Normalization for %1%-%2% - %3%") % i.first
+                                                                            % l.start
+                                                                            % l.end).str());
+            }
+            
+            if (!genC) { stats.noGAlign++; }
+            if (!synC) { stats.noSAlign++; }
+            
+            stats.c2v[cID][l].rID    = j.first;
+            stats.c2v[cID][l].gen    = genC;
+            stats.c2v[cID][l].before = synC;
+            stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
+            
+            allNorms.push_back(norm);
+        }
+    }
+    
+    // Now, we have the normalization factors. We can proceed with subsampling.
+    const auto after = sample(seq, norms, stats, o);
+    
+    /*
+     * Assume our subsampling is working, let's check the coverage for every region.
+     */
+    
+    // For each chromosome...
+    for (auto &i : after.inters)
+    {
+        // For each region...
+        for (auto &j : i.second.data())
+        {
+            stats.count++;
+            const auto &l = j.second.l();
+            
+            // Coverage after subsampling
+            const auto cov = stats2cov(o.meth, j.second.stats());
+
+            stats.c2v[i.first][l].after = cov;
+            
+            // Required for generating summary statistics
+            allAfterSynC.push_back(cov);
+        }
+    }
+    
+    stats.beforeGen = SS::mean(allBeforeGenC);
+    stats.beforeSyn = SS::mean(allBeforeSynC);
+    stats.afterGen  = stats.beforeGen;
+    stats.afterSyn  = SS::mean(allAfterSynC);
+    
+    stats.normSD   = SS::getSD(allNorms);
+    stats.normAver = SS::mean(allNorms);
+    
+    stats.totAfter.countGen = stats.totBefore.countGen;
+    
+    stats.sampAfter.countGen  = gStats.countGen;
+    stats.sampBefore.countGen =  gStats.countGen;
+    
+    // Remember, the synthetic reads have been mapped to the forward genome
+    stats.sampBefore.countSyn = sStats.countGen;
+
+    // Remember, the synthetic reads have been mapped to the forward genome
+    stats.sampAfter.countSyn = after.countGen;
+
+    return stats;
+}
+
+static void generateCSV(const FileName &file, const VSample::Stats &stats, const VSample::Options &o)
+{
+    o.generate(file);
+
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%");
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "ID"
+                                           % "ChrID"
+                                           % "Start"
+                                           % "End"
+                                           % "Genome"
+                                           % "Before"
+                                           % "After"
+                                           % "Norm").str());
+
+    // For each chromosome...
+    for (const auto &i : stats.c2v)
+    {
+        // For each variant...
+        for (const auto &j : i.second)
+        {
+            o.writer->write((boost::format(format) % j.second.rID
+                                                   % i.first
+                                                   % j.first.start
+                                                   % j.first.end
+                                                   % j.second.gen
+                                                   % j.second.before
+                                                   % j.second.after
+                                                   % j.second.norm).str());            
+        }
+    }
+    
+    o.writer->close();
+}
+
+static void generateSummary(const FileName &file,
+                            const FileName &gen,
+                            const FileName &seq,
+                            const VSample::Stats &stats,
+                            const VSample::Options &o)
+{
+    o.generate(file);
+    
+    auto meth2Str = [&]()
+    {
+        switch (o.meth)
+        {
+            case VSample::Method::Mean:   { return "Mean";       }
+            case VSample::Method::Median: { return "Median";     }
+            case VSample::Method::Reads:  { return "Reads";      }
+            case VSample::Method::Prop:   { return "Proportion"; }
+        }
+    };
+
+    const auto summary = "-------VarSubsample Summary Statistics\n\n"
+                         "       Reference annotation file: %1%\n"
+                         "       Alignment file (genome):  %2%\n"
+                         "       Alignment file (sequins): %3%\n\n"
+                         "-------Reference regions\n\n"
+                         "       Variant regions: %4% regions\n"
+                         "       Method: %5%\n\n"
+                         "-------Total alignments (before subsampling)\n\n"
+                         "       Synthetic: %6%\n"
+                         "       Genome:    %7%\n\n"
+                         "-------Total alignments (after subsampling)\n\n"
+                         "       Synthetic: %8%\n"
+                         "       Genome:    %9%\n\n"
+                         "-------Alignments within sampling regions (before subsampling)\n\n"
+                         "       Synthetic: %10%\n"
+                         "       Genome:    %11%\n\n"
+                         "-------Alignments within sampling regions (after subsampling)\n\n"
+                         "       Synthetic: %12%\n"
+                         "       Genome:    %13%\n\n"
+                         "       Normalization: %14% \u00B1 %15%\n\n"
+                         "-------Before subsampling (within sampling regions)\n\n"
+                         "       Synthetic coverage (average): %16%\n"
+                         "       Genome coverage (average):    %17%\n\n"
+                         "-------After subsampling (within sampling regions)\n\n"
+                         "       Synthetic coverage (average): %18%\n"
+                         "       Genome coverage (average):    %19%\n";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % BedRef()                  // 1
+                                            % gen                       // 2
+                                            % seq                       // 3
+                                            % stats.count               // 4
+                                            % meth2Str()                // 5
+                                            % stats.totBefore.countSyn  // 6
+                                            % stats.totBefore.countGen  // 7
+                                            % stats.totAfter.countSyn   // 8
+                                            % stats.totAfter.countGen   // 9
+                                            % stats.sampBefore.countSyn // 10
+                                            % stats.sampBefore.countGen // 11
+                                            % stats.sampAfter.countSyn  // 12
+                                            % stats.sampAfter.countGen  // 13
+                                            % stats.normAver            // 14
+                                            % stats.normSD              // 15
+                                            % stats.beforeSyn           // 16
+                                            % stats.beforeGen           // 17
+                                            % stats.afterSyn            // 18
+                                            % stats.afterGen            // 19
+                     ).str());
+    o.writer->close();
+}
+
+void VSample::report(const std::vector<FileName> &files, const Options &o)
+{
+    const auto stats = analyze(files[0], files[1], o);
+    
+    /*
+     * Generating VarSubsample_summary.stats
+     */
+    
+    generateSummary("VarSubsample_summary.stats", files[0], files[1], stats, o);
+
+    /*
+     * Generating VarSubsample_sequins.csv
+     */
+
+    generateCSV("VarSubsample_sequins.csv", stats, o);
 }

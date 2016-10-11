@@ -6,12 +6,6 @@
 
 namespace Anaquin
 {
-    struct SynGenAligns
-    {
-        Counts syn = 0;
-        Counts gen = 0;
-    };
-
     struct VSample
     {
         enum class Method
@@ -22,42 +16,71 @@ namespace Anaquin
             Prop,
         };
         
+        struct SampledInfo
+        {
+            RegionID rID;
+            
+            // Alignment coverage for the genome
+            Coverage gen;
+            
+            // Alignment coverage before subsampling
+            Coverage before;
+            
+            // Alignment coverage after subsampling
+            Coverage after;
+            
+            // Normalization factor
+            Proportion norm;
+        };
+        
+        struct GenomeSequins
+        {
+            Counts countGen = 0;
+            Counts countSyn = 0;
+        };
+        
         struct Stats
         {
-            // Intervals for synthetic
-            ID2Intervals syn;
+            // Total number of subsampling regions
+            Counts count = 0;
             
-            // Intervals for genome
-            ID2Intervals gen;
+            // Number of regions without alignment (genomic)
+            Counts noGAlign = 0;
             
-            // Raw coverage
-            CoverageTool::Stats cov;
+            // Number of regions without alignment (synthetic)
+            Counts noSAlign = 0;
             
-            // Calculated coverage for synthetic
-            Coverage synC;
+            Coverage afterGen,  afterSyn;
+            Coverage beforeGen, beforeSyn;
             
-            // Calculated coverage for the query (eg: chr21)
-            Coverage genC;
+            // Summary statistics for normalization
+            double normAver, normSD;
             
-            // Total alignments (not just sampling regions)
-            SynGenAligns tot;
+            GenomeSequins totBefore,  totAfter;
+            GenomeSequins sampBefore, sampAfter;
             
-            // Alignments within sampling regions
-            SynGenAligns samp;
+            std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
         };
 
         struct Options : public AnalyzerOptions
         {
             Options() {}
-
+            
             Method meth = Method::Mean;
             
             // Defined only if meth==Prop
-            Proportion p;            
+            Proportion p = NAN;
+            
+            // Defined only if meth==Reads
+            Counts reads = NAN;
         };
+        
+        static Stats analyze(const FileName &gen,
+                             const FileName &seqs,
+                             const Options &o = Options());
 
-        static Stats stats(const FileName &file, const Options &o = Options());
-        static void report(const FileName &file, const Options &o = Options());
+        static void report(const std::vector<FileName> &,
+                           const Options &o = Options());
     };
 }
 

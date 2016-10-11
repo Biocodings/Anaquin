@@ -18,8 +18,8 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_kreport.hpp"
-#include "VarQuin/v_sample2.hpp"
 #include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_align.hpp"
@@ -1374,7 +1374,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_SUBSAMPLE:
                 {
-                    VSample2::Options o;
+                    VSample::Options o;
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];
@@ -1389,20 +1389,20 @@ void parse(int argc, char ** argv)
                     
                     if (meth == "mean")
                     {
-                        o.meth = VSample2::Method::Mean;
+                        o.meth = VSample::Method::Mean;
                     }
                     else if (meth == "median")
                     {
-                        o.meth = VSample2::Method::Median;
+                        o.meth = VSample::Method::Median;
                     }
                     else if (meth == "reads")
                     {
-                        o.meth = VSample2::Method::Reads;
+                        o.meth = VSample::Method::Reads;
                     }
                     else if (isFloat())
                     {
                         o.p = stod(meth);
-                        o.meth = VSample2::Method::Prop;
+                        o.meth = VSample::Method::Prop;
                         
                         if (o.p <= 0.0)
                         {
@@ -1418,7 +1418,7 @@ void parse(int argc, char ** argv)
                         throw std::runtime_error("Unknown method: " + meth);
                     }
 
-                    analyze_n<VSample2>(o);
+                    analyze_n<VSample>(o);
                     break;
                 }
             }
