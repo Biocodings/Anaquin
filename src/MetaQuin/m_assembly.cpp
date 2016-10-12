@@ -36,9 +36,9 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             stats.c2l = x.c2l;
             stats.c2a = x.c2a;
             
-            assert(!stats.c2s.empty());
-            assert(!stats.c2l.empty());
-            assert(!stats.c2a.empty());
+            A_ASSERT(!stats.c2s.empty());
+            A_ASSERT(!stats.c2l.empty());
+            A_ASSERT(!stats.c2a.empty());
             
             /*
              * Building mapping for sequins
@@ -87,18 +87,18 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             
             ParserQuast::parseGenome(Reader(genome), [&](const ParserQuast::GenomeData &x,
                                                          const ParserProgress &)
-                                     {
-                                         const auto match = r.match(x.id);
-                                         
-                                         if (match)
-                                         {
-                                             // Build a linear model between input concentration and sensitivity
-                                             stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
-                                         }
-                                     });
+            {
+                const auto match = r.match(x.id);
+                
+                if (match)
+                {
+                    // Build a linear model between input concentration and sensitivity
+                    stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
+                }
+            });
             
-            assert(stats.c2l.empty());
-            assert(stats.c2a.empty());
+            A_ASSERT(stats.c2l.empty());
+            A_ASSERT(stats.c2a.empty());
             
             break;
         }
@@ -106,8 +106,8 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
         default : { throw "Not Implemented"; }
     }
     
-    assert(!stats.c2s.empty());
-    assert(!stats.s2c.empty());
+    A_ASSERT(!stats.c2s.empty());
+    A_ASSERT(!stats.s2c.empty());
     
     stats.format = o.format;
     
@@ -178,21 +178,21 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
     const auto &dn = stats.dnovo;
     
     return (boost::format(summary) % file
-            % dn.countSyn
-            % dn.countGen
-            % (dn.countSyn + dn.countGen)
-            % dn.countSyn
-            % "" //o.rAnnot
-            % r.data().size()
-            % dn.N20
-            % dn.N50
-            % dn.N80
-            % dn.min
-            % dn.mean
-            % dn.max
-            % stats.match
-            % stats.mismatch
-            % stats.covered()
+                                   % dn.countSyn
+                                   % dn.countGen
+                                   % (dn.countSyn + dn.countGen)
+                                   % dn.countSyn
+                                   % "" //o.rAnnot
+                                   % r.data().size()
+                                   % dn.N20
+                                   % dn.N50
+                                   % dn.N80
+                                   % dn.min
+                                   % dn.mean
+                                   % dn.max
+                                   % stats.match
+                                   % stats.mismatch
+                                   % stats.covered()
             ).str();
 }
 
