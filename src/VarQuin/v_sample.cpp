@@ -82,7 +82,7 @@ static ReaderBam::Stats sample(const FileName &file,
             stats.totAfter.countSyn++;
             
             // Write SAM read to console
-            // FUCKwriter.write(x);
+            writer.write(x);
             
             return ReaderBam::Response::OK;
         }
