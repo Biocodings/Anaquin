@@ -177,7 +177,7 @@ namespace Anaquin
                     t(_id, lastStart, _l.length(), lastDepth);
                 }
             }
-        
+
             inline const Locus &l()       const { return _l;  }
             inline const IntervalID &id() const { return _id; }
         

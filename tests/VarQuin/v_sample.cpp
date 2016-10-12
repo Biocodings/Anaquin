@@ -231,3 +231,30 @@ TEST_CASE("VSubsample_Mean")
     REQUIRE(r.c2v["chr1"][l4].before == Approx(25.98));
     REQUIRE(r.c2v["chr1"][l4].after  == 0);
 }
+
+TEST_CASE("VSubsample_Edge")
+{
+    srand(100);
+    __hackBedFile__ = true;
+    
+    Test::clear();
+    Standard::instance().addVStd(Reader("tests/data/test2.bed"));
+    
+    VSample::Options o;
+    
+    o.edge = 0;
+    auto r1 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
+    
+    o.edge = 300;
+    auto r2 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
+    
+    REQUIRE(r1.afterGen  == Approx(62.600445186421815));
+    REQUIRE(r1.afterSyn  == Approx(58.537006121313297));
+    REQUIRE(r1.beforeGen == Approx(62.600445186421815));
+    REQUIRE(r1.beforeSyn == Approx(973.71007234279352));
+    
+    REQUIRE(r2.afterGen  == Approx(62.600445186421815));
+    REQUIRE(r2.afterSyn  == Approx(49.666110183639397));
+    REQUIRE(r2.beforeGen == Approx(62.600445186421815));
+    REQUIRE(r2.beforeSyn == Approx(1185.0868838763577));
+}

@@ -82,7 +82,7 @@ static ReaderBam::Stats sample(const FileName &file,
             stats.totAfter.countSyn++;
             
             // Write SAM read to console
-            writer.write(x);
+            // FUCKwriter.write(x);
             
             return ReaderBam::Response::OK;
         }
@@ -105,6 +105,46 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
         case VSample::Method::Prop:
         case VSample::Method::Reads: { return stats.mean; }
     }
+}
+
+C2Intervals VSample::trimInters(const C2Intervals &c2i, const VSample::Options &o)
+{
+    if (!o.edge)
+    {
+        return c2i;
+    }
+    
+    C2Intervals c2l_;
+    
+    for (auto &x : c2i)
+    {
+        Intervals<> inters_;
+
+        for (auto &y : x.second.data())
+        {
+            Locus l = Locus(y.second.l().start, y.second.l().end);
+            
+            if (l.length() <= 2 * o.edge)
+            {
+                o.logWarn("Interval " + y.first + " is too narrow for edge width: " + std::to_string(o.edge));
+            }
+            else
+            {
+                // It's important to do that before we manipulate the positions
+                l.add(l.key());
+
+                l.end   -= o.edge;
+                l.start += o.edge;
+            }
+            
+            inters_.add(Interval(y.second.id(), l));
+        }
+        
+        inters_.build();
+        c2l_[x.first] = inters_;
+    }
+
+    return c2l_;
 }
 
 VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
@@ -139,8 +179,11 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         return ReaderBam::Response::OK;
     });
     
+    // Trim the intervals
+    const auto trimmed = trimInters(refs, o);
+    
     // Checking synthetic alignments before sampling
-    const auto sStats = ReaderBam::stats(seq, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto sStats = ReaderBam::stats(seq, trimmed, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -151,7 +194,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         {
             stats.totBefore.countSyn++;
         }
-        
+
         return ReaderBam::Response::OK;
     });
     
@@ -184,7 +227,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             o.info("Calculating coverage for the synthetic and genome");
             
             /*
-             * Now we have the data, we'll need to compare the coverage and determine the fraction that
+             * Now we have the data, we'll need to compare coverage and determine the fraction that
              * the synthetic alignments needs to be sampled.
              */
             
@@ -224,8 +267,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             if (isnan(norm))
             {
                 o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
-                                                                              % l.start
-                                                                              % l.end).str());
+                                                                                 % l.start
+                                                                                 % l.end).str());
                 
                 // We can't just use NAN...
                 norm = 0.0;
@@ -233,8 +276,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             else if (norm == 1.0)
             {
                 o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
-                                                                            % l.start
-                                                                            % l.end).str());
+                                                                               % l.start
+                                                                               % l.end).str());
             }
             else
             {
@@ -255,7 +298,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         }
     }
     
-    // Now, we have the normalization factors. We can proceed with subsampling.
+    // We have the normalization factors so we can proceed with subsampling.
     const auto after = sample(seq, norms, stats, o);
     
     /*
