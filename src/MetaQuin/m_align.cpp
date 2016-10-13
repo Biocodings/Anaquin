@@ -383,29 +383,28 @@ static void writeSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
                                             % file                    // 2
-                                            % file                    // 3
-                                            % stats.countSyn          // 4
-                                            % (100 * stats.propSyn()) // 5
-                                            % stats.countGen          // 6
-                                            % (100 * stats.propGen()) // 7
-                                            % stats.dilution()        // 8
-                                            % r.countGeneSyn()        // 9
-                                            % r.countBaseSyn()        // 10
-                                            % r.countGeneGen()        // 11
-                                            % r.countBaseGen()        // 12
-                                            % stats.sa.tp()           // 13
-                                            % stats.sa.fp()           // 14
-                                            % stats.sa.pc()           // 15
-                                            % stats.sb.tp()           // 16
-                                            % stats.sb.fn()           // 17
-                                            % stats.sb.fp()           // 18
-                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 19
-                                            % prop2Str(stats.sb.sn())         // 20
-                                            % prop2Str(stats.sb.pc())         // 21
-                                            % stats.gb.tp()                   // 22
-                                            % stats.gb.fn()                   // 23
-                                            % (stats.gb.tp() + stats.gb.fn()) // 24
-                                            % prop2Str(stats.gb.sn())         // 25
+                                            % stats.countSyn          // 3
+                                            % (100 * stats.propSyn()) // 4
+                                            % stats.countGen          // 5
+                                            % (100 * stats.propGen()) // 6
+                                            % stats.dilution()        // 7
+                                            % r.countGeneSyn()        // 8
+                                            % r.countBaseSyn()        // 9
+                                            % r.countGeneGen()        // 10
+                                            % r.countBaseGen()        // 11
+                                            % stats.sa.tp()           // 12
+                                            % stats.sa.fp()           // 13
+                                            % stats.sa.pc()           // 14
+                                            % stats.sb.tp()           // 15
+                                            % stats.sb.fn()           // 16
+                                            % stats.sb.fp()           // 17
+                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 18
+                                            % prop2Str(stats.sb.sn())         // 19
+                                            % prop2Str(stats.sb.pc())         // 20
+                                            % stats.gb.tp()                   // 21
+                                            % stats.gb.fn()                   // 22
+                                            % (stats.gb.tp() + stats.gb.fn()) // 23
+                                            % prop2Str(stats.gb.sn())         // 24
                      ).str());
     o.writer->close();
 }
