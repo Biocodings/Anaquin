@@ -9,8 +9,8 @@
 //    Test::VarQuinBed();
 //    const auto r = VAlign::analyze("tests/data/test1.bam");
 //
-//    REQUIRE(r.countSyn  == 356332);
-//    REQUIRE(r.countGen  == 0);
+//    REQUIRE(r.nSyn  == 356332);
+//    REQUIRE(r.nGen  == 0);
 //    REQUIRE(r.n_unmap == 2015);
 //    
 ////    REQUIRE(r.p.m.ac() == Approx(0.9463336876));

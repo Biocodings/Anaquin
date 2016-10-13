@@ -14,8 +14,8 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(!i.contains(Locus(6955480, 6955485)));
     REQUIRE(!i.overlap(Locus(6955480, 6955485)));
     
-    REQUIRE(r.countGene()     == 78);
-    REQUIRE(r.countGeneSyn()  == 78);
+    REQUIRE(r.nGene()     == 78);
+    REQUIRE(r.nGeneSyn()  == 78);
     REQUIRE(r.countTrans()    == 164);
     REQUIRE(r.countTransSyn() == 164);
     REQUIRE(r.countUExon()    == 869);
@@ -73,7 +73,7 @@ TEST_CASE("GTF_Merged")
 {
     const auto r = gtfData(Reader("tests/data/merged.gtf"));
 
-    REQUIRE(r.countGeneSyn()  == 78);
+    REQUIRE(r.nGeneSyn()  == 78);
     REQUIRE(r.countTransSyn() == 164);
     REQUIRE(r.countUExonSyn() == 869);
     REQUIRE(r.countUIntrSyn() == 754);
@@ -84,7 +84,7 @@ TEST_CASE("GTF_Merged")
      * cat merged.gtf | grep -v chrIS | cut -f3 | grep exon  | wc
      */
     
-    REQUIRE(r.countGeneGen()  == 881);
+    REQUIRE(r.nGeneGen()  == 881);
     REQUIRE(r.countTransGen() == 2449);
     REQUIRE(r.countUIntrGen() == 4214);
     REQUIRE(r.countUExonGen() == 6540);
@@ -122,16 +122,16 @@ TEST_CASE("GTF_GenCode")
 {
     const auto r = gtfData(Reader("tests/data/gencode.v24.annotation.gtf"));
     
-    REQUIRE(r.countGeneSyn()  == 0);
+    REQUIRE(r.nGeneSyn()  == 0);
     REQUIRE(r.countTransSyn() == 0);
     REQUIRE(r.countExonSyn()  == 0);
     REQUIRE(r.countUExonSyn() == 0);
     REQUIRE(r.countIntrSyn()  == 0);
     REQUIRE(r.countUIntrSyn() == 0);
     
-    REQUIRE(r.countGene()     == 60554);
+    REQUIRE(r.nGene()     == 60554);
     REQUIRE(r.countTrans()    == 199169);
-    REQUIRE(r.countGeneGen()  == 60554);
+    REQUIRE(r.nGeneGen()  == 60554);
     REQUIRE(r.countTransGen() == 199169);
     REQUIRE(r.countExonGen()  == 1177311);
     REQUIRE(r.countUExonGen() == 570957);

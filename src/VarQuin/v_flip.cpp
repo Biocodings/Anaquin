@@ -26,7 +26,7 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
 
         if (impl.isReverse(x.cID))
         {
-            stats.countSyn++;
+            stats.nSyn++;
             
             if (!x.isPassed || x.isSecondary || x.isSupplement)
             {
@@ -81,11 +81,11 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
         }
         else if (!x.mapped)
         {
-            stats.countNA++;
+            stats.nNA++;
         }
         else
         {
-            stats.countGen++;
+            stats.nGen++;
         }
     }, true);
 
@@ -148,11 +148,11 @@ static void writeSummary(const FileName &file,
                                             % stats.pHanging   // 9
                                             % stats.nSingle    // 10
                                             % stats.pSingle    // 11
-                                            % stats.countNA    // 12
+                                            % stats.nNA    // 12
                                             % stats.propNA()   // 13
-                                            % stats.countGen   // 14
+                                            % stats.nGen   // 14
                                             % stats.propGen()  // 15
-                                            % stats.countSyn   // 16
+                                            % stats.nSyn   // 16
                                             % stats.propSyn()  // 17
                                             % stats.dilution() // 18
                      ).str());

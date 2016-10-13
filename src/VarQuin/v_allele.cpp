@@ -175,8 +175,8 @@ void VAllele::report(const FileName &file, const VAllele::Options &o)
     VAllele::writeCSV("VarAllele_sequins.csv", stats, o);
     
     /*
-     * Generating VarAllele_allele.R
+     * Generating VarAllele_linear.R
      */
 
-    VAllele::writeRLinear("VarAllele_allele.R", "VarAllele_sequins.csv", stats, o);
+    VAllele::writeRLinear("VarAllele_linear.R", "VarAllele_sequins.csv", stats, o);
 }

@@ -30,11 +30,11 @@ VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, cons
     {
         if (isVarQuin(x.cID))
         {
-            stats.countSyn++;
+            stats.nSyn++;
         }
         else
         {
-            stats.countGen++;
+            stats.nGen++;
         }
 
         out.write((boost::format(format) % x.cID

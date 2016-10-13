@@ -20,15 +20,15 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
         
         if (Standard::isSynthetic(x.cID))
         {
-            stats.countSyn++;
+            stats.nSyn++;
         }
         else if (x.cID != "*")
         {
-            stats.countGen++;
+            stats.nGen++;
         }
         else
         {
-            stats.countNA++;
+            stats.nNA++;
         }
         
         if (x.mapped && inters.count(x.cID))

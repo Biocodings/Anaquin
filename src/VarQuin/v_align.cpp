@@ -461,14 +461,14 @@ static void writeSummary(const FileName &file,
     o.writer->write((boost::format(summary) % BedRef()         // 1
                                             % gen              // 2
                                             % seq              // 3
-                                            % stats.countSyn   // 4
+                                            % stats.nSyn   // 4
                                             % stats.propSyn()  // 5
-                                            % stats.countGen   // 6
+                                            % stats.nGen   // 6
                                             % stats.propGen()  // 7
                                             % stats.dilution() // 8
-                                            % r.countGeneSyn() // 9
+                                            % r.nGeneSyn() // 9
                                             % r.countBaseSyn() // 10
-                                            % r.countGeneGen() // 11
+                                            % r.nGeneGen() // 11
                                             % r.countBaseGen() // 12
                                             % stats.sa.tp()    // 13
                                             % stats.sa.fp()    // 14

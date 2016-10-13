@@ -92,14 +92,14 @@ namespace Anaquin
                                 
                                 if (seqID.empty())
                                 {
-                                    stats.countGen++;
+                                    stats.nGen++;
                                     
                                     // Don't bother if the contig isn't part of MetaQuins...
                                     return;
                                 }
                                 else
                                 {
-                                    stats.countSyn++;
+                                    stats.nSyn++;
                                 }
                                 
                                 // Size of the config

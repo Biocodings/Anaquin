@@ -79,7 +79,7 @@ static ReaderBam::Stats sample(const FileName &file,
         
         if (shouldSampled)
         {
-            stats.totAfter.countSyn++;
+            stats.totAfter.nSyn++;
             
             // Write SAM read to console
             writer.write(x);
@@ -173,7 +173,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.countGen++;
+            stats.totBefore.nGen++;
         }
         
         return ReaderBam::Response::OK;
@@ -192,7 +192,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.countSyn++;
+            stats.totBefore.nSyn++;
         }
 
         return ReaderBam::Response::OK;
@@ -332,16 +332,16 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     stats.normSD   = SS::getSD(allNorms);
     stats.normAver = SS::mean(allNorms);
     
-    stats.totAfter.countGen = stats.totBefore.countGen;
+    stats.totAfter.nGen = stats.totBefore.nGen;
     
-    stats.sampAfter.countGen  = gStats.countGen;
-    stats.sampBefore.countGen =  gStats.countGen;
+    stats.sampAfter.nGen  = gStats.nGen;
+    stats.sampBefore.nGen =  gStats.nGen;
     
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.countSyn = sStats.countGen;
+    stats.sampBefore.nSyn = sStats.nGen;
 
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampAfter.countSyn = after.countGen;
+    stats.sampAfter.nSyn = after.nGen;
 
     return stats;
 }
@@ -436,14 +436,14 @@ static void generateSummary(const FileName &file,
                                             % seq                       // 3
                                             % stats.count               // 4
                                             % meth2Str()                // 5
-                                            % stats.totBefore.countSyn  // 6
-                                            % stats.totBefore.countGen  // 7
-                                            % stats.totAfter.countSyn   // 8
-                                            % stats.totAfter.countGen   // 9
-                                            % stats.sampBefore.countSyn // 10
-                                            % stats.sampBefore.countGen // 11
-                                            % stats.sampAfter.countSyn  // 12
-                                            % stats.sampAfter.countGen  // 13
+                                            % stats.totBefore.nSyn  // 6
+                                            % stats.totBefore.nGen  // 7
+                                            % stats.totAfter.nSyn   // 8
+                                            % stats.totAfter.nGen   // 9
+                                            % stats.sampBefore.nSyn // 10
+                                            % stats.sampBefore.nGen // 11
+                                            % stats.sampAfter.nSyn  // 12
+                                            % stats.sampAfter.nGen  // 13
                                             % stats.normAver            // 14
                                             % stats.normSD              // 15
                                             % stats.beforeSyn           // 16

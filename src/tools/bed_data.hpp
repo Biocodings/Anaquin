@@ -21,7 +21,7 @@ namespace Anaquin
     
     struct BedData : public std::map<ChrID, BedChrData>
     {
-        inline Counts countGene(const ChrID &cID) const
+        inline Counts nGene(const ChrID &cID) const
         {
             return at(cID).r2d.size();
         }
@@ -60,25 +60,25 @@ namespace Anaquin
             return countBase() - countBaseSyn();
         }
         
-        inline Counts countGene() const
+        inline Counts nGene() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
             {
-                return countGene(cID);
+                return nGene(cID);
             });
         }
         
-        inline Counts countGeneSyn() const
+        inline Counts nGeneSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countGene(cID) : 0;
+                return Standard::isSynthetic(cID) ? nGene(cID) : 0;
             });
         }
 
-        inline Counts countGeneGen() const
+        inline Counts nGeneGen() const
         {
-            return countGene() - countGeneSyn();
+            return nGene() - nGeneSyn();
         }
 
         inline std::map<ChrID, Hist> hist() const

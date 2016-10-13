@@ -75,7 +75,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
         if (!isnan(exp) && !isnan(t.logF_) && std::isfinite(t.logF_))
         {
             stats.add(id, exp, t.logF_);
-            stats.countSyn++;
+            stats.nSyn++;
         }
     };
     
@@ -129,7 +129,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
     }
     else
     {
-        stats.countGen++;
+        stats.nGen++;
     }
 }
 
@@ -239,7 +239,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : g2f)
             {
-                stats.countSyn++;
+                stats.nSyn++;
                 stats.data[i.first].obs = i.second;
                 stats.data[i.first].exp = r.logFoldGene(i.first);                
                 stats.add(i.first, i.second, r.logFoldGene(i.first));
@@ -352,7 +352,7 @@ Scripts RFold::generateSummary(const FileName &src,
     const auto lm = stats.linear(false);
     
     // No reference coordinate annotation given here
-    const auto countSyn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
+    const auto nSyn = o.metrs == Metrics::Gene ? r.nGeneSeqs() : r.countSeqs();
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
@@ -375,12 +375,12 @@ Scripts RFold::generateSummary(const FileName &src,
                          "       SST:         %17%, DF: %18%\n";
 
     return (boost::format(summary) % src            // 1
-                                   % countSyn       // 2
+                                   % nSyn       // 2
                                    % units          // 3
                                    % MixRef()       // 4
                                    % title          // 5
-                                   % stats.countSyn // 6
-                                   % stats.countGen // 7
+                                   % stats.nSyn // 6
+                                   % stats.nGen // 7
                                    % lm.m           // 8
                                    % lm.r           // 9
                                    % lm.R2          // 10

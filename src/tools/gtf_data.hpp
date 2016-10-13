@@ -138,11 +138,11 @@ namespace Anaquin
             return r;
         }
         
-        inline Counts countGene() const
+        inline Counts nGene() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return countGene(cID);
+                return nGene(cID);
             });
         }
         
@@ -170,7 +170,7 @@ namespace Anaquin
             });
         }
         
-        inline Counts countGene(const ChrID &cID) const
+        inline Counts nGene(const ChrID &cID) const
         {
             return at(cID).gIDs.size();
         }
@@ -190,11 +190,11 @@ namespace Anaquin
             return at(cID).uintrs;
         }
 
-        inline Counts countGeneSyn() const
+        inline Counts nGeneSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countGene(cID) : 0;
+                return Standard::isSynthetic(cID) ? nGene(cID) : 0;
             });
         }
         
@@ -222,9 +222,9 @@ namespace Anaquin
             });
         }
 
-        inline Counts countGeneGen() const
+        inline Counts nGeneGen() const
         {
-            return countGene() - countGeneSyn();
+            return nGene() - nGeneSyn();
         }
         
         inline Counts countTransGen() const

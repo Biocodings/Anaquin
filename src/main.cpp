@@ -23,6 +23,7 @@
 #include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_align.hpp"
+#include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_gtf.hpp"
@@ -67,7 +68,8 @@ typedef std::set<Value> Range;
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_ALLELE    276
 #define TOOL_M_ALIGN     277
-#define TOOL_M_ASSEMBLY  278
+#define TOOL_M_ABUND     278
+#define TOOL_M_ASSEMBLY  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_R_SUBSAMPLE 281
 #define TOOL_V_FLIP      305
@@ -159,6 +161,7 @@ static std::map<Value, Tool> _tools =
     { "VarFlip",        TOOL_V_FLIP      },
     
     { "MetaAlign",      TOOL_M_ALIGN     },
+    { "MetaAbund",      TOOL_M_ABUND     },
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
 };
 
@@ -546,7 +549,7 @@ static void printError(const std::string &msg)
     std::cerr << "[ERRO]: " << msg << std::endl;
 }
 
-template <typename Mixture> void addMix(Mixture mix)
+template <typename Mixture> void applyMix(Mixture mix)
 {
     if (mixture().empty())
     {
@@ -1058,11 +1061,11 @@ void parse(int argc, char ** argv)
                     {
                         try
                         {
-                            addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                            applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         }
                         catch (...)
                         {
-                            addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
+                            applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         }
 
                         break;
@@ -1076,27 +1079,27 @@ void parse(int argc, char ** argv)
 
                     case TOOL_R_FOLD:
                     {
-                        addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_R_EXPRESS:
                     case TOOL_R_ASSEMBLY:
                     {
-                        addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_R_KREPORT:
                     {
-                        addMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
                         addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
-                        addMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
                 }
@@ -1213,17 +1216,21 @@ void parse(int argc, char ** argv)
             break;
         }
 
+        case TOOL_M_ABUND:
         case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
         {
             switch (_p.tool)
             {
-                case TOOL_M_ALIGN:
+                case TOOL_M_ABUND: { applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));   break; }
+                case TOOL_M_ALIGN: { applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1)); break; }
+                case TOOL_M_ASSEMBLY:
                 {
+                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
                     break;
                 }
-                    
+
                 default: { break; }
             }
             
@@ -1231,6 +1238,18 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
+                case TOOL_M_ABUND: { analyze_1<MAbund>(OPT_U_FILES); break; }
+
+                case TOOL_M_ASSEMBLY:
+                {
+                    MAssembly::Options o;
+
+                    o.format = MAssembly::Format::Blat; // TODO:...
+
+                    analyze_n<MAssembly>(o);
+                    break;
+                }
+
                 case TOOL_M_ALIGN: { analyze_n<MAlign>(); break; }
 
                 default: { break; }
@@ -1238,7 +1257,7 @@ void parse(int argc, char ** argv)
 
             break;
         }
-    
+
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
@@ -1258,7 +1277,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALLELE:
                     case TOOL_V_KREPORT:
                     {
-                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
                     }
                         
@@ -1278,7 +1297,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_DISCOVER:
                     {
                         __hackBedFile__ = true;
-                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
                         break;

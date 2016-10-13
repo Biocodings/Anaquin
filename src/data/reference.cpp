@@ -89,14 +89,14 @@ Counts RnaRef::countUIntrGen() const
     return _impl->gData.countUIntrGen();
 }
 
-Counts RnaRef::countGeneSyn() const
+Counts RnaRef::nGeneSyn() const
 {
-    return _impl->gData.countGeneSyn();
+    return _impl->gData.nGeneSyn();
 }
 
-Counts RnaRef::countGeneGen() const
+Counts RnaRef::nGeneGen() const
 {
-    return _impl->gData.countGeneGen();
+    return _impl->gData.nGeneGen();
 }
 
 Counts RnaRef::countTransSyn() const
@@ -130,7 +130,7 @@ std::map<ChrID, Hist> RnaRef::histIsof() const
     return _impl->gData.histIsof();
 }
 
-Counts RnaRef::countGeneSeqs() const
+Counts RnaRef::nGeneSeqs() const
 {
     std::set<GeneID> gIDs;
     
@@ -464,7 +464,7 @@ void MetaRef::validate()
 
         A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
         
-        merge(seqIDs);
+        merge(_rawMIDs, seqIDs);
     }
 }
 
@@ -601,14 +601,14 @@ Base VarRef::countBaseGen() const
     return _impl->bData.countBaseGen();
 }
 
-Counts VarRef::countGeneSyn() const
+Counts VarRef::nGeneSyn() const
 {
-    return _impl->bData.countGeneSyn();
+    return _impl->bData.nGeneSyn();
 }
 
-Counts VarRef::countGeneGen() const
+Counts VarRef::nGeneGen() const
 {
-    return _impl->bData.countGeneGen();
+    return _impl->bData.nGeneGen();
 }
 
 void VarRef::validate()

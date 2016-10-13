@@ -49,52 +49,41 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     {
         const auto t = Reader(r);
 
-        try
+        bool succceed = false;
+        
+        ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
         {
-            bool succceed = false;
-            
-            ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
+            // Don't bother if this is the first line or an invalid line
+            if (p.i == 0 || d.size() <= 1)
             {
-                // Don't bother if this is the first line or an invalid line
-                if (p.i == 0 || d.size() <= 1)
+                return;
+            }
+            
+            const auto seq = d[0];
+            const auto con = stof(d[column]);
+            
+            switch (format)
+            {
+                case ID_Length_Mix:
                 {
-                    return;
+                    succceed = true;
+                    ref.add(seq, stoi(d[1]), con, m); break;
                 }
-                
-                // Eg: R1_1_1
-                const auto seq = d[0];
-                
-                A_CHECK(std::count(seq.begin(), seq.end(), '_') == 2, "Invalid sequin: " + seq + ". Valid sequin names include R1_1_1, R1_1_2, R2_2_1 etc.");
-                
-                const auto con = stof(d[column]);
-                
-                switch (format)
+                    
+                case ID_Mix:
                 {
-                    case ID_Length_Mix:
-                    {
-                        succceed = true;
-                        ref.add(seq, stoi(d[1]), con, m); break;
-                    }
-
-                    case ID_Mix:
-                    {
-                        succceed = true;
-                        ref.add(seq, 0.0, con, m); break;
-                    }
+                    succceed = true;
+                    ref.add(seq, 0.0, con, m); break;
                 }
-            }, delim);
-
-            return succceed;
-        }
-        catch (...)
-        {
-            throw std::runtime_error("[Error]: Error in the mixture file. Please check and try again.");
-        }
+            }
+        }, delim);
+        
+        return succceed;
     };
-
+    
     if (!f("\t") && !f(","))
     {
-        throw std::runtime_error("[Error]: No sequin is found in the mixture file. Please check and try again.");
+        throw std::runtime_error("No sequin is found in the mixture file. Please check and try again.");
     }
 }
 
@@ -137,6 +126,13 @@ bool Standard::isSynthetic(const ChrID &cID)
     }
     
     return false;
+}
+
+void Standard::addMMix(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
+    
+    readMixture(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addVMix(const Reader &r)

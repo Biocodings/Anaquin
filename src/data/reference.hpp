@@ -211,7 +211,7 @@ namespace Anaquin
                     // Add a new entry for the validated sequin
                     _data[id] = d;
 
-                    assert(!d.id.empty());
+                    A_ASSERT(!d.id.empty());
                 });
 
                 /*
@@ -234,7 +234,7 @@ namespace Anaquin
                     }
                 }
             
-                assert(!_data.empty());
+                A_ASSERT(!_data.empty());
             }
         
             template <typename T> void merge(const std::set<T> &x)
@@ -307,8 +307,8 @@ namespace Anaquin
             Base countBaseSyn() const;
             Base countBaseGen() const;
 
-            Counts countGeneSyn() const;
-            Counts countGeneGen() const;
+            Counts nGeneSyn() const;
+            Counts nGeneGen() const;
 
             // Returns number of known variants
             Counts countVar() const;
@@ -400,7 +400,7 @@ namespace Anaquin
             MergedIntervals<> mergedExons(const ChrID &cID) const;
 
             // Number of sequin genes from mixture
-            Counts countGeneSeqs() const;
+            Counts nGeneSeqs() const;
 
             Counts countUExon(const ChrID &) const;
             Counts countUExonSyn() const;
@@ -410,8 +410,8 @@ namespace Anaquin
             Counts countUIntrSyn() const;
             Counts countUIntrGen() const;
 
-            Counts countGeneSyn() const;
-            Counts countGeneGen() const;
+            Counts nGeneSyn() const;
+            Counts nGeneGen() const;
 
             Counts countTransSyn() const;
             Counts countTransGen() const;

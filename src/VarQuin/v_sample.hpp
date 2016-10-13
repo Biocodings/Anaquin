@@ -35,8 +35,8 @@ namespace Anaquin
         
         struct GenomeSequins
         {
-            Counts countGen = 0;
-            Counts countSyn = 0;
+            Counts nGen = 0;
+            Counts nSyn = 0;
         };
         
         struct Stats

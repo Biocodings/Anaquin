@@ -5,9 +5,6 @@
 
 using namespace Anaquin;
 
-// Defined in resources.cpp
-extern Scripts PlotMAssembly();
-
 MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Options &o)
 {
     // Eg: Contigs.fasta
@@ -178,10 +175,10 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
     const auto &dn = stats.dnovo;
     
     return (boost::format(summary) % file
-                                   % dn.countSyn
-                                   % dn.countGen
-                                   % (dn.countSyn + dn.countGen)
-                                   % dn.countSyn
+                                   % dn.nSyn
+                                   % dn.nGen
+                                   % (dn.nSyn + dn.nGen)
+                                   % dn.nSyn
                                    % "" //o.rAnnot
                                    % r.data().size()
                                    % dn.N20

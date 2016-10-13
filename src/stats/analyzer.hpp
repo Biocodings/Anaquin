@@ -80,7 +80,7 @@ namespace Anaquin
 
     struct AnalyzerStats
     {
-        std::map<ChrID, Hist> hist;
+        // Empty Implementation
     };
     
     struct LimitStats
@@ -93,41 +93,41 @@ namespace Anaquin
     {
         inline Counts total() const
         {
-            return countSyn + countGen + countNA;
+            return nSyn + nGen + nNA;
         }
 
         inline Proportion propNA() const
         {
-            return total() ? static_cast<Proportion>(100.0 * countNA) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * nNA) / total() : NAN;
         }
         
         inline Proportion propGen() const
         {
-            return total() ? static_cast<Proportion>(100.0 * countGen) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * nGen) / total() : NAN;
         }
 
         inline Proportion propSyn() const
         {
-            return total() ? static_cast<Proportion>(100.0 * countSyn) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * nSyn) / total() : NAN;
         }
 
         inline Proportion dilution() const
         {
-            return (countSyn + countGen) ? static_cast<Proportion>(countSyn) / (countSyn + countGen) : NAN;
+            return (nSyn + nGen) ? static_cast<Proportion>(nSyn) / (nSyn + nGen) : NAN;
         }
 
-        Counts countNA  = 0;
-        Counts countGen = 0;
-        Counts countSyn = 0;
+        Counts nNA  = 0;
+        Counts nGen = 0;
+        Counts nSyn = 0;
     };
 
     struct AlignmentStats : public MappingStats
     {
         template <typename T, typename F> void update(const T &t, F f)
         {
-            if      (!t.mapped) { countNA++;  }
-            else if (!f(t.cID)) { countSyn++; }
-            else                { countGen++; }
+            if      (!t.mapped) { nNA++;  }
+            else if (!f(t.cID)) { nSyn++; }
+            else                { nGen++; }
         }
     };
 

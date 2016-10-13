@@ -107,11 +107,11 @@ static void readQueryGTF(const FileName &file)
     __Stats__->sExons = gs.countUExonSyn();
     __Stats__->sIntrs = gs.countUIntrSyn();
     __Stats__->sTrans = gs.countTransSyn();
-    __Stats__->sGenes = gs.countGeneSyn();
+    __Stats__->sGenes = gs.nGeneSyn();
     __Stats__->gExons = gs.countUExonGen();
     __Stats__->gIntrs = gs.countUIntrGen();
     __Stats__->gTrans = gs.countTransGen();
-    __Stats__->gGenes = gs.countGeneGen();
+    __Stats__->gGenes = gs.nGeneGen();
 }
 
 static void readRefGTF(const FileName &file)
@@ -389,11 +389,11 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                                            % r.countUExonSyn() // 3
                                            % r.countUIntrSyn() // 4
                                            % r.countTransSyn() // 5
-                                           % r.countGeneSyn()  // 6
+                                           % r.nGeneSyn()  // 6
                                            % r.countUExonGen() // 7
                                            % r.countUIntrGen() // 8
                                            % r.countTransGen() // 9
-                                           % r.countGeneGen()  // 10
+                                           % r.nGeneGen()  // 10
                                            % stats.sExons      // 11
                                            % stats.sIntrs      // 12
                                            % stats.sTrans      // 13

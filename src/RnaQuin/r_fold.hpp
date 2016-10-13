@@ -52,7 +52,7 @@ namespace Anaquin
             Metrics metrs;
         };
 
-        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats
+        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats, public SequinStats
         {
             struct Data
             {
@@ -74,6 +74,9 @@ namespace Anaquin
                 Probability p = NAN;
                 Probability q = NAN;
             };
+            
+            // Histogram
+            std::map<ChrID, Hist> hist;
             
             std::map<SequinID, Data> data;
             
