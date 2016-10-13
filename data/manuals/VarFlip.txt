@@ -20,9 +20,10 @@ s<b>SUPPORT SOFTWARE</b>
 
      Optional:
         -o = output  Directory in which output files are written to
+		-edge = 0	 Length of window edge in bases
 
 <b>OUTPUTS</b>
-     VarFlip_summary.stats - gives the summary statistics
-     VarFlip_sequins.1.fq  - is the first paired-end sequence file with reads from the inputs that
-                             are aligned to reverse genome.
-     VarFlip_sequins.2.fq  - is the second paired-end for VarFlip_sequins_1.fq
+	 VarFlip_paired_1.fq - is the first paired-end sequence file with reads from the inputs that are aligned to the in silico genome.
+	 VarFlip_paired_2.fq - is the second paired-end for VarFlip_paired_1.fq.
+	 VarFlip_hanging.fq - gives hanging paired-end reads aligned to the in silico genome.
+	 VarFlip_single.fq - gives single-ended reads aligned to the in silico genome.	 
