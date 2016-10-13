@@ -5,12 +5,34 @@
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_tsv.hpp"
 #include "MetaQuin/m_histogram.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace Anaquin
 {
     inline bool isMetaQuin(const SequinID &id)
     {
-        return true;
+        if (boost::starts_with(id, "GC_"))
+        {
+            return true;
+        }
+        else if (boost::starts_with(id, "M5_"))
+        {
+            return true;
+        }
+        else if (boost::starts_with(id, "MH_"))
+        {
+            return true;
+        }
+        else if (boost::starts_with(id, "MG_"))
+        {
+            return true;
+        }
+        else if (boost::starts_with(id, "M1"))
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     struct DAsssembly

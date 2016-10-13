@@ -1,3 +1,4 @@
+#include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "writers/file_writer.hpp"
 #include "parsers/parser_varscan.hpp"
@@ -27,7 +28,7 @@ VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, cons
     
     ParserVarScan::parse(Reader(file), [&](const ParserVarScan::Data &x, const ParserProgress &)
     {
-        if (Standard::isSynthetic(x.cID))
+        if (isVarQuin(x.cID))
         {
             stats.countSyn++;
         }

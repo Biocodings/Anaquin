@@ -1,3 +1,4 @@
+#include "data/convert.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/MetaQuin.hpp"
 #include "parsers/parser_sam.hpp"
@@ -154,7 +155,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
             return;
         }
         
-        stats.update(x);
+        stats.update(x, isMetaQuin);
         
         if (info.skip)
         {
@@ -329,8 +330,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &src,
-                         const FileName &file,
+static void writeSummary(const FileName &file,
+                         const FileName &src,
                          const MAlign::Stats &stats,
                          const MAlign::Options &o)
 {
@@ -348,36 +349,35 @@ static void writeSummary(const FileName &src,
     
     const auto summary = "-------MetaAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       Genome alignment file: %2%\n"
-                         "       Synthetic alignment file: %3%\n\n"
+                         "       Alignment file: %2%\n\n"
                          "-------Alignments\n\n"
-                         "       Synthetic: %4% (%5%)\n"
-                         "       Genome:    %6% (%7%)\n"
-                         "       Dilution:  %8$.2f\n\n"
+                         "       Synthetic: %3% (%4%)\n"
+                         "       Genome:    %5% (%6%)\n"
+                         "       Dilution:  %7$.2f\n\n"
                          "-------Reference annotation (Synthetic)\n\n"
-                         "       Synthetic: %9% regions\n"
-                         "       Synthetic: %10% bases\n\n"
+                         "       Synthetic: %8% regions\n"
+                         "       Synthetic: %9% bases\n\n"
                          "-------Reference annotation (Genome)\n\n"
-                         "       Genome: %11% regions\n"
-                         "       Genome: %12% bases\n\n"
+                         "       Genome: %10% regions\n"
+                         "       Genome: %11% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Alignment level\n"
-                         "       Correct:     %13%\n"
-                         "       Incorrect:   %14%\n\n"
-                         "       Precision:   %15$.4f\n\n"
+                         "       Correct:     %12%\n"
+                         "       Incorrect:   %13%\n\n"
+                         "       Precision:   %14$.4f\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %16%\n"
-                         "       Uncovered:   %17%\n"
-                         "       Erroneous:   %18%\n"
-                         "       Total:       %19%\n\n"
-                         "       Sensitivity: %20$.4f\n"
-                         "       Precision:   %21$.4f\n\n"
+                         "       Covered:     %15%\n"
+                         "       Uncovered:   %16%\n"
+                         "       Erroneous:   %17%\n"
+                         "       Total:       %18%\n\n"
+                         "       Sensitivity: %19$.4f\n"
+                         "       Precision:   %20$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %22%\n"
-                         "       Uncovered:   %23%\n"
-                         "       Total:       %24%\n\n"
-                         "       Sensitivity: %25$.4f\n";
+                         "       Covered:     %21%\n"
+                         "       Uncovered:   %22%\n"
+                         "       Total:       %23%\n\n"
+                         "       Sensitivity: %24$.4f\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -400,12 +400,12 @@ static void writeSummary(const FileName &src,
                                             % stats.sb.fn()           // 17
                                             % stats.sb.fp()           // 18
                                             % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 19
-                                            % stats.sb.sn()                   // 20
-                                            % stats.sb.pc()                   // 21
+                                            % prop2Str(stats.sb.sn())         // 20
+                                            % prop2Str(stats.sb.pc())         // 21
                                             % stats.gb.tp()                   // 22
                                             % stats.gb.fn()                   // 23
                                             % (stats.gb.tp() + stats.gb.fn()) // 24
-                                            % stats.gb.sn()                   // 25
+                                            % prop2Str(stats.gb.sn())         // 25
                      ).str());
     o.writer->close();
 }
@@ -481,10 +481,10 @@ static void writeQuins(const FileName &file, const MAlign::Stats &stats, const M
                 const auto reads = x.aLvl.r2r.count(sID) ? x.aLvl.r2r.at(sID) : 0;
                 
                 o.writer->write((boost::format(format) % sID
-                                 % stats.s2l.at(sID)
-                                 % reads
-                                 % stats.g2s.at(sID)
-                                 % stats.g2p.at(sID)).str());
+                                                       % stats.s2l.at(sID)
+                                                       % reads
+                                                       % stats.g2s.at(sID)
+                                                       % stats.g2p.at(sID)).str());
             }
         }
     }

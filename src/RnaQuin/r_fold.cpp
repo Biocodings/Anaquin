@@ -7,6 +7,7 @@
 #include "data/convert.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_cdiff.hpp"
@@ -122,7 +123,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
 {
     typedef DiffTest::Status Status;
     
-    if (Standard::isSynthetic(x.cID))
+    if (RnaQuin::isRnaQuin(x.cID))
     {
         classifySyn(stats, x, metrs, o);
     }

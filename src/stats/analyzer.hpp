@@ -126,16 +126,8 @@ namespace Anaquin
         template <typename T, typename F> void update(const T &t, F f)
         {
             if      (!t.mapped) { countNA++;  }
-            else if (!f(t))     { countSyn++; }
+            else if (!f(t.cID)) { countSyn++; }
             else                { countGen++; }
-        }
-
-        template <typename T> void update(const T &t)
-        {
-            return update(t, [&](const T &t)
-            {
-                return !Standard::isSynthetic(t.cID);
-            });
         }
     };
 

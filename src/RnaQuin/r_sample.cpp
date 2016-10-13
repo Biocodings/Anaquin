@@ -1,5 +1,6 @@
 #include "tools/errors.hpp"
 #include "tools/sample.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "writers/writer_sam.hpp"
 
@@ -32,7 +33,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         // Don't count for multiple alignments
         if (x.isPrimary)
         {
-            if (Standard::isSynthetic(x.cID))
+            if (RnaQuin::isRnaQuin(x.cID))
             {
                 stats.before.syn++;
             }

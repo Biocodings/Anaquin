@@ -1,6 +1,7 @@
 #include "tools/errors.hpp"
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_align.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -155,7 +156,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
          * Aggregating statistics for synthetic chromosomes and genomic chromosomes
          */
         
-        if (Standard::isSynthetic(cID))
+        if (RnaQuin::isRnaQuin(cID))
         {
             stats.sbm.tp() += btp;
             stats.sbm.fp() += bfp;
@@ -344,14 +345,14 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
                 if (x.mapped && x.cID != ChrIS)
                     __rWriter__ << x.name << "\n";
 #endif
-                stats.update(x);
+                stats.update(x, RnaQuin::isRnaQuin);
             }
 
             if (!x.mapped)
             {
                 return;
             }
-            else if (Standard::isSynthetic(x.cID) || Standard::isGenomic(x.cID))
+            else if (RnaQuin::isRnaQuin(x.cID) || Standard::isGenomic(x.cID))
             {
                 match(stats, info, x);
             }
@@ -529,7 +530,7 @@ static void writeQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        if (Standard::isSynthetic(cID))
+        if (RnaQuin::isRnaQuin(cID))
         {
             std::map<GeneID, Confusion> bm, im;
 

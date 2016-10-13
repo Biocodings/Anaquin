@@ -113,7 +113,7 @@ void RnaRef::readRef(const Reader &r)
 {
     for (const auto &i : (_impl->gData = gtfData(r)))
     {
-        if (!Standard::isSynthetic(i.first))
+        if (!RnaQuin::isRnaQuin(i.first))
         {
             Standard::addGenomic(i.first);
         }
@@ -167,7 +167,7 @@ Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
 {
     for (const auto &i : _impl->gData)
     {
-        if (Standard::isSynthetic(i.first))
+        if (RnaQuin::isRnaQuin(i.first))
         {
             A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
 
@@ -347,7 +347,7 @@ void RnaRef::validate()
     
     for (const auto &i : _impl->gData)
     {
-        if (Standard::isSynthetic(i.first))
+        if (RnaQuin::isRnaQuin(i.first))
         {
             iIDs = getKeys(_impl->gData.at(i.first).t2d);
             break;
@@ -492,7 +492,7 @@ void VarRef::readBRef(const Reader &r)
 {
     for (const auto &i : (_impl->bData = bedData(r)))
     {
-        if (!Standard::isSynthetic(i.first))
+        if (!isVarQuin(i.first))
         {
             Standard::addGenomic(i.first);
         }
@@ -503,7 +503,7 @@ void VarRef::readVRef(const Reader &r)
 {
     for (const auto &i : (_impl->vData = vcfData(r)))
     {
-        if (!Standard::isSynthetic(i.first))
+        if (!isVarQuin(i.first))
         {
             Standard::addGenomic(i.first);
         }

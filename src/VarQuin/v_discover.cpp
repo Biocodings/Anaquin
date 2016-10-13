@@ -62,7 +62,7 @@ struct VDiscoverImpl : public VCFDataUser
             m.query = query;
             m.match = nullptr;
             
-            const auto isSyn = Standard::isSynthetic(query.cID);
+            const auto isSyn = isVarQuin(query.cID);
             
             if (isSyn || Standard::isGenomic(query.cID))
             {

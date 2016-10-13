@@ -3,6 +3,7 @@
 #include "tools/system.hpp"
 #include "data/compare.hpp"
 #include "tools/gtf_data.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 using namespace Anaquin;
@@ -191,7 +192,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
         // Only required for sensitivity at individual sequins...
-        if (Standard::isSynthetic(cID))
+        if (RnaQuin::isRnaQuin(cID))
         {
             /*
              * Calculating sensitivty for each sequin. Unfortunately, there is no simpler way

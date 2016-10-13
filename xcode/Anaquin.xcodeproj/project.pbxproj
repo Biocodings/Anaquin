@@ -48,7 +48,8 @@
 		EF71F97C1D94B7F600F10CBF /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF71F97A1D94B7F600F10CBF /* system.cpp */; };
 		EF721FBF1D4E478900288973 /* script.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF721FBE1D4E478900288973 /* script.cpp */; };
 		EF745EEB1C1E8B1B0072CEBB /* t_parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */; };
-		EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D6BB1C616B5D00697051 /* t_standard.cpp */; };
+		EF74AA8F1DAF418B00CED162 /* MetaQuin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF74AA8E1DAF418B00CED162 /* MetaQuin.cpp */; };
+		EF74AA911DAF480A00CED162 /* RnaQuin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF74AA901DAF480A00CED162 /* RnaQuin.cpp */; };
 		EF99B8B91D8BAABE0082ED31 /* t_parser_sleuth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF99B8B81D8BAABE0082ED31 /* t_parser_sleuth.cpp */; };
 		EF9D0EBC1D70013600F4FE89 /* r_gene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9D0EBB1D70013600F4FE89 /* r_gene.cpp */; };
 		EF9ED39F1D07EBE700CE7F2B /* samtools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ED39E1D07EBE700CE7F2B /* samtools.cpp */; };
@@ -220,12 +221,13 @@
 		EF721FBD1D4E470D00288973 /* script.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = script.hpp; path = ../src/tools/script.hpp; sourceTree = "<group>"; };
 		EF721FBE1D4E478900288973 /* script.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = script.cpp; path = ../tests/tools/script.cpp; sourceTree = "<group>"; };
 		EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_gtf.cpp; path = ../tests/parsers/t_parser_gtf.cpp; sourceTree = "<group>"; };
+		EF74AA8E1DAF418B00CED162 /* MetaQuin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetaQuin.cpp; path = ../tests/MetaQuin/MetaQuin.cpp; sourceTree = "<group>"; };
+		EF74AA901DAF480A00CED162 /* RnaQuin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RnaQuin.cpp; path = ../tests/RnaQuin/RnaQuin.cpp; sourceTree = "<group>"; };
 		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
 		EF8DB9BA1CD8DC4B00648FA9 /* hist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = hist.hpp; path = ../src/data/hist.hpp; sourceTree = "<group>"; };
 		EF8F262B1D12B87D00E9A441 /* parser_fq.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_fq.hpp; path = ../src/parsers/parser_fq.hpp; sourceTree = "<group>"; };
 		EF94CB061CC4D2D600EDDDA7 /* data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = data.hpp; path = ../src/data/data.hpp; sourceTree = "<group>"; };
-		EF98D6BB1C616B5D00697051 /* t_standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard.cpp; path = ../tests/data/t_standard.cpp; sourceTree = "<group>"; };
 		EF99B8B71D8BAA910082ED31 /* parser_sleuth.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_sleuth.hpp; path = ../src/parsers/parser_sleuth.hpp; sourceTree = "<group>"; };
 		EF99B8B81D8BAABE0082ED31 /* t_parser_sleuth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sleuth.cpp; path = ../tests/parsers/t_parser_sleuth.cpp; sourceTree = "<group>"; };
 		EF9D0EBA1D6FE74200F4FE89 /* r_gene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_gene.hpp; path = ../src/RnaQuin/r_gene.hpp; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				EFB7FF371B4F84430045DC6A /* Data */,
 				EF4BD9AD1ADE4035007BE6AB /* Parsers */,
 				EF6D05F11BD3E5F60048044F /* Tools */,
+				EF74AA8D1DAF416D00CED162 /* MetaQuin */,
 				EFFC30C91D090A1A00814E0F /* RnaQuin */,
 				EFA672F51D0691CA005C3DA6 /* VarQuin */,
 				EFE8168E1B5370600004D9BF /* cmd.cpp */,
@@ -593,6 +596,14 @@
 			name = Libraries;
 			sourceTree = "<group>";
 		};
+		EF74AA8D1DAF416D00CED162 /* MetaQuin */ = {
+			isa = PBXGroup;
+			children = (
+				EF74AA8E1DAF418B00CED162 /* MetaQuin.cpp */,
+			);
+			name = MetaQuin;
+			sourceTree = "<group>";
+		};
 		EFA672F51D0691CA005C3DA6 /* VarQuin */ = {
 			isa = PBXGroup;
 			children = (
@@ -636,7 +647,6 @@
 				EFC68C921D79159F00E511CE /* t_mixture.cpp */,
 				EFB7FF381B4F848D0045DC6A /* t_locus.cpp */,
 				EFB26DB61D19373400B08054 /* t_minters.cpp */,
-				EF98D6BB1C616B5D00697051 /* t_standard.cpp */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -774,6 +784,7 @@
 				EFFC30CD1D090A2000814E0F /* r_express.cpp */,
 				EF4F563E1D27C8EA00A570E7 /* r_fold.cpp */,
 				EFF3BF381D2B92FD006DC51B /* r_sample.cpp */,
+				EF74AA901DAF480A00CED162 /* RnaQuin.cpp */,
 			);
 			name = RnaQuin;
 			sourceTree = "<group>";
@@ -837,6 +848,7 @@
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */,
 				EF6D05F31BD3E6040048044F /* sample.cpp in Sources */,
+				EF74AA8F1DAF418B00CED162 /* MetaQuin.cpp in Sources */,
 				EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */,
 				EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */,
 				EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */,
@@ -868,6 +880,7 @@
 				EF9D0EBC1D70013600F4FE89 /* r_gene.cpp in Sources */,
 				EF2615741B5FF9AD00BE8037 /* GFaSeqGet.cpp in Sources */,
 				EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */,
+				EF74AA911DAF480A00CED162 /* RnaQuin.cpp in Sources */,
 				EF26157C1B5FF9DC00BE8037 /* gff.cpp in Sources */,
 				EF4664681DA535CB00223A0B /* v_flip.cpp in Sources */,
 				EF0C67961C5F25070033168D /* v_discover.cpp in Sources */,
@@ -899,7 +912,6 @@
 				EFB26DB71D19373400B08054 /* t_minters.cpp in Sources */,
 				EFFDE9701D3297E400D8B2D9 /* t_convert.cpp in Sources */,
 				EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */,
-				EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */,
 				EFFD61781D7ED7990029DE6B /* v_allele.cpp in Sources */,
 				EF37EDD21DA7452A00757291 /* m_blat.cpp in Sources */,
 				EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */,

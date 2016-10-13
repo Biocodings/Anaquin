@@ -9,6 +9,11 @@
 
 namespace Anaquin
 {
+    inline std::string prop2Str(double p)
+    {
+        return isnan(p) ? "-" : std::to_string(p);
+    }
+    
     inline double s2d(const std::string &x)
     {
         if (x == "NA" || x == "-")

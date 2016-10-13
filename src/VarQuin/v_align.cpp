@@ -183,7 +183,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             return;
         }
         
-        stats.update(x);
+        stats.update(x, isVarQuin);
         
         if (info.skip)
         {

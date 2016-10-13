@@ -119,7 +119,7 @@ namespace Anaquin
      */
 
     template <typename F, typename Input> void parseVariants(const FileName &file, Input input, F f)
-    {
+    {   
         const auto &r = Standard::instance().r_var;
 
         VariantMatch m;
@@ -129,7 +129,7 @@ namespace Anaquin
             m.query = query;
             m.match = nullptr;
 
-            const auto isSyn = Standard::isSynthetic(query.cID);
+            const auto isSyn = isVarQuin(query.cID);
 
             if (isSyn || Standard::isGenomic(query.cID))
             {

@@ -13,6 +13,11 @@ namespace Anaquin
         {
             return id.substr(0, id.size()-2);
         }
+        
+        static bool isRnaQuin(const ChrID &id)
+        {
+            return id == "chrIS";
+        }
     };
 }
 

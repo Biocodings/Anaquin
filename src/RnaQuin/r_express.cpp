@@ -1,5 +1,6 @@
 #include <cmath>
 #include "tools/gtf_data.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
@@ -36,7 +37,7 @@ template <typename T> void update(RExpress::Stats &stats,
 {
     const auto &r = Standard::instance().r_rna;
     
-    if (Standard::isSynthetic(x.cID))
+    if (RnaQuin::isRnaQuin(x.cID))
     {
         SequinID id;
         Concent  exp = NAN;
