@@ -142,7 +142,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     return stats;
 }
 
-static Scripts generateSummary(const FileName &file, const MAssembly::Stats &stats, const MAssembly::Options &o)
+static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
@@ -174,7 +174,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
     
     const auto &dn = stats.dnovo;
     
-    return (boost::format(summary) % file
+    return (boost::format(summary) % src
                                    % dn.nSyn
                                    % dn.nGen
                                    % (dn.nSyn + dn.nGen)
@@ -189,8 +189,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                                    % dn.max
                                    % stats.match
                                    % stats.mismatch
-                                   % stats.covered()
-            ).str();
+                                   % stats.covered()).str();
 }
 
 static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Options &o)
@@ -288,9 +287,15 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     /*
      * Generating MetaAssembly_assembly.R
      */
-    
+
     o.info("Generating MetaAssembly_assembly.R");
     o.writer->open("MetaAssembly_assembly.R");
-    //o.writer->write(RWriter::createScript("MetaAssembly_sequins.csv", PlotMAssembly()));
+    o.writer->write(RWriter::createLogistic("MetaAssembly_sequins.csv",
+                                            "Assembly Detection",
+                                            "Input Concentration (log2)",
+                                            "Sensitivity",
+                                            "InputConcent",
+                                            "Sn",
+                                            true));
     o.writer->close();
 }
