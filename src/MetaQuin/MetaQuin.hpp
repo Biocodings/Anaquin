@@ -32,7 +32,7 @@ namespace Anaquin
 //            return true;
 //        }
         
-        return false;
+        return true;
     }
 
     struct DAsssembly
