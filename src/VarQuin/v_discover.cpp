@@ -350,11 +350,12 @@ static void writeQuins(const FileName &file,
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
+                                           % "ChrID"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
@@ -372,67 +373,65 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
 
     for (const auto &i : stats.data)
     {
-//        if (Standard::isSynthetic(i.first))
+        const auto &cID = i.first;
+        
+        auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
         {
-            const auto &cID = i.first;
-            
-            auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+            for (const auto &i : x)
             {
-                for (const auto &i : x)
+                auto sID = (i.match ? i.match->id : "-");
+                
+                if (label == "FP")
                 {
-                    auto sID = (i.match ? i.match->id : "-");
+                    /*
+                     * We know this is a false-positive, but we can trace it to one of the sequins?
+                     */
                     
-                    if (label == "FP")
+                    if (r.hasInters(cID))
                     {
-                        /*
-                         * We know this is a false-positive, but we can trace it to one of the sequins?
-                         */
+                        // We'll need it to search for the sequin where the FPs are
+                        const auto inters = r.mInters(cID);
                         
-                        if (r.hasInters(cID))
+                        A_ASSERT(inters.size());
+                        
+                        const auto m = inters.contains(i.query.l);
+                        
+                        // Can we find the corresponding region for the FP?
+                        if (m)
                         {
-                            // We'll need it to search for the sequin where the FPs are
-                            const auto inters = r.mInters(cID);
+                            sID = m->id();
                             
-                            assert(inters.size());
-                            
-                            const auto m = inters.contains(i.query.l);
-                            
-                            // Can we find the corresponding region for the FP?
-                            if (m)
-                            {
-                                sID = m->id();
-                                
-                                // It has to be a sequin (eg: D_3_12)
-                                assert(!sID.empty());
-                            }
+                            // It has to be a sequin (eg: D_3_12)
+                            A_ASSERT(!sID.empty());
                         }
                     }
-                    
-                    const auto eRef  = sID != "-" ? r.findRCon(sID)  : NAN;
-                    const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
-                    const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
-
-                    o.writer->write((boost::format(format) % sID
-                                                           % i.query.l.start
-                                                           % label
-                                                           % i.query.readR
-                                                           % i.query.readV
-                                                           % i.query.depth
-                                                           % eRef
-                                                           % eVar
-                                                           % eFreq
-                                                           % i.query.alleleFreq()
-                                                           % ld2ss(i.query.p)
-                                                           % x2ns(i.query.qual)
-                                                           % x2ns(i.query.qualR)
-                                                           % x2ns(i.query.qualV)
-                                                           % type2str(i.query.type())).str());
                 }
-            };
-            
-            f(i.second.tps, "TP");
-            f(i.second.fps, "FP");
-        }
+                
+                const auto eRef  = sID != "-" ? r.findRCon(sID)  : NAN;
+                const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
+                const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
+                
+                o.writer->write((boost::format(format) % sID
+                                                       % i.match->cID
+                                                       % i.query.l.start
+                                                       % label
+                                                       % i.query.readR
+                                                       % i.query.readV
+                                                       % i.query.depth
+                                                       % eRef
+                                                       % eVar
+                                                       % eFreq
+                                                       % i.query.alleleFreq()
+                                                       % ld2ss(i.query.p)
+                                                       % x2ns(i.query.qual)
+                                                       % x2ns(i.query.qualR)
+                                                       % x2ns(i.query.qualV)
+                                                       % type2str(i.query.type())).str());
+            }
+        };
+        
+        f(i.second.tps, "TP");
+        f(i.second.fps, "FP");
     }
 
     o.writer->close();
