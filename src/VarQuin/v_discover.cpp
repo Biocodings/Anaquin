@@ -475,15 +475,18 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       *Variants\n"
                              "       Sensitivity: %20$.4f\n"
                              "       Precision:   %21$.4f\n"
-                             "       FDR Rate:    %22$.4f\n\n"
+                             "       F1 Score:    %22$.4f\n"
+                             "       FDR Rate:    %23$.4f\n\n"
                              "       *SNPs\n"
-                             "       Sensitivity: %23$.4f\n"
-                             "       Precision:   %24$.4f\n"
-                             "       FDR Rate:    %25$.4f\n\n"
+                             "       Sensitivity: %24$.4f\n"
+                             "       Precision:   %25$.4f\n"
+                             "       F1 Score:    %26$.4f\n"
+                             "       FDR Rate:    %27$.4f\n\n"
                              "       *Indels\n"
-                             "       Sensitivity: %26$.4f\n"
-                             "       Precision:   %27$.4f\n"
-                             "       FDR Rate:    %28$.4f\n";
+                             "       Sensitivity: %28$.4f\n"
+                             "       Precision:   %29$.4f\n"
+                             "       F1 Score:    %30$.4f\n"
+                             "       FDR Rate:    %31$.4f\n";
 
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
@@ -503,18 +506,21 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 14
                                                 % stats.countInd_FP_Syn()    // 15
                                                 % stats.countVar_FP_Syn()    // 16
-                                                % stats.countSNP_FnSyn() // 17
-                                                % stats.countInd_FnSyn() // 18
-                                                % stats.countVar_FnSyn() // 19
-                                                % stats.countVarSnSyn()  // 20
+                                                % stats.countSNP_FnSyn()     // 17
+                                                % stats.countInd_FnSyn()     // 18
+                                                % stats.countVar_FnSyn()     // 19
+                                                % stats.countVarSnSyn()      // 20
                                                 % stats.countVarPC_Syn()     // 21
-                                                % (1-stats.countVarPC_Syn()) // 22
-                                                % stats.countSNPSnSyn()  // 23
-                                                % stats.countSNPPC_Syn()     // 24
-                                                % (1-stats.countSNPPC_Syn()) // 25
-                                                % stats.countIndSnSyn()  // 26
-                                                % stats.countIndPC_Syn()     // 27
-                                                % (1-stats.countIndPC_Syn()) // 28
+                                                % stats.varF1()              // 22
+                                                % (1-stats.countVarPC_Syn()) // 23
+                                                % stats.countSNPSnSyn()      // 24
+                                                % stats.countSNPPC_Syn()     // 25
+                                                % stats.SNPF1()              // 26
+                                                % (1-stats.countSNPPC_Syn()) // 27
+                                                % stats.countIndSnSyn()      // 28
+                                                % stats.countIndPC_Syn()     // 29
+                                                % stats.indelF1()            // 30
+                                                % (1-stats.countIndPC_Syn()) // 31
                          ).str());
     };
     

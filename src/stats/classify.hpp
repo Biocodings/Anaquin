@@ -1,8 +1,6 @@
 #ifndef CLASSIFY_HPP
 #define CLASSIFY_HPP
 
-#include <cmath>
-#include <assert.h>
 #include "data/data.hpp"
 
 namespace Anaquin
@@ -26,19 +24,27 @@ namespace Anaquin
             inline Counts &nr() const { return _nr; }
             inline Counts &nq() const { return _nq; }
 
+            // Sensitivity (true positive rate)
             inline Proportion sn() const
             {
                 return (_tp + _fn) ? static_cast<Proportion>(_tp) / (_tp + _fn) : NAN;
             }
 
+            // Precision (positive predictive value)
             inline Proportion pc() const
             {
                 return (_tp + _fp) ? static_cast<Proportion>(_tp) / (_tp + _fp) : NAN;
             }
 
+            // False discovery (false discovery rate)
             inline Proportion fdr() const
             {
                 return 1.0 - pc();
+            }
+        
+            inline Proportion F1() const
+            {
+                return 2.0 * ((pc() * sn()) / (pc() + sn()));
             }
 
         private:

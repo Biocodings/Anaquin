@@ -55,7 +55,6 @@ namespace Anaquin
                 
                 std::vector<VariantMatch> fps, tps;
 
-                //std::map<long, VariantMatch *> fns_, tps_;
                 std::map<long, VariantMatch> fns_, tps_;
                 
                 // Performance metrics
@@ -147,7 +146,15 @@ namespace Anaquin
                     return countVar_FN(cID);
                 });
             }
-            
+
+            inline Proportion varF1() const
+            {
+                const auto sn = countVarSnSyn();
+                const auto pc = countVarPC_Syn();
+                
+                return 2.0 * ((pc * sn) / (pc + sn));
+            }
+
             inline Proportion countVarSnSyn() const
             {
                 return (Proportion)countVar_TP_Syn() / (countVar_TP_Syn() + countVar_FnSyn());
@@ -156,6 +163,14 @@ namespace Anaquin
             inline Proportion countSNPSnSyn() const
             {
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FnSyn());
+            }
+            
+            inline Proportion indelF1() const
+            {
+                const auto sn = countIndSnSyn();
+                const auto pc = countIndPC_Syn();
+                
+                return 2.0 * ((pc * sn) / (pc + sn));
             }
             
             inline Proportion countIndSnSyn() const
@@ -171,6 +186,14 @@ namespace Anaquin
             inline Proportion countSNPPC_Syn() const
             {
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FP_Syn());
+            }
+
+            inline Proportion SNPF1() const
+            {
+                const auto sn = countSNPSnSyn();
+                const auto pc = countSNPPC_Syn();
+                
+                return 2.0 * ((pc * sn) / (pc + sn));
             }
             
             inline Proportion countIndPC_Syn() const
