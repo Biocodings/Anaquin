@@ -28,8 +28,6 @@ namespace Anaquin
             // Reference genomic chromosomes
             static std::set<ChrID> genoIDs;
 
-            static ChrID toReverse(const ChrID &);
-        
             // Whether the chromosome is synthetic
             static bool isSynthetic(const ChrID &);
 
@@ -66,6 +64,9 @@ namespace Anaquin
             // Add reference mixture for MetaQuin
             void addMMix(const Reader &);
 
+            // Add reference differential mixture for MetaQuin
+            void addMDMix(const Reader &);
+        
             // Add reference annotation for MetaQuin in BED format
             inline void addMBed(const Reader &r) { r_meta.readBed(r); }
 

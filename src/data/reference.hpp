@@ -23,10 +23,16 @@ namespace Anaquin
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
-        // Input concentration
+        // Expected concentration
         inline Concent concent(Mixture m = Mix_1, bool norm = false) const
         {
             return mixes.at(m) / (norm ? l.length() : 1);
+        }
+        
+        // Expected differential
+        inline Fold fold() const
+        {
+            return concent(Mixture::Mix_2) / concent(Mixture::Mix_1);
         }
 
         inline SequinID name() const override

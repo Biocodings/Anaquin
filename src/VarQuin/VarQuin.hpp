@@ -45,7 +45,19 @@ namespace Anaquin
         
         return false;
     }
-    
+
+    inline ChrID toReverse(const ChrID &cID)
+    {
+        auto x = cID;
+        
+        // Eg; chr2 to chrev2
+        boost::replace_all(x, "chr", "chrev");
+        
+        A_ASSERT(!x.empty());
+        
+        return x;
+    }
+
     // Eg: ST_007_R, GS_047 etc...
     inline bool isVarQuin(const SequinID &id)
     {

@@ -87,18 +87,6 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
-ChrID Standard::toReverse(const ChrID &cID)
-{
-    auto x = cID;
-    
-    // Eg; chr2 to chrev2
-    boost::replace_all(x, "chr", "chrev");
-
-    A_ASSERT(!x.empty());
-    
-    return x;
-}
-
 bool Standard::isSynthetic(const ChrID &cID)
 {
     assert(!cID.empty());
@@ -126,6 +114,14 @@ bool Standard::isSynthetic(const ChrID &cID)
     }
     
     return false;
+}
+
+void Standard::addMDMix(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
+    
+    readMixture(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
+    readMixture(Reader(r), r_meta, Mix_2, ID_Length_Mix, 3);
 }
 
 void Standard::addMMix(const Reader &r)

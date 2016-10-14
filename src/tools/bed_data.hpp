@@ -243,7 +243,7 @@ namespace Anaquin
                 A_ASSERT(!x.name.empty());
                 
                 // Eg: "chr1 GS_058" to "chrev1 GS_058"
-                c2d[Standard::toReverse(x.cID)].r2d[x.name] = x;
+                c2d[toReverse(x.cID)].r2d[x.name] = x;
             }
             else
             {

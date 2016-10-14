@@ -63,6 +63,7 @@
 		EFB149D01D7AF0AD001A0A12 /* t_parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB149CF1D7AF0AD001A0A12 /* t_parser_vcf.cpp */; };
 		EFB2532C1D6EAFE1002F057E /* t_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB2532B1D6EAFE1002F057E /* t_sample.cpp */; };
 		EFB26DB71D19373400B08054 /* t_minters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB26DB61D19373400B08054 /* t_minters.cpp */; };
+		EFB745A51DB0E98E00CBD5FF /* m_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB745A31DB0E98E00CBD5FF /* m_diff.cpp */; };
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
 		EFC4BEC91D8EC534005BFA10 /* t_parser_salmon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */; };
 		EFC68C931D79159F00E511CE /* t_mixture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC68C921D79159F00E511CE /* t_mixture.cpp */; };
@@ -257,6 +258,8 @@
 		EFB2532B1D6EAFE1002F057E /* t_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_sample.cpp; path = ../tests/data/t_sample.cpp; sourceTree = "<group>"; };
 		EFB26DB41D1936FD00B08054 /* minters.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = minters.hpp; path = ../src/data/minters.hpp; sourceTree = "<group>"; };
 		EFB26DB61D19373400B08054 /* t_minters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_minters.cpp; path = ../tests/data/t_minters.cpp; sourceTree = "<group>"; };
+		EFB745A31DB0E98E00CBD5FF /* m_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = m_diff.cpp; path = ../src/MetaQuin/m_diff.cpp; sourceTree = "<group>"; };
+		EFB745A41DB0E98E00CBD5FF /* m_diff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = m_diff.hpp; path = ../src/MetaQuin/m_diff.hpp; sourceTree = "<group>"; };
 		EFB7FF381B4F848D0045DC6A /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_locus.cpp; path = ../tests/data/t_locus.cpp; sourceTree = "<group>"; };
 		EFB897141C524A3500B875EE /* linear.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = linear.hpp; path = ../src/stats/linear.hpp; sourceTree = "<group>"; };
 		EFC0DAC51B8C056F005F6C85 /* reference.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = reference.hpp; path = ../src/data/reference.hpp; sourceTree = "<group>"; };
@@ -775,6 +778,8 @@
 				EF46646A1DA539DF00223A0B /* m_assembly.hpp */,
 				EF37EDD01DA7452A00757291 /* m_blat.cpp */,
 				EF37EDD11DA7452A00757291 /* m_blat.hpp */,
+				EFB745A31DB0E98E00CBD5FF /* m_diff.cpp */,
+				EFB745A41DB0E98E00CBD5FF /* m_diff.hpp */,
 				EF37EDCF1DA7449000757291 /* m_histogram.hpp */,
 				EF37EDCE1DA743BD00757291 /* MetaQuin.hpp */,
 			);
@@ -910,6 +915,7 @@
 				EFDD6ACA1B0DD76C00450029 /* cram_decode.c in Sources */,
 				EF9ED39F1D07EBE700CE7F2B /* samtools.cpp in Sources */,
 				EF2615771B5FF9C500BE8037 /* gtf_tracking.cpp in Sources */,
+				EFB745A51DB0E98E00CBD5FF /* m_diff.cpp in Sources */,
 				EF06A67B1D08464A000D9B17 /* v_vscan.cpp in Sources */,
 				EF2615711B5FF99F00BE8037 /* GBase.cpp in Sources */,
 				EFDD6ACC1B0DD76C00450029 /* cram_index.c in Sources */,
