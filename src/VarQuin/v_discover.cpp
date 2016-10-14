@@ -412,7 +412,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                 const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
                 
                 o.writer->write((boost::format(format) % sID
-                                                       % i.match->cID
+                                                       % i.query.cID
                                                        % i.query.l.start
                                                        % label
                                                        % i.query.readR
