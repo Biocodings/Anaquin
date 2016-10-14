@@ -84,49 +84,49 @@ namespace Anaquin
             Histogram hist;
             
             ParserFA::parse(file, [&](const ParserFA::Data &x, const ParserProgress &)
-                            {
-                                Contig c;
-                                
-                                // Can this contig be mapped to a sequin?
-                                const auto seqID = impl->findSeq(c.id = x.id);
-                                
-                                if (seqID.empty())
-                                {
-                                    stats.nGen++;
-                                    
-                                    // Don't bother if the contig isn't part of MetaQuins...
-                                    return;
-                                }
-                                else
-                                {
-                                    stats.nSyn++;
-                                }
-                                
-                                // Size of the config
-                                c.len = x.seq.size();
-                                
-                                // The histogram needs the size of the sequence
-                                hist.insert(x.seq.size());
-                                
-                                stats.contigs[seqID] = c;
-                                
-                                /*
-                                 if (blat)
-                                 {
-                                 // Eg: "contig-30000000	21269" to "contig-30000000"
-                                 const auto first = Tokens::first(id, " ");
-                                 
-                                 id = blat->aligns.count(first) ? first : "";
-                                 
-                                 // Don't bother if the contig isn't defined in the alignment...
-                                 if (id.empty())
-                                 {
-                                 return;
-                                 }
-                                 }
-                                 */
-                            });
-            
+            {
+                Contig c;
+                
+                // Can this contig be mapped to a sequin?
+                const auto seqID = impl->findSeq(c.id = x.id);
+                
+                if (seqID.empty())
+                {
+                    stats.nGen++;
+                    
+                    // Don't bother if the contig isn't part of MetaQuins...
+                    return;
+                }
+                else
+                {
+                    stats.nSyn++;
+                }
+                
+                // Size of the config
+                c.len = x.seq.size();
+                
+                // The histogram needs the size of the sequence
+                hist.insert(x.seq.size());
+                
+                stats.contigs[seqID] = c;
+                
+                /*
+                 if (blat)
+                 {
+                 // Eg: "contig-30000000	21269" to "contig-30000000"
+                 const auto first = Tokens::first(id, " ");
+                 
+                 id = blat->aligns.count(first) ? first : "";
+                 
+                 // Don't bother if the contig isn't defined in the alignment...
+                 if (id.empty())
+                 {
+                 return;
+                 }
+                 }
+                 */                
+            });
+
             /*
              * https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
              */
@@ -141,9 +141,10 @@ namespace Anaquin
             stats.sum   = hist.sum();
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
                                           [&](int sum, const std::pair<std::string, Contig> &p)
-                                          {
-                                              return sum + p.second.len;
-                                          });
+            {
+                return sum + p.second.len;
+            });
+
             return stats;
         }
         
@@ -158,39 +159,39 @@ namespace Anaquin
             Histogram hist;
             
             ParserFA::parse(file, [&](const ParserFA::Data &data, const ParserProgress &)
-                            {
-                                //stats.n++;
-                                
-                                C c;
-                                c.id = data.id;
-                                
-                                auto id = c.id;
-                                
-                                if (blat)
-                                {
-                                    // Eg: "contig-30000000	21269" to "contig-30000000"
-                                    const auto first = Tokens::first(id, " ");
-                                    
-                                    id = blat->aligns.count(first) ? first : "";
-                                    
-                                    // Don't bother if the contig isn't defined in the alignment...
-                                    if (id.empty())
-                                    {
-                                        return;
-                                    }
-                                }
-                                
-                                // Size of the config
-                                c.len = data.seq.size();
-                                
-                                // The histogram needs the size of the sequence
-                                hist.insert(data.seq.size());
-                                
-                                // Allows to apply custom operation
-                                f(c);
-                                
-                                //stats.contigs[id] = c;
-                            });
+            {
+                //stats.n++;
+                
+                C c;
+                c.id = data.id;
+                
+                auto id = c.id;
+                
+                if (blat)
+                {
+                    // Eg: "contig-30000000	21269" to "contig-30000000"
+                    const auto first = Tokens::first(id, " ");
+                    
+                    id = blat->aligns.count(first) ? first : "";
+                    
+                    // Don't bother if the contig isn't defined in the alignment...
+                    if (id.empty())
+                    {
+                        return;
+                    }
+                }
+                
+                // Size of the config
+                c.len = data.seq.size();
+                
+                // The histogram needs the size of the sequence
+                hist.insert(data.seq.size());
+                
+                // Allows to apply custom operation
+                f(c);
+                
+                //stats.contigs[id] = c;
+            });
             
             /*
              * https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
@@ -229,15 +230,15 @@ namespace Anaquin
             std::vector<std::string> toks;
             
             return DAsssembly::analyze_<C, Stats>(file, align, [&](C &node)
-                                                  {
-                                                      Tokens::split(node.id, "_", toks);
-                                                      
-                                                      node.k_len = stoi(toks[3]);
-                                                      node.k_cov = stod(toks[toks.size() - 1]) * node.k_len;
-                                                  });
+            {
+                Tokens::split(node.id, "_", toks);
+                
+                node.k_len = stoi(toks[3]);
+                node.k_cov = stod(toks[toks.size() - 1]) * node.k_len;
+            });
         }
     };
-    
+
     struct RayMeta
     {
         template <typename Stats, typename C> static Stats analyze(const FileName &file,
@@ -249,24 +250,24 @@ namespace Anaquin
             if (!contigs.empty())
             {
                 ParserTSV::parse(Reader(contigs), [&](const ParserTSV::TSV &t, const ParserProgress &)
-                                 {
-                                     covs[t.id] = t.kmer;
-                                     lens[t.id] = t.klen;
-                                 });
+                {
+                    covs[t.id] = t.kmer;
+                    lens[t.id] = t.klen;
+                });
             }
             
             Stats stats;
             
             return DAsssembly::analyze<C, Stats>(file, align, [&](C &node)
-                                                 {
-                                                     const auto id = Tokens::first(node.id, " ");
-                                                     
-                                                     if (covs.count(id))
-                                                     {
-                                                         node.k_len = lens.at(id);
-                                                         node.k_cov = covs.at(id);
-                                                     }
-                                                 });
+            {
+                const auto id = Tokens::first(node.id, " ");
+                
+                if (covs.count(id))
+                {
+                    node.k_len = lens.at(id);
+                    node.k_cov = covs.at(id);
+                }
+            });
         }
     };
 }
