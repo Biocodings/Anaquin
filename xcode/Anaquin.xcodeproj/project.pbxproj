@@ -43,6 +43,7 @@
 		EF5A3B6F1D162719008F2C9F /* bed_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5A3B6D1D162719008F2C9F /* bed_data.cpp */; };
 		EF5A3B701D162719008F2C9F /* vcf_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5A3B6E1D162719008F2C9F /* vcf_data.cpp */; };
 		EF5B4ABC1D926AD8004F4CA9 /* v_kreport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5B4ABA1D926AD8004F4CA9 /* v_kreport.cpp */; };
+		EF6093061DB4AB1A0009BC89 /* parser_varscan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6093051DB4AB1A0009BC89 /* parser_varscan.cpp */; };
 		EF6B01D11C60975000D82709 /* t_parser_varscan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */; };
 		EF6D05F31BD3E6040048044F /* sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6D05F21BD3E6040048044F /* sample.cpp */; };
 		EF71F97C1D94B7F600F10CBF /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF71F97A1D94B7F600F10CBF /* system.cpp */; };
@@ -212,6 +213,7 @@
 		EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_edgeR.hpp; path = ../src/parsers/parser_edgeR.hpp; sourceTree = "<group>"; };
 		EF5B4ABA1D926AD8004F4CA9 /* v_kreport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_kreport.cpp; path = ../src/VarQuin/v_kreport.cpp; sourceTree = "<group>"; };
 		EF5B4ABB1D926AD8004F4CA9 /* v_kreport.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_kreport.hpp; path = ../src/VarQuin/v_kreport.hpp; sourceTree = "<group>"; };
+		EF6093051DB4AB1A0009BC89 /* parser_varscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_varscan.cpp; path = ../src/parsers/parser_varscan.cpp; sourceTree = "<group>"; };
 		EF6AE1231D4DCF9F005AF569 /* errors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = errors.hpp; path = ../src/tools/errors.hpp; sourceTree = "<group>"; };
 		EF6B01CF1C60956500D82709 /* parser_varscan.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_varscan.hpp; path = ../src/parsers/parser_varscan.hpp; sourceTree = "<group>"; };
 		EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_varscan.cpp; path = ../tests/parsers/t_parser_varscan.cpp; sourceTree = "<group>"; };
@@ -508,6 +510,7 @@
 				EF37EDCD1DA742D000757291 /* parser_tsv.hpp */,
 				EF06A67C1D0862B7000D9B17 /* parser_variants.hpp */,
 				EF6B01CF1C60956500D82709 /* parser_varscan.hpp */,
+				EF6093051DB4AB1A0009BC89 /* parser_varscan.cpp */,
 				EF3860E41AD3783A0062D246 /* parser_vcf.hpp */,
 				EFB1E0421B0098F300F093A2 /* parser.hpp */,
 			);
@@ -934,6 +937,7 @@
 				EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */,
 				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
 				EF2615801B5FF9F500BE8037 /* codons.cpp in Sources */,
+				EF6093061DB4AB1A0009BC89 /* parser_varscan.cpp in Sources */,
 				EF3302BE1C8E8498007A73A2 /* t_parser_kallisto.cpp in Sources */,
 				EF1C8D181D9A2BDC00D6D97F /* markdown.cpp in Sources */,
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,

@@ -1,6 +1,7 @@
 #ifndef VARIANT_HPP
 #define VARIANT_HPP
 
+#include <map>
 #include <cmath>
 #include "data/data.hpp"
 #include "data/locus.hpp"
@@ -16,9 +17,16 @@ namespace Anaquin
                                                            % l.end).str();
         return std::hash<std::string>{}(str);
     }
-
+    
     struct Variant
     {
+        enum Status
+        {
+            Germline,
+            LOH,
+            Somatic
+        };
+
         operator const Locus &() const { return l; }
         
         inline bool operator<(const Locus &x) const { return l < x; }
@@ -66,6 +74,9 @@ namespace Anaquin
         // The reference position, with the 1st base having position 1
         Locus l;
         
+        // Germline? Somatic? LOH?
+        Status status;
+        
         Sequence ref, alt;
         
         // Allelle frequency
@@ -91,6 +102,12 @@ namespace Anaquin
         
         // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
         Counts depth = NAN;
+        
+        /*
+         * Optional data. Caller specific options and data are saved here.
+         */
+        
+        std::map<std::string, std::string> options;
     };
     
     typedef Variant CalledVariant;

@@ -1,4 +1,4 @@
-Chrom   Position        Ref     Cons    Reads1  Reads2  VarFreq Strands1        Strands2        Qual1   Qual2   Pvalue  MapQual1        MapQual2        Reads1Plus      Reads1Minus     Reads2Plus      Reads2Minus     VarAllele
+Chrom	Position	Ref	Cons	Reads1	Reads2	VarFreq	Strands1	Strands2	Qual1	Qual2	Pvalue	MapQual1	MapQual2	Reads1Plus	Reads1Minus	Reads2Plus	Reads2Minus	VarAllele
 chrT	553866	C	C	3170	1	0.03%	2	1	28	15	0.9375591342684994	1	1	1638	1532	1	0	A
 chrT	554154	T	T	2833	3	0.11%	2	1	28	15	0.4999999999986411	1	1	1421	1412	0	3	A
 chrT	554567	A	A	4406	3	0.07%	2	2	28	30	0.7735305692728937	1	1	2066	2340	2	1	G

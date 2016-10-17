@@ -1,6 +1,7 @@
 #ifndef PARSER_BED_HPP
 #define PARSER_BED_HPP
 
+#include <iostream>
 #include "data/locus.hpp"
 #include "data/reader.hpp"
 #include "parsers/parser.hpp"
