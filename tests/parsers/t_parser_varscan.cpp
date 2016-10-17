@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("ParserVarScan_Test")
+TEST_CASE("ParserVarScan_Single")
 {
     std::vector<ParserVarScan::Data> x;
     
