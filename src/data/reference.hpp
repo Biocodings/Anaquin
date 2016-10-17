@@ -356,6 +356,9 @@ namespace Anaquin
             const Variant *findVar(const ChrID &, long key) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
 
+            bool hasRCon(const SequinID &) const;
+            bool hasVCon(const SequinID &) const;
+        
             Concent findRCon(const SequinID &) const;
             Concent findVCon(const SequinID &) const;
 

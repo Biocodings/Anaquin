@@ -59,17 +59,6 @@ namespace Anaquin
                                      const std::string &,
                                      bool showLOQ);
 
-        static Scripts createLinear(const FileName    &,
-                                    const Path        &,
-                                    const std::string &,
-                                    const std::string &,
-                                    const std::string &,
-                                    const std::string &,
-                                    const std::string &,
-                                    const std::string &,
-                                    bool showLOQ,
-                                    const std::string &extra = "");
-
         static Scripts createScript(const FileName &, const Scripts &);
         static Scripts createScript(const FileName &, const Scripts &, const std::string &);
     };

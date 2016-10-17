@@ -77,6 +77,14 @@ namespace Anaquin
         {
             return true;
         }
+        else if (id.find("CS_") != std::string::npos)
+        {
+            return true;
+        }
+        else if (id.find("CI_") != std::string::npos)
+        {
+            return true;
+        }
 
         return false;
     }

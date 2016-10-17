@@ -17,7 +17,7 @@ namespace Anaquin
 
         static bool isVarScan(const Reader &r)
         {
-            return ParserVarScan::isPileup(r) || ParserVarScan::isSomatic(r);
+            return ParserVarScan::isPileup(r) || ParserVarScan::isSomatic(Reader(r));
         }
 
         static bool isPileup(const Reader &);

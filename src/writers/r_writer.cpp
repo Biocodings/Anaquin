@@ -113,31 +113,6 @@ Scripts RWriter::createRLinear(const FileName    &file,
                                         % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
-Scripts RWriter::createLinear(const FileName    &file,
-                              const Path        &path,
-                              const std::string &title,
-                              const std::string &xlab,
-                              const std::string &ylab,
-                              const std::string &expected,
-                              const std::string &measured,
-                              const std::string &xname,
-                              bool  showLOQ,
-                              const std::string &extra)
-{
-    return (boost::format(PlotLinear()) % date()
-                                        % __full_command__
-                                        % path
-                                        % file
-                                        % title
-                                        % xlab
-                                        % ylab
-                                        % ("log2(data$" + expected + ")")
-                                        % ("log2(data$" + measured + ")")
-                                        % xname
-                                        % (showLOQ ? "TRUE" : "FALSE")
-                                        % extra).str();
-}
-
 Scripts RWriter::createScript(const FileName &file, const Scripts &script)
 {
     return (boost::format(script) % date()

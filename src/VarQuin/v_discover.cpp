@@ -57,7 +57,7 @@ struct VDiscoverImpl : public VCFDataUser
         
         VariantMatch m;
 
-        auto match = [&](const CalledVariant &query)
+        auto match = [&](const ParserVCF::Data &query)
         {
             m.query = query;
             m.match = nullptr;
@@ -232,11 +232,12 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
+                                           % "ChrID"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
@@ -283,6 +284,7 @@ static void writeQuins(const FileName &file,
                         const auto &t = x.at(key);
                         
                         o.writer->write((boost::format(format) % id
+                                                               % m->cID
                                                                % m->l.start
                                                                % label
                                                                % t.query.readR
@@ -322,6 +324,7 @@ static void writeQuins(const FileName &file,
                 const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
                 
                 o.writer->write((boost::format(format) % id
+                                                       % m->cID
                                                        % m->l.start
                                                        % "FN"
                                                        % "NA"
@@ -691,15 +694,15 @@ void VDiscover::report(const FileName &file, const Options &o)
         
         o.generate("VarDiscover_allele.R");
         o.writer->open("VarDiscover_allele.R");
-        o.writer->write(RWriter::createLinear("VarDiscover_sequins.csv",
-                                              o.work,
-                                              "Allele Frequency",
-                                              "Expected allele frequency (log2)",
-                                              "Measured allele frequency (log2)",
-                                              "ExpFreq",
-                                              "ObsFreq",
-                                              "input",
-                                               true));
+        o.writer->write(RWriter::createRLinear("VarDiscover_sequins.csv",
+                                               o.work,
+                                               "Allele Frequency",
+                                               "Expected allele frequency (log2)",
+                                               "Measured allele frequency (log2)",
+                                               "log2(data$ExpFreq)",
+                                               "log2(data$ObsFreq)",
+                                               "input",
+                                                true));
         o.writer->close();
 
         /*

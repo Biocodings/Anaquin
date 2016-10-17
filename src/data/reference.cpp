@@ -535,6 +535,34 @@ bool VarRef::isGermline() const
     return freqs.size() == 2 && freqs.count(0.5) && freqs.count(1);
 }
 
+bool VarRef::hasRCon(const SequinID &id) const
+{
+    if (!_impl->data.at(Mix_1).count(baseID(id)))
+    {
+        return false;
+    }
+    else if (isnan(_impl->data.at(Mix_1).at(baseID(id)).r->abund))
+    {
+        return false;
+    }
+    
+    return true;
+}
+
+bool VarRef::hasVCon(const SequinID &id) const
+{
+    if (!_impl->data.at(Mix_1).count(baseID(id)))
+    {
+        return false;
+    }
+    else if (isnan(_impl->data.at(Mix_1).at(baseID(id)).v->abund))
+    {
+        return false;
+    }
+    
+    return true;
+}
+
 Concent VarRef::findRCon(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));
@@ -672,13 +700,15 @@ void VarRef::validate()
                     return m.id == vID;
                 });
                 
-                assert(rIter != data.end() && vIter != data.end());
+                A_ASSERT(rIter != data.end() && vIter != data.end());
                 
                 _impl->data[i.first][baseID(j.id)].r = &(*rIter);
                 _impl->data[i.first][baseID(j.id)].v = &(*vIter);
             }
         }
     }
+    
+    // TODO: If the tool requires mixture, we need to make sure we have _impl->data
 }
 
 const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const

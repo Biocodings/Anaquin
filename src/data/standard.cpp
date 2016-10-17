@@ -49,7 +49,7 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     {
         const auto t = Reader(r);
 
-        bool succceed = false;
+        Counts n = 0;
         
         ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
         {
@@ -66,19 +66,19 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
             {
                 case ID_Length_Mix:
                 {
-                    succceed = true;
+                    n++;
                     ref.add(seq, stoi(d[1]), con, m); break;
                 }
                     
                 case ID_Mix:
                 {
-                    succceed = true;
+                    n++;
                     ref.add(seq, 0.0, con, m); break;
                 }
             }
         }, delim);
         
-        return succceed;
+        return n ? true : false;
     };
     
     if (!f("\t") && !f(","))
