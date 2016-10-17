@@ -101,39 +101,35 @@ struct VDiscoverImpl : public VCFDataUser
                 
                 stats->data.at(cID).af = m.query.alleleFreq();
                 
-//                if (Standard::isSynthetic(cID))
+                const auto exp = r.findAFreq(baseID(m.match->id));
+                const auto obs = m.query.alleleFreq();
+                
+                // Eg: 2821292107
+                const auto id = toString(key);
+                
+                // Add for all variants
+                stats->vars.add(id, exp, obs);
+                
+                switch (m.query.type())
                 {
-                    const auto exp = r.findAFreq(baseID(m.match->id));
-                    const auto obs = m.query.alleleFreq();
-
-                    // Eg: 2821292107
-                    const auto id = toString(key);
-                    
-                    // Add for all variants
-                    stats->vars.add(id, exp, obs);
-                    
-                    switch (m.query.type())
-                    {
-                        case Mutation::SNP:       { stats->snp.add(id, exp, obs); break; }
-                        case Mutation::Deletion:
-                        case Mutation::Insertion: { stats->ind.add(id, exp, obs); break; }
-                    }
-                    
-                    stats->readR[key] = m.query.readR;
-                    stats->readV[key] = m.query.readV;
-                    stats->depth[key] = m.query.depth;
-                    
-                    if (isnan(stats->vars.limit.abund) || exp < stats->vars.limit.abund)
-                    {
-                        stats->vars.limit.id = m.match->id;
-                        stats->vars.limit.abund = exp;
-                    }
+                    case Mutation::SNP:       { stats->snp.add(id, exp, obs); break; }
+                    case Mutation::Deletion:
+                    case Mutation::Insertion: { stats->ind.add(id, exp, obs); break; }
+                }
+                
+                stats->readR[key] = m.query.readR;
+                stats->readV[key] = m.query.readV;
+                stats->depth[key] = m.query.depth;
+                
+                if (isnan(stats->vars.limit.abund) || exp < stats->vars.limit.abund)
+                {
+                    stats->vars.limit.id = m.match->id;
+                    stats->vars.limit.abund = exp;
                 }
             }
             else
             {
                 // FP because the variant is not found in the reference
-                //stats.data[cID].fps_.insert(key);
                 stats->data[cID].fps.push_back(m);
             }
         };
@@ -347,7 +343,7 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+static void writeDetected(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
@@ -384,7 +380,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                 if (label == "FP")
                 {
                     /*
-                     * We know this is a false-positive, but we can trace it to one of the sequins?
+                     * We know this is a FP, but we can trace it to one of the sequins?
                      */
                     
                     if (r.hasInters(cID))
@@ -665,7 +661,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating VarDiscover_detected.csv
      */
     
-    writeQueries("VarDiscover_detected.csv", stats, o);
+    writeDetected("VarDiscover_detected.csv", stats, o);
     
     /*
      * Generating VarDiscover_ROC.R

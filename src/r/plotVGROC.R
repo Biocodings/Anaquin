@@ -12,7 +12,7 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', sep='\t')
 
 # Remove false positives that are not called within the sequin regions
-data <- data[data$ID != 'NA',]
+data <- data[data$ID != '-',]
 
 # How to rank the ROC points
 score <- %5%
@@ -24,7 +24,10 @@ data$Unique <- paste(paste(data$ID, data$Pos, sep='_'), data$Type, sep='_')
 data$AlleleF <- round(data$ExpRef / data$ExpVar)
 
 # Required for the next step
-data[is.nan(data$AlleleF),]$AlleleF <- 2
+if (nrow(data[is.nan(data$AlleleF),]))
+{
+    data[is.nan(data$AlleleF),]$AlleleF <- 2
+}
 
 # Give better names for the groups
 data$AlleleF <- revalue(as.factor(data$AlleleF), c('0'='Homozygous', '1'='Heterozygous', '2'='FP'))
