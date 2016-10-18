@@ -53,12 +53,11 @@ MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
 static void writeQuins(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
-    const auto format = "%1%\t%2%\t%3%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     o.generate(file);
-    
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID" % "input" % "reads").str());
+    o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Reads" % "FPKM").str());
     
     const auto total = sum(stats.hist);
     
@@ -72,7 +71,11 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
         // Measured FPKM
         const auto measured = ((double)i.second * pow(10, 9)) / (total * l.length());
         
-        o.writer->write((boost::format(format) % i.first % expected % measured).str());
+        o.writer->write((boost::format(format) % i.first
+                                               % l.length()
+                                               % expected
+                                               % i.second
+                                               % measured).str());
     }
     
     o.writer->close();
@@ -82,11 +85,11 @@ Scripts MAbund::generateRLinear(const FileName &src, const Stats &stats, const O
 {
     return RWriter::createRLinear(src,
                                   o.work,
-                                  "Allele Frequency",
-                                  "Expected allele frequency (log2)",
-                                  "Measured allele frequency (log2)",
-                                  "log2(data$ExpFreq)",
-                                  "log2(data$ObsFreq)",
+                                  "FPKM",
+                                  "Input concentration (log2)",
+                                  "Measured FPKM (log2)",
+                                  "log2(data$Input)",
+                                  "log2(data$FPKM)",
                                   "input",
                                   true);
 }
