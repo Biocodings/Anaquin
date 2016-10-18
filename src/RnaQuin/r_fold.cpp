@@ -123,7 +123,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
 {
     typedef DiffTest::Status Status;
     
-    if (RnaQuin::isRnaQuin(x.cID))
+    if (isRnaQuin(x.cID))
     {
         classifySyn(stats, x, metrs, o);
     }

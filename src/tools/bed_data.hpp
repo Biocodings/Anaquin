@@ -39,11 +39,11 @@ namespace Anaquin
             return b;
         }
 
-        inline Counts countBaseSyn() const
+        template <typename F> Counts countBaseSyn(F f) const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countBase(cID) : 0;
+                return f(cID) ? countBase(cID) : 0;
             });
         }
 
@@ -55,9 +55,9 @@ namespace Anaquin
             });
         }
         
-        inline Counts countBaseGen() const
+        template <typename F> Counts countBaseGen(F f) const
         {
-            return countBase() - countBaseSyn();
+            return countBase() - countBaseSyn(f);
         }
         
         inline Counts nGene() const
@@ -68,17 +68,17 @@ namespace Anaquin
             });
         }
         
-        inline Counts nGeneSyn() const
+        template <typename F> Counts nGeneSyn(F f) const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
             {
-                return Standard::isSynthetic(cID) ? nGene(cID) : 0;
+                return f(cID) ? nGene(cID) : 0;
             });
         }
 
-        inline Counts nGeneGen() const
+        template <typename F> Counts nGeneGen(F f) const
         {
-            return nGene() - nGeneSyn();
+            return nGene() - nGeneSyn(f);
         }
 
         inline std::map<ChrID, Hist> hist() const
@@ -139,13 +139,13 @@ namespace Anaquin
         }
         
         // Synthetic regions mapped by chromosomes
-        inline ID2Intervals intersSyn() const
+        template <typename F> ID2Intervals intersSyn(F f) const
         {
             ID2Intervals r;
             
             for (const auto &i : *this)
             {
-                if (Standard::isSynthetic(i.first))
+                if (f(i.first))
                 {
                     r[i.first] = inters(i.first);
                 }
@@ -215,13 +215,13 @@ namespace Anaquin
             return r;
         }
         
-        inline std::map<ChrID, MergedIntervals<>> mintersSyn() const
+        template <typename F> std::map<ChrID, MergedIntervals<>> mintersSyn(F f) const
         {
             std::map<ChrID, MergedIntervals<>> r;
             
             for (const auto &i : *this)
             {
-                if (Standard::isSynthetic(i.first))
+                if (f(i.first))
                 {
                     r[i.first] = minters(i.first);
                 }

@@ -85,6 +85,10 @@ namespace Anaquin
         {
             return true;
         }
+        else if (id.find("rev") != std::string::npos)
+        {
+            return true;
+        }
 
         return false;
     }

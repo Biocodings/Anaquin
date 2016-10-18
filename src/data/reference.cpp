@@ -113,7 +113,7 @@ void RnaRef::readRef(const Reader &r)
 {
     for (const auto &i : (_impl->gData = gtfData(r)))
     {
-        if (!RnaQuin::isRnaQuin(i.first))
+        if (!isRnaQuin(i.first))
         {
             Standard::addGenomic(i.first);
         }
@@ -167,7 +167,7 @@ Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
 {
     for (const auto &i : _impl->gData)
     {
-        if (RnaQuin::isRnaQuin(i.first))
+        if (isRnaQuin(i.first))
         {
             A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
 
@@ -347,7 +347,7 @@ void RnaRef::validate()
     
     for (const auto &i : _impl->gData)
     {
-        if (RnaQuin::isRnaQuin(i.first))
+        if (isRnaQuin(i.first))
         {
             iIDs = getKeys(_impl->gData.at(i.first).t2d);
             break;
@@ -440,31 +440,42 @@ MC2Intervals MetaRef::mInters() const
     return _impl->bData.minters();
 }
 
+Base MetaRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isMetaQuin); }
+Base MetaRef::nBaseGen() const { return _impl->bData.countBaseGen(isMetaQuin); }
+
+Counts MetaRef::nMicroSyn() const { return _impl->bData.nGeneSyn(isMetaQuin); }
+Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
+
 void MetaRef::validate()
 {
-    // Do we have a BED reference? If no, let's try mixture reference.
+    auto bed2ID = [](const BedData &data)
+    {
+        std::set<SequinID> ids;
+        
+        std::for_each(data.begin(), data.end(), [&](const std::pair<ChrID, BedChrData> & p)
+        {
+            if (isMetaQuin(p.first))
+            {
+                ids.insert(p.first);
+            }
+        });
+        
+        A_CHECK(!ids.empty(), "No sequin found in the reference");
+        
+        return ids;
+    };
+
     if (!_impl->bData.countBase())
     {
         merge(_rawMIDs, _rawMIDs);
     }
+    else if (_rawMIDs.empty())
+    {
+        merge(bed2ID(_impl->bData));
+    }
     else
     {
-        std::set<SequinID> seqIDs;
-        
-        for (const auto &i : _impl->bData)
-        {
-            const auto &chrID = i.first;
-            A_ASSERT(!chrID.empty());
-            
-            if (isMetaQuin(chrID))
-            {
-                seqIDs.insert(chrID);
-            }
-        }
-
-        A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
-        
-        merge(_rawMIDs, seqIDs);
+        merge(_rawMIDs, bed2ID(_impl->bData));
     }
 }
 
@@ -510,8 +521,8 @@ void VarRef::readVRef(const Reader &r)
     }
 }
 
-C2Intervals  VarRef::dInters()    const { return _impl->bData.inters();    }
-ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(); }
+C2Intervals  VarRef::dInters()    const { return _impl->bData.inters(); }
+ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(isVarQuin); }
 
 MC2Intervals VarRef::mInters()  const { return _impl->bData.minters(); }
 
@@ -619,25 +630,11 @@ Counts VarRef::countVar() const
     return _impl->vData.countVar();
 }
 
-Base VarRef::countBaseSyn() const
-{
-    return _impl->bData.countBaseSyn();
-}
+Base VarRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isVarQuin); }
+Base VarRef::nBaseGen() const { return _impl->bData.countBaseGen(isVarQuin); }
 
-Base VarRef::countBaseGen() const
-{
-    return _impl->bData.countBaseGen();
-}
-
-Counts VarRef::nGeneSyn() const
-{
-    return _impl->bData.nGeneSyn();
-}
-
-Counts VarRef::nGeneGen() const
-{
-    return _impl->bData.nGeneGen();
-}
+Counts VarRef::nGeneSyn() const { return _impl->bData.nGeneSyn(isVarQuin); }
+Counts VarRef::nGeneGen() const { return _impl->bData.nGeneGen(isVarQuin); }
 
 void VarRef::validate()
 {
@@ -668,7 +665,7 @@ void VarRef::validate()
         }
         
         A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
-        
+
         merge(seqIDs);
     }
 

@@ -2,6 +2,7 @@
 #define READER_BAM_HPP
 
 #include "data/intervals.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_sam.hpp"
 
 namespace Anaquin
@@ -59,7 +60,7 @@ namespace Anaquin
                         matched->map(x.l);
                     }
                     
-                    if (Standard::isSynthetic(x.cID))
+                    if (isVarQuin(x.cID))
                     {
                         stats.nSyn++;
                     }

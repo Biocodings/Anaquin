@@ -1,4 +1,5 @@
 #include "tools/coverage.hpp"
+#include "VarQuin/VarQuin.hpp"
 
 // Defined in main.cpp
 extern bool __showInfo__;
@@ -18,7 +19,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
             std::cout << std::to_string(info.p.i) << std::endl;
         }
         
-        if (Standard::isSynthetic(x.cID))
+        if (isVarQuin(x.cID))
         {
             stats.nSyn++;
         }

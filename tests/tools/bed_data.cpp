@@ -7,10 +7,15 @@ TEST_CASE("BED_Synthetic")
 {
     const auto r = bedData(Reader("data/VarQuin/AVA017_v001.bed"));
     
-    REQUIRE(r.nGene()    == 36);
-    REQUIRE(r.nGeneSyn() == 36);
-    REQUIRE(r.nGeneGen() == 0);
+    auto allTrue = [&](const ChrID &)
+    {
+        return true;
+    };
     
+    REQUIRE(r.nGene()    == 36);
+    REQUIRE(r.nGeneSyn(allTrue) == 36);
+    REQUIRE(r.nGeneGen(allTrue) == 0);
+
     const auto i = r.inters();
     
     REQUIRE(i.size() == 1);

@@ -3,6 +3,7 @@
 
 #include "data/hist.hpp"
 #include "data/intervals.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_gtf.hpp"
 
 // Defined in main.cpp
@@ -194,7 +195,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? nGene(cID) : 0;
+                return isRnaQuin(cID) ? nGene(cID) : 0;
             });
         }
         
@@ -202,7 +203,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countTrans(cID) : 0;
+                return isRnaQuin(cID) ? countTrans(cID) : 0;
             });
         }
         
@@ -210,7 +211,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countUExon(cID) : 0;
+                return isRnaQuin(cID) ? countUExon(cID) : 0;
             });
         }
         
@@ -218,7 +219,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countUIntr(cID) : 0;
+                return isRnaQuin(cID) ? countUIntr(cID) : 0;
             });
         }
 
@@ -457,7 +458,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countLen(cID) : 0;
+                return isRnaQuin(cID) ? countLen(cID) : 0;
             });
         }
         
@@ -465,7 +466,7 @@ namespace Anaquin
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return !Standard::isSynthetic(cID) ? countLen(cID) : 0;
+                return !isRnaQuin(cID) ? countLen(cID) : 0;
             });
         }
     };
@@ -606,7 +607,7 @@ namespace Anaquin
                                                                    % id.l.start
                                                                    % id.l.end).str();
                     
-                    if (Standard::isSynthetic(i.first) || id.l.length() >= MIN_INTRON_LEN)
+                    if (isRnaQuin(i.first) || id.l.length() >= MIN_INTRON_LEN)
                     {
                         if (!m_intrs.count(key))
                         {

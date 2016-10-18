@@ -10,6 +10,10 @@ static MAlign::Stats init()
 {
     const auto &r = Standard::instance().r_meta;
     
+    std::cout << r.nMicroSyn() << std::endl;
+    std::cout << r.nMicroGen() << std::endl;
+    
+    
     MAlign::Stats stats;
     
     stats.inters = r.mInters();
@@ -337,7 +341,7 @@ static void writeSummary(const FileName &file,
 {
     extern FileName BedRef();
     
-    const auto &r = Standard::instance().r_var;
+    const auto &r = Standard::instance().r_meta;
     
     const auto sums2c = sum(stats.s2c);
     const auto sums2l = sum(stats.s2l);
@@ -382,16 +386,16 @@ static void writeSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
-                                            % file                    // 2
-                                            % stats.nSyn          // 3
+                                            % src                     // 2
+                                            % stats.nSyn              // 3
                                             % (100 * stats.propSyn()) // 4
-                                            % stats.nGen          // 5
+                                            % stats.nGen              // 5
                                             % (100 * stats.propGen()) // 6
                                             % stats.dilution()        // 7
-                                            % r.nGeneSyn()        // 8
-                                            % r.countBaseSyn()        // 9
-                                            % r.nGeneGen()        // 10
-                                            % r.countBaseGen()        // 11
+                                            % r.nMicroSyn()           // 8
+                                            % r.nBaseSyn()            // 9
+                                            % r.nMicroGen()           // 10
+                                            % r.nBaseGen()            // 11
                                             % stats.sa.tp()           // 12
                                             % stats.sa.fp()           // 13
                                             % stats.sa.pc()           // 14
@@ -450,15 +454,15 @@ static void writeBQuins(const FileName &file,
 
 static void writeQuins(const FileName &file, const MAlign::Stats &stats, const MAlign::Options &o)
 {
+    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
+    
     o.generate(file);
     o.writer->open(file);
-    
-    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
     o.writer->write((boost::format(format) % "ID"
-                     % "Length"
-                     % "Reads"
-                     % "Sn"
-                     % "Pc").str());
+                                           % "Length"
+                                           % "Reads"
+                                           % "Sn"
+                                           % "Pc").str());
     
     // For each chromosome...
     for (const auto &i : stats.inters)

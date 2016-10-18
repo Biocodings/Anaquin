@@ -37,7 +37,7 @@ template <typename T> void update(RExpress::Stats &stats,
 {
     const auto &r = Standard::instance().r_rna;
     
-    if (RnaQuin::isRnaQuin(x.cID))
+    if (isRnaQuin(x.cID))
     {
         SequinID id;
         Concent  exp = NAN;

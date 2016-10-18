@@ -283,6 +283,12 @@ namespace Anaquin
 
             void readBed(const Reader &);
 
+            Counts nMicroSyn() const;
+            Counts nMicroGen() const;
+
+            Base nBaseSyn() const;
+            Base nBaseGen() const;
+        
             MC2Intervals mInters() const;
 
         protected:
@@ -310,8 +316,8 @@ namespace Anaquin
             void readBRef(const Reader &);
             void readVRef(const Reader &);
 
-            Base countBaseSyn() const;
-            Base countBaseGen() const;
+            Base nBaseSyn() const;
+            Base nBaseGen() const;
 
             Counts nGeneSyn() const;
             Counts nGeneGen() const;

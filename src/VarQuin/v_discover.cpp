@@ -137,7 +137,7 @@ struct VDiscoverImpl : public VCFDataUser
         // Always work on the queries
         stats->query[cID].af.insert(m.query.alleleFreq());
 
-        if (Standard::isSynthetic(cID))
+        if (isVarQuin(cID))
         {
             stats->nSyn++;
             f();

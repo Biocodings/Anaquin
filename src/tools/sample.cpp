@@ -1,4 +1,5 @@
 #include "tools/sample.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
 
@@ -8,7 +9,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
 {
     Sampler::Stats stats;
 
-    assert(p > 0.0 && p <= 1.0);
+    A_ASSERT(p > 0.0 && p <= 1.0);
     Random r(1.0 - p);
 
     WriterSAM w;
@@ -21,11 +22,11 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
             o.logInfo(std::to_string(info.p.i));
         }
         
-        const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
+        const auto shouldWrite = !x.mapped || !isRnaQuin(x.cID);
 
         if (x.isPrimary)
         {
-            if (Standard::isSynthetic(x.cID))
+            if (isRnaQuin(x.cID))
             {
                 stats.before.syn++;
             }
@@ -38,19 +39,17 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         // This is the key, randomly write the reads with certain probability
         if (shouldWrite || r.select(x.name))
         {
-            const auto isSyn = Standard::isSynthetic(x.cID);
+            const auto isSyn = isRnaQuin(x.cID);
             
             if (x.mapped && isSyn)
             {
-                assert(Standard::isSynthetic(x.cID));
-                
                 if (user)
                 {
                     user->syncReadSampled(x);
                 }
             }
             
-            if (x.isPrimary && Standard::isSynthetic(x.cID))
+            if (x.isPrimary && isRnaQuin(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);
@@ -72,7 +71,7 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         }
     }, true);
     
-    assert(stats.before.syn >= stats.after.syn);    
+    A_ASSERT(stats.before.syn >= stats.after.syn);
     stats.after.gen = stats.before.gen;
     
     w.close();

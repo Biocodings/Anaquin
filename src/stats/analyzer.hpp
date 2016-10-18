@@ -126,7 +126,7 @@ namespace Anaquin
         template <typename T, typename F> void update(const T &t, F f)
         {
             if      (!t.mapped) { nNA++;  }
-            else if (!f(t.cID)) { nSyn++; }
+            else if (f(t.cID))  { nSyn++; }
             else                { nGen++; }
         }
     };
