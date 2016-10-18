@@ -28,9 +28,6 @@ namespace Anaquin
             // Reference genomic chromosomes
             static std::set<ChrID> genoIDs;
 
-            // Whether the chromosome is synthetic
-            static bool isSynthetic(const ChrID &);
-
             // Whether the chromosome is genomic
             static bool isGenomic(const ChrID &cID)
             {

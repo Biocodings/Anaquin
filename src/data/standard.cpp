@@ -87,35 +87,6 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
-bool Standard::isSynthetic(const ChrID &cID)
-{
-    assert(!cID.empty());
-    
-    const std::set<ChrID> sIDs = { "chrT", "chrIS" };
-
-    // Can we match by exact?
-    if (sIDs.count(cID))
-    {
-        return true;
-    }
-
-    // Eg; chrev10
-    else if (cID.find("rev") != std::string::npos)
-    {
-        return true;
-    }
-    else if (cID.find("GS_") != std::string::npos)
-    {
-        return true;
-    }
-    else if (cID.find("GI_") != std::string::npos)
-    {
-        return true;
-    }
-    
-    return false;
-}
-
 void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
