@@ -10,10 +10,6 @@ static MAlign::Stats init()
 {
     const auto &r = Standard::instance().r_meta;
     
-    std::cout << r.nMicroSyn() << std::endl;
-    std::cout << r.nMicroGen() << std::endl;
-    
-    
     MAlign::Stats stats;
     
     stats.inters = r.mInters();
@@ -29,7 +25,7 @@ static MAlign::Stats init()
          */
         
         stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>
-                    (new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max())));
+                (new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max())));
     }
     
     return stats;
