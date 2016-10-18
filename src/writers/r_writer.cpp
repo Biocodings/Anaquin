@@ -24,15 +24,15 @@ Scripts RWriter::createLogistic(const FileName    &file,
                                 bool showLOQ)
 {
     return (boost::format(PlotLogistic()) % date()
-                                             % __full_command__
-                                             % __output__
-                                             % file
-                                             % title
-                                             % xlab
-                                             % ylab
-                                             % ("log2(data$" + expected + ")")
-                                             % ("data$" + measured)
-                                             % (showLOQ ? "TRUE" : "FALSE")).str();
+                                          % __full_command__
+                                          % __output__
+                                          % file
+                                          % title
+                                          % xlab
+                                          % ylab
+                                          % ("log2(data$" + expected + ")")
+                                          % ("data$" + measured)
+                                          % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
 Scripts RWriter::createFold(const FileName    &file,

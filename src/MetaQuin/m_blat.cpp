@@ -107,9 +107,9 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
              */
             
             const auto total = std::accumulate(merged.begin(), merged.end(), 0, [&](int sum, const Locus &l)
-                                               {
-                                                   return sum + l.length();
-                                               });
+            {
+                return sum + l.length();
+            });
             
             /*
              * Generating overlapping statistics for this sequin. In this context, target refers
@@ -136,6 +136,8 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
              */
             
             const auto l = align->seq->l.length();
+            
+            A_ASSERT(l > 2);
             
             // Proportion of non-overlapping bases covered or assembled
             align->covered = static_cast<double>(total) / l;

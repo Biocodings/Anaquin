@@ -144,33 +144,34 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
 
 static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
+    extern FileName BedRef();
+    
     const auto &r = Standard::instance().r_meta;
     
     const auto summary = "Summary for input: %1%\n\n"
-                         "   Synthetic: %2%\n"
-                         "   Community: %3%\n\n"
-                         "   Contigs:   %4%\n\n"
+                         "   Synthetic: %2% contigs\n"
+                         "   Community: %3% contigs\n"
+                         "   Total:     %4% contigs\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
-                         "   File: %6%\n\n"
-                         "   Synthetic: %7% sequins\n"
-                         "   Contigs: %5%\n\n"
+                         "   File: %5%\n\n"
+                         "   Synthetic: %6% sequins\n"
                          "   ***\n"
                          "   *** The following statistics are computed on the synthetic community\n"
                          "   ***\n\n"
-                         "   N20:  %8%\n"
-                         "   N50:  %9%\n"
-                         "   N80:  %10%\n"
-                         "   Min:  %11%\n"
-                         "   Mean: %12%\n"
-                         "   Max:  %13%\n\n"
+                         "   N20:  %7%\n"
+                         "   N50:  %8%\n"
+                         "   N80:  %9%\n"
+                         "   Min:  %10%\n"
+                         "   Mean: %11%\n"
+                         "   Max:  %12%\n\n"
                          "   ***\n"
                          "   *** The following overlapping statistics are computed as proportion\n"
                          "   ***\n\n"
-                         "   Match:    %14%\n"
-                         "   Mismatch: %15%\n"
-                         "   Covered:  %16%\n";
+                         "   Match:    %13%\n"
+                         "   Mismatch: %14%\n"
+                         "   Covered:  %15%\n";
     
     const auto &dn = stats.dnovo;
     
@@ -178,8 +179,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                                    % dn.nSyn
                                    % dn.nGen
                                    % (dn.nSyn + dn.nGen)
-                                   % dn.nSyn
-                                   % "" //o.rAnnot
+                                   % BedRef()
                                    % r.data().size()
                                    % dn.N20
                                    % dn.N50
@@ -200,10 +200,10 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
     
     std::stringstream ss;
     ss << ((boost::format(format) % "ID"
-                                  % "input"
-                                  % "contig"
-                                  % "match"
-                                  % "mismatch")) << std::endl;
+                                  % "InputContent"
+                                  % "Contig"
+                                  % "Match"
+                                  % "Mismatch")) << std::endl;
     
     for (const auto &seq : r.data())
     {
@@ -251,6 +251,28 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
     return ss.str();
 }
 
+Scripts MAssembly::generateQuins(const Stats &stats, const Options &o)
+{
+    std::stringstream ss;
+    
+    const auto &r = Standard::instance().r_meta;
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+    
+    ss << (boost::format(format) % "ID" % "Length" % "InputConcent" % "Sn").str() << std::endl;
+    
+    for (const auto &i : stats)
+    {
+        const auto l = r.match(i.first)->l;
+        
+        ss << ((boost::format(format) % i.first
+                                      % l.length()
+                                      % i.second.x
+                                      % i.second.y).str()) << std::endl;
+    }
+    
+    return ss.str();
+}
+
 void MAssembly::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto stats = MAssembly::analyze(files, o);
@@ -263,24 +285,24 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     
     o.info("Generating MetaAssembly_summary.stats");
     o.writer->open("MetaAssembly_summary.stats");
-    o.writer->write(generateSummary("MetaAssembly_summary.stats", stats, o));
+    o.writer->write(generateSummary(files[0], stats, o));
     o.writer->close();
     
     /*
-     * Generating MetaAssembly_quins.stats
+     * Generating MetaAssembly_sequins.csv
      */
     
     o.info("Generating MetaAssembly_sequins.csv");
     o.writer->open("MetaAssembly_sequins.csv");
-    //o.writer->write(StatsWriter::writeCSV(stats));
+    o.writer->write(MAssembly::generateQuins(stats, o));
     o.writer->close();
     
     /*
-     * Generating MetaAssembly_queries.stats
+     * Generating MetaAssembly_queries.csv
      */
     
-    o.info("Generating MetaAssembly_queries.stats");
-    o.writer->open("MetaAssembly_queries.stats");
+    o.info("Generating MetaAssembly_queries.csv");
+    o.writer->open("MetaAssembly_queries.csv");
     o.writer->write(writeContigs(stats, o));
     o.writer->close();
     

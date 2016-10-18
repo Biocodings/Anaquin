@@ -476,6 +476,21 @@ void MetaRef::validate()
     else
     {
         merge(_rawMIDs, bed2ID(_impl->bData));
+        
+        /*
+         * Build length for each synthetic genome
+         */
+        
+        for (const auto &i : _impl->bData)
+        {
+            for (const auto &j : i.second.r2d)
+            {
+                if (_data.count(i.first))
+                {
+                    _data.at(i.first).l = j.second.l;
+                }
+            }
+        }
     }
 }
 

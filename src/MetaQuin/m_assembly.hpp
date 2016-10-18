@@ -69,8 +69,7 @@ namespace Anaquin
             Format format;
         };
 
-        static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
-        void writeRLinear(const FileName &, const FileName &, const Stats &, const Options &);
+        static Scripts generateQuins(const Stats &, const Options &);        
 
         static Stats analyze(const std::vector<FileName> &, const Options &o);
         static void  report (const std::vector<FileName> &, const Options &o = Options());
