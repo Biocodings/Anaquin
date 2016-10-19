@@ -1,14 +1,13 @@
 #include <Variant.h>
 #include "parsers/parser_vcf.hpp"
 
-using namespace vcflib;
 using namespace Anaquin;
 
 bool ParserVCF::isVCF(const Reader &r)
 {
     try
     {
-        VariantCallFile vFile;
+        vcflib::VariantCallFile vFile;
         
         auto src = std::string(r.src());
         vFile.open(src);
