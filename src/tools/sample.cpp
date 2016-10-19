@@ -1,11 +1,10 @@
 #include "tools/sample.hpp"
-#include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
 
 using namespace Anaquin;
 
-Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const AnalyzerOptions &o, bool toConsole, User *user)
+Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const AnalyzerOptions &o, std::function<bool (const ChrID &)> isSyn)
 {
     Sampler::Stats stats;
 
@@ -22,11 +21,11 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
             o.logInfo(std::to_string(info.p.i));
         }
         
-        const auto shouldWrite = !x.mapped || !isRnaQuin(x.cID);
+        const auto shouldWrite = !x.mapped || !isSyn(x.cID);
 
         if (x.isPrimary)
         {
-            if (isRnaQuin(x.cID))
+            if (isSyn(x.cID))
             {
                 stats.before.syn++;
             }
@@ -39,34 +38,21 @@ Sampler::Stats Sampler::subsample(const FileName &file, Proportion p, const Anal
         // This is the key, randomly write the reads with certain probability
         if (shouldWrite || r.select(x.name))
         {
-            const auto isSyn = isRnaQuin(x.cID);
-            
-            if (x.mapped && isSyn)
-            {
-                if (user)
-                {
-                    user->syncReadSampled(x);
-                }
-            }
-            
-            if (x.isPrimary && isRnaQuin(x.cID))
+            if (x.isPrimary && isSyn(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);
             }
 
-            if (toConsole)
+            /*
+             * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to
+             * give '*' to QNAME, but not an empty string....
+             */
+            
+            if (!x.name.empty())
             {
-                /*
-                 * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to
-                 * give '*' to QNAME, but not an empty string....
-                 */
-                
-                if (!x.name.empty())
-                {
-                    // Print SAM line
-                    w.write(x);
-                }
+                // Print SAM line
+                w.write(x);
             }
         }
     }, true);

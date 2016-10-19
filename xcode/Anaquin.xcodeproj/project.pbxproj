@@ -34,6 +34,7 @@
 		EF283B1D1DB71D0500163634 /* libvcflib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF283B1C1DB71D0500163634 /* libvcflib.a */; };
 		EF283B201DB71D6200163634 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EF283B1F1DB71D6200163634 /* libz.tbd */; };
 		EF283B221DB7368C00163634 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF283B211DB7368C00163634 /* m_assembly.cpp */; };
+		EF283B251DB7415D00163634 /* m_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF283B231DB7415D00163634 /* m_sample.cpp */; };
 		EF3302BE1C8E8498007A73A2 /* t_parser_kallisto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */; };
 		EF37EDD21DA7452A00757291 /* m_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF37EDD01DA7452A00757291 /* m_blat.cpp */; };
 		EF3860E81AD3783A0062D246 /* parser_cufflink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */; };
@@ -183,6 +184,8 @@
 		EF283B1C1DB71D0500163634 /* libvcflib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvcflib.a; path = ../../VCF/vcflib/libvcflib.a; sourceTree = "<group>"; };
 		EF283B1F1DB71D6200163634 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		EF283B211DB7368C00163634 /* m_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = m_assembly.cpp; path = ../tests/MetaQuin/m_assembly.cpp; sourceTree = "<group>"; };
+		EF283B231DB7415D00163634 /* m_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = m_sample.cpp; path = ../src/MetaQuin/m_sample.cpp; sourceTree = "<group>"; };
+		EF283B241DB7415D00163634 /* m_sample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = m_sample.hpp; path = ../src/MetaQuin/m_sample.hpp; sourceTree = "<group>"; };
 		EF2E58731CDCE452009A35D4 /* sample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sample.hpp; path = ../src/tools/sample.hpp; sourceTree = "<group>"; };
 		EF3302BC1C8E81FF007A73A2 /* parser_kallisto.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_kallisto.hpp; path = ../src/parsers/parser_kallisto.hpp; sourceTree = "<group>"; };
 		EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_kallisto.cpp; path = ../tests/parsers/t_parser_kallisto.cpp; sourceTree = "<group>"; };
@@ -802,6 +805,8 @@
 				EFB745A31DB0E98E00CBD5FF /* m_diff.cpp */,
 				EFB745A41DB0E98E00CBD5FF /* m_diff.hpp */,
 				EF37EDCF1DA7449000757291 /* m_histogram.hpp */,
+				EF283B231DB7415D00163634 /* m_sample.cpp */,
+				EF283B241DB7415D00163634 /* m_sample.hpp */,
 				EF37EDCE1DA743BD00757291 /* MetaQuin.hpp */,
 			);
 			name = MetaQuin;
@@ -887,6 +892,7 @@
 				EFFD9A891D26BB6A00A7A80B /* sample.cpp in Sources */,
 				EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */,
 				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
+				EF283B251DB7415D00163634 /* m_sample.cpp in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF5A3B6F1D162719008F2C9F /* bed_data.cpp in Sources */,

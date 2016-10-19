@@ -1,6 +1,7 @@
 #ifndef SAMPLE_HPP
 #define SAMPLE_HPP
 
+#include <functional>
 #include <klib/khash.h>
 #include "stats/analyzer.hpp"
 
@@ -25,12 +26,10 @@ namespace Anaquin
             SGReads before, after;
         };
         
-        struct User
-        {
-            virtual void syncReadSampled(const Alignment &) = 0;
-        };
-
-        static Stats subsample(const FileName &, Proportion, const AnalyzerOptions &, bool toConsole, User *user = nullptr);
+        static Stats sample(const FileName &,
+                            Proportion,
+                            const AnalyzerOptions &,
+                            std::function<bool (const ChrID &)>);
     };
     
     class Random

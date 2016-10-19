@@ -153,7 +153,7 @@ namespace Anaquin
          */
         
         template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T analyze_
-        (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
+                (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
         {
             T stats;
             Histogram hist;

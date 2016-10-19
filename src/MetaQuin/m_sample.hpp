@@ -1,18 +1,18 @@
-#ifndef R_SAMPLE_HPP
-#define R_SAMPLE_HPP
+#ifndef M_SAMPLE_HPP
+#define M_SAMPLE_HPP
 
 #include "tools/sample.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct RSample
+    struct MSample
     {
         struct Options : public AnalyzerOptions
         {
             Options() {}
             
-            // Fraction required for the spike-in
+            // Fraction required for sampling
             Proportion p = NAN;
         };
 
@@ -27,7 +27,7 @@ namespace Anaquin
             Proportion norm;
         };
 
-        static Stats stats(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &);
         static void report(const FileName &, const Options &o = Options());
     };
 }

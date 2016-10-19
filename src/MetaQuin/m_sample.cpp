@@ -1,27 +1,20 @@
 #include "tools/errors.hpp"
-#include "RnaQuin/RnaQuin.hpp"
-#include "RnaQuin/r_sample.hpp"
+#include "MetaQuin/MetaQuin.hpp"
+#include "MetaQuin/m_sample.hpp"
 #include "writers/writer_sam.hpp"
 
 using namespace Anaquin;
 
-RSample::Stats RSample::stats(const FileName &file, const Options &o)
+MSample::Stats MSample::analyze(const FileName &file, const Options &o)
 {
     A_CHECK(!isnan(o.p), "Sampling probability must not be NAN");
     A_CHECK(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1)");
 
-    RSample::Stats stats;
+    MSample::Stats stats;
     
     o.info(file);
+    o.info("Sampling proportion: " + std::to_string(o.p));
 
-    o.info("Spike-in proportion: " + std::to_string(o.p));
-
-    /*
-     * Calculating sequencing depth for both genomic and synthetic before subsampling
-     */
-
-    o.info("Calculating the coverage before subsampling");
-    
     ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -32,7 +25,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         // Don't count for multiple alignments
         if (x.isPrimary)
         {
-            if (isRnaQuin(x.cID))
+            if (isMetaQuin(x.cID))
             {
                 stats.before.syn++;
             }
@@ -43,10 +36,10 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         }
     });
 
-    o.info("Alignments mapped to the in-silico (before subsampling): " + std::to_string(stats.before.syn));
+    o.info("Alignments mapped to the synthetic community (before subsampling): " + std::to_string(stats.before.syn));
     o.info("Alignments mapped to the genome (before subsampling): " + std::to_string(stats.before.gen));
     
-    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico chromosome"); }
+    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico community"); }
     if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the genome");   }
 
     /*
@@ -76,14 +69,14 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Normalization: "    + std::to_string(stats.norm));
 
     // Perform subsampling
-    const auto r = Sampler::sample(file, stats.norm, o, [&](const ChrID &id) { return isRnaQuin(id); });
+    const auto r = Sampler::sample(file, stats.norm, o, [&](const ChrID &id) { return isMetaQuin(id); });
 
     stats.after = r.after;
 
     return stats;
 }
 
-static void generateSummary(const FileName &file, const FileName &src, const RSample::Stats &stats, const RSample::Options &o)
+static void generateSummary(const FileName &file, const FileName &src, const MSample::Stats &stats, const MSample::Options &o)
 {
     o.generate(file);
     
@@ -116,13 +109,13 @@ static void generateSummary(const FileName &file, const FileName &src, const RSa
     o.writer->close();
 }
 
-void RSample::report(const FileName &file, const Options &o)
+void MSample::report(const FileName &file, const Options &o)
 {
-    const auto stats = RSample::stats(file, o);
+    const auto stats = MSample::analyze(file, o);
     
     /*
-     * Generating RnaSubsample_summary.stats
+     * Generating MetaSubsample_summary.stats
      */
     
-    generateSummary("RnaSubsample_summary.stats", file, stats, o);
+    generateSummary("MetaSubsample_summary.stats", file, stats, o);
 }

@@ -25,6 +25,7 @@
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_abund.hpp"
+#include "MetaQuin/m_sample.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_gtf.hpp"
@@ -71,9 +72,10 @@ typedef std::set<Value> Range;
 #define TOOL_M_ALIGN     277
 #define TOOL_M_ABUND     278
 #define TOOL_M_DIFF      279
-#define TOOL_M_ASSEMBLY  280
-#define TOOL_V_SUBSAMPLE 281
-#define TOOL_R_SUBSAMPLE 282
+#define TOOL_M_SUBSAMPLE 280
+#define TOOL_M_ASSEMBLY  281
+#define TOOL_V_SUBSAMPLE 282
+#define TOOL_R_SUBSAMPLE 283
 #define TOOL_V_FLIP      305
 
 /*
@@ -166,6 +168,7 @@ static std::map<Value, Tool> _tools =
     { "MetaAlign",      TOOL_M_ALIGN     },
     { "MetaAbund",      TOOL_M_ABUND     },
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
+    { "MetaSubsample",  TOOL_M_SUBSAMPLE },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -197,9 +200,10 @@ static std::map<Tool, std::set<Option>> _required =
      * MetaQuin Analysis
      */
 
-    { TOOL_M_DIFF,     { OPT_U_FILES } },
-    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_U_FILES } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_DIFF,      { OPT_U_FILES } },
+    { TOOL_M_ALIGN,     { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_ASSEMBLY,  { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_SUBSAMPLE, { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
 };
 
 /*
@@ -942,6 +946,7 @@ void parse(int argc, char ** argv)
                     case TOOL_R_EXPRESS:
                     case TOOL_V_SUBSAMPLE: { _p.opts[opt] = val; break; }
 
+                    case TOOL_M_SUBSAMPLE:
                     case TOOL_R_SUBSAMPLE:
                     {
                         parseDouble(_p.opts[opt] = val, _p.sampled);
@@ -1224,12 +1229,15 @@ void parse(int argc, char ** argv)
         case TOOL_M_ABUND:
         case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
+        case TOOL_M_SUBSAMPLE:
         {
             switch (_p.tool)
             {
-                case TOOL_M_DIFF:  { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
-                case TOOL_M_ABUND: { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-                case TOOL_M_ALIGN: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_DIFF:      { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
+                case TOOL_M_ABUND:     { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_ALIGN:     { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_SUBSAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+
                 case TOOL_M_ASSEMBLY:
                 {
                     applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
@@ -1246,6 +1254,14 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_M_DIFF:  { analyze_2<MDiff>(OPT_U_FILES);  break; }
                 case TOOL_M_ABUND: { analyze_1<MAbund>(OPT_U_FILES); break; }
+
+                case TOOL_M_SUBSAMPLE:
+                {
+                    MSample::Options o;
+                    o.p = _p.sampled;
+                    analyze_1<MSample>(OPT_U_FILES, o);
+                    break;
+                }
 
                 case TOOL_M_ASSEMBLY:
                 {

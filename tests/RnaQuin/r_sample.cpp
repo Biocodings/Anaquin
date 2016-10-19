@@ -13,9 +13,6 @@ TEST_CASE("RSample_OverSubsampled")
     // Over subsampling
     o.p = 0.99;
     
-    // It's a unit test...
-    o.toConsole = false;
-    
     const auto r = RSample::stats("tests/data/sampled.bam", o);
     
     REQUIRE(r.before.syn == 32252);
