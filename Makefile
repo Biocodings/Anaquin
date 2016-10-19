@@ -11,6 +11,9 @@
 #   2. Catch:  https://github.com/philsquared/Catch
 #   3. Eigen:  https://eigen.tuxfamily.org
 #   4. Klib:   https://github.com/attractivechaos/klib
+#   4. VCFLib: https://github.com/student-t/vcflib
+#
+# Pleae note the VCFLib version compatible with Anaquin is *not* the ofifical release.
 #
 # Please email t.wong@garvan.org.au if you have any problems.
 #
@@ -22,6 +25,9 @@ EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 
 # Library for random generator
 KLIB = /Applications
+
+# Library for VCF parsing
+VCFLIB = /Users/tedwong/Sources/VCF/vcflib
 
 # Where the header are
 INCLUDE = src
@@ -37,13 +43,13 @@ SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lpthread -lz -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -L $(VCFLIB) -g -lpthread -lz -lvcflib -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
