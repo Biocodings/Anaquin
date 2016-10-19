@@ -27,6 +27,8 @@ namespace Anaquin
             FormatData
         };
 
+        static bool isVCF(const Reader &);
+        
         template <typename F> static void parse(const Reader &r, F f)
         {
             std::string line;

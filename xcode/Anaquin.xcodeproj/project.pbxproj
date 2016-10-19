@@ -30,6 +30,9 @@
 		EF26157D1B5FF9DC00BE8037 /* gffread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26157A1B5FF9DC00BE8037 /* gffread.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF2615801B5FF9F500BE8037 /* codons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26157E1B5FF9F500BE8037 /* codons.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF2615811B5FF9F500BE8037 /* cuffcompare.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EF283B191DB709F700163634 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF283B181DB709F700163634 /* parser_vcf.cpp */; };
+		EF283B1D1DB71D0500163634 /* libvcflib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF283B1C1DB71D0500163634 /* libvcflib.a */; };
+		EF283B201DB71D6200163634 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EF283B1F1DB71D6200163634 /* libz.tbd */; };
 		EF3302BE1C8E8498007A73A2 /* t_parser_kallisto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */; };
 		EF37EDD21DA7452A00757291 /* m_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF37EDD01DA7452A00757291 /* m_blat.cpp */; };
 		EF3860E81AD3783A0062D246 /* parser_cufflink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */; };
@@ -69,7 +72,6 @@
 		EFC4BEC91D8EC534005BFA10 /* t_parser_salmon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */; };
 		EFC68C931D79159F00E511CE /* t_mixture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC68C921D79159F00E511CE /* t_mixture.cpp */; };
 		EFD6292B1C4CAE2400FDF262 /* r_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */; };
-		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
 		EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A751B0DD75B00450029 /* bgzf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7D1B0DD76200450029 /* hfile_net.c */; };
 		EFDD6A931B0DD76200450029 /* hfile.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7E1B0DD76200450029 /* hfile.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -176,6 +178,9 @@
 		EF26157A1B5FF9DC00BE8037 /* gffread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gffread.cpp; path = ../src/cufflinks/gffread.cpp; sourceTree = "<group>"; };
 		EF26157E1B5FF9F500BE8037 /* codons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = codons.cpp; path = ../src/cufflinks/codons.cpp; sourceTree = "<group>"; };
 		EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cuffcompare.cpp; path = ../src/cufflinks/cuffcompare.cpp; sourceTree = "<group>"; };
+		EF283B181DB709F700163634 /* parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_vcf.cpp; path = ../src/parsers/parser_vcf.cpp; sourceTree = "<group>"; };
+		EF283B1C1DB71D0500163634 /* libvcflib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvcflib.a; path = ../../VCF/vcflib/libvcflib.a; sourceTree = "<group>"; };
+		EF283B1F1DB71D6200163634 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		EF2E58731CDCE452009A35D4 /* sample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sample.hpp; path = ../src/tools/sample.hpp; sourceTree = "<group>"; };
 		EF3302BC1C8E81FF007A73A2 /* parser_kallisto.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_kallisto.hpp; path = ../src/parsers/parser_kallisto.hpp; sourceTree = "<group>"; };
 		EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_kallisto.cpp; path = ../tests/parsers/t_parser_kallisto.cpp; sourceTree = "<group>"; };
@@ -269,7 +274,6 @@
 		EFC4BEC81D8EC534005BFA10 /* t_parser_salmon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_salmon.cpp; path = ../tests/parsers/t_parser_salmon.cpp; sourceTree = "<group>"; };
 		EFC68C921D79159F00E511CE /* t_mixture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_mixture.cpp; path = ../tests/data/t_mixture.cpp; sourceTree = "<group>"; };
 		EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_writer.cpp; path = ../src/writers/r_writer.cpp; sourceTree = "<group>"; };
-		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		EFDD6A751B0DD75B00450029 /* bgzf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bgzf.c; path = ../src/htslib/bgzf.c; sourceTree = "<group>"; };
 		EFDD6A7D1B0DD76200450029 /* hfile_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile_net.c; path = ../src/htslib/hfile_net.c; sourceTree = "<group>"; };
 		EFDD6A7E1B0DD76200450029 /* hfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile.c; path = ../src/htslib/hfile.c; sourceTree = "<group>"; };
@@ -355,7 +359,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */,
+				EF283B201DB71D6200163634 /* libz.tbd in Frameworks */,
+				EF283B1D1DB71D0500163634 /* libvcflib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,6 +390,7 @@
 				7F6E0C831AB653AC00C9E3E0 /* Tests */,
 				EF150F4D1AD505D50004E613 /* Framework */,
 				7F7C70531AB4726E00C6EE36 /* Products */,
+				EF283B1E1DB71D6200163634 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -447,7 +453,8 @@
 		EF150F4D1AD505D50004E613 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				EFDD6A701B0DD60500450029 /* libz.dylib */,
+				EF283B1C1DB71D0500163634 /* libvcflib.a */,
+				EF283B1F1DB71D6200163634 /* libz.tbd */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -483,6 +490,13 @@
 			name = Cufflinks;
 			sourceTree = "<group>";
 		};
+		EF283B1E1DB71D6200163634 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EF3860D61AD378190062D246 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
@@ -509,8 +523,9 @@
 				EF99B8B71D8BAA910082ED31 /* parser_sleuth.hpp */,
 				EF37EDCD1DA742D000757291 /* parser_tsv.hpp */,
 				EF06A67C1D0862B7000D9B17 /* parser_variants.hpp */,
-				EF6B01CF1C60956500D82709 /* parser_varscan.hpp */,
 				EF6093051DB4AB1A0009BC89 /* parser_varscan.cpp */,
+				EF6B01CF1C60956500D82709 /* parser_varscan.hpp */,
+				EF283B181DB709F700163634 /* parser_vcf.cpp */,
 				EF3860E41AD3783A0062D246 /* parser_vcf.hpp */,
 				EFB1E0421B0098F300F093A2 /* parser.hpp */,
 			);
@@ -900,6 +915,7 @@
 				EF0C67961C5F25070033168D /* v_discover.cpp in Sources */,
 				EFDD6AD91B0DD76C00450029 /* zfio.c in Sources */,
 				EFFD61751D7ED35E0029DE6B /* r_kreport.cpp in Sources */,
+				EF283B191DB709F700163634 /* parser_vcf.cpp in Sources */,
 				EF4085AD1D268B600077CAAF /* v_sample.cpp in Sources */,
 				EF5B4ABC1D926AD8004F4CA9 /* v_kreport.cpp in Sources */,
 				EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */,
@@ -1057,12 +1073,11 @@
 		7F7C705A1AB4726E00C6EE36 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATE_OWNER = "";
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"~/Sources/QA/src/htslib",
-					/Applications,
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1074,8 +1089,6 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
 					/Applications/catch/include,
-					../../src,
-					../src,
 					src,
 					"~/Sources/QA",
 					"~/Sources/QA/src/htslib",
@@ -1083,11 +1096,16 @@
 					/Applications,
 					/Applications/boost_1_61_0,
 					"~/Sources/QA/tests",
+					/Users/tedwong/Sources/QA/src,
+					/Users/tedwong/Sources/VCF/vcflib/src,
+					/Users/tedwong/Sources/VCF/vcflib/tabixpp,
+					/Users/tedwong/Sources/VCF/vcflib/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"~/Sources/QA/src",
+					/Users/tedwong/Sources/VCF/vcflib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -1100,20 +1118,17 @@
 		7F7C705B1AB4726E00C6EE36 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATE_OWNER = "";
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"~/Sources/QA/src/htslib",
-					/Applications,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
 					/Applications/catch/include,
-					../../src,
-					../src,
 					src,
 					"~/Sources/QA",
 					"~/Sources/QA/src/htslib",
@@ -1121,11 +1136,16 @@
 					/Applications,
 					/Applications/boost_1_61_0,
 					"~/Sources/QA/tests",
+					/Users/tedwong/Sources/QA/src,
+					/Users/tedwong/Sources/VCF/vcflib/src,
+					/Users/tedwong/Sources/VCF/vcflib/tabixpp,
+					/Users/tedwong/Sources/VCF/vcflib/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"~/Sources/QA/src",
+					/Users/tedwong/Sources/VCF/vcflib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

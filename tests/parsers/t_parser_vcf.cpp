@@ -4,11 +4,16 @@
 
 using namespace Anaquin;
 
+TEST_CASE("ParserVCF_Invalid")
+{
+    REQUIRE(!ParserVCF::isVCF(Reader("tests/data/Invalid.vcf")));
+}
+
 TEST_CASE("ParserVCF_AVA026")
 {
     std::vector<ParserVCF::Data> x;
     
-    ParserVCF::parse(Reader("data/VarQuin/AVA026_v001.vcf"), [&](const ParserVCF::Data &d, const ParserProgress &)
+    ParserVCF::parse(Reader("tests/data/AVA026_v001.vcf"), [&](const ParserVCF::Data &d, const ParserProgress &)
     {
         x.push_back(d);
     });
