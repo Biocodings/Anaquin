@@ -1,5 +1,5 @@
-#include <Variant.h>
 #include "parsers/parser_vcf.hpp"
+#include <Variant.h>
 
 using namespace Anaquin;
 
