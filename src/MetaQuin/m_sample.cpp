@@ -40,16 +40,8 @@ MSample::Stats MSample::analyze(const FileName &file, const Options &o)
     o.info("Alignments mapped to the genome (before subsampling): " + std::to_string(stats.before.gen));
     
     if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico community"); }
-    if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the genome");   }
+    if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the microbes");   }
 
-    /*
-     * Calculating subsamping fraction. Eg: if we have 10m reads to the genome and 5m reads to the
-     * in-silico chromsome and the specified fraction is 1%.
-     *
-     *   New total is: 10/0.99 = 10.10101 => Synthetic will have: 0.10101 reads.
-     *   We should sample for 0.10101/5 = 0.020202.
-     */
-    
     o.info("Calculating the normalization factor");
     
     const auto nTotal = stats.before.gen / (1.0 - o.p);
@@ -80,7 +72,7 @@ static void generateSummary(const FileName &file, const FileName &src, const MSa
 {
     o.generate(file);
     
-    const auto summary = "-------RnaSubsample Summary Statistics\n\n"
+    const auto summary = "-------MetaSubsample Summary Statistics\n\n"
                          "       User generated alignment: %1%\n\n"
                          "-------User alignments (before subsampling)\n\n"
                          "       Synthetic: %2% reads\n"
