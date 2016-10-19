@@ -106,8 +106,6 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     A_ASSERT(!stats.c2s.empty());
     A_ASSERT(!stats.s2c.empty());
     
-    stats.format = o.format;
-    
     // Calculate statistics such as N50 and proportion asssembled
     stats.dnovo = DAsssembly::analyze(fasta, &stats);
     

@@ -39,8 +39,6 @@ namespace Anaquin
                 return static_cast<Proportion>(match) / (match + mismatch);
             }
             
-            Format format;
-            
             // Total mismatching bases
             Base mismatch = 0;
             

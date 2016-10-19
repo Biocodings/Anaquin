@@ -28,62 +28,62 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
      */
     
     ParserBlat::parse(file, [&](const ParserBlat::Data &l, const ParserProgress &)
-                      {
-                          // Eg: M2_G, M10_G
-                          const auto id = l.tName;
-                          
-                          if (m.count(id))
-                          {
-                              stats.nSyn++;
-                              
-                              AlignedContig contig;
-                              
-                              contig.id = l.qName;
-                              contig.l  = Locus(l.tStart, l.tEnd);
-                              
-                              contig.match    = l.match;
-                              contig.mismatch = l.mismatch;
-                              
-                              contig.rGap   = l.tGap;
-                              contig.rStart = l.tStart;
-                              contig.rEnd   = l.tEnd;
-                              contig.rSize  = l.tSize;
-                              
-                              contig.qGap   = l.qGap;
-                              contig.qStart = l.qStart;
-                              contig.qEnd   = l.qEnd;
-                              contig.qSize  = l.qSize;
-                              
-                              contig.qGapCount = l.qGapCount;
-                              contig.rGapCount = l.tGapCount;
-                              
-                              // That's because we might have multiple contigs aligned to a sequin
-                              m.at(id)->contigs.push_back(contig);
-                              
-                              assert(contig.l.length());
-                              
-                              /*
-                               * TODO: What about a contig being mapped to the same sequin multiple times?
-                               */
-                              
-                              /*
-                               * Building mappings for contigs
-                               */
-                              
-                              // This is the size of the entire contig, regardless of whether they're aligned or not
-                              stats.c2l[contig.id]  = contig.qSize;
-                              
-                              // This is the size of the aligned contig (not the entire contig would be aligned)
-                              stats.c2a[contig.id] = contig.l.length() - 1;
-                              
-                              assert(contig.l.length()-1 <= contig.qSize);
-                          }
-                          else
-                          {
-                              stats.nGen++;
-                              o.warn((boost::format("%1% is not a sequin") % id).str());
-                          }
-                      });
+    {
+        // Eg: M2_G, M10_G
+        const auto id = l.tName;
+        
+        if (m.count(id))
+        {
+            stats.nSyn++;
+            
+            AlignedContig contig;
+            
+            contig.id = l.qName;
+            contig.l  = Locus(l.tStart, l.tEnd);
+            
+            contig.match    = l.match;
+            contig.mismatch = l.mismatch;
+            
+            contig.rGap   = l.tGap;
+            contig.rStart = l.tStart;
+            contig.rEnd   = l.tEnd;
+            contig.rSize  = l.tSize;
+            
+            contig.qGap   = l.qGap;
+            contig.qStart = l.qStart;
+            contig.qEnd   = l.qEnd;
+            contig.qSize  = l.qSize;
+            
+            contig.qGapCount = l.qGapCount;
+            contig.rGapCount = l.tGapCount;
+            
+            // That's because we might have multiple contigs aligned to a sequin
+            m.at(id)->contigs.push_back(contig);
+            
+            A_ASSERT(contig.l.length());
+            
+            /*
+             * TODO: What about a contig being mapped to the same sequin multiple times?
+             */
+            
+            /*
+             * Building mappings for contigs
+             */
+            
+            // Size of the contig
+            stats.c2l[contig.id] = contig.qSize;
+            
+            // Size of the aligned contig (<= contig size)
+            stats.c2a[contig.id] = contig.l.length() - 1;
+            
+            A_ASSERT(stats.c2a[contig.id] <= stats.c2l[contig.id]);
+        }
+        else
+        {
+            stats.nGen++;
+            o.warn((boost::format("%1% is not a sequin") % id).str());
+        }
+    });
     
     /*
      * Traverse through the sequins, and calculate statistics for all alignments for each of those sequin.
@@ -191,74 +191,4 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
     }
     
     return stats;
-}
-
-void MBlat::report(const FileName &file, const Options &o)
-{
-    const auto stats = MBlat::analyze(file);
-    
-    o.info("Generating summary statistics");
-    
-    /*
-     * Generate summary statistics
-     */
-    
-    {
-        o.writer->open("MetaPSL_summary.stats");
-        
-        const auto summary = "Summary for input: %1%\n\n"
-        "   Samples: %2%\n"
-        "   Synthetic: %3%\n\n"
-        "   Contigs: %4%\n"
-        "   Assembled: %5%\n"
-        "   Reference: %6%\n\n"
-        "   ***\n"
-        "   *** The following overlapping statistics are computed by proportion\n"
-        "   ***\n\n"
-        "   Match: %7%\n"
-        "   Mismatch: %9%\n"
-        "   Gaps (sequins): %8%\n"
-        "   Gaps (contigs): %8%\n"
-        ;
-        
-        o.writer->write((boost::format(summary) % file
-                         % stats.nGen
-                         % stats.nSyn
-                         % stats.aligns.size()
-                         % stats.countAssembled()
-                         % stats.metas.size()
-                         % stats.overMatch()
-                         % stats.overRGaps()
-                         % stats.overQGaps()
-                         % stats.overMismatch()).str());
-        o.writer->close();
-    }
-    
-    {
-        o.writer->open("MetaPSL_sequins.csv");
-        
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-        
-        o.writer->write((boost::format(format) % "ID"
-                         % "Contigs"
-                         % "Covered"
-                         % "Match"
-                         % "Mismatch"
-                         % "TGaps"
-                         % "QGaps").str());
-        
-        for (const auto &i : stats.metas)
-        {
-            const auto &align = i.second;
-            
-            o.writer->write((boost::format(format) % align->seq->id
-                             % align->contigs.size()
-                             % align->covered
-                             % align->oMismatch
-                             % align->oRGaps
-                             % align->oQGaps).str());
-        }
-        
-        o.writer->close();
-    }
 }
