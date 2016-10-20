@@ -15,7 +15,7 @@ namespace Anaquin
             MetaQuast,
         };
 
-        struct Stats : public LinearStats, public DAsssembly::DenoAssemblyImpl
+        struct Stats : public SequinStats, public DAsssembly::DenoAssemblyImpl
         {
             inline SequinID findSeq(const ContigID &cID) const
             {

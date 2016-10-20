@@ -1253,7 +1253,23 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_M_DIFF:  { analyze_2<MDiff>(OPT_U_FILES);  break; }
-                case TOOL_M_ABUND: { analyze_1<MAbund>(OPT_U_FILES); break; }
+                case TOOL_M_ABUND:
+                {
+                    MAbund::Options o;
+                    
+                    if (_p.inputs.size() == 1 && ParserSAM::isBAM(Reader(_p.inputs[0])))
+                    {
+                        o.format = MAbund::Format::BAM;
+                    }
+                    else if (_p.inputs.size() == 3)
+                    {
+                        // TODO: Please fix this
+                        o.format = MAbund::Format::RayMeta;
+                    }
+                    
+                    analyze_n<MAbund>(o);
+                    break;
+                }
 
                 case TOOL_M_SUBSAMPLE:
                 {

@@ -149,6 +149,12 @@ namespace Anaquin
             std::map<ContigID, std::shared_ptr<MetaAlignment>> aligns;
             
             /*
+             * Mappings for targets (including sequins)
+             */
+            
+            std::map<SequinID, Base> t2l;
+            
+            /*
              * Mapping for contigs
              */
             

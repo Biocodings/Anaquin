@@ -50,7 +50,7 @@ namespace Anaquin
                 double abund = NAN;
             };
 
-            LinearStats isos, genes;
+            SequinStats isos, genes;
 
             // Data for the genome
             std::map<GenoID, GenData> gData;

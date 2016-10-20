@@ -70,7 +70,7 @@ namespace Anaquin
         double x, y;
     };
 
-    struct LinearStats : public std::map<SequinID, Point>
+    struct SequinStats : public std::map<SequinID, Point>
     {
         struct Data
         {
@@ -80,11 +80,6 @@ namespace Anaquin
             std::map<SequinID, double> id2x;
             std::map<SequinID, double> id2y;
         };
-        
-        inline bool contains(const SequinID &id) const
-        {
-            return (*this).count(id);
-        }
         
         inline void add(const SequinID &id, double x, double y)
         {
@@ -96,6 +91,8 @@ namespace Anaquin
             assert((*this)[id].x == x);            
             (*this)[id].y += y;
         }
+        
+        Limit limitQuant() const;
         
         // Return the x-values and y-values after filtering
         Data data(bool shouldLog) const;

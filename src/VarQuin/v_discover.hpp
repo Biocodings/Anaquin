@@ -220,7 +220,7 @@ namespace Anaquin
                 std::set<Proportion> af;
             };
 
-            struct VarStats : public LinearStats, public LimitStats {};
+            struct VarStats : public SequinStats, public LimitStats {};
             
             std::map<ChrID, QueryData> query;
 

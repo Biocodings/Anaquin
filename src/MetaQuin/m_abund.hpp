@@ -7,17 +7,26 @@ namespace Anaquin
 {
     struct MAbund
     {
-        struct Stats : public LinearStats, public AlignmentStats, public SequinStats, public LimitStats
+        struct Stats : public SequinStats, public AlignmentStats, public HistStats
         {
             // Empty Implementation
         };
         
-        typedef AnalyzerOptions Options;
+        enum class Format
+        {
+            BAM,
+            RayMeta,
+        };
+        
+        struct Options : public AnalyzerOptions
+        {
+            Format format;
+        };
         
         static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
         
-        static Stats analyze(const FileName &, const Options &o = Options());
-        static void  report (const FileName &, const Options &o = Options());
+        static Stats analyze(const std::vector<FileName> &, const Options &);
+        static void  report (const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

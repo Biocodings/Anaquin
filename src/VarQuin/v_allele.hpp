@@ -17,7 +17,7 @@ namespace Anaquin
             Format format;
         };
 
-        struct Stats : public LinearStats
+        struct Stats : public SequinStats
         {
             Limit limit;
         };

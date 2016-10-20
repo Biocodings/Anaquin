@@ -10,14 +10,17 @@ MDiff::Stats MDiff::analyze(const FileName &f1, const FileName &f2, const Option
 
     MDiff::Stats stats;
 
+    MAbund::Options ao;
+    ao.format = o.format;
+
     std::thread t1([&]()
     {
-        stats.stats1 = MAbund::analyze(f1, o);
+        stats.stats1 = MAbund::analyze(std::vector<FileName> { f1 }, ao);
     });
-    
+
     std::thread t2([&]()
     {
-        stats.stats2 = MAbund::analyze(f2, o);
+        stats.stats2 = MAbund::analyze(std::vector<FileName> { f2 }, ao);
     });
     
     t1.join();

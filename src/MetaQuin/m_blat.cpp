@@ -66,6 +66,8 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
              * TODO: What about a contig being mapped to the same sequin multiple times?
              */
             
+            stats.t2l[l.tName] = l.tSize;
+            
             /*
              * Building mappings for contigs
              */
@@ -132,10 +134,25 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             }
             
             /*
-             * Update statistics for the sequins
+             * We need the sequin length. Try to get it from the BED annotation. Otherwise,
+             * try from the alignment file.
              */
             
-            const auto l = align->seq->l.length();
+            // Sequin length
+            Base l;
+            
+            if (align->seq->l.length() > 2)
+            {
+                l = align->seq->l.length();
+            }
+            else if (stats.t2l.count(align->id()))
+            {
+                l = stats.t2l[align->id()];
+            }
+            else
+            {
+                throw std::runtime_error("Sequin length for " + align->id() + " not found");
+            }
             
             A_ASSERT(l > 2);
             

@@ -72,7 +72,7 @@ namespace Anaquin
     
     typedef std::map<SequinID, Counts> Hist;
     
-    struct SequinStats
+    struct HistStats
     {
         // Distribution of counts within sampling regions
         Hist hist;

@@ -8,7 +8,7 @@ namespace Anaquin
 {
     struct CoverageTool
     {
-        struct Stats : public AlignmentStats, public SequinStats
+        struct Stats : public AlignmentStats, public HistStats
         {
             FileName src;
         };

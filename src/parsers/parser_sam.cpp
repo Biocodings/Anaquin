@@ -1,8 +1,19 @@
 #include <htslib/sam.h>
 #include "tools/samtools.hpp"
 #include "parsers/parser_sam.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace Anaquin;
+
+bool ParserSAM::isBAM(const Reader &r)
+{
+    if (boost::algorithm::ends_with(r.src(), ".sam") || boost::algorithm::ends_with(r.src(), ".bam"))
+    {
+        return true;
+    }
+    
+    return false;
+}
 
 bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
 {

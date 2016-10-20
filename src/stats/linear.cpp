@@ -4,7 +4,23 @@
 
 using namespace Anaquin;
 
-LinearStats::Data LinearStats::data(bool shouldLog) const
+Limit SequinStats::limitQuant() const
+{
+    Limit limit;
+    
+    for (const auto &i : *this)
+    {
+        if (limit.id.empty() || limit.abund > i.second.x)
+        {
+            limit.id = i.first;
+            limit.abund = i.second.x;
+        }
+    }
+
+    return limit;
+}
+
+SequinStats::Data SequinStats::data(bool shouldLog) const
 {
     Data r;
     
@@ -35,7 +51,7 @@ LinearStats::Data LinearStats::data(bool shouldLog) const
     return r;
 }
 
-LinearModel LinearStats::linear(bool shouldLog) const
+LinearModel SequinStats::linear(bool shouldLog) const
 {
     const auto d = data(shouldLog);
     

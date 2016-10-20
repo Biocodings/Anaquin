@@ -52,7 +52,7 @@ namespace Anaquin
             Metrics metrs;
         };
 
-        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats, public SequinStats
+        struct Stats : public SequinStats, public MappingStats, public AnalyzerStats, public HistStats
         {
             struct Data
             {

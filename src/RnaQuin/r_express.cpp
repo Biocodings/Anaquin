@@ -109,7 +109,7 @@ template <typename T> void update(RExpress::Stats &stats,
         {
             auto &ls = metrs == RExpress::Metrics::Isoform ? stats.isos : stats.genes;
             
-            if (ls.contains(id))
+            if (ls.count(id))
             {
                 // This happens to Cufflink guided assembly...
                 o.warn("Duplicate: " + id);
@@ -361,7 +361,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
 
 static MultiStats multiStats(const std::vector<FileName>     &files,
                              const std::vector<MappingStats> &mStats,
-                             const std::vector<LinearStats>  &lstats)
+                             const std::vector<SequinStats>  &lstats)
 {
     A_ASSERT(files.size()  == mStats.size());
     A_ASSERT(mStats.size() == lstats.size());
@@ -400,7 +400,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &files,
     const auto &r = Standard::instance().r_rna;
     
     std::vector<SequinHist>   hists;
-    std::vector<LinearStats>  lStats;
+    std::vector<SequinStats>  lStats;
     std::vector<MappingStats> mStats;
     
     // Detection limit for the replicates
@@ -456,10 +456,10 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &files,
                                   % units                  // 3
                                   % MixRef()               // 4
                                   % title                  // 5
-                                  % STRING(ms.nSyn)    // 6
+                                  % STRING(ms.nSyn)        // 6
                                   % limit.abund            // 7
                                   % limit.id               // 8
-                                  % STRING(ms.nGen)    // 9
+                                  % STRING(ms.nGen)        // 9
                                   % STRING(ms.stats.sl)    // 10
                                   % STRING(ms.stats.r)     // 11
                                   % STRING(ms.stats.R2)    // 12

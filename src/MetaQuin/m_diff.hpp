@@ -14,47 +14,21 @@ namespace Anaquin
 {
     struct MDiff
     {
-//        // Represent a differential result for a MetaQuin sequin
-//        struct SequinDiff
-//        {
-//            inline bool operator<(const SequinDiff &x)  const { return id < x.id;      }
-//            inline bool operator==(const SequinDiff &x) const { return id != x.id;     }
-//            inline bool operator!=(const SequinDiff &x) const { return !operator==(x); }
-//            
-//            SequinID id;
-//            
-//            // Expected coverage for mixture A
-//            Coverage e1;
-//            
-//            // Expected coverage for mixture B
-//            Coverage e2;
-//            
-//            // Measured coverage for mixture A
-//            Coverage m1;
-//            
-//            // Measured coverage for mixture B
-//            Coverage m2;
-//            
-//            // Expected fold-change
-//            Coverage eFold;
-//            
-//            // Measured fold-change
-//            Coverage mFold;
-//        };
-        
-        struct Options : public DoubleMixtureOptions
-        {
-            // Empty Implementation
-        };
-        
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats : public SequinStats, public MappingStats
         {
             MAbund::Stats stats1, stats2;
         };
         
+        typedef MAbund::Format Format;
+        
+        struct Options : public DoubleMixtureOptions
+        {
+            Format format;
+        };
+
         static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
         
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &);
         static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
 }

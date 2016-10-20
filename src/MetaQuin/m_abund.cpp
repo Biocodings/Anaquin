@@ -4,77 +4,183 @@
 
 using namespace Anaquin;
 
-MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
+MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
+ 
+    auto file = files[0];
     
     MAbund::Stats stats;
     stats.hist = r.hist();
     
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &)
+    switch (o.format)
     {
-        if (align.mapped)
+        case Format::BAM:
         {
-            const auto m = r.match(align.cID);
-            
-            if (m)
+            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
             {
-                stats.nSyn++;
-                stats.hist.at(m->id)++;
-                
-                if (stats.limit.id.empty() || m->concent() < stats.limit.abund)
+                if (info.p.i && !(info.p.i % 1000000))
                 {
-                    stats.limit.id = m->id;
-                    stats.limit.abund = m->concent();
+                    o.wait(std::to_string(info.p.i));
+                }
+
+                if (align.mapped)
+                {
+                    const auto m = r.match(align.cID);
+                    
+                    if (m)
+                    {
+                        stats.nSyn++;
+                        stats.hist.at(m->id)++;
+                    }
+                    else
+                    {
+                        stats.nGen++;
+                    }
+                }
+                else
+                {
+                    stats.nNA++;
+                }
+            });
+
+            for (auto &i : stats.hist)
+            {
+                if (i.second)
+                {
+                    stats.add(i.first, r.match(i.first)->concent(), i.second);
                 }
             }
-            else
-            {
-                stats.nGen++;
-            }
-        }
-        else
-        {
-            stats.nNA++;
-        }
-    });
 
-    for (auto &i : stats.hist)
-    {
-        if (i.second)
+            break;
+        }
+
+        case Format::RayMeta:
         {
-            stats.add(i.first, r.match(i.first)->concent(), i.second);
+            const auto x = MBlat::analyze(files[2]);
+            
+
+            
+            
+            std::map<ContigID, Base> c2l;
+            std::map<ContigID, SequinID> c2s;
+            std::map<SequinID, std::vector<ContigID>> s2c;
+            
+            c2l = x.c2l;
+            
+            for (auto &i : x.aligns)
+            {
+                c2s[i.first] = i.second->id();
+            }
+            
+            for (auto &i : x.metas)
+            {
+                for (auto &j : i.second->contigs)
+                {
+                    s2c[i.first].push_back(j.id);
+                }
+            }
+
+            
+            
+            // Mapping from contigs to k-mer coverage
+            std::map<ContigID, Coverage> c2m;
+            
+            // Mapping from contigs to k-mer length
+            std::map<ContigID, Base> c2kl;
+            
+            ParserTSV::parse(Reader(files[1]), [&](const ParserTSV::TSV &x, const ParserProgress &)
+            {
+                c2m[x.id]  = x.kmer;
+                c2kl[x.id] = x.klen;
+            });
+            
+            A_ASSERT(!c2m.empty());
+            
+            /*
+             * Quantifying k-mer abundance
+             */
+            
+            for (const auto &i : s2c)
+            {
+                const auto m = r.match(i.first);
+                
+                const auto expected = m->concent();
+                auto measured = 0.0;
+                
+                auto x = 0.0;
+                auto y = 0.0;
+                
+                for (const auto &j : i.second)
+                {
+                    // K-mer length
+                    //const auto kl = c2kl.at(j);
+                    
+                    // Entire size of the contig (including bases that are not mapped)
+                    const auto l = c2l[j];
+                    
+                    /*
+                     * How should we normalize the k-mer observations? Should we normalize by the k-mer length?
+                     * Should we normalize by the size of the contig?
+                     */
+                    
+                    x += (double)c2m.at(j); // / kl;// / l;
+                    y += l; //j->l.length();
+                }
+                
+                //measured = x / y;
+                measured = x;
+                
+                stats.add(i.first, expected, measured);
+            }
+            
+            break;
         }
     }
-    
+
     return stats;
 }
 
 static void writeQuins(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Reads" % "FPKM").str());
+    
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund" % "FPKM").str());
     
     const auto total = sum(stats.hist);
     
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats)
     {
+        // Sequin length
         const auto l = r.match(i.first)->l;
+
+        const auto input = i.second.x;
+        const auto abund = i.second.y;
         
-        // Input concentration (attomol/ul)
-        const auto expected = r.match(i.first)->concent();
+        // Normalized measurement
+        auto measured = abund;
         
-        // Measured FPKM
-        const auto measured = ((double)i.second * pow(10, 9)) / (total * l.length());
-        
+        switch (o.format)
+        {
+            case MAbund::Format::BAM:
+            {
+                // Normalized FPKM
+                measured = ((double)measured * pow(10, 9)) / (total * l.length());
+
+                break;
+            }
+
+            default: { break; }
+        }
+
         o.writer->write((boost::format(format) % i.first
                                                % l.length()
-                                               % expected
-                                               % i.second
+                                               % input
+                                               % abund
                                                % measured).str());
     }
     
@@ -128,29 +234,31 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
                         "       SSE:         %14%, DF: %15%\n"
                         "       SST:         %16%, DF: %17%\n";
     
-    return (boost::format(format) % src               // 1
-                                  % r.countSeqs()     // 2
-                                  % MixRef()          // 3
-                                  % stats.size()      // 4
-                                  % stats.limit.abund // 5
-                                  % stats.limit.id    // 6
-                                  % ls.m              // 7
-                                  % ls.r              // 8
-                                  % ls.R2             // 9
-                                  % ls.F              // 10
-                                  % ls.p              // 11
-                                  % ls.SSM            // 12
-                                  % ls.SSM_D          // 13
-                                  % ls.SSE            // 14
-                                  % ls.SSE_D          // 15
-                                  % ls.SST            // 16
-                                  % ls.SST_D          // 17
+    const auto limit = stats.limitQuant();
+    
+    return (boost::format(format) % src           // 1
+                                  % r.countSeqs() // 2
+                                  % MixRef()      // 3
+                                  % stats.size()  // 4
+                                  % limit.abund   // 5
+                                  % limit.id      // 6
+                                  % ls.m          // 7
+                                  % ls.r          // 8
+                                  % ls.R2         // 9
+                                  % ls.F          // 10
+                                  % ls.p          // 11
+                                  % ls.SSM        // 12
+                                  % ls.SSM_D      // 13
+                                  % ls.SSE        // 14
+                                  % ls.SSE_D      // 15
+                                  % ls.SST        // 16
+                                  % ls.SST_D      // 17
             ).str();
 }
 
-void MAbund::report(const FileName &file, const MAbund::Options &o)
+void MAbund::report(const std::vector<FileName> &files, const MAbund::Options &o)
 {
-    const auto stats = MAbund::analyze(file, o);
+    const auto stats = MAbund::analyze(files, o);
     
     /*
      * Generating MetaAbund_summary.stats
@@ -158,7 +266,7 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
     
     o.generate("MetaAbund_summary.stats");
     o.writer->open("MetaAbund_summary.stats");
-    o.writer->write(generateSummary(file, stats, o));
+    o.writer->write(generateSummary(files[0], stats, o));
     o.writer->close();
     
     /*
