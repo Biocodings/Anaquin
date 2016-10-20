@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-MDiff::Stats MDiff::analyze(const FileName &f1, const FileName &f2, const Options &o)
+MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o)
 {
     const auto &r = Standard::instance().r_meta;
 
@@ -15,12 +15,38 @@ MDiff::Stats MDiff::analyze(const FileName &f1, const FileName &f2, const Option
 
     std::thread t1([&]()
     {
-        stats.stats1 = MAbund::analyze(std::vector<FileName> { f1 }, ao);
+        switch (o.format)
+        {
+            case Format::BAM:
+            {
+                stats.stats1 = MAbund::analyze(std::vector<FileName> { files[0] }, ao);
+                break;
+            }
+
+            case Format::RayMeta:
+            {
+                stats.stats1 = MAbund::analyze(std::vector<FileName> { files[0], files[1] }, ao);
+                break;
+            }
+        }
     });
 
     std::thread t2([&]()
     {
-        stats.stats2 = MAbund::analyze(std::vector<FileName> { f2 }, ao);
+        switch (o.format)
+        {
+            case Format::BAM:
+            {
+                stats.stats2 = MAbund::analyze(std::vector<FileName> { files[2], files[3] }, ao);
+                break;
+            }
+
+            case Format::RayMeta:
+            {
+                stats.stats2 = MAbund::analyze(std::vector<FileName> { files[2], files[3] }, ao);
+                break;
+            }
+        }
     });
     
     t1.join();
@@ -53,8 +79,6 @@ MDiff::Stats MDiff::analyze(const FileName &f1, const FileName &f2, const Option
         }
     }
     
-    stats.linear();
-
     return stats;
 }
 
@@ -66,7 +90,7 @@ static void writeQuins(const FileName &file, const MDiff::Stats &stats, const MD
     o.generate(file);
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID" % "Length" % "EFold" % "MFold").str());
+    o.writer->write((boost::format(format) % "ID" % "Length" % "ExpFold" % "ObsFold").str());
     
     for (const auto &i : stats)
     {
@@ -83,11 +107,11 @@ Scripts MDiff::generateRLinear(const FileName &src, const Stats &stats, const Op
 {
     return RWriter::createRLinear(src,
                                   o.work,
-                                  "Fold",
-                                  "Expected allele frequency (log2)",
-                                  "Measured allele frequency (log2)",
-                                  "log2(data$ExpFreq)",
-                                  "log2(data$ObsFreq)",
+                                  "Differential Fold",
+                                  "Expected Fold (log2)",
+                                  "Measured Fold (log2)",
+                                  "log2(data$ExpFold)",
+                                  "log2(data$ObsFold)",
                                   "input",
                                   true);
 }
@@ -144,9 +168,9 @@ static Scripts generateSummary(const FileName &f1, const FileName &f2, const MDi
             ).str();
 }
 
-void MDiff::report(const FileName &f1, const FileName &f2, const MDiff::Options &o)
+void MDiff::report(const std::vector<FileName> &files, const MDiff::Options &o)
 {
-    const auto stats = MDiff::analyze(f1, f2, o);
+    const auto stats = MDiff::analyze(files, o);
     
     /*
      * Generating MetaDiff_summary.stats
@@ -154,7 +178,22 @@ void MDiff::report(const FileName &f1, const FileName &f2, const MDiff::Options 
     
     o.generate("MetaDiff_summary.stats");
     o.writer->open("MetaDiff_summary.stats");
-    o.writer->write(generateSummary(f1, f2, stats, o));
+    
+    switch (o.format)
+    {
+        case Format::BAM:
+        {
+            o.writer->write(generateSummary(files[0], files[1], stats, o));
+            break;
+        }
+
+        case Format::RayMeta:
+        {
+            o.writer->write(generateSummary(files[0], files[2], stats, o));
+            break;
+        }
+    }
+
     o.writer->close();
     
     /*
@@ -164,8 +203,8 @@ void MDiff::report(const FileName &f1, const FileName &f2, const MDiff::Options 
     writeQuins("MetaDiff_sequins.csv", stats, o);
     
     /*
-     * Generating MetaDiff_linear.R
+     * Generating MetaDiff_fold.R
      */
     
-    writeRLinear("MetaDiff_linear.R", "MetaDiff_sequins.csv", stats, o);
+    writeRLinear("MetaDiff_fold.R", "MetaDiff_sequins.csv", stats, o);
 }

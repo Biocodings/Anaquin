@@ -322,6 +322,11 @@ struct TooManyOptionsError : public std::runtime_error
     TooManyOptionsError(const ErrorMsg &msg) : std::runtime_error(msg) {}
 };
 
+struct UnknownFormatError : public std::runtime_error
+{
+    UnknownFormatError() : std::runtime_error("Unknown format") {}
+};
+
 /*
  * Argument options
  */
@@ -1252,7 +1257,29 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case TOOL_M_DIFF:  { analyze_2<MDiff>(OPT_U_FILES);  break; }
+                case TOOL_M_DIFF:
+                {
+                    MDiff::Options o;
+                    
+                    if (_p.inputs.size() == 2 && ParserSAM::isBAM(Reader(_p.inputs[0]))
+                                              && ParserSAM::isBAM(Reader(_p.inputs[1])))
+                    {
+                        o.format = MDiff::Format::BAM;
+                    }
+                    else if (_p.inputs.size() == 4)
+                    {
+                        // TODO: Please fix this
+                        o.format = MDiff::Format::RayMeta;
+                    }
+                    else
+                    {
+                        throw UnknownFormatError();
+                    }
+
+                    analyze_n<MDiff>(o);
+                    break;
+                }
+
                 case TOOL_M_ABUND:
                 {
                     MAbund::Options o;
@@ -1506,6 +1533,10 @@ int parse_options(int argc, char ** argv)
     catch (const NoValueError &ex)
     {
         printError("Invalid command. Need to specify " + ex.opt + ".");
+    }
+    catch (const UnknownFormatError &ex)
+    {
+        printError("Unknown format for the input file(s)");
     }
     catch (const InvalidToolError &ex)
     {

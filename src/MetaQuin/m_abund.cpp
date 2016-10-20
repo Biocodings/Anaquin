@@ -8,8 +8,6 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
 {
     const auto &r = Standard::instance().r_meta;
  
-    auto file = files[0];
-    
     MAbund::Stats stats;
     stats.hist = r.hist();
     
@@ -17,7 +15,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
     {
         case Format::BAM:
         {
-            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
+            ParserSAM::parse(files[0], [&](const Alignment &align, const ParserSAM::Info &info)
             {
                 if (info.p.i && !(info.p.i % 1000000))
                 {
@@ -57,10 +55,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
 
         case Format::RayMeta:
         {
-            const auto x = MBlat::analyze(files[2]);
-            
-
-            
+            const auto x = MBlat::analyze(files[1]);
             
             std::map<ContigID, Base> c2l;
             std::map<ContigID, SequinID> c2s;
@@ -89,7 +84,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
             // Mapping from contigs to k-mer length
             std::map<ContigID, Base> c2kl;
             
-            ParserTSV::parse(Reader(files[1]), [&](const ParserTSV::TSV &x, const ParserProgress &)
+            ParserTSV::parse(Reader(files[0]), [&](const ParserTSV::TSV &x, const ParserProgress &)
             {
                 c2m[x.id]  = x.kmer;
                 c2kl[x.id] = x.klen;
@@ -192,7 +187,7 @@ Scripts MAbund::generateRLinear(const FileName &src, const Stats &stats, const O
     return RWriter::createRLinear(src,
                                   o.work,
                                   "FPKM",
-                                  "Input concentration (log2)",
+                                  "Input Concentration (log2)",
                                   "Measured FPKM (log2)",
                                   "log2(data$Input)",
                                   "log2(data$FPKM)",

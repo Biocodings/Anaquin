@@ -28,8 +28,8 @@ namespace Anaquin
 
         static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
         
-        static Stats analyze(const FileName &, const FileName &, const Options &);
-        static void  report (const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const std::vector<FileName> &, const Options &);
+        static void  report (const std::vector<FileName> &, const Options &o = Options());
     };
 }
 
