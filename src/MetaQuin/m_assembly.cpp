@@ -146,31 +146,31 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
     
     const auto &r = Standard::instance().r_meta;
     
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   Synthetic: %2% contigs\n"
-                         "   Community: %3% contigs\n"
-                         "   Total:     %4% contigs\n\n"
-                         "   ***\n"
-                         "   *** Reference annotation (Synthetic)\n"
-                         "   ***\n\n"
-                         "   File: %5%\n\n"
-                         "   Synthetic: %6% sequins\n"
-                         "   ***\n"
-                         "   *** The following statistics are computed on the synthetic community\n"
-                         "   ***\n\n"
-                         "   N20:  %7%\n"
-                         "   N50:  %8%\n"
-                         "   N80:  %9%\n"
-                         "   Min:  %10%\n"
-                         "   Mean: %11%\n"
-                         "   Max:  %12%\n\n"
-                         "   ***\n"
-                         "   *** The following overlapping statistics are computed as proportion\n"
-                         "   ***\n\n"
-                         "   Match:    %13%\n"
-                         "   Mismatch: %14%\n"
-                         "   Covered:  %15%\n";
-    
+    const auto summary = "-------MetaAssembly Output\n\n"
+                         "       Summary for input: %1%\n\n"
+                         "       Synthetic: %2% contigs\n"
+                         "       Community: %3% contigs\n"
+                         "       Total:     %4% contigs\n\n"
+                         "-------Reference MetaQuin Annotation\n\n"
+                         "       File: %5%\n"
+                         "       Synthetic: %6% sequins\n\n"
+                         "-------Assembly Statistics\n\n"
+                         "       ***\n"
+                         "       *** The following statistics are computed on the synthetic community\n"
+                         "       ***\n\n"
+                         "       N20:  %7%\n"
+                         "       N50:  %8%\n"
+                         "       N80:  %9%\n"
+                         "       Min:  %10%\n"
+                         "       Mean: %11%\n"
+                         "       Max:  %12%\n\n"
+                         "       ***\n"
+                         "       *** The following overlapping statistics are computed as proportion\n"
+                         "       ***\n\n"
+                         "       Match:    %13%\n"
+                         "       Mismatch: %14%\n"
+                         "       Covered:  %15%\n";
+
     const auto &dn = stats.dnovo;
     
     return (boost::format(summary) % src
