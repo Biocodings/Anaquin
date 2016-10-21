@@ -6,6 +6,8 @@
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
 #include "parsers/parser.hpp"
+#include <boost/algorithm/string.hpp>
+#include <iostream>
 
 namespace Anaquin
 {
@@ -80,6 +82,86 @@ namespace Anaquin
             // Number of mismatching bases
             Base mismatch;
         };
+        
+        static bool isBlat(const Reader &r)
+        {
+            std::string line;
+            std::vector<std::string> toks;
+            
+            try
+            {
+                auto splitTrim = [&](std::string &line)
+                {
+                    Tokens::split(line, "\t", toks);
+                    
+                    std::for_each(toks.begin(), toks.end(), [&](std::string &x)
+                    {
+                        boost::trim(x);
+                    });
+                };
+                
+                r.nextLine(line);
+                r.nextLine(line);
+                splitTrim(line);
+                
+                if (toks.size()  != 21           ||
+                        toks[0]  != "match"      ||
+                        toks[1]  != "mis-"       ||
+                        toks[2]  != "rep."       ||
+                        toks[3]  != "N's"        ||
+                        toks[4]  != "Q gap"      ||
+                        toks[5]  != "Q gap"      ||
+                        toks[6]  != "T gap"      ||
+                        toks[7]  != "T gap"      ||
+                        toks[8]  != "strand"     ||
+                        toks[9]  != "Q"          ||
+                        toks[10] != "Q"          ||
+                        toks[11] != "Q"          ||
+                        toks[12] != "Q"          ||
+                        toks[13] != "T"          ||
+                        toks[14] != "T"          ||
+                        toks[15] != "T"          ||
+                        toks[16] != "T"          ||
+                        toks[17] != "block"      ||
+                        toks[18] != "blockSizes" ||
+                        toks[19] != "qStarts"    ||
+                        toks[20] != "tStarts")
+                {
+                    return false;
+                }
+                
+                r.nextLine(line);
+                splitTrim(line);
+                
+                if (toks.size()  != 17      ||
+                        toks[0]  != "match" ||
+                        toks[1]  != "match" ||
+                        toks[2]  != ""      ||
+                        toks[3]  != "count" ||
+                        toks[4]  != "bases" ||
+                        toks[5]  != "count" ||
+                        toks[6]  != "bases" ||
+                        toks[7]  != ""      ||
+                        toks[8]  != "name"  ||
+                        toks[9]  != "size"  ||
+                        toks[10] != "start" ||
+                        toks[11] != "end"   ||
+                        toks[12] != "name"  ||
+                        toks[13] != "size"  ||
+                        toks[14] != "start" ||
+                        toks[15] != "end"   ||
+                        toks[16] != "count")
+                {
+                    return false;
+                }
+            }
+            catch (...)
+            {
+                return false;
+            }
+
+            return true;
+        }
         
         template <typename F> static void parse(const Reader &r, F f)
         {

@@ -14,9 +14,6 @@
 // Defined in resources.cpp
 extern std::string ReportScript();
 
-// Defined in resources.cpp
-extern std::string __anaquin__;
-
 namespace Anaquin
 {
     struct Script

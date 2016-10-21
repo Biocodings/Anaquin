@@ -123,9 +123,6 @@ Path __working__;
 // Shared with other modules
 Path __output__;
 
-// Full path where Anaquin is
-Path __anaquin__;
-
 // Shared with other modules
 std::string date()
 {
@@ -136,7 +133,7 @@ std::string date()
     time (&rawtime);
     timeinfo = localtime(&rawtime);
     
-    strftime(buffer, 80, "%d-%m-%Y %I:%M:%S", timeinfo);
+    strftime(buffer, 80, "%d-%m-%Y %H:%M:%S", timeinfo);
     std::string str(buffer);
     
     return str;
@@ -528,10 +525,10 @@ static void print(Reader &r)
             continue;
         }
 
-        std::vector<std::string> tokens;
-        Tokens::split(l, "\t", tokens);
+        std::vector<std::string> toks;
+        Tokens::split(l, "\t", toks);
 
-        std::cout << tokens[0] << "\t" << tokens[2] << "\t" << tokens[3] << std::endl;
+        std::cout << toks[0] << "\t" << toks[2] << "\t" << toks[3] << std::endl;
     }
 }
 
@@ -1005,8 +1002,7 @@ void parse(int argc, char ** argv)
         }
     }
 
-    __anaquin__ = argv[0];
-    __output__  = _p.path = checkPath(_p.path);
+    __output__ = _p.path = checkPath(_p.path);
 
     auto &s = Standard::instance();
     
