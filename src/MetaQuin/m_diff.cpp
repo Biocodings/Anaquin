@@ -12,6 +12,7 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
 
     MAbund::Options ao;
     ao.format = o.format;
+    ao.writer = o.writer;
 
     std::thread t1([&]()
     {
@@ -173,11 +174,11 @@ void MDiff::report(const std::vector<FileName> &files, const MDiff::Options &o)
     const auto stats = MDiff::analyze(files, o);
     
     /*
-     * Generating MetaDiff_summary.stats
+     * Generating MetaFoldChange_summary.stats
      */
     
-    o.generate("MetaDiff_summary.stats");
-    o.writer->open("MetaDiff_summary.stats");
+    o.generate("MetaFoldChange_summary.stats");
+    o.writer->open("MetaFoldChange_summary.stats");
     
     switch (o.format)
     {
@@ -197,14 +198,14 @@ void MDiff::report(const std::vector<FileName> &files, const MDiff::Options &o)
     o.writer->close();
     
     /*
-     * Generating MetaDiff_sequins.csv
+     * Generating MetaFoldChange_sequins.csv
      */
 
-    writeQuins("MetaDiff_sequins.csv", stats, o);
+    writeQuins("MetaFoldChange_sequins.csv", stats, o);
     
     /*
-     * Generating MetaDiff_fold.R
+     * Generating MetaFoldChange_fold.R
      */
     
-    writeRLinear("MetaDiff_fold.R", "MetaDiff_sequins.csv", stats, o);
+    writeRLinear("MetaFoldChange_fold.R", "MetaFoldChange_sequins.csv", stats, o);
 }

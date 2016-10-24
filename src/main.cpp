@@ -72,7 +72,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    276
 #define TOOL_M_ALIGN     277
 #define TOOL_M_ABUND     278
-#define TOOL_M_DIFF      279
+#define TOOL_M_FOLD      279
 #define TOOL_M_SUBSAMPLE 280
 #define TOOL_M_ASSEMBLY  281
 #define TOOL_V_SUBSAMPLE 282
@@ -162,7 +162,7 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
 
-    { "MetaDiff",       TOOL_M_DIFF      },
+    { "MetaFoldChange", TOOL_M_FOLD      },
     { "MetaAlign",      TOOL_M_ALIGN     },
     { "MetaAbund",      TOOL_M_ABUND     },
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
@@ -198,7 +198,7 @@ static std::map<Tool, std::set<Option>> _required =
      * MetaQuin Analysis
      */
 
-    { TOOL_M_DIFF,      { OPT_U_FILES } },
+    { TOOL_M_FOLD,      { OPT_U_FILES } },
     { TOOL_M_ALIGN,     { OPT_R_BED, OPT_U_FILES } },
     { TOOL_M_ASSEMBLY,  { OPT_R_BED, OPT_U_FILES } },
     { TOOL_M_SUBSAMPLE, { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
@@ -1227,7 +1227,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_M_DIFF:
+        case TOOL_M_FOLD:
         case TOOL_M_ABUND:
         case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
@@ -1235,7 +1235,7 @@ void parse(int argc, char ** argv)
         {
             switch (_p.tool)
             {
-                case TOOL_M_DIFF:      { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
+                case TOOL_M_FOLD:      { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
                 case TOOL_M_ABUND:     { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
                 case TOOL_M_ALIGN:     { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
                 case TOOL_M_SUBSAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
@@ -1254,7 +1254,7 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case TOOL_M_DIFF:
+                case TOOL_M_FOLD:
                 {
                     MDiff::Options o;
                     
