@@ -133,7 +133,7 @@ static Scripts generateSummary(const FileName &f1, const FileName &f2, const MDi
     const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
-    const auto format = "-------MetaDiff Output\n\n"
+    const auto format = "-------MetaFoldChange Output\n\n"
                         "       Summary for input: %1% and %2%\n\n"
                         "-------Reference MetaQuin Annotations\n\n"
                         "       Synthetic: %3%\n"

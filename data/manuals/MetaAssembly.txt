@@ -1,0 +1,34 @@
+<b>Anaquin Manual</b>
+
+<b>NAME</b>
+    MetaAssembly - Compares assembled contigs to sequin annotations in the in silico community.
+
+<b>DESCRIPTION</b>
+    MetaAssembly quantifies performance of de novo assembly to known synthetic sequins in the in silico community.
+    The tool provides the following statistics:     
+       
+       Contig length – N20, N25, N80
+       Accuracy      - number of bases matched, number of bases mismatched
+       Sensitivity   – fraction of nucleotide bases relative to the reference assembled. 
+
+    The tool also builds a logistic regression model between input concentration and sensitivity for sequins.
+   
+<b>SUPPORT SOFTWARE</b>
+    Any de novo assembler able to generate FASTA outputs. Alignment for the contigs must be done by Blat.
+
+<b>USAGE EXAMPLE</b>
+     anaquin MetaAssembly -m mixture.csv -rbed reference.bed -ufiles contigs.fasta -ufiles align.psl
+
+<b>TOOL OPTIONS</b>
+     Required:
+        -rbed        Reference annotation file in BED format
+        -ufiles      Generated contigs in FASTA format
+        -ufiles      Generated Blat alignment in PSL format    
+
+     Optional:
+        -o = output  Directory in which output files are written to
+
+<b>OUTPUTS</b>
+     MetaAssembly_summary.stats - gives the summary statistics
+     MetaAssembly_sequins.csv   - gives detailed statistics for each sequin
+     MetaAssembly_assembly.R    - R-script for building a logistic model between sensitivity and input concentration

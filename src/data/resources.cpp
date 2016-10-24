@@ -18,6 +18,11 @@
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
 #include "resources/VarSubsample.txt"
+#include "resources/MetaAlign.txt"
+#include "resources/MetaSubsample.txt"
+#include "resources/MetaAssembly.txt"
+#include "resources/MetaAbund.txt"
+#include "resources/MetaFoldChange.txt"
 
 /*
  * Scripts
@@ -135,6 +140,31 @@ Scripts VarDiscover()
 Scripts VarKReport()
 {
     return ToString(data_manuals_VarKReport_txt);
+}
+
+Scripts MetaAlign()
+{
+    return ToString(data_manuals_MetaAlign_txt);
+}
+
+Scripts MetaSubsample()
+{
+    return ToString(data_manuals_MetaSubsample_txt);
+}
+
+Scripts MetaAssembly()
+{
+    return ToString(data_manuals_MetaAssembly_txt);
+}
+
+Scripts MetaAbund()
+{
+    return ToString(data_manuals_MetaAbund_txt);
+}
+
+Scripts MetaFoldChange()
+{
+    return ToString(data_manuals_MetaFoldChange_txt);
 }
 
 /*

@@ -149,7 +149,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
     const auto summary = "-------MetaAssembly Output\n\n"
                          "       Summary for input: %1%\n\n"
                          "       Synthetic: %2% contigs\n"
-                         "       Community: %3% contigs\n"
+                         "       Genome:    %3% contigs\n"
                          "       Total:     %4% contigs\n\n"
                          "-------Reference MetaQuin Annotation\n\n"
                          "       File: %5%\n"
@@ -167,9 +167,9 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                          "       ***\n"
                          "       *** The following overlapping statistics are computed as proportion\n"
                          "       ***\n\n"
-                         "       Match:    %13%\n"
-                         "       Mismatch: %14%\n"
-                         "       Covered:  %15%\n";
+                         "       Match:       %13%\n"
+                         "       Mismatch:    %14%\n"
+                         "       Sensitivity: %15%\n";
 
     const auto &dn = stats.dnovo;
     

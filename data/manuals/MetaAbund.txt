@@ -1,0 +1,48 @@
+<b>Anaquin Manual</b>
+
+<b>NAME</b>
+    MetaAbund - Quantitative analysis of sequin abundance.
+
+<b>DESCRIPTION</b>
+    MetaAbund can be used for analyzing sequin abundance within a library. Comparing the measured abundance
+    relative to the known input concentrations provides an indication of the quantitative accuracy for measuring species.
+    
+    Specifically, MetaAbund builds a linear model regressing the measured expression (dependent variable) with the input
+    concentration (independent variable; defined by the mixture). Singular Value Decomposition (SVD) is used to estimate
+    the regression parameters, including:
+    
+       Correlation – provides a measure of quantitative accuracy across a range of input concentrations.
+       Slope – indicates the quantitative linearity for gene expression measures.
+       Coefficient of determination (R2) – indicates the amount of variation that can be accounted for by the linear model.
+
+<b>SUPPORT SOFTWARE</b>
+     MetaAbund is compatible with short-read aligners, including: BWA and Bowtie. In addition, the tool can be used in R
+     for data visualization.
+     
+     Furthermore, the tool can be used for quantifying k-mer abundance. The current release supports RayMeta, future
+     releases will add new softwares.
+     
+     Users of alternative software may need to modify their results to conform with file formats produced by these popular
+     software tools, before provision to the tool.
+
+<b>USAGE EXAMPLE</b>
+     Measure abundance by alignment:
+
+         anaquin MetaAbund -m mixture.csv -ufiles align.bam
+     
+     Measure abundance by de-novo assembly:
+
+         anaquin MetaAbund -m mixture.csv -ufiles contigs.tsv -ufiles align.psl
+
+<b>TOOL OPTIONS</b>
+     Required:
+        -m           Reference mixture file in CSV format
+        -ufiles      The tool supports quantification by alignment or de novo assmebly. The usage example describes the
+                     two scenarios. 
+
+     Optional:
+        -o = output  Directory in which output files are written to
+
+<b>OUTPUTS</b>
+     MetaAbund_summary.stats - gives the summary statistics
+     MetaAbund_sequins.csv   - gives detailed statistics for each sequin

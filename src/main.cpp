@@ -417,20 +417,30 @@ static Scripts manual(Tool tool)
     extern Scripts VarSubsample();
     extern Scripts RnaExpression();
     extern Scripts RnaFoldChange();
-
+    extern Scripts MetaAlign();
+    extern Scripts MetaAbund();
+    extern Scripts MetaAssembly();
+    extern Scripts MetaSubsample();
+    extern Scripts MetaFoldChange();
+    
     switch (tool)
     {
-        case TOOL_R_ALIGN:     { return RnaAlign();      }
-        case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
-        case TOOL_R_EXPRESS:   { return RnaExpression(); }
-        case TOOL_R_KREPORT:   { return RnaKReport();    }
-        case TOOL_R_FOLD:      { return RnaFoldChange(); }
-        case TOOL_V_FLIP:      { return VarFlip();       }
-        case TOOL_R_SUBSAMPLE: { return RnaSubsample();  }
-        case TOOL_V_ALIGN:     { return VarAlign();      }
-        case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
-        case TOOL_V_DISCOVER:  { return VarDiscover();   }
-        case TOOL_V_KREPORT:   { return VarKReport();    }
+        case TOOL_R_ALIGN:     { return RnaAlign();       }
+        case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
+        case TOOL_R_EXPRESS:   { return RnaExpression();  }
+        case TOOL_R_KREPORT:   { return RnaKReport();     }
+        case TOOL_R_FOLD:      { return RnaFoldChange();  }
+        case TOOL_V_FLIP:      { return VarFlip();        }
+        case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
+        case TOOL_V_ALIGN:     { return VarAlign();       }
+        case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
+        case TOOL_V_DISCOVER:  { return VarDiscover();    }
+        case TOOL_V_KREPORT:   { return VarKReport();     }
+        case TOOL_M_ALIGN:     { return MetaAlign();      }
+        case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
+        case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
+        case TOOL_M_ABUND:     { return MetaSubsample();  }
+        case TOOL_M_FOLD:      { return MetaFoldChange(); }
     }
 
     throw std::runtime_error("Manual not found");
