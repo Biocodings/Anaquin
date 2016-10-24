@@ -245,13 +245,13 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
                 +
                 (stats.data.at(i.first).rGaps.count(rID) ? stats.data.at(i.first).rGaps.at(rID) : 0);
                 
-                assert(!isnan(btp) && btp >= 0);
-                assert(!isnan(bfp) && bfp >= 0);
+                A_ASSERT(!isnan(btp) && btp >= 0);
+                A_ASSERT(!isnan(bfp) && bfp >= 0);
                 
                 // Precision at the base level
                 const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
                 
-                assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
+                A_ASSERT(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
                 
                 if (isMetaQuin(cID))
                 {
@@ -413,7 +413,7 @@ static void writeBQuins(const FileName &file,
                         const MAlign::Stats &stats,
                         const MAlign::Options &o)
 {
-#ifdef DEBUG_MAlign
+#ifdef DEBUG_MALIGN
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -493,7 +493,7 @@ static void writeQuins(const FileName &file, const MAlign::Stats &stats, const M
 
 static void writeQueries(const FileName &file, const MAlign::Stats &stats, const MAlign::Options &o)
 {
-#ifdef DEBUG_MAlign
+#ifdef DEBUG_MALIGN
     o.generate(file);
     o.writer->open(file);
     

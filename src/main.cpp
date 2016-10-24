@@ -29,6 +29,7 @@
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_gtf.hpp"
+#include "parsers/parser_blat.hpp"
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_edgeR.hpp"
@@ -1284,9 +1285,8 @@ void parse(int argc, char ** argv)
                     {
                         o.format = MAbund::Format::BAM;
                     }
-                    else if (_p.inputs.size() == 3)
+                    else if (_p.inputs.size() == 2 && ParserBlat::isBlat(Reader(_p.inputs[1])))
                     {
-                        // TODO: Please fix this
                         o.format = MAbund::Format::RayMeta;
                     }
                     
@@ -1306,7 +1306,8 @@ void parse(int argc, char ** argv)
                 {
                     MAssembly::Options o;
 
-                    o.format = MAssembly::Format::Blat; // TODO:...
+                    // This is the only supporting format
+                    o.format = MAssembly::Format::Blat;
 
                     analyze_n<MAssembly>(o);
                     break;

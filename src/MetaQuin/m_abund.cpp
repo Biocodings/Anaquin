@@ -76,8 +76,6 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
                 }
             }
 
-            
-            
             // Mapping from contigs to k-mer coverage
             std::map<ContigID, Coverage> c2m;
             
