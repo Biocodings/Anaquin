@@ -35,6 +35,38 @@ namespace Anaquin
             Base klen;
         };
         
+        static bool isTSV(const Reader &r)
+        {
+            try
+            {
+                std::string line;
+                r.nextLine(line);
+                
+                std::vector<std::string> toks;
+                Tokens::split(line, "\t", toks);
+                
+                if (toks.size() != 9 &&
+                    toks[0] != "#Contig name" &&
+                    toks[1] != "K-mer length" &&
+                    toks[2] != "Contig length in k-mers" &&
+                    toks[3] != "Colored k-mers" &&
+                    toks[4] != "Proportion of colored k-mers in contig" &&
+                    toks[5] != "Mode k-mer coverage depth" &&
+                    toks[6] != "K-mer observations" &&
+                    toks[7] != "Total" &&
+                    toks[8] != "Proportion of k-mer observations in sample")
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+        
         typedef std::function<void(const TSV &, const ParserProgress &)> Functor;
         
         static void parse(const Reader &r, Functor f)

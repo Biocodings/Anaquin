@@ -1289,6 +1289,10 @@ void parse(int argc, char ** argv)
                     {
                         o.format = MAbund::Format::RayMeta;
                     }
+                    else
+                    {
+                        throw UnknownFormatError();
+                    }
                     
                     analyze_n<MAbund>(o);
                     break;

@@ -141,9 +141,25 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
     o.generate(file);
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund" % "FPKM").str());
+    std::string format;
     
+    switch (o.format)
+    {
+        case MAbund::Format::BAM:
+        {
+            format ="%1%\t%2%\t%3%\t%4%\t%5%";
+            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund" % "FPKM").str());
+            break;
+        }
+
+        case MAbund::Format::RayMeta:
+        {
+            format = "%1%\t%2%\t%3%\t%4%";
+            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund").str());
+            break;
+        }
+    }
+
     const auto total = sum(stats.hist);
     
     for (const auto &i : stats)
@@ -169,12 +185,28 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
 
             default: { break; }
         }
+        
+        switch (o.format)
+        {
+            case MAbund::Format::BAM:
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % l.length()
+                                                       % input
+                                                       % abund
+                                                       % measured).str());
+                break;
+            }
 
-        o.writer->write((boost::format(format) % i.first
-                                               % l.length()
-                                               % input
-                                               % abund
-                                               % measured).str());
+            case MAbund::Format::RayMeta:
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % l.length()
+                                                       % input
+                                                       % abund).str());
+                break;
+            }
+        }
     }
     
     o.writer->close();
@@ -182,15 +214,34 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
 
 Scripts MAbund::generateRLinear(const FileName &src, const Stats &stats, const Options &o)
 {
-    return RWriter::createRLinear(src,
-                                  o.work,
-                                  "FPKM",
-                                  "Input Concentration (log2)",
-                                  "Measured FPKM (log2)",
-                                  "log2(data$Input)",
-                                  "log2(data$FPKM)",
-                                  "input",
-                                  true);
+    switch (o.format)
+    {
+        case Format::BAM:
+        {
+            return RWriter::createRLinear(src,
+                                          o.work,
+                                          "FPKM",
+                                          "Input Concentration (log2)",
+                                          "Measured FPKM (log2)",
+                                          "log2(data$Input)",
+                                          "log2(data$FPKM)",
+                                          "input",
+                                          true);
+        }
+
+        case Format::RayMeta:
+        {
+            return RWriter::createRLinear(src,
+                                          o.work,
+                                          "K-mer coverage",
+                                          "Input Concentration (log2)",
+                                          "Measured K-mer coverage (log2)",
+                                          "log2(data$Input)",
+                                          "log2(data$Abund)",
+                                          "input",
+                                          true);
+        }
+    }
 }
 
 static void writeRLinear(const FileName &file, const FileName &src, const MAbund::Stats &stats, const MAbund::Options &o)

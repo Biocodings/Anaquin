@@ -37,7 +37,7 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
         {
             case Format::BAM:
             {
-                stats.stats2 = MAbund::analyze(std::vector<FileName> { files[2], files[3] }, ao);
+                stats.stats1 = MAbund::analyze(std::vector<FileName> { files[1] }, ao);
                 break;
             }
 
