@@ -114,8 +114,12 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
      * Perform differential analysis with sleuth (recommended by the Kallisto team)
      */
     
+    const auto runDiff = stats.exp.samps.size() == 2        &&
+                         stats.exp.samps[Mix_1].size() >= 2 &&
+                         stats.exp.samps[Mix_2].size() >= 2;
+
     // Do we have at least two replicates for each mixture?
-    if (stats.exp.samps.size() == 2 && stats.exp.samps[Mix_1].size() >= 2 && stats.exp.samps[Mix_2].size() >= 2)
+    if (runDiff)
     {
         const auto script = "library(sleuth)\n\n"
                             "# Where the Kallisto files are\n"
@@ -163,19 +167,22 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     }
     
     {
-        RFold::Options ro;
-        
-        ro.writer = o.writer;
-        ro.format = RFold::Format::Sleuth;
-        
+        if (runDiff)
         {
-            ro.metrs = RFold::Metrics::Isoform;
-            stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
-        }
-        
-        {
-            ro.metrs = RFold::Metrics::Gene;
-            stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
+            RFold::Options ro;
+            
+            ro.writer = o.writer;
+            ro.format = RFold::Format::Sleuth;
+            
+            {
+                ro.metrs = RFold::Metrics::Isoform;
+                stats.iFold = RFold::analyze(output + "/sleuth.csv", ro);
+            }
+            
+            {
+                ro.metrs = RFold::Metrics::Gene;
+                stats.gFold = RFold::analyze(output + "/sleuth.csv", ro);
+            }
         }
     }
     
@@ -300,56 +307,59 @@ void RReport::report(const FileName &file, const Options &o)
      */
     
     {
-        RFold::Options ro;
-        
-        ro.work   = tmp;
-        ro.logger = o.logger;
-        ro.format = RFold::Format::Sleuth;
-        
-        const auto src = tmp + "/sleuth.csv";
-        
-        auto isoFold = [&](const Title &title,
-                           const FileName &csv,
-                           const RFold::Stats &stats)
+        if (!stats.gFold.empty() && !stats.iFold.empty())
         {
-            ro.metrs = RFold::Metrics::Isoform;
+            RFold::Options ro;
             
-            const auto x = RFold::generateSummary(src, stats, ro, "isoforms");
-            const auto y = RFold::generateCSV(stats, ro);
-            const auto z = RFold::generateRFold(stats, csv, ro);
+            ro.work   = tmp;
+            ro.logger = o.logger;
+            ro.format = RFold::Format::Sleuth;
             
-            // Required for R
-            FileWriter::create(tmp, csv, y);
-
-            mark.start(title);
-            mark.addText("Summary Statistics", x);
-            mark.addText("Sequin Statistics",  y);
-            mark.addRCode("Plot for Fold Change", z);            
-            mark.end();
-        };
-
-        auto geneFold = [&](const Title &title,
-                            const FileName &csv,
-                            const RFold::Stats &stats)
-        {
-            ro.metrs = RFold::Metrics::Gene;
+            const auto src = tmp + "/sleuth.csv";
             
-            const auto x = RFold::generateSummary(src, stats, ro, "genes");
-            const auto y = RFold::generateCSV(stats, ro);
-            const auto z = RFold::generateRFold(stats, csv, ro);
+            auto isoFold = [&](const Title &title,
+                               const FileName &csv,
+                               const RFold::Stats &stats)
+            {
+                ro.metrs = RFold::Metrics::Isoform;
+                
+                const auto x = RFold::generateSummary(src, stats, ro, "isoforms");
+                const auto y = RFold::generateCSV(stats, ro);
+                const auto z = RFold::generateRFold(stats, csv, ro);
+                
+                // Required for R
+                FileWriter::create(tmp, csv, y);
+                
+                mark.start(title);
+                mark.addText("Summary Statistics", x);
+                mark.addText("Sequin Statistics",  y);
+                mark.addRCode("Plot for Fold Change", z);
+                mark.end();
+            };
             
-            // Required for R
-            FileWriter::create(tmp, csv, y);
+            auto geneFold = [&](const Title &title,
+                                const FileName &csv,
+                                const RFold::Stats &stats)
+            {
+                ro.metrs = RFold::Metrics::Gene;
+                
+                const auto x = RFold::generateSummary(src, stats, ro, "genes");
+                const auto y = RFold::generateCSV(stats, ro);
+                const auto z = RFold::generateRFold(stats, csv, ro);
+                
+                // Required for R
+                FileWriter::create(tmp, csv, y);
+                
+                mark.start(title);
+                mark.addText("Summary Statistics", x);
+                //mark.addText("Sequin Statistics",  y);
+                mark.addRCode("Plot for Fold Change", z);
+                mark.end();
+            };
             
-            mark.start(title);
-            mark.addText("Summary Statistics", x);
-            //mark.addText("Sequin Statistics",  y);
-            mark.addRCode("Plot for Fold Change", z);
-            mark.end();
-        };
-        
-        isoFold ("Differential Isoform", "RnaFoldChange_isoforms.csv", stats.iFold);
-        geneFold("Differential Gene", "RnaFoldChange_genes.csv", stats.gFold);
+            geneFold("Differential Gene", "RnaFoldChange_genes.csv", stats.gFold);
+            isoFold ("Differential Isoform", "RnaFoldChange_isoforms.csv", stats.iFold);
+        }
     }
     
     /*
