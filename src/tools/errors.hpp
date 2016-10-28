@@ -22,16 +22,6 @@ namespace Anaquin
         const std::string file;
     };
 
-    struct InvalidInputError : public std::runtime_error
-    {
-        InvalidInputError(const std::string &msg) : std::runtime_error(msg) {}
-    };
-
-    struct InvalidInputException : public std::runtime_error
-    {
-        InvalidInputException(const std::string &msg) : std::runtime_error(msg) {}
-    };
-
     struct MissingDependencyException : public std::runtime_error
     {
         MissingDependencyException(const std::string &msg) : std::runtime_error(msg) {}
@@ -42,9 +32,9 @@ namespace Anaquin
         FailedCommandException(const std::string &msg) : std::runtime_error(msg) {}
     };
     
-    struct BadFormatException : public std::runtime_error
+    struct InvalidFormatException : public std::runtime_error
     {
-        BadFormatException(const std::string &msg) : std::runtime_error(msg) {}
+        InvalidFormatException(const std::string &msg) : std::runtime_error(msg) {}
     };
 }
 

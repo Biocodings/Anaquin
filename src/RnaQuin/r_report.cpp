@@ -35,7 +35,7 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     
     if (stats.exp.samps.empty())
     {
-        throw InvalidInputError("Empty metadata: " + data);
+        throw InvalidFileError("Empty metadata: " + data);
     }
     
     struct KalSample

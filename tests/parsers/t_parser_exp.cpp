@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("ParserExp_1")
 {
-    auto r = ParserExp::parse(Reader("tests/data/experiment.txt"));
+    auto r = ParserExp::parse(Reader("tests/data/exp1.txt"));
     
     REQUIRE(r.samps.size() == 2);
     REQUIRE(r.samps[Mix_1].size() == 3);
@@ -23,4 +23,20 @@ TEST_CASE("ParserExp_1")
     REQUIRE(r.samps[Mix_2][1].p2 == "L.R.5.2_val_2.fq");
     REQUIRE(r.samps[Mix_2][2].p1 == "L.R.6.1_val_1.fq");
     REQUIRE(r.samps[Mix_2][2].p2 == "L.R.6.2_val_2.fq");
+}
+
+TEST_CASE("ParserExp_2")
+{
+    auto r = ParserExp::parse(Reader("tests/data/exp2.txt"));
+    
+    REQUIRE(r.samps.size() == 1);
+    REQUIRE(r.samps[Mix_1].size() == 1);
+
+    REQUIRE(r.samps[Mix_1][0].p1 == "L.R.1.1_val_1.fq");
+    REQUIRE(r.samps[Mix_1][0].p2 == "L.R.1.2_val_2.fq");
+}
+
+TEST_CASE("ParserExp_3")
+{
+    REQUIRE_THROWS_AS(ParserExp::parse(Reader("tests/data/exp3.txt")), InvalidFormatException);
 }

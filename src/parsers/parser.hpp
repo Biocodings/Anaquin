@@ -23,7 +23,7 @@ namespace Anaquin
         }
         catch (...)
         {
-            throw BadFormatException("Invalid file, expected " + msg + ". Please check and try again.");
+            throw InvalidFormatException("Invalid file, expected " + msg);
         }
     }
 }

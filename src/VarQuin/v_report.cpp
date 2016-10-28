@@ -33,7 +33,7 @@ VReport::Stats VReport::analyze(const FileName &data, const Options &o)
     
     if (stats.exp.samps.empty())
     {
-        throw InvalidInputError("Empty metadata: " + data);
+        throw InvalidFileError("Empty metadata: " + data);
     }
     
     std::vector<Sample> samps;

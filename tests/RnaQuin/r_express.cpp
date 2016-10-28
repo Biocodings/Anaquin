@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TExpress_Multiple_Kallisto_2")
+TEST_CASE("RExpress_Multiple_Kallisto_2")
 {
     Test::transA();
     
@@ -48,7 +48,7 @@ TEST_CASE("TExpress_Multiple_Kallisto_2")
     REQUIRE(r[2].isos["R2_66_1"].y == Approx(6297.6));
 }
 
-TEST_CASE("TExpress_Multiple_Kallisto_1")
+TEST_CASE("RExpress_Multiple_Kallisto_1")
 {
     Test::transA();
     
@@ -92,7 +92,7 @@ TEST_CASE("TExpress_Multiple_Kallisto_1")
     REQUIRE(r[2].genes["R2_66"].y == Approx(235537.6));
 }
 
-TEST_CASE("TExpress_Guided_Invalid")
+TEST_CASE("RExpress_Guided_Invalid")
 {
     Test::transA();
     
@@ -111,7 +111,7 @@ TEST_CASE("TExpress_Guided_Invalid")
     REQUIRE(r2.status == 1);
 }
 
-TEST_CASE("TExpress_Replicates")
+TEST_CASE("RExpress_Replicates")
 {
     Test::transA();
     
@@ -172,7 +172,7 @@ TEST_CASE("TExpress_Replicates")
     REQUIRE(r[2].limit.abund == Approx(0.014305115));
 }
 
-TEST_CASE("TExpress_Guided_Equal")
+TEST_CASE("RExpress_Guided_Equal")
 {
     Test::transA();
     
@@ -226,7 +226,7 @@ TEST_CASE("TExpress_Guided_Equal")
     REQUIRE(r2.status == 0);
 }
 
-TEST_CASE("TExpress_Guided_Head")
+TEST_CASE("RExpress_Guided_Head")
 {
     Test::transA();
     
@@ -260,7 +260,7 @@ TEST_CASE("TExpress_Guided_Head")
     REQUIRE(ls.R2 == Approx(0.7548839714));
 }
 
-TEST_CASE("TExpress_Denovo_Genes")
+TEST_CASE("RExpress_Denovo_Genes")
 {
     Test::transA();
     
@@ -290,7 +290,7 @@ TEST_CASE("TExpress_Denovo_Genes")
     REQUIRE(r2.status == 1);
 }
 
-TEST_CASE("TExpress_Denovo_Isoforms")
+TEST_CASE("RExpress_Denovo_Isoforms")
 {
     Test::transA();
     
@@ -320,7 +320,7 @@ TEST_CASE("TExpress_Denovo_Isoforms")
     REQUIRE(r2.status == 1);
 }
 
-TEST_CASE("TExpress_Guided_Genes")
+TEST_CASE("RExpress_Guided_Genes")
 {
     Test::transA();
  
@@ -347,7 +347,7 @@ TEST_CASE("TExpress_Guided_Genes")
     REQUIRE(ls.R2 == Approx(0.9063191975));
 }
 
-TEST_CASE("TExpress_Guided_Isoforms")
+TEST_CASE("RExpress_Guided_Isoforms")
 {
     Test::transA();
     

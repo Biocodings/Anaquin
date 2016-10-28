@@ -1470,7 +1470,7 @@ int parse_options(int argc, char ** argv)
     {
         printError("Invalid command: " + std::string(ex.what()));
     }
-    catch (const BadFormatException &ex)
+    catch (const InvalidFormatException &ex)
     {
         printError("Invalid file format: " + std::string(ex.what()));
     }

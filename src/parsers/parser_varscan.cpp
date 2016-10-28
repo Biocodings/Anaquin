@@ -327,6 +327,6 @@ void ParserVarScan::parse(const Reader &r, Functor f)
     }
     else
     {
-        throw InvalidInputError("Unknown file type for ParserVarScan");
+        throw InvalidFileError("Unknown file type for ParserVarScan");
     }
 }
