@@ -66,19 +66,20 @@ typedef std::set<Value> Range;
 #define TOOL_R_CUFFLINK  269
 #define TOOL_R_FOLD      270
 #define TOOL_R_GENE      271
-#define TOOL_R_KREPORT   272
-#define TOOL_V_KREPORT   273
-#define TOOL_V_ALIGN     274
-#define TOOL_V_DISCOVER  275
-#define TOOL_V_ALLELE    276
-#define TOOL_M_ALIGN     277
-#define TOOL_M_ABUND     278
-#define TOOL_M_FOLD      279
-#define TOOL_M_SUBSAMPLE 280
-#define TOOL_M_ASSEMBLY  281
-#define TOOL_V_SUBSAMPLE 282
-#define TOOL_R_SUBSAMPLE 283
-#define TOOL_V_FLIP      305
+#define TOOL_R_REPORT    272
+#define TOOL_R_SUBSAMPLE 273
+#define TOOL_V_REPORT    274
+#define TOOL_V_ALIGN     275
+#define TOOL_V_FLIP      276
+#define TOOL_V_DISCOVER  277
+#define TOOL_V_ALLELE    278
+#define TOOL_V_SUBSAMPLE 279
+#define TOOL_M_ALIGN     280
+#define TOOL_M_ABUND     281
+#define TOOL_M_FOLD      282
+#define TOOL_M_SUBSAMPLE 283
+#define TOOL_M_ASSEMBLY  284
+#define TOOL_M_REPORT    285
 
 /*
  * Options specified in the command line
@@ -150,7 +151,7 @@ static std::map<Value, Tool> _tools =
     { "RnaAssembly",    TOOL_R_ASSEMBLY  },
     { "RnaExpress",     TOOL_R_EXPRESS   },
     { "RnaExpression",  TOOL_R_EXPRESS   },
-    { "RnaKReport",     TOOL_R_KREPORT  },
+    { "RnaReport",      TOOL_R_REPORT    },
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
@@ -159,7 +160,7 @@ static std::map<Value, Tool> _tools =
     { "VarAllele",      TOOL_V_ALLELE    },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VaRReport",     TOOL_V_KREPORT   },
+    { "VarReport",      TOOL_V_REPORT    },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
 
@@ -180,7 +181,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_KREPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
+    { TOOL_R_REPORT,    { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
 
@@ -193,7 +194,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
-    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
+    { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
 
     /*
      * MetaQuin Analysis
@@ -429,14 +430,14 @@ static Scripts manual(Tool tool)
         case TOOL_R_ALIGN:     { return RnaAlign();       }
         case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
         case TOOL_R_EXPRESS:   { return RnaExpression();  }
-        case TOOL_R_KREPORT:   { return RnaReport();      }
+        case TOOL_R_REPORT:    { return RnaReport();      }
         case TOOL_R_FOLD:      { return RnaFoldChange();  }
         case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
         case TOOL_V_FLIP:      { return VarFlip();        }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_KREPORT:   { return VarReport();      }
+        case TOOL_V_REPORT:    { return VarReport();      }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
         case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
@@ -995,8 +996,8 @@ void parse(int argc, char ** argv)
         case TOOL_R_FOLD:
         case TOOL_R_GENE:
         case TOOL_R_ALIGN:
+        case TOOL_R_REPORT:
         case TOOL_R_EXPRESS:
-        case TOOL_R_KREPORT:
         case TOOL_R_ASSEMBLY:
         case TOOL_R_CUFFLINK:
         case TOOL_R_SUBSAMPLE:
@@ -1043,7 +1044,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_R_KREPORT:
+                    case TOOL_R_REPORT:
                     {
                         applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
@@ -1065,7 +1066,7 @@ void parse(int argc, char ** argv)
                 case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
                 case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);             break; }
                 case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
-                case TOOL_R_KREPORT:
+                case TOOL_R_REPORT:
                 {
                     RReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
@@ -1270,7 +1271,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
-        case TOOL_V_KREPORT:
+        case TOOL_V_REPORT:
         case TOOL_V_DISCOVER:
         case TOOL_V_SUBSAMPLE:
         {
@@ -1284,7 +1285,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_V_ALLELE:
-                    case TOOL_V_KREPORT:
+                    case TOOL_V_REPORT:
                     {
                         applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
@@ -1342,7 +1343,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_KREPORT:
+                case TOOL_V_REPORT:
                 {
                     VReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
