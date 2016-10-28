@@ -25,8 +25,6 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     // Where the analysis files should be saved
     const auto output = System::tmpFile();
     
-    std::cout << output << std::endl;
-    
     // Create the directory structure
     System::runCmd("mkdir -p " + output);
     
