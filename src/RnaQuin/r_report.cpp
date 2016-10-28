@@ -11,15 +11,15 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
 {
     if (!System::checkConsole("kallisto"))
     {
-        throw MissingDependencyException("Kallisto is not installed. Please consult the user guide on www.sequin.xyz and try again.");
+        throw MissingDependencyException("Kallisto is not installed. Please consult the user guide on www.sequin.xyz.");
     }
     else if (!System::checkConsole("R"))
     {
-        throw MissingDependencyException("R is not installed. Please consult the user guide on www.sequin.xyz and try again.");
+        throw MissingDependencyException("R is not installed. Please consult the user guide on www.sequin.xyz.");
     }
     else if (!System::checkRPack("sleuth"))
     {
-        throw MissingDependencyException("Sleuth is not installed. Please consult the user guide on www.sequin.xyz and try again.");
+        throw MissingDependencyException("Sleuth is not installed. Please consult the user guide on www.sequin.xyz.");
     }
     
     // Where the analysis files should be saved
