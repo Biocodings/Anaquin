@@ -54,18 +54,21 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     // Eg: A1, A2 A3
     Counts i = 0;
     
-    for (const auto &info : stats.exp.samps[Mix_1])
+    if (!stats.exp.samps.at(Mix_1).empty())
     {
-        KalSample samp;
-        
-        samp.p1   = info.p1;
-        samp.p2   = info.p2;
-        samp.path = output + "/A" + std::to_string(++i);
-        
-        samps.push_back(samp);
-        stats.tsvs[Mix_1].push_back(samp.path + "/abundance.tsv");
+        for (const auto &info : stats.exp.samps[Mix_1])
+        {
+            KalSample samp;
+            
+            samp.p1   = info.p1;
+            samp.p2   = info.p2;
+            samp.path = output + "/A" + std::to_string(++i);
+            
+            samps.push_back(samp);
+            stats.tsvs[Mix_1].push_back(samp.path + "/abundance.tsv");
+        }
     }
-    
+
     // Eg: B1, B2 B3
     i = 0;
     
@@ -84,22 +87,22 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
         }
     }
     
-    auto runKallisto = [&](const KalSample &samp)
-    {
-        const auto format = "kallisto quant -b 500 -i %1% -o %2% %3% %4%";
-        System::runCmd((boost::format(format) % o.index % samp.path % samp.p1 % samp.p2).str());
-    };
-    
     // Multi-threaded instances
     std::vector<std::thread> kals;
     
     std::for_each(samps.begin(), samps.end(), [&](const KalSample &samp)
     {
-        kals.push_back(std::thread(runKallisto, samp));
+        kals.push_back(std::thread([&](const KalSample &samp)
+        {
+            System::runCmd((boost::format("kallisto quant -b 500 -i %1% -o %2% %3% %4%") % o.index
+                                                                                         % samp.path
+                                                                                         % samp.p1
+                                                                                         % samp.p2).str());
+        }, samp));
     });
-    
+
     /*
-     * Wait until Kallisto quantification completes
+     * Wait until the quantification completes
      */
     
     std::for_each(kals.begin(), kals.end(), [&](std::thread &tID)
