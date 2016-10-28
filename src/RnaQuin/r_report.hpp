@@ -1,5 +1,5 @@
-#ifndef R_KREPORT_HPP
-#define R_KREPORT_HPP
+#ifndef R_REPORT_HPP
+#define R_REPORT_HPP
 
 #include "stats/analyzer.hpp"
 #include "RnaQuin/r_fold.hpp"
@@ -8,7 +8,7 @@
 
 namespace Anaquin
 {
-    struct RKReport : public Analyzer
+    struct RReport : public Analyzer
     {
         struct Options : public AnalyzerOptions
         {

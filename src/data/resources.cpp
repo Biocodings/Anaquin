@@ -102,7 +102,7 @@ Scripts RnaAssembly()
     return ToString(data_manuals_RnaAssembly_txt);
 }
 
-Scripts RnaKReport()
+Scripts RnaReport()
 {
     return ToString(data_manuals_RnaKReport_txt);
 }
@@ -137,7 +137,7 @@ Scripts VarDiscover()
     return ToString(data_manuals_VarDiscover_txt);
 }
 
-Scripts VarKReport()
+Scripts VarReport()
 {
     return ToString(data_manuals_VarKReport_txt);
 }

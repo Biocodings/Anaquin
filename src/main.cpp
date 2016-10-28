@@ -11,21 +11,22 @@
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_sample.hpp"
+#include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_express.hpp"
-#include "RnaQuin/r_kreport.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_kreport.hpp"
+#include "VarQuin/v_report.hpp"
 #include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_sample.hpp"
+#include "MetaQuin/m_report.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_gtf.hpp"
@@ -158,7 +159,7 @@ static std::map<Value, Tool> _tools =
     { "VarAllele",      TOOL_V_ALLELE    },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VarKReport",     TOOL_V_KREPORT   },
+    { "VaRReport",     TOOL_V_KREPORT   },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
 
@@ -408,13 +409,13 @@ static Scripts manual(Tool tool)
 {
     extern Scripts VarFlip();
     extern Scripts VarAlign();
-    extern Scripts RnaAlign();
-    extern Scripts RnaKReport();
-    extern Scripts VarKReport();
-    extern Scripts RnaAssembly();
+    extern Scripts VarReport();
     extern Scripts VarDiscover();
-    extern Scripts RnaSubsample();
     extern Scripts VarSubsample();
+    extern Scripts RnaAlign();
+    extern Scripts RnaReport();
+    extern Scripts RnaAssembly();
+    extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
     extern Scripts RnaFoldChange();
     extern Scripts MetaAlign();
@@ -428,14 +429,14 @@ static Scripts manual(Tool tool)
         case TOOL_R_ALIGN:     { return RnaAlign();       }
         case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
         case TOOL_R_EXPRESS:   { return RnaExpression();  }
-        case TOOL_R_KREPORT:   { return RnaKReport();     }
+        case TOOL_R_KREPORT:   { return RnaReport();      }
         case TOOL_R_FOLD:      { return RnaFoldChange();  }
-        case TOOL_V_FLIP:      { return VarFlip();        }
         case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
+        case TOOL_V_FLIP:      { return VarFlip();        }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_KREPORT:   { return VarKReport();     }
+        case TOOL_V_KREPORT:   { return VarReport();      }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
         case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
@@ -1135,9 +1136,9 @@ void parse(int argc, char ** argv)
                 case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
                 case TOOL_R_KREPORT:
                 {
-                    RKReport::Options o;
+                    RReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
-                    analyze_1<RKReport>(OPT_U_FILES, o);
+                    analyze_1<RReport>(OPT_U_FILES, o);
                     break;
                 }
 
@@ -1412,9 +1413,9 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_V_KREPORT:
                 {
-                    VKReport::Options o;
+                    VReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
-                    analyze_1<VKReport>(OPT_U_FILES, o);
+                    analyze_1<VReport>(OPT_U_FILES, o);
                     break;
                 }
 

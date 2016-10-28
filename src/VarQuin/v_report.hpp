@@ -1,5 +1,5 @@
-#ifndef V_KREPORT_HPP
-#define V_KREPORT_HPP
+#ifndef V_REPORT_HPP
+#define V_REPORT_HPP
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/v_allele.hpp"
@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    struct VKReport : public Analyzer
+    struct VReport : public Analyzer
     {
         struct Options : public AnalyzerOptions
         {

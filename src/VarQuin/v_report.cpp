@@ -2,12 +2,12 @@
 #include "tools/script.hpp"
 #include "tools/markdown.hpp"
 #include "VarQuin/v_allele.hpp"
-#include "VarQuin/v_kreport.hpp"
+#include "VarQuin/v_report.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
-VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
+VReport::Stats VReport::analyze(const FileName &data, const Options &o)
 {
     if (!System::checkConsole("salmon"))
     {
@@ -26,7 +26,7 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     // Create the directory structure
     System::runCmd("mkdir -p " + output);
     
-    VKReport::Stats stats;
+    VReport::Stats stats;
     
     // Parse the metadata
     stats.exp = ParserExp::parse(data);
@@ -91,9 +91,9 @@ VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
     return stats;
 }
 
-void VKReport::report(const FileName &file, const Options &o)
+void VReport::report(const FileName &file, const Options &o)
 {
-    const auto stats = VKReport::analyze(file, o);
+    const auto stats = VReport::analyze(file, o);
     
     // Directory where the temporary files should be saved
     const auto tmp = System::tmpFile();
@@ -118,9 +118,9 @@ void VKReport::report(const FileName &file, const Options &o)
         {
             const auto x = VAllele::generateSummary(file, stats, ro);
 	        const auto y = VAllele::generateCSV(stats, ro);
-            const auto z = VAllele::generateRLinear("/VarKReportAllelle.csv", stats, ro);
+            const auto z = VAllele::generateRLinear("/VaRReportAllelle.csv", stats, ro);
             
-            FileWriter::create(tmp, "VarKReportAllelle.csv", y);
+            FileWriter::create(tmp, "VaRReportAllelle.csv", y);
             
             mark.start(title);
             mark.addText("Summary Statistics", x);
@@ -143,5 +143,5 @@ void VKReport::report(const FileName &file, const Options &o)
     FileWriter::create(tmp, "r2pdf.R", "library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
     
     System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
-    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/VarKReport_report.pdf");
+    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/VaRReport_report.pdf");
 }

@@ -2,12 +2,12 @@
 #include <boost/format.hpp>
 #include "tools/script.hpp"
 #include "tools/markdown.hpp"
-#include "RnaQuin/r_kreport.hpp"
+#include "RnaQuin/r_report.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
-RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
+RReport::Stats RReport::analyze(const FileName &data, const Options &o)
 {
     if (!System::checkConsole("kallisto"))
     {
@@ -30,7 +30,7 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     // Create the directory structure
     System::runCmd("mkdir -p " + output);
     
-    RKReport::Stats stats;
+    RReport::Stats stats;
     
     // Parse the metadata
     stats.exp = ParserExp::parse(data);
@@ -181,9 +181,9 @@ RKReport::Stats RKReport::analyze(const FileName &data, const Options &o)
     return stats;
 }
 
-void RKReport::report(const FileName &file, const Options &o)
+void RReport::report(const FileName &file, const Options &o)
 {
-    const auto stats = RKReport::analyze(file, o);
+    const auto stats = RReport::analyze(file, o);
     
     // Directory where the temporary files should be saved
     const auto tmp = System::tmpFile();
