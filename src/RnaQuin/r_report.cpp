@@ -54,7 +54,7 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     // Eg: A1, A2 A3
     Counts i = 0;
     
-    if (!stats.exp.samps.at(Mix_1).empty())
+    if (stats.exp.samps.count(Mix_1))
     {
         for (const auto &info : stats.exp.samps[Mix_1])
         {
@@ -72,7 +72,7 @@ RReport::Stats RReport::analyze(const FileName &data, const Options &o)
     // Eg: B1, B2 B3
     i = 0;
     
-    if (!stats.exp.samps.at(Mix_2).empty())
+    if (stats.exp.samps.count(Mix_2))
     {
         for (const auto &info : stats.exp.samps[Mix_2])
         {
