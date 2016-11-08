@@ -413,6 +413,9 @@ static void generateSummary(const FileName &file,
     
     #define G(x) (hasGeno ? toString(x) : "-")
     
+    o.logInfo("stats.gim.sn(): " + std::to_string(stats.gim.sn()));
+    o.logInfo("stats.gbm.sn(): " + std::to_string(stats.gbm.sn()));
+    
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                  // 1
                                               % GTFRef()             // 2
