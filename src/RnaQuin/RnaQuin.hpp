@@ -5,6 +5,9 @@
 
 namespace Anaquin
 {
+    // Synthetic chromosome for RnaQuin
+    const ChrID ChrIS = "chrIS";
+
     inline bool isRnaQuin(const ChrID &id)
     {
         return id == ChrIS;

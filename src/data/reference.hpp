@@ -6,6 +6,7 @@
 #include "data/variant.hpp"
 #include "data/minters.hpp"
 #include "data/intervals.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 
 namespace Anaquin
 {

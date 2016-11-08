@@ -61,9 +61,6 @@ namespace Anaquin
     
     const ChrID Geno  = "geno";
     
-    // Synthetic chromosome for RnaQuin
-    const ChrID ChrIS = "chrIS";
-    
     enum Mixture
     {
         Mix_1,
