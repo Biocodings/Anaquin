@@ -87,7 +87,6 @@ namespace Anaquin
         // Transcripts to unique exons
         std::map<TransID, std::set<ExonData>> t2ue;
 
-        // TODO: Forward and reverse?
         // Transcripts to unique introns
         std::map<TransID, std::set<IntronData>> t2ui;
         
