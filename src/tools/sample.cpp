@@ -21,9 +21,9 @@ Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const Analyze
             o.logInfo(std::to_string(info.p.i));
         }
         
-        const auto shouldWrite = !x.mapped || !isSyn(x.cID);
+        const auto shouldWrite = !x.mapped || !isSyn(x.cID) || !x.isAligned;
 
-        if (x.isPrimary)
+        if (x.isPrimary && x.isAligned)
         {
             if (isSyn(x.cID))
             {
@@ -38,7 +38,7 @@ Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const Analyze
         // This is the key, randomly write the reads with certain probability
         if (shouldWrite || r.select(x.name))
         {
-            if (x.isPrimary && isSyn(x.cID))
+            if (x.isPrimary && x.isAligned && isSyn(x.cID))
             {
                 stats.after.syn++;
                 o.logInfo("Sampled " + x.name);

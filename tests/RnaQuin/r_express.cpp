@@ -107,7 +107,7 @@ TEST_CASE("RExpress_Guided_Invalid")
     
     const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/guidedInvalid.gtf");
     
-    REQUIRE(r2.error == "[ERRO]: Failed to parse \"ABCD\". This is not a number.\n");
+    REQUIRE(r2.error == "***********************\n[ERRO]: Failed to parse \"ABCD\". This is not a number.\n***********************\n");
     REQUIRE(r2.status == 1);
 }
 
@@ -286,7 +286,7 @@ TEST_CASE("RExpress_Denovo_Genes")
     
     const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/denovo.gtf");
     
-    REQUIRE(r2.error == "[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n");
+    REQUIRE(r2.error == "***********************\n[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n***********************\n");
     REQUIRE(r2.status == 1);
 }
 
@@ -316,7 +316,7 @@ TEST_CASE("RExpress_Denovo_Isoforms")
     
     const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method isoform -ufiles tests/data/denovo.gtf");
     
-    REQUIRE(r2.error == "[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n");
+    REQUIRE(r2.error == "***********************\n[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n***********************\n");
     REQUIRE(r2.status == 1);
 }
 
