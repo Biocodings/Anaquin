@@ -27,7 +27,7 @@ namespace Anaquin
             Proportion norm;
         };
 
-        static Stats stats(const FileName &, const Options &o = Options());
+        static Stats stats(const FileName &, const Options &o);
         static void report(const FileName &, const Options &o = Options());
     };
 }
