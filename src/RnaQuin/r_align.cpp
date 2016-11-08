@@ -409,12 +409,12 @@ static void generateSummary(const FileName &file,
                             const RAlign::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
-    const auto hasGeno = stats.data.size() > 1;
-    
-    #define G(x) (hasGeno ? toString(x) : "-")
     
     o.logInfo("stats.gim.sn(): " + std::to_string(stats.gim.sn()));
     o.logInfo("stats.gbm.sn(): " + std::to_string(stats.gbm.sn()));
+    
+    #define G(x) (stats.data.size() > 1   ? toString(x) : "-")
+    #define S(x) (stats.data.count(ChrIS) ? toString(x) : "-")
     
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                  // 1
@@ -433,14 +433,14 @@ static void generateSummary(const FileName &file,
                                               % stats.ss             // 14
                                               % G(stats.gn)          // 15
                                               % G(stats.gs)          // 16
-                                              % stats.sim.sn()       // 17
-                                              % stats.sim.pc()       // 18
-                                              % stats.sbm.sn()       // 19
-                                              % stats.sbm.pc()       // 20
-                                              % stats.gim.sn()       // 21
-                                              % stats.gim.pc()       // 22
-                                              % stats.gbm.sn()       // 23
-                                              % stats.gbm.pc()       // 24
+                                              % S(stats.sim.sn())    // 17
+                                              % S(stats.sim.pc())    // 18
+                                              % S(stats.sbm.sn())    // 19
+                                              % S(stats.sbm.pc())    // 20
+                                              % G(stats.gim.sn())    // 21
+                                              % G(stats.gim.pc())    // 22
+                                              % G(stats.gbm.sn())    // 23
+                                              % G(stats.gbm.pc())    // 24
                      ).str());
     o.writer->close();
 }
