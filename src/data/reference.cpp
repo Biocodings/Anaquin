@@ -136,7 +136,7 @@ Counts RnaRef::nGeneSeqs() const
     
     for (const auto &i : _data)
     {
-        gIDs.insert(RnaQuin::t2g(i.first));
+        gIDs.insert(Isoform2Gene(i.first));
     }
     
     return gIDs.size();
@@ -388,7 +388,7 @@ void RnaRef::validate()
             
             t.cID = ChrIS;
             t.tID = i;
-            t.gID = RnaQuin::t2g(i);
+            t.gID = Isoform2Gene(i);
             
             GeneData g;
             

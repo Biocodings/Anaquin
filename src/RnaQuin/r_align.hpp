@@ -79,7 +79,7 @@ namespace Anaquin
                 Confusion gbm, gam, gim, gem;
             };
 
-            static Stats analyze(const FileName &, const Options &o = Options());
+            static Stats analyze(const FileName &, const Options &o);
             static void  report (const FileName &, const Options &o = Options());
     };
 }

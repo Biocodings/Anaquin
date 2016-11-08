@@ -102,8 +102,8 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
 
     o.info("Collecting statistics");
     
-    o.logInfo("stats.data.size() == " + std::to_string(stats.data.size()));
-    o.logInfo("stats.eInters.size() == " + std::to_string(stats.eInters.size()));
+    o.logInfo("Reference chromsomes: == " + std::to_string(stats.data.size()));
+    o.logInfo("Exon intervals: " + std::to_string(stats.eInters.size()));
     
     // For each reference chromosome...
     for (const auto i : stats.eInters)
@@ -111,7 +111,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
         const auto &cID = i.first;
         const auto &x = stats.data.at(cID);
 
-        const auto bs  = i.second.stats();
+        const auto bs = i.second.stats();
         
         /*
          * Calculating statistics for alignments
@@ -416,10 +416,10 @@ static void generateSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                  // 1
                                               % GTFRef()             // 2
-                                              % stats.nSyn       // 3
-                                              % stats.nGen       // 4
+                                              % stats.nSyn           // 3
+                                              % stats.nGen           // 4
                                               % stats.dilution()     // 5
-                                              % stats.nNA        // 6
+                                              % stats.nNA            // 6
                                               % r.countUExonSyn()    // 7
                                               % r.countUIntrSyn()    // 8
                                               % r.countLenSyn()      // 9
