@@ -7,7 +7,7 @@ namespace Anaquin
 {
     inline bool isRnaQuin(const ChrID &id)
     {
-        return id == "chrIS";
+        return id == ChrIS;
     }
 
     // Eg: R1_1_1 to R1_1

@@ -500,7 +500,9 @@ FileName refFile()
 
 static void printError(const std::string &msg)
 {
+    std::cerr << "***********************" << std::endl;
     std::cerr << "[ERRO]: " << msg << std::endl;
+    std::cerr << "***********************" << std::endl;
 }
 
 template <typename Mixture> void applyMix(Mixture mix)

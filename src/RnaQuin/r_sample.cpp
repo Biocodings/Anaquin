@@ -17,7 +17,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Spike-in proportion: " + std::to_string(o.p));
 
     /*
-     * Calculating sequencing depth for both genomic and synthetic before subsampling
+     * Computing sequencing depth for both genomic and synthetic before subsampling
      */
 
     o.info("Calculating the coverage before subsampling");
@@ -30,7 +30,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         }
         
         // Don't count for multiple alignments
-        if (x.isPrimary)
+        if (x.isPrimary && x.isAligned)
         {
             if (isRnaQuin(x.cID))
             {
@@ -44,13 +44,13 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     });
 
     o.info("Alignments mapped to the in-silico (before subsampling): " + std::to_string(stats.before.syn));
-    o.info("Alignments mapped to the genome (before subsampling): " + std::to_string(stats.before.gen));
+    o.info("Alignments mapped to the genome (before subsampling): "    + std::to_string(stats.before.gen));
     
     if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico chromosome"); }
     if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the genome");   }
 
     /*
-     * Calculating subsamping fraction. Eg: if we have 10m reads to the genome and 5m reads to the
+     * Computing subsamping fraction. Eg: if we have 10m reads to the genome and 5m reads to the
      * in-silico chromsome and the specified fraction is 1%.
      *
      *   New total is: 10/0.99 = 10.10101 => Synthetic will have: 0.10101 reads.
