@@ -2,7 +2,7 @@
 #include <streambuf>
 #include <catch.hpp>
 #include "tools/script.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 TEST_CASE("ScriptTool_1")
