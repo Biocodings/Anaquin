@@ -1,4 +1,5 @@
 #include <cmath>
+#include "tools/system.hpp"
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_express.hpp"
@@ -392,11 +393,12 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
     return r;
 }
 
-Scripts RExpress::generateSummary(const std::vector<FileName> &files,
+Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   const std::vector<RExpress::Stats> &stats,
                                   const RExpress::Options &o,
                                   const Units &units)
 {
+    const auto files = path2file(tmp);
     const auto &r = Standard::instance().r_rna;
     
     std::vector<SequinHist>   hists;
