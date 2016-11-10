@@ -373,5 +373,5 @@ void RReport::report(const FileName &file, const Options &o)
     FileWriter::create(tmp, "r2pdf.R", "library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
     
     System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
-    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaKReport_report.pdf");
+    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/RnaReport_report.pdf");
 }
