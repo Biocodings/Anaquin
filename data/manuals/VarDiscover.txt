@@ -1,11 +1,11 @@
 <b>ANAQUIN MANUAL
 
 <b>NAME</b>
-     VarDiscover - Assess the identification of variants on the in silico chromosome
+     VarDiscover - Assess the identification of variants on the in silico genome
 
 <b>DESCRIPTION</b>
     VarDiscover is used to assess the identification and quantification of synthetic variation on the in silico
-    chromosome. VarDiscover provides several useful statistics to describe the variant identification (sensitivity,
+    genome. VarDiscover provides several useful statistics to describe the variant identification (sensitivity,
     precision etc) and quantification (correlation, slope etc.). 
     VarDiscover also generates scripts to plot variant quantification in R, which can be used to assess diagnostic
     performance (including ROC curve and AUC statistics).
