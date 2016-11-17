@@ -285,19 +285,25 @@ void RReport::report(const FileName &file, const Options &o)
             }
 
             {
-                const auto format = "Gene Expression (Mixture %1%)";
-                geneExpress(((boost::format(format) % str).str()),
-                            ((boost::format("RnaKReportGene_%1%.csv") % str).str()),
-                              stats.tsvs.at(mix.first),
-                              stats.gExpress.at(mix.first));
+                if (mix.second.size() > 1)
+                {
+                    const auto format = "Gene Expression (Mixture %1%)";
+                    geneExpress(((boost::format(format) % str).str()),
+                                ((boost::format("RnaKReportGene_%1%.csv") % str).str()),
+                                stats.tsvs.at(mix.first),
+                                stats.gExpress.at(mix.first));
+                }
             }
             
             {
-                const auto format = "Isoform Expression (Mixture %1%)";
-                isoExpress(((boost::format(format) % str).str()),
-                           ((boost::format("RnaKReportIsoform_%1%.csv") % str).str()),
-                             stats.tsvs.at(mix.first),
-                             stats.iExpress.at(mix.first));
+                if (mix.second.size() > 1)
+                {
+                    const auto format = "Isoform Expression (Mixture %1%)";
+                    isoExpress(((boost::format(format) % str).str()),
+                               ((boost::format("RnaKReportIsoform_%1%.csv") % str).str()),
+                               stats.tsvs.at(mix.first),
+                               stats.iExpress.at(mix.first));
+                }
             }
         }
     }
