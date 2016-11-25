@@ -5,17 +5,7 @@
 #
 
 #
-# To compile the source code, you'll need to have the following:
-#
-#   1. Boost:  http://www.boost.org/
-#   2. Catch:  https://github.com/philsquared/Catch
-#   3. Eigen:  https://eigen.tuxfamily.org
-#   4. Klib:   https://github.com/attractivechaos/klib
-#   4. VCFLib: https://github.com/student-t/vcflib
-#
-# Pleae note the VCFLib version compatible with Anaquin is *not* the ofifical release.
-#
-# Please email t.wong@garvan.org.au if you have any problems.
+# https://s3.amazonaws.com/sequins/software/CompileAnaquin.pdf has the instructions
 #
 
 BOOST = /usr/include/boost
@@ -49,7 +39,8 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
-
+	$(CC) -g -DK_HACK -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	#$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
