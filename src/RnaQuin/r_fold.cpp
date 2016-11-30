@@ -444,11 +444,6 @@ void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RF
 {
     switch (o.format)
     {
-        case Format::Sleuth:
-        {
-            break;
-        }
-
         case Format::edgeR:
         case Format::Cuffdiff:
         {
@@ -456,6 +451,7 @@ void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RF
             break;
         }
 
+        case Format::Sleuth:
         case Format::DESeq2:
         case Format::Anaquin:
         {
