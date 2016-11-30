@@ -99,6 +99,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
             break;
         }
 
+        case Metrics::ERCC:
         case Metrics::Isoform:
         {
             assert(!t.iID.empty());
@@ -142,6 +143,7 @@ template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Func
     switch (o.metrs)
     {
         case Metrics::Gene:    { stats.hist = r.histGene(); break; }
+        case Metrics::ERCC:
         case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
     }
 
@@ -283,14 +285,15 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
 
         switch (o.metrs)
         {
-            case RFold::Metrics::Gene:
+            case Metrics::Gene:
             {
                 fold = r.logFoldGene(id);
                 l = r.findGene(ChrIS, id)->l;
                 break;
             }
 
-            case RFold::Metrics::Isoform:
+            case Metrics::ERCC:
+            case Metrics::Isoform:
             {
                 fold = r.logFoldSeq(id);
                 l = r.findTrans(ChrIS, id)->l;
@@ -414,7 +417,7 @@ Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, con
 void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
 {
     o.generate(file);
-    o.writer->open("RnaFoldChange_fold.R");
+    o.writer->open(file);
     o.writer->write(RFold::generateRFold(stats, "RnaFoldChange_sequins.csv", o));
     o.writer->close();
 }
@@ -427,7 +430,7 @@ Scripts RFold::generateRROC(const RFold::Stats &stats, const RFold::Options &o)
 void RFold::writeRROC(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
 {
     o.generate(file);
-    o.writer->open("RnaFoldChange_ROC.R");
+    o.writer->open(file);
     o.writer->write(RFold::generateRROC(stats, o));
     o.writer->close();
 }
@@ -476,6 +479,7 @@ void RFold::report(const FileName &file, const Options &o)
     switch (o.metrs)
     {
         case Metrics::Gene:    { o.info("Gene Differential");    break; }
+        case Metrics::ERCC:
         case Metrics::Isoform: { o.info("Isoform Differential"); break; }
     }
     
@@ -506,7 +510,7 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_ROC.R
      */
 
-    RFold::writeRFold("RnaFoldChange_ROC.R", stats, o);
+    RFold::writeRROC("RnaFoldChange_ROC.R", stats, o);
 
     /*
      * Generating RnaFoldChange_LODR.R

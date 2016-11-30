@@ -1063,6 +1063,8 @@ void parse(int argc, char ** argv)
                 s.r_rna.finalize();
             }
 
+            #define HACK_ERCC(x) if (x == "ERCC") { x = "isoform"; }
+
             switch (_p.tool)
             {
                 case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
@@ -1088,11 +1090,14 @@ void parse(int argc, char ** argv)
                 {
                     RExpress::Options o;
                     
-                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
+                    if (_p.opts[OPT_METHOD] != "gene"    &&
+                        _p.opts[OPT_METHOD] != "isoform" &&
+                        _p.opts[OPT_METHOD] != "ERCC")
                     {
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
 
+                    HACK_ERCC(_p.opts[OPT_METHOD])                    
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
                     
                     const auto &file = _p.inputs[0];
@@ -1125,11 +1130,14 @@ void parse(int argc, char ** argv)
                 {
                     RFold::Options o;
 
-                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
+                    if (_p.opts[OPT_METHOD] != "gene"    &&
+                        _p.opts[OPT_METHOD] != "isoform" &&
+                        _p.opts[OPT_METHOD] != "ERCC")
                     {
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
                     
+                    HACK_ERCC(_p.opts[OPT_METHOD])
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RFold::Metrics::Gene : RFold::Metrics::Isoform;
                     
                     const auto &file = _p.inputs[0];

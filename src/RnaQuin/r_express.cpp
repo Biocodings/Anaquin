@@ -46,6 +46,7 @@ template <typename T> void update(RExpress::Stats &stats,
 
         switch (metrs)
         {
+            case Metrics::ERCC:
             case Metrics::Isoform:
             {
                 const auto m = r.match(x.id);
@@ -224,6 +225,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     
                     switch (metrs = o.metrs)
                     {
+                        case Metrics::ERCC:
                         case Metrics::Isoform:
                         {
                             matched = x.type == RNAFeature::Transcript;
@@ -334,8 +336,9 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
         
         switch (metrs)
         {
-            case RExpress::Metrics::Gene:    { l = r.findGene(ChrIS, seq)->l;  break; }
-            case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, seq)->l; break; }
+            case Metrics::Gene:    { l = r.findGene(ChrIS, seq)->l;  break; }
+            case Metrics::ERCC:
+            case Metrics::Isoform: { l = r.findTrans(ChrIS, seq)->l; break; }
         }
         
         ss << ((boost::format("%1%\t%2%\t%3%") % seq
@@ -563,8 +566,9 @@ Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const R
             
             switch (o.metrs)
             {
-                case RExpress::Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
-                case RExpress::Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
+                case Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
+                case Metrics::ERCC:
+                case Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
             }
             
             assert(l.length() > 1);
@@ -602,6 +606,7 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     switch (o.metrs)
     {
         case Metrics::Gene:    { o.info("Gene Expresssion");   break; }
+        case Metrics::ERCC:
         case Metrics::Isoform: { o.info("Isoform Expression"); break; }
     }
     

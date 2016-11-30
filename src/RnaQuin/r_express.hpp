@@ -19,7 +19,8 @@ namespace Anaquin
         enum class Metrics
         {
             Gene,
-            Isoform
+            Isoform,
+            ERCC
         };
         
         enum class Format
