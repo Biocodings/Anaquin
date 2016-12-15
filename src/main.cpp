@@ -57,7 +57,6 @@ typedef int Option;
 typedef std::string Value;
 typedef std::set<Value> Range;
 
-#define TOOL_VERSION     'v'
 #define TOOL_TEST        264
 #define TOOL_HELP        265
 #define TOOL_R_ALIGN     266
@@ -381,11 +380,6 @@ static void printUsage()
 {
     extern Scripts Manual();
     std::cout << fixManual(Manual()) << std::endl;
-}
-
-static void printVersion()
-{
-    std::cout << "v1.1" << std::endl;
 }
 
 template <typename F> bool testFile(const FileName &x, F f)
@@ -803,15 +797,6 @@ void parse(int argc, char ** argv)
     {
         throw InvalidToolError(argv[1]);
     }
-    else if (!strcmp(argv[1], "-v"))
-    {
-        _p.tool = TOOL_VERSION;
-        
-        if (argc != 2)
-        {
-            throw TooManyOptionsError("Too many options given for -v");
-        }
-    }
     else
     {
         _p.tool = _tools[argv[1]];
@@ -839,28 +824,25 @@ void parse(int argc, char ** argv)
 
     unsigned n = 2;
 
-    if (_p.tool != TOOL_VERSION)
+    while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
-        while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
+        if (next == ':')
         {
-            if (next == ':')
-            {
-                throw NoValueError(argv[n]);
-            }
-            else if (next < OPT_TOOL)
-            {
-                throw InvalidOptionException(argv[n]);
-            }
-            
-            opts.push_back(next);
-            
-            // Whether this option has an value
-            const auto hasValue = optarg;
-            
-            n += hasValue ? 2 : 1;
-            
-            vals.push_back(hasValue ? std::string(optarg) : "");
+            throw NoValueError(argv[n]);
         }
+        else if (next < OPT_TOOL)
+        {
+            throw InvalidOptionException(argv[n]);
+        }
+        
+        opts.push_back(next);
+        
+        // Whether this option has an value
+        const auto hasValue = optarg;
+        
+        n += hasValue ? 2 : 1;
+        
+        vals.push_back(hasValue ? std::string(optarg) : "");
     }
 
     for (auto i = 0; i < opts.size(); i++)
@@ -974,7 +956,7 @@ void parse(int argc, char ** argv)
         }
     }
 
-    if (_p.tool != TOOL_VERSION && __showInfo__)
+    if (__showInfo__)
     {
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "------------- Sequin Analysis -----------" << std::endl;
@@ -983,7 +965,6 @@ void parse(int argc, char ** argv)
 
     switch (_p.tool)
     {
-        case TOOL_VERSION: { printVersion();                break; }
         case TOOL_TEST:
         {
 #ifdef UNIT_TEST

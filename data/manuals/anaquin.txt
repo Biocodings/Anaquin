@@ -9,9 +9,6 @@ Version: 1.1.1
        anaquin <tool> [options]
 
 <b>General options</b>
-       -v
-            Display version information.
-
        -o <directory> = output
             All output files will be saved in the directory. The default is "output".
             
