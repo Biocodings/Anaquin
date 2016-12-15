@@ -30,5 +30,5 @@
         -o = output  Directory in which the output files are written to
 
 <b>OUTPUTS</b>
-     RnaAlign_summary.stats - provides statistics to describe to describe the global alignment profile
+     RnaAlign_summary.stats - provides statistics to describe the global alignment profile
      RnaAlign_sequins.csv   - gives detailed statistics for each individual sequin gene
