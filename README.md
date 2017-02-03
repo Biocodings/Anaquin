@@ -21,7 +21,8 @@ This is a **beta** software as we are trying to work with the bioinformatics com
 
 <ul>
 <li>RNA-Seq</li>
-<li>Genetic variation</li>
+<li>Genome sequencing</li>
+<li>Cancer mutations</li>
 <li>Metagenomcis</li>
 </ul>
 
