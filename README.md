@@ -48,4 +48,4 @@ Finally, to aid in the analysis of sequins, we have also developed a software to
 <li> <a href='https://github.com/attractivechaos/klib'>Klib</a>
 </ul>
 
-The source code requires a C++11 compiler to build.
+The source code requires a C++11 compiler to build. Instructions on how to compile the source code is <a href='https://s3.amazonaws.com/sequins/software/Anaquin_CompileFromSource_v1.pdf'>here</a>.
