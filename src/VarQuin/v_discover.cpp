@@ -406,10 +406,10 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                     }
                 }
                 
-                const auto eRef  = sID != "-" ? r.findRCon(sID)  : NAN;
-                const auto eVar  = sID != "-" ? r.findVCon(sID)  : NAN;
-                const auto eFreq = sID != "-" ? r.findAFreq(sID) : NAN;
-                
+                const auto eRef  = sID != "-" && r.hasRCon(sID) ?  r.findRCon(sID) : NAN;
+                const auto eVar  = sID != "-" && r.hasVCon(sID) ?  r.findVCon(sID) : NAN;
+                const auto eFreq = sID != "-" && r.hasRCon(sID) && r.hasVCon(sID)  ? r.findAFreq(sID) : NAN;
+
                 o.writer->write((boost::format(format) % sID
                                                        % i.query.cID
                                                        % i.query.l.start
