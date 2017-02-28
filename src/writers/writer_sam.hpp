@@ -69,9 +69,10 @@ namespace Anaquin
                     {
                         throw std::runtime_error("Failed to write in write()");
                     }
-                    
-                    //bam2print(x);
-                    std::cout << _fp->line.s; //<< std::endl;
+
+                #ifndef UNIT_TEST
+                    std::cout << _fp->line.s;
+                #endif
                 }
                 else
                 {
