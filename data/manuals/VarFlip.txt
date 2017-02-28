@@ -26,5 +26,5 @@ s<b>SUPPORT SOFTWARE</b>
      VarFlip_paired_1.fq  - is the first paired-end sequence file with reads from inputs aligned to the reverse genome.
      VarFlip_paired_2.fq  - is the second paired-end for VarFlip_paired_1.fq.
      VarFlip_crossed_1.fq - is the first paired-end sequence file with reads from inputs aligned to both the forward and the reverse genome.
-	 VarFlip_crossed_2.fq - is the second paired-end for VarFlip_crossed_1.fq.
-     VarFlip_hanging.fq   - gives hanging paired-end reads aligned to the reverse genome.	 
+     VarFlip_crossed_2.fq - is the second paired-end for VarFlip_crossed_1.fq.
+     VarFlip_hanging.fq   - gives hanging paired-end reads aligned to the reverse genome.    
