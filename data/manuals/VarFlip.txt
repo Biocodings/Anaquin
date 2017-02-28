@@ -23,7 +23,8 @@ s<b>SUPPORT SOFTWARE</b>
         -edge = 0    Length of window edge in bases
 
 <b>OUTPUTS</b>
-     VarFlip_paired_1.fq - is the first paired-end sequence file with reads from the inputs that are aligned to the in silico genome.
-     VarFlip_paired_2.fq - is the second paired-end for VarFlip_paired_1.fq.
-     VarFlip_hanging.fq - gives hanging paired-end reads aligned to the in silico genome.
-     VarFlip_single.fq - gives single-ended reads aligned to the in silico genome.   
+     VarFlip_paired_1.fq  - is the first paired-end sequence file with reads from inputs aligned to the reverse genome.
+     VarFlip_paired_2.fq  - is the second paired-end for VarFlip_paired_1.fq.
+     VarFlip_crossed_1.fq - is the first paired-end sequence file with reads from inputs aligned to both the forward and the reverse genome.
+	 VarFlip_crossed_2.fq - is the second paired-end for VarFlip_crossed_1.fq.
+     VarFlip_hanging.fq   - gives hanging paired-end reads aligned to the reverse genome.	 
