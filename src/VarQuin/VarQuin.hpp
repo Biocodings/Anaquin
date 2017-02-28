@@ -37,13 +37,7 @@ namespace Anaquin
     inline bool isReverseGenome(const ChrID &cID)
     {
         A_ASSERT(!cID.empty());
-        
-        if (cID.find("rev") != std::string::npos)
-        {
-            return true;
-        }
-        
-        return false;
+        return cID.find("rev") != std::string::npos;
     }
 
     inline ChrID toReverse(const ChrID &cID)
