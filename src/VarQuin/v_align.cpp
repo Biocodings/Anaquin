@@ -1,7 +1,6 @@
 #include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_align.hpp"
 #include "parsers/parser_sam.hpp"
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
 
@@ -210,15 +209,11 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     
     o.analyze(gen);
     
-    ParserSAM::parse(gen, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    ParserSAM::parse(gen, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
-        /*
-         * Our workflow allows reads to the reverse genome, but they're simply ignored.
-         */
-        
-        if (!isReverseGenome(align.cID))
+        if (!isReverseGenome(x.cID))
         {
-            classify(align, info);
+            classify(x, info);
         }
     });
     
@@ -228,7 +223,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     
     o.analyze(seqs);
     
-    ParserSAM::parse(seqs, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    ParserSAM::parse(seqs, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         /*
          * Important: the aligments will be on the forward genome. We must convert the reads
@@ -236,15 +231,15 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
          */
         
         // Eg: chr2 to chrev2
-        boost::replace_all(align.cID, "chr", "chrev");
-
-        if (isReverseGenome(align.cID))
+        x.cID = toReverse(x.cID);
+        
+        if (isReverseGenome(x.cID))
         {
-            classify(align, info);
+            classify(x, info);
         }
         else
         {
-            o.logInfo("Invalid chromosome for sequins: " + align.cID + "." + align.name);
+            o.logInfo("Invalid chromosome for sequins: " + x.cID + "." + x.name);
         }
     });
 
@@ -411,8 +406,6 @@ static void writeSummary(const FileName &file,
                          const VAlign::Stats &stats,
                          const VAlign::Options &o)
 {
-    extern FileName BedRef();
-
     const auto &r = Standard::instance().r_var;
 
     const auto sums2c = sum(stats.s2c);
@@ -458,7 +451,7 @@ static void writeSummary(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()         // 1
+    o.writer->write((boost::format(summary) % (o.gBed + " and " + o.sBed) // 1
                                             % gen              // 2
                                             % seq              // 3
                                             % stats.nSyn       // 4

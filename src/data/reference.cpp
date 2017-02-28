@@ -514,14 +514,19 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-void VarRef::readBRef(const Reader &r)
+void VarRef::readGBRef(const Reader &r)
 {
     for (const auto &i : (_impl->bData = bedData(r)))
     {
-        if (!isVarQuin(i.first))
-        {
-            Standard::addGenomic(i.first);
-        }
+        Standard::addGenomic(i.first);
+    }
+}
+
+void VarRef::readSBRef(const Reader &r)
+{
+    for (const auto &i : bedData(r))
+    {
+        _impl->bData[toReverse(i.first)] = i.second;
     }
 }
 
@@ -539,7 +544,7 @@ void VarRef::readVRef(const Reader &r)
 C2Intervals  VarRef::dInters()    const { return _impl->bData.inters(); }
 ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(isVarQuin); }
 
-MC2Intervals VarRef::mInters()  const { return _impl->bData.minters(); }
+MC2Intervals VarRef::mInters() const { return _impl->bData.minters(); }
 
 MergedIntervals<> VarRef::mInters(const ChrID &cID) const
 {
@@ -653,7 +658,7 @@ Counts VarRef::nGeneGen() const { return _impl->bData.nGeneGen(isVarQuin); }
 
 void VarRef::validate()
 {
-    // Do we have a BED reference? If no, let's try mixture reference.
+    // Try mixture if we don't have a BED reference
     if (!_impl->bData.countBase())
     {
         merge(_rawMIDs, _rawMIDs);
@@ -664,23 +669,14 @@ void VarRef::validate()
         
         for (const auto &i : _impl->bData)
         {
-            const auto &chrID = i.first;
-            A_ASSERT(!chrID.empty());
-            
             for (const auto &j : i.second.r2d)
             {
                 A_ASSERT(!j.first.empty());
-
-                // Region represented by the sequins?
-                if (isVarQuin(j.first))
-                {
-                    seqIDs.insert(j.first);
-                }
+                seqIDs.insert(j.first);
             }
         }
         
         A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
-
         merge(seqIDs);
     }
 

@@ -63,7 +63,6 @@
 		EF9D0EBC1D70013600F4FE89 /* r_gene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9D0EBB1D70013600F4FE89 /* r_gene.cpp */; };
 		EF9ED39F1D07EBE700CE7F2B /* samtools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ED39E1D07EBE700CE7F2B /* samtools.cpp */; };
 		EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F70ED1B9C397900B8BD7B /* reference.cpp */; };
-		EFA672F71D0691D2005C3DA6 /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA672F61D0691D2005C3DA6 /* v_align.cpp */; };
 		EFA83CBF1DD43904006A0F18 /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA83CBE1DD43904006A0F18 /* system.cpp */; };
 		EFA869691D606C1400A4326B /* v_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA869671D606C1400A4326B /* v_sample.cpp */; };
 		EFA8DDBF1D9148AA00A7D108 /* t_parser_exp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA8DDBE1D9148AA00A7D108 /* t_parser_exp.cpp */; };
@@ -146,6 +145,7 @@
 		EF06A6791D08464A000D9B17 /* v_vscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_vscan.cpp; path = ../src/VarQuin/v_vscan.cpp; sourceTree = "<group>"; };
 		EF06A67A1D08464A000D9B17 /* v_vscan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_vscan.hpp; path = ../src/VarQuin/v_vscan.hpp; sourceTree = "<group>"; };
 		EF06A67C1D0862B7000D9B17 /* parser_variants.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_variants.hpp; path = ../src/parsers/parser_variants.hpp; sourceTree = "<group>"; };
+		EF088B2C1E56D0CE009D0DD3 /* info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = info.plist; sourceTree = "<group>"; };
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
 		EF0C67871C5F25070033168D /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../src/VARQuin/v_align.cpp; sourceTree = "<group>"; };
 		EF0C67881C5F25070033168D /* v_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_align.hpp; path = ../src/VARQuin/v_align.hpp; sourceTree = "<group>"; };
@@ -259,7 +259,6 @@
 		EF9F70EC1B9C331200B8BD7B /* variant.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = variant.hpp; path = ../src/data/variant.hpp; sourceTree = "<group>"; };
 		EF9F70ED1B9C397900B8BD7B /* reference.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reference.cpp; path = ../src/data/reference.cpp; sourceTree = "<group>"; };
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
-		EFA672F61D0691D2005C3DA6 /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../tests/VarQuin/v_align.cpp; sourceTree = "<group>"; };
 		EFA83CBE1DD43904006A0F18 /* system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = system.cpp; path = ../tests/tools/system.cpp; sourceTree = "<group>"; };
 		EFA869671D606C1400A4326B /* v_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_sample.cpp; path = ../src/VarQuin/v_sample.cpp; sourceTree = "<group>"; };
 		EFA869681D606C1400A4326B /* v_sample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_sample.hpp; path = ../src/VarQuin/v_sample.hpp; sourceTree = "<group>"; };
@@ -428,6 +427,7 @@
 				EFFA92EB1DA4C2CB00D2E46B /* MetaQuin */,
 				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF2290351AC0E58000CE76BF /* main.cpp */,
+				EF088B2C1E56D0CE009D0DD3 /* info.plist */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -646,7 +646,6 @@
 		EFA672F51D0691CA005C3DA6 /* VarQuin */ = {
 			isa = PBXGroup;
 			children = (
-				EFA672F61D0691D2005C3DA6 /* v_align.cpp */,
 				EF1B9A8F1D7078FA000E0D6A /* v_flip.cpp */,
 				EF4085AC1D268B600077CAAF /* v_sample.cpp */,
 			);
@@ -867,6 +866,8 @@
 				TargetAttributes = {
 					7F7C70511AB4726E00C6EE36 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = MLQ27XKV79;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -971,7 +972,6 @@
 				EF2615751B5FF9AD00BE8037 /* GFastaIndex.cpp in Sources */,
 				EFFC30CF1D090A2000814E0F /* r_align.cpp in Sources */,
 				EFFC30C51D08F7AA00814E0F /* r_express.cpp in Sources */,
-				EFA672F71D0691D2005C3DA6 /* v_align.cpp in Sources */,
 				EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */,
 				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
 				EF8376951DC2D38200EA559D /* m_report.cpp in Sources */,
@@ -1099,6 +1099,9 @@
 			buildSettings = {
 				ALTERNATE_OWNER = "";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = MLQ27XKV79;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1118,13 +1121,14 @@
 					"~/Sources/QA/src/htslib",
 					"~/Sources/QA/src/stats",
 					/Applications,
-					/Applications/boost_1_61_0,
+					/usr/local/Cellar/boost/1.60.0_1/include,
 					"~/Sources/QA/tests",
 					/Users/tedwong/Sources/QA/src,
 					/Users/tedwong/Sources/VCF/vcflib/src,
 					/Users/tedwong/Sources/VCF/vcflib/tabixpp,
 					/Users/tedwong/Sources/VCF/vcflib/include,
 				);
+				INFOPLIST_FILE = "$(SRCROOT)/info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1135,6 +1139,7 @@
 					"$(OTHER_CFLAGS)",
 					"-I/usr/include",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = Anaquin;
 				PRODUCT_NAME = Anaquin;
 			};
 			name = Debug;
@@ -1144,6 +1149,9 @@
 			buildSettings = {
 				ALTERNATE_OWNER = "";
 				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = MLQ27XKV79;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1158,13 +1166,14 @@
 					"~/Sources/QA/src/htslib",
 					"~/Sources/QA/src/stats",
 					/Applications,
-					/Applications/boost_1_61_0,
+					/usr/local/Cellar/boost/1.60.0_1/include,
 					"~/Sources/QA/tests",
 					/Users/tedwong/Sources/QA/src,
 					/Users/tedwong/Sources/VCF/vcflib/src,
 					/Users/tedwong/Sources/VCF/vcflib/tabixpp,
 					/Users/tedwong/Sources/VCF/vcflib/include,
 				);
+				INFOPLIST_FILE = "$(SRCROOT)/info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1175,6 +1184,7 @@
 					"$(OTHER_CFLAGS)",
 					"-I/usr/include",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = Anaquin;
 				PRODUCT_NAME = Anaquin;
 			};
 			name = Release;

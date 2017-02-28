@@ -60,7 +60,7 @@ void Test::RnaFoldChange()
 void Test::VarQuinBed()
 {
     Test::clear();
-    Standard::instance().addVStd(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().addVSRef(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().r_var.finalize();
 }
 
@@ -68,7 +68,7 @@ void Test::variantA()
 {
     Test::clear();
     Standard::instance().addVVar(Reader(VarDataVCF(),  DataMode::String));
-    Standard::instance().addVStd(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().addVSRef(Reader(VarDataBed(), DataMode::String));
     Standard::instance().addVMix(Reader(VarDataMixA(), DataMode::String));
     Standard::instance().r_var.finalize();
 }

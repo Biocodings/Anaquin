@@ -314,8 +314,9 @@ namespace Anaquin
 
             VarRef();
 
-            void readBRef(const Reader &);
             void readVRef(const Reader &);
+            void readGBRef(const Reader &);
+            void readSBRef(const Reader &);
 
             Base nBaseSyn() const;
             Base nBaseGen() const;

@@ -68,17 +68,17 @@ typedef std::set<Value> Range;
 #define TOOL_R_REPORT    272
 #define TOOL_R_SUBSAMPLE 273
 #define TOOL_V_REPORT    274
-#define TOOL_V_ALIGN     275
-#define TOOL_V_FLIP      276
-#define TOOL_V_DISCOVER  277
-#define TOOL_V_ALLELE    278
-#define TOOL_V_SUBSAMPLE 279
-#define TOOL_M_ALIGN     280
-#define TOOL_M_ABUND     281
-#define TOOL_M_FOLD      282
-#define TOOL_M_SUBSAMPLE 283
-#define TOOL_M_ASSEMBLY  284
-#define TOOL_M_REPORT    285
+#define TOOL_V_ALIGN     276
+#define TOOL_V_FLIP      277
+#define TOOL_V_DISCOVER  278
+#define TOOL_V_ALLELE    279
+#define TOOL_V_SUBSAMPLE 280
+#define TOOL_M_ALIGN     281
+#define TOOL_M_ABUND     282
+#define TOOL_M_FOLD      283
+#define TOOL_M_SUBSAMPLE 284
+#define TOOL_M_ASSEMBLY  285
+#define TOOL_M_REPORT    286
 
 /*
  * Options specified in the command line
@@ -104,11 +104,10 @@ typedef std::set<Value> Range;
 #define OPT_U_BASE  900
 #define OPT_U_FILES 909
 #define OPT_EDGE    910
+#define OPT_G_BED   911
+#define OPT_S_BED   912
 
 using namespace Anaquin;
-
-// Shared with BedData
-bool __hackBedFile__ = false;
 
 // Shared with other modules
 bool __hack__ = false;
@@ -190,7 +189,7 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_V_FLIP,      { OPT_U_FILES } },
     { TOOL_V_ALLELE,    { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
+    { TOOL_V_ALIGN,     { OPT_G_BED,   OPT_S_BED,  OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
     { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
@@ -211,8 +210,6 @@ static std::map<Tool, std::set<Option>> _required =
 
 struct Parsing
 {
-    std::map<Tool, FileName> rFiles;
-    
     // The path that outputs are written
     std::string path = "output";
 
@@ -248,22 +245,22 @@ void SetGTFRef(const FileName &file)
 
 FileName GTFRef()
 {
-    return !__mockGTFRef__.empty() ? __mockGTFRef__ : _p.rFiles.at(OPT_R_GTF);
+    return !__mockGTFRef__.empty() ? __mockGTFRef__ : _p.opts.at(OPT_R_GTF);
 }
 
 FileName MixRef()
 {
-    return _p.rFiles.at(OPT_MIXTURE);
+    return _p.opts.at(OPT_MIXTURE);
 }
 
 FileName VCFRef()
 {
-    return _p.rFiles.at(OPT_R_VCF);
+    return _p.opts.at(OPT_R_VCF);
 }
 
 FileName BedRef()
 {
-    return _p.rFiles.at(OPT_R_BED);
+    return _p.opts.at(OPT_R_BED);
 }
 
 static Scripts fixManual(const Scripts &str)
@@ -342,6 +339,9 @@ static const struct option long_options[] =
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
+
+    { "gbed",    required_argument, 0, OPT_G_BED  },
+    { "sbed",    required_argument, 0, OPT_S_BED  },
 
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
@@ -915,10 +915,11 @@ void parse(int argc, char ** argv)
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
+            case OPT_G_BED:
+            case OPT_S_BED:
             case OPT_MIXTURE:
             {
-                checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
-                break;
+                checkFile(_p.opts[opt] = val); break;
             }
 
             case OPT_PATH: { _p.path = val; break; }
@@ -1284,23 +1285,22 @@ void parse(int argc, char ** argv)
                         
                     case TOOL_V_SUBSAMPLE:
                     {
-                        __hackBedFile__ = true;
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
                     case TOOL_V_ALIGN:
                     {
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_G_BED);
+                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_S_BED);
                         break;
                     }
 
                     case TOOL_V_DISCOVER:
                     {
-                        __hackBedFile__ = true;
                         applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
@@ -1338,12 +1338,23 @@ void parse(int argc, char ** argv)
                 {
                     VReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
+                    
                     analyze_1<VReport>(OPT_U_FILES, o);
                     break;
                 }
 
-                case TOOL_V_FLIP:  { analyze_1<VFlip>(OPT_U_FILES); break; }
-                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_FILES); break; }
+                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_FILES); break; }
+                
+                case TOOL_V_ALIGN:
+                {
+                    VAlign::Options o;
+                    
+                    o.gBed = _p.opts.at(OPT_G_BED);
+                    o.sBed = _p.opts.at(OPT_S_BED);
+
+                    analyze_2<VAlign>(OPT_U_FILES, o);
+                    break;
+                }
 
                 case TOOL_V_ALLELE:
                 {

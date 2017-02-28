@@ -7,9 +7,6 @@
 #include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_bed.hpp"
 
-// Defined in main.cpp
-extern bool __hackBedFile__;
-
 namespace Anaquin
 {
     typedef ParserBed::Data Data;
@@ -35,7 +32,7 @@ namespace Anaquin
                 b += i.second.l.length();
             }
 
-            assert(b);
+            A_ASSERT(b);
             return b;
         }
 
@@ -237,24 +234,13 @@ namespace Anaquin
         
         ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &)
         {
-            if (!__hackBedFile__ && isVarQuin(x.name))
-            {
-                // Eg: GS_058 (must always be specified)
-                A_ASSERT(!x.name.empty());
-                
-                // Eg: "chr1 GS_058" to "chrev1 GS_058"
-                c2d[toReverse(x.cID)].r2d[x.name] = x;
-            }
-            else
-            {
-                // Name of the region? Locus of the region if not specified.
-                const auto rkey = !x.name.empty() ? x.name : x.l.key();
-                
-                A_ASSERT(!c2d[x.cID].r2d.count(rkey));
-                
-                // Eg: chr1 0 248956422 chr1
-                c2d[x.cID].r2d[rkey] = x;
-            }
+            // Name of the region? Locus of the region if not specified.
+            const auto rkey = !x.name.empty() ? x.name : x.l.key();
+            
+            A_ASSERT(!c2d[x.cID].r2d.count(rkey));
+            
+            // Eg: chr1 0 248956422 chr1
+            c2d[x.cID].r2d[rkey] = x;
         });
 
         return c2d;

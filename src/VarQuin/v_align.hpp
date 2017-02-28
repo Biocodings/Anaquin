@@ -8,7 +8,10 @@ namespace Anaquin
 {
     struct VAlign
     {
-        typedef AnalyzerOptions Options;
+        struct Options : public AnalyzerOptions
+        {
+            FileName gBed, sBed;
+        };
         
         struct Stats : public AlignmentStats
         {

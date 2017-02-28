@@ -7,16 +7,10 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern Scripts AVA033Bed();
 
-// Defined in main.cpp
-extern bool __hackBedFile__;
-
 TEST_CASE("VSubsample_Read_10")
 {
-    __hackBedFile__ = true;
-    
     Test::clear();
-    
-    Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth  = VSample::Method::Reads;
@@ -68,11 +62,9 @@ TEST_CASE("VSubsample_Read_10")
 
 TEST_CASE("VSubsample_ZeroProp")
 {
-    __hackBedFile__ = true;
-    
     Test::clear();
     
-    Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth = VSample::Method::Prop;
@@ -124,11 +116,8 @@ TEST_CASE("VSubsample_ZeroProp")
 
 TEST_CASE("VSubsample_Median")
 {
-    __hackBedFile__ = true;
-    
     Test::clear();
-    
-    Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth = VSample::Method::Median;
@@ -179,11 +168,8 @@ TEST_CASE("VSubsample_Median")
 
 TEST_CASE("VSubsample_Mean")
 {
-    __hackBedFile__ = true;
-    
     Test::clear();
-
-    Standard::instance().addVStd(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
 
     VSample::Options o;
     o.meth = VSample::Method::Mean;
@@ -235,10 +221,9 @@ TEST_CASE("VSubsample_Mean")
 TEST_CASE("VSubsample_Edge")
 {
     srand(100);
-    __hackBedFile__ = true;
     
     Test::clear();
-    Standard::instance().addVStd(Reader("tests/data/test2.bed"));
+    Standard::instance().addVGRef(Reader("tests/data/test2.bed"));
     
     VSample::Options o;
     
