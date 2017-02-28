@@ -5,19 +5,20 @@
 
 using namespace Anaquin;
 
-static const FileName SINGLE   = "VarFlip_single.fq";
-static const FileName HANGING  = "VarFlip_hanging.fq";
-static const FileName PAIRED_1 = "VarFlip_paired_1.fq";
-static const FileName PAIRED_2 = "VarFlip_paired_2.fq";
+static const FileName Paired_1    = "VarFlip_paired_1.fq";
+static const FileName Paired_2    = "VarFlip_paired_2.fq";
+static const FileName Crossed_1   = "VarFlip_crossed_1.fq";
+static const FileName Crossed_2   = "VarFlip_crossed_2.fq";
+static const FileName HangingFile = "VarFlip_hanging.fq";
 
-VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
+VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
     Stats stats;
 
     // Required for pooling paired-end reads
     std::map<ReadName, ParserSAM::Data> seenMates;
     
-    ParserSAM::parse(align, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -65,7 +66,16 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
                         std::reverse(second->seq.begin(), second->seq.end());
                     }
                     
-                    impl.paired(*first, *second);
+                    if (!impl.isReverse(first->cID) || !impl.isReverse(second->cID))
+                    {
+                        stats.nCross++;
+                        impl.cross(*first, *second);
+                    }
+                    else
+                    {
+                        impl.paired(*first, *second);
+                    }
+
                     seenMates.erase(x.name);
                 }
             }
@@ -76,7 +86,7 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
                 // Compute the complement (but not reverse)
                 complement(x.seq);
 
-                impl.nonPaired(x);
+                impl.single(x);
             }
         }
         else if (!x.mapped)
@@ -98,16 +108,17 @@ VFlip::Stats VFlip::analyze(const FileName &align, const Options &o, Impl &impl)
         // Compute the complement (but not reverse)
         complement(i.second.seq);
 
-        impl.unknownPaired(i.second);
+        impl.hanging(i.second);
     }
 
-    stats.nHanging = seenMates.size();
+    stats.nHang = seenMates.size();
     
-    const auto total = stats.nPaired + stats.nSingle + stats.nHanging;
+    const auto total = stats.nPaired + stats.nSingle + stats.nHang + stats.nCross;
     
-    stats.pPaired  = static_cast<Proportion>(stats.nPaired)  / total;
-    stats.pSingle  = static_cast<Proportion>(stats.nSingle)  / total;
-    stats.pHanging = static_cast<Proportion>(stats.nHanging) / total;
+    stats.pHang   = static_cast<Proportion>(stats.nHang)   / total;
+    stats.pCross  = static_cast<Proportion>(stats.nCross)  / total;
+    stats.pPaired = static_cast<Proportion>(stats.nPaired) / total;
+    stats.pSingle = static_cast<Proportion>(stats.nSingle) / total;
 
     return stats;
 }
@@ -123,38 +134,40 @@ static void writeSummary(const FileName &file,
                          "-------VarFlip Outputs\n\n"
                          "       Paired-end alignments: %2%\n"
                          "                              %3%\n"
-                         "       Hanging alignments:    %4%\n"
-                         "       Single-end alignments: %5%\n\n"
+                         "       Crossed alignments:    %4%\n"
+                         "                              %5%\n"
+                         "       Hanging alignments:    %6%\n\n"
                          "-------Alignments\n\n"
-                         "       Paired:   %6% (%7%%%)\n"
-                         "       Hanging:  %8% (%9%%%)\n"
-                         "       Unpaired: %10% (%11%%%)\n\n"
+                         "       Paired:   %7% (%8%%%)\n"
+                         "       Crossed:  %9% (%10%%%)\n"
+                         "       Hanging:  %11% (%12%%%)\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %12% (%13%%%)\n"
-                         "       Forward:  %14% (%15%%%)\n"
-                         "       Reverse:  %16% (%17%%%)\n"
-                         "       Dilution: %18$.4f\n";
+                         "       Unmapped: %13% (%14%%%)\n"
+                         "       Forward:  %15% (%16%%%)\n"
+                         "       Reverse:  %17% (%18%%%)\n"
+                         "       Dilution: %19$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
-                                            % PAIRED_1         // 2
-                                            % PAIRED_2         // 3
-                                            % HANGING          // 4
-                                            % SINGLE           // 5
-                                            % stats.nPaired    // 6
-                                            % stats.pPaired    // 7
-                                            % stats.nHanging   // 8
-                                            % stats.pHanging   // 9
-                                            % stats.nSingle    // 10
-                                            % stats.pSingle    // 11
-                                            % stats.nNA    // 12
-                                            % stats.propNA()   // 13
-                                            % stats.nGen   // 14
-                                            % stats.propGen()  // 15
-                                            % stats.nSyn   // 16
-                                            % stats.propSyn()  // 17
-                                            % stats.dilution() // 18
+                                            % Paired_1         // 2
+                                            % Paired_2         // 3
+                                            % Crossed_1        // 4
+                                            % Crossed_2        // 5
+                                            % HangingFile      // 6
+                                            % stats.nPaired    // 7
+                                            % stats.pPaired    // 8
+                                            % stats.nCross     // 9
+                                            % stats.pCross     // 10
+                                            % stats.nHang      // 11
+                                            % stats.pHang      // 12
+                                            % stats.nNA        // 13
+                                            % stats.propNA()   // 14
+                                            % stats.nGen       // 15
+                                            % stats.propGen()  // 16
+                                            % stats.nSyn       // 17
+                                            % stats.propSyn()  // 18
+                                            % stats.dilution() // 19
                      ).str());
 }
     
@@ -164,20 +177,23 @@ void VFlip::report(const FileName &file, const Options &o)
     {
         Impl(const Options &o)
         {
-            up = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             p1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             p2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            c1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            c2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
-            up->open(SINGLE);
-            hg->open(HANGING);
-            p1->open(PAIRED_1);
-            p2->open(PAIRED_2);
+            p1->open(Paired_1);
+            p2->open(Paired_2);
+            c1->open(Crossed_1);
+            c2->open(Crossed_2);
+            hg->open(HangingFile);
         }
 
         ~Impl()
         {
-            up->close();
+            c1->close();
+            c2->close();
             p1->close();
             p2->close();
             hg->close();
@@ -200,15 +216,21 @@ void VFlip::report(const FileName &file, const Options &o)
             p2->write(y.qual);
         }
 
-        void nonPaired(const ParserSAM::Data &x)
+        void cross(const ParserSAM::Data &x, const ParserSAM::Data &y)
         {
-            up->write("@" + x.name + "/1");
-            up->write(x.seq);
-            up->write("+");
-            up->write(x.qual);
+            c1->write("@" + x.name + "/1");
+            c1->write(x.seq);
+            c1->write("+");
+            c1->write(x.qual);
+            c2->write("@" + y.name + "/2");
+            c2->write(y.seq);
+            c2->write("+");
+            c2->write(y.qual);
         }
+        
+        void single(const ParserSAM::Data &x) {}
 
-        void unknownPaired(const ParserSAM::Data &x)
+        void hanging(const ParserSAM::Data &x)
         {
             if (x.isFirstPair)
             {
@@ -224,7 +246,7 @@ void VFlip::report(const FileName &file, const Options &o)
             hg->write(x.qual);
         }
         
-        std::shared_ptr<FileWriter> p1, p2, up, hg;
+        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2;
     };
     
     Impl impl(o);
