@@ -1282,10 +1282,10 @@ void parse(int argc, char ** argv)
                         applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
                     }
-                        
+
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
@@ -1298,9 +1298,9 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_DISCOVER:
                     {
-                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
-                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyMix(std::bind(&Standard::addVMix,  &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addVVar,  &s, std::placeholders::_1), OPT_R_VCF);
+                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
