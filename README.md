@@ -4,7 +4,7 @@
 
 Respository for the R-package is hosted by Bioconductor and available at: https://github.com/Bioconductor-mirror/Anaquin.
 
-The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute of Medical Research.
+The project is maintained by <b>Ted Wong</b> (t.wong@garvan.org.au), Garvan Institute of Medical Research.
 
 This is a **beta** software as we are trying to work with the bioinformatics community. Please send us your suggestions (eg. what do you want Anaquin to do?). Detailed workflow guide is avaialble for download at www.sequin.xyz.
 
@@ -40,12 +40,6 @@ By combining sequins at different concentrations to from a mixture, we can also 
 
 Finally, to aid in the analysis of sequins, we have also developed a software toolkit we call <b>Anaquin</b>. This contains a wide range of tools for some of the most common analysis or problems that use sequins. This includes quality control and troubleshooting steps in your NGS pipeline, providing quantitative measurements of sequence libraries, or assess third-party bioinformatic software. However, this toolkit is simply a starting point to a huge range of statistical analysis made possible by sequins.
 
-## Dependencies
-
-<ul>
-<li> <a href='http://www.boost.org/users/download/'>Boost</a>
-<li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
-<li> <a href='https://github.com/attractivechaos/klib'>Klib</a>
-</ul>
+## Compile
 
 The source code requires a C++11 compiler to build. Instructions on how to compile the source code is <a href='https://s3.amazonaws.com/sequins/software/Anaquin_CompileFromSource_v1.pdf'>here</a>.
