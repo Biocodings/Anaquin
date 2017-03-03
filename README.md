@@ -16,6 +16,7 @@ This is a **beta** software as we are trying to work with the bioinformatics com
 
 * Spliced synthetic genes as internal controls in RNA sequencing experiments
 * Representing genetic variation with synthetic DNA standards
+* ANAQUIN: a software toolkit for the analysis of spike-in controls for next generation sequencing
 
 ## Bioinformatics
 
