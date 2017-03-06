@@ -52,6 +52,14 @@ static ReaderBam::Stats sample(const FileName &file,
             o.logInfo(std::to_string(info.p.i));
         }
         
+        /*
+         * We should sample:
+         *
+         *    - Anything that is not mapped
+         *    - Anything outside the sampling regions
+         *    - Inside the region with probability
+         */
+
         auto shouldSampled = !x.mapped;
         
         if (!shouldSampled)
@@ -431,11 +439,11 @@ static void generateSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()                  // 1
-                                            % gen                       // 2
-                                            % seq                       // 3
-                                            % stats.count               // 4
-                                            % meth2Str()                // 5
+    o.writer->write((boost::format(summary) % BedRef()              // 1
+                                            % gen                   // 2
+                                            % seq                   // 3
+                                            % stats.count           // 4
+                                            % meth2Str()            // 5
                                             % stats.totBefore.nSyn  // 6
                                             % stats.totBefore.nGen  // 7
                                             % stats.totAfter.nSyn   // 8
@@ -444,12 +452,12 @@ static void generateSummary(const FileName &file,
                                             % stats.sampBefore.nGen // 11
                                             % stats.sampAfter.nSyn  // 12
                                             % stats.sampAfter.nGen  // 13
-                                            % stats.normAver            // 14
-                                            % stats.normSD              // 15
-                                            % stats.beforeSyn           // 16
-                                            % stats.beforeGen           // 17
-                                            % stats.afterSyn            // 18
-                                            % stats.afterGen            // 19
+                                            % stats.normAver        // 14
+                                            % stats.normSD          // 15
+                                            % stats.beforeSyn       // 16
+                                            % stats.beforeGen       // 17
+                                            % stats.afterSyn        // 18
+                                            % stats.afterGen        // 19
                      ).str());
     o.writer->close();
 }
