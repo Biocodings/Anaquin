@@ -2,6 +2,7 @@
 #define BIOLOGY_HPP
 
 #include <map>
+#include <string>
 
 namespace Anaquin
 {
@@ -21,6 +22,15 @@ namespace Anaquin
             
             i = m[i];
         }
+    }
+
+    /*
+     * Standardize chromosome names. For example, "1" and "chr1" should mean the same thing.
+     */
+    
+    template <typename T> T standChr(const T &cID)
+    {
+        return cID.find("chr") == std::string::npos ? "chr" + cID : cID;
     }
 }
 

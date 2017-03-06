@@ -4,10 +4,10 @@
 
 using namespace Anaquin;
 
-TEST_CASE("ParserVCF_Invalid")
-{
-    REQUIRE(!ParserVCF::isVCF(Reader("tests/data/Invalid.vcf")));
-}
+//TEST_CASE("ParserVCF_Invalid")
+//{
+//    REQUIRE(!ParserVCF::isVCF(Reader("tests/data/Invalid.vcf")));
+//}
 
 TEST_CASE("ParserVCF_AVA026")
 {

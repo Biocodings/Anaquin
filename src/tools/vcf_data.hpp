@@ -173,7 +173,8 @@ namespace Anaquin
 
     struct VCFDataUser
     {
-        virtual void variantProcessed(const ParserVCF::Data &, const ParserProgress &) = 0;
+        // Process a variant
+        virtual void process(const ParserVCF::Data &, const ParserProgress &) = 0;
     };
     
     inline VCFData vcfData(const Reader &r, VarFormat format = VarFormat::VCF, VCFDataUser *user = nullptr)
@@ -204,7 +205,7 @@ namespace Anaquin
                     
                     if (user)
                     {
-                        user->variantProcessed(x, p);
+                        user->process(x, p);
                     }
                 });
                 
@@ -233,7 +234,7 @@ namespace Anaquin
                     
                     if (user)
                     {
-                        user->variantProcessed(x, p);
+                        user->process(x, p);
                     }
                 });
 
@@ -262,7 +263,7 @@ namespace Anaquin
                     
                     if (user)
                     {
-                        user->variantProcessed(x, p);
+                        user->process(x, p);
                     }
                 });
                 

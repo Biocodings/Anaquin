@@ -46,7 +46,7 @@ struct VDiscoverImpl : public VCFDataUser
     VDiscover::Stats *stats;
     const VDiscover::Options *o;
 
-    void variantProcessed(const ParserVCF::Data &x, const ParserProgress &p) override
+    void process(const ParserVCF::Data &x, const ParserProgress &p)
     {
         if (p.i && !(p.i % 100000))
         {
@@ -597,16 +597,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % stats.countSNP_FP_Syn()    // 19
                                                 % stats.countInd_FP_Syn()    // 20
                                                 % stats.countVar_FP_Syn()    // 21
-                                                % stats.countSNP_FnSyn() // 22
-                                                % stats.countInd_FnSyn() // 23
-                                                % stats.countVar_FnSyn() // 24
-                                                % stats.countVarSnSyn()  // 25
+                                                % stats.countSNP_FnSyn()     // 22
+                                                % stats.countInd_FnSyn()     // 23
+                                                % stats.countVar_FnSyn()     // 24
+                                                % stats.countVarSnSyn()      // 25
                                                 % stats.countVarPC_Syn()     // 26
                                                 % (1-stats.countVarPC_Syn()) // 27
-                                                % stats.countSNPSnSyn()  // 28
+                                                % stats.countSNPSnSyn()      // 28
                                                 % stats.countSNPPC_Syn()     // 29
                                                 % (1-stats.countSNPPC_Syn()) // 30
-                                                % stats.countIndSnSyn()  // 31
+                                                % stats.countIndSnSyn()      // 31
                                                 % stats.countIndPC_Syn()     // 32
                                                 % (1-stats.countIndPC_Syn()) // 33
                                                 % lm.m                       // 34

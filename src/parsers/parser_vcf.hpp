@@ -5,6 +5,7 @@
 #include "data/reader.hpp"
 #include "data/variant.hpp"
 #include "data/convert.hpp"
+#include "data/biology.hpp"
 #include "parsers/parser.hpp"
 
 namespace Anaquin
@@ -27,7 +28,7 @@ namespace Anaquin
             FormatData
         };
 
-        static bool isVCF(const Reader &);
+//        static bool isVCF(const Reader &);
         
         template <typename F> static void parse(const Reader &r, F f)
         {
@@ -56,8 +57,7 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", fields);
                 
-                // Eg: chrIS
-                d.cID = fields[Field::Chrom];
+                d.cID = standChr(fields[Field::Chrom]);
                 
                 // Eg: D_1_3_R
                 d.id = fields[Field::ID];
