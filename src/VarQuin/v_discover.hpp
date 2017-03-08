@@ -15,6 +15,9 @@ namespace Anaquin
         {
             Options() {}
 
+            // Matching alleles?
+            bool matchAllele = true;
+            
             VarFormat format;
         };
 

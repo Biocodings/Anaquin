@@ -88,8 +88,8 @@ struct VDiscoverImpl : public VCFDataUser
             if (!isnan(m.query.p))     { __countP__++; }
             if (!isnan(m.query.depth)) { __countD__++; }
 
-            // Only matching if the position and alleles agree
-            const auto matched = m.match && m.ref && m.alt;
+            // Matched if the position and alleles agree
+            const auto matched = m.match && (!o->matchAllele || (m.ref && m.alt));
             
             if (matched)
             {

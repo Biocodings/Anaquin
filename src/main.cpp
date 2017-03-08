@@ -89,10 +89,6 @@ typedef std::set<Value> Range;
 #define OPT_PATH     325
 #define OPT_VERSION  338
 
-/*
- * References - OPT_R_BASE to OPT_U_BASE
- */
-
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
 #define OPT_METHOD  802
@@ -101,11 +97,12 @@ typedef std::set<Value> Range;
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
 #define OPT_R_IND   809
-#define OPT_U_BASE  900
 #define OPT_U_FILES 909
 #define OPT_EDGE    910
 #define OPT_G_BED   911
 #define OPT_S_BED   912
+#define OPT_ALLELE  913
+#define OPT_U_BASE  914
 
 using namespace Anaquin;
 
@@ -353,6 +350,8 @@ static const struct option long_options[] =
     
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
+
+    { "allele",  required_argument, 0, OPT_ALLELE },
 
     {0, 0, 0, 0 }
 };
@@ -852,6 +851,8 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
+            case OPT_ALLELE: { _p.opts[opt] = val; break; }
+
             case OPT_EDGE:
             case OPT_FUZZY:
             {
@@ -1367,6 +1368,11 @@ void parse(int argc, char ** argv)
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
+                    
+                    if (_p.opts.count(OPT_ALLELE) && _p.opts[OPT_ALLELE] == "skip")
+                    {
+                        o.matchAllele = false;
+                    }
                     
                     const auto file = _p.opts.at(OPT_U_FILES);
                     
