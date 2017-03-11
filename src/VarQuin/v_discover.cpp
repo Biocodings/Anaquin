@@ -270,9 +270,6 @@ static void writeQuins(const FileName &file,
                 // Eg: "SNP"
                 const auto type = type2str(m->type());
 
-                // Unique ID for the variant
-                const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
-
                 /*
                  * Now we need to know the label for this reference variant
                  */
@@ -283,7 +280,7 @@ static void writeQuins(const FileName &file,
                     {
                         const auto &t = x.at(key);
                         
-                        o.writer->write((boost::format(format) % id
+                        o.writer->write((boost::format(format) % m->id
                                                                % m->cID
                                                                % m->l.start
                                                                % label
@@ -320,10 +317,7 @@ static void writeQuins(const FileName &file,
                 // Eg: "SNP"
                 const auto type = type2str(m->type());
                 
-                // Unique ID for the variant
-                const auto id = (m->id + "_" + std::to_string(m->l.start) + "_" + type);
-                
-                o.writer->write((boost::format(format) % id
+                o.writer->write((boost::format(format) % m->id
                                                        % m->cID
                                                        % m->l.start
                                                        % "FN"
