@@ -236,7 +236,7 @@ static void writeQuins(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
+    o.writer->write((boost::format(format) % "Name"
                                            % "ChrID"
                                            % "Position"
                                            % "Label"
