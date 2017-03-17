@@ -8,7 +8,7 @@ The project is maintained by <b>Ted Wong</b> (t.wong@garvan.org.au), Garvan Inst
 
 This is a **beta software** as we are trying to work with the bioinformatics community. Please send us your suggestions (eg. what do you want Anaquin to do?). Detailed workflow guide is avaialble for download at www.sequin.xyz.
 
-The current **beta** release only supports RNA-Seq. Support for whole genome sequencing, cancer mutations, metagenomics etc will be available soon. We need more time to validate our sequins in our laboratories.
+The current **beta** release only supports RNA-Seq. Support for whole genome sequencing, cancer mutations, metagenomics etc will be available soon. We need more time to validate our sequins in our laboratory.
 
 ## License
 
