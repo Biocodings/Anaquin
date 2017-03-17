@@ -8,13 +8,10 @@
 # https://s3.amazonaws.com/sequins/software/CompileAnaquin.pdf has the instructions
 #
 
-BOOST = /usr/include/boost
+BOOST = /usr/local/Cellar/boost/1.60.0_1/include
 
 # Linear-algebra library
 EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
-
-# Library for random generator
-KLIB = /Applications
 
 # Library for VCF parsing
 VCFLIB = /Users/tedwong/Sources/VCF/vcflib
@@ -36,11 +33,11 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -L $(VCFLIB) -g -lpthread -lz -lvcflib -o $(EXEC)
 
 %.o: %.c
-	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DK_HACK -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
-	#$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} -I ${KLIB} $< -o $@
+	$(CC) -g -DK_HACK -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
+	#$(CC) -g -DK_HACK -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I src/htslib -I $(VCFLIB)/include -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
 	
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
