@@ -3,34 +3,36 @@
 
 #include <map>
 #include <string>
+#include "tools/errors.hpp"
 
 namespace Anaquin
 {
-    template <typename T> void complement(T &str)
+    /*
+     * Complement DNA string
+     */
+    
+    template <typename T> void complement(T &x)
     {
         std::map<char, char> m = { { 'A', 'T' },
                                    { 'T', 'A' },
                                    { 'G', 'C' },
                                    { 'C', 'G' },
                                    { 'N', 'N' } };
-        for (auto &i : str)
+
+        std::transform(x.begin(), x.end(), x.begin(), [&](char c)
         {
-            if (!m.count(i))
-            {
-                throw std::runtime_error("Unknown DNA base: " + str);
-            }
-            
-            i = m[i];
-        }
+            A_CHECK(m.count(c), "Unknown DNA base: " + std::to_string(c));
+            return m[c];
+        });
     }
 
     /*
-     * Standardize chromosome names. For example, "1" and "chr1" should mean the same thing.
+     * Standardize chromosome name. For example, "1" and "chr1" should have the same meaning.
      */
     
-    template <typename T> T standChr(const T &cID)
+    template <typename T> T standChr(const T &x)
     {
-        return cID.find("chr") == std::string::npos ? "chr" + cID : cID;
+        return !x.empty() && isdigit(x.front()) ? "chr" + x : x;
     }
 }
 

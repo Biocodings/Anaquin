@@ -10,7 +10,7 @@ TEST_CASE("StandChr_1")
     auto x2 = std::string("3");
     auto x3 = std::string("chr1");
     auto x4 = std::string("????");
-
+    
     REQUIRE(standChr(x1) == "chr1");
     REQUIRE(standChr(x2) == "chr3");
     REQUIRE(standChr(x3) == "chr1");
