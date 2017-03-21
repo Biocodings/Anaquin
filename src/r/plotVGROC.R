@@ -35,4 +35,4 @@ data$AlleleF <- revalue(as.factor(data$AlleleF), c('0'='Homozygous', '1'='Hetero
 # Create Anaquin data for PlotROC
 anaquin <- AnaquinData(analysis='PlotROC', seqs=data$Unique, ratio=data$AlleleF, score=score, label=data$Label)
 
-plotROC(anaquin, title=title, legTitle=legTitle, refRats=%6%)
+plotROC(anaquin, title='ROC Plot', legTitle='Zygosity', refRats=%6%)
