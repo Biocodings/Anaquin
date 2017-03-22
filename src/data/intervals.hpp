@@ -320,6 +320,7 @@ namespace Anaquin
                     const auto s = i.second.stats();
                 
                     stats.sums     += s.sums;
+                    stats.aligns   += s.aligns;
                     stats.length   += s.length;
                     stats.nonZeros += s.nonZeros;
                     stats.zeros    += s.zeros;
@@ -402,6 +403,7 @@ namespace Anaquin
                 stats.length   += s.length;
                 stats.nonZeros += s.nonZeros;
                 stats.zeros    += s.zeros;
+                stats.aligns   += s.aligns;
                 stats.min       = std::min(stats.min, s.min);
                 stats.max       = std::max(stats.max, s.max);
                 
