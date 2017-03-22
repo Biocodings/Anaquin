@@ -259,7 +259,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                 {
                     A_ASSERT(!isnan(o.reads));
 
-                    // Number of reads in the region
+                    // Number of alignments in the region
                     const auto aligns = ss.aligns;
 
                     // Try to keep subsample the fixed number of reads
