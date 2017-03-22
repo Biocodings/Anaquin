@@ -239,8 +239,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
              * the synthetic alignments needs to be sampled.
              */
             
-            const auto synC = stats2cov(o.meth, ss);
             const auto genC = stats2cov(o.meth, gs);
+            const auto synC = stats2cov(o.meth, ss);
 
             Proportion norm;
 
@@ -259,16 +259,22 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                 {
                     A_ASSERT(!isnan(o.reads));
 
-                    // Number of alignments in the region
-                    const auto aligns = ss.aligns;
+                    const auto gAligns = gs.aligns;
+                    const auto sAligns = ss.aligns;
 
-                    // Try to keep subsample the fixed number of reads
-                    norm = o.reads >= aligns ? 1.0 : ((Proportion) o.reads) / aligns;
+                    o.logInfo("Genomic alignments: "   + std::to_string(gAligns));
+                    o.logInfo("Synthetic alignments: " + std::to_string(sAligns));
 
+                    /*
+                     * Nothing to subsample if no sequin alignments. Subsample everything if the
+                     * genomic region has higher coverage.
+                     */
+
+                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
                     break;
                 }
             }
-            
+
             allBeforeGenC.push_back(genC);
             allBeforeSynC.push_back(synC);
             

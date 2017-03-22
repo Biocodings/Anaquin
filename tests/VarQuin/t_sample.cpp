@@ -22,13 +22,13 @@ TEST_CASE("VSubsample_Read_10")
     REQUIRE(r.noGAlign == 2);
     REQUIRE(r.noSAlign == 0);
     
-    REQUIRE(r.afterGen  == Approx(7.30675));
-    REQUIRE(r.afterSyn  == Approx(1.757));
     REQUIRE(r.beforeGen == Approx(7.30675));
+    REQUIRE(r.afterGen  == Approx(7.30675));
     REQUIRE(r.beforeSyn == Approx(27.599));
+    REQUIRE(r.afterSyn  == Approx(7.399));
     
-    REQUIRE(r.normAver == Approx(0.0394361079));
-    REQUIRE(r.normSD   == Approx(0.0018474064));
+    REQUIRE(r.normAver == Approx(0.2576314217));
+    REQUIRE(r.normSD   == Approx(0.2993820454));
     
     const auto l1 = Locus(58701157,  58702156);
     const auto l2 = Locus(60005305,  60006304);
@@ -36,28 +36,28 @@ TEST_CASE("VSubsample_Read_10")
     const auto l4 = Locus(206093670, 206094669);
     
     REQUIRE(r.c2v["chr1"][l1].rID    == "GI_086");
-    REQUIRE(r.c2v["chr1"][l1].norm   == Approx(0.037037037));
+    REQUIRE(r.c2v["chr1"][l1].norm   == Approx(0.4740740741));
     REQUIRE(r.c2v["chr1"][l1].gen    == Approx(14.604));
     REQUIRE(r.c2v["chr1"][l1].before == Approx(29.599));
-    REQUIRE(r.c2v["chr1"][l1].after  == Approx(1.006));
+    REQUIRE(r.c2v["chr1"][l1].after  == Approx(13.615));
     
     REQUIRE(r.c2v["chr1"][l2].rID    == "GI_048");
-    REQUIRE(r.c2v["chr1"][l2].norm   == Approx(0.0403225806));
+    REQUIRE(r.c2v["chr1"][l2].norm   == Approx(0.5564516129));
     REQUIRE(r.c2v["chr1"][l2].gen    == Approx(14.623));
     REQUIRE(r.c2v["chr1"][l2].before == Approx(26.761));
-    REQUIRE(r.c2v["chr1"][l2].after  == Approx(2.424));
+    REQUIRE(r.c2v["chr1"][l2].after  == Approx(15.981));
     
     REQUIRE(r.c2v["chr1"][l3].rID    == "GI_030");
-    REQUIRE(r.c2v["chr1"][l3].norm   == Approx(0.0390625));
+    REQUIRE(r.c2v["chr1"][l3].norm   == 0);
     REQUIRE(r.c2v["chr1"][l3].gen    == 0);
     REQUIRE(r.c2v["chr1"][l3].before == Approx(28.056));
-    REQUIRE(r.c2v["chr1"][l3].after  == 1.903);
+    REQUIRE(r.c2v["chr1"][l3].after  == 0);
     
     REQUIRE(r.c2v["chr1"][l4].rID    == "GI_097");
-    REQUIRE(r.c2v["chr1"][l4].norm   == Approx(0.041322314));
+    REQUIRE(r.c2v["chr1"][l4].norm   == 0);
     REQUIRE(r.c2v["chr1"][l4].gen    == 0);
     REQUIRE(r.c2v["chr1"][l4].before == Approx(25.98));
-    REQUIRE(r.c2v["chr1"][l4].after  == 1.695);
+    REQUIRE(r.c2v["chr1"][l4].after  == 0);
 }
 
 TEST_CASE("VSubsample_ZeroProp")
