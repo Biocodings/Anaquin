@@ -226,10 +226,10 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     ParserSAM::parse(seqs, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         /*
-         * Important: the aligments will be on the forward genome. We must convert the reads
-         *            to reverse genome explicitly.
+         * Important: the aligments will be on the forward genome. We must convert them to
+         *            the reverse genome.
          */
-        
+
         // Eg: chr2 to chrev2
         x.cID = toReverse(x.cID);
         
@@ -383,13 +383,13 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
         }
     }
 
-    //assert(!stats.g2r.empty());
+    //A_ASSERT(!stats.g2r.empty());
     A_ASSERT(!stats.g2s.empty());
     A_ASSERT(!stats.s2l.empty());
     A_ASSERT(!stats.s2c.empty());
 
     A_ASSERT(stats.s2l.size() == stats.s2c.size());
-    //assert(stats.g2r.size() == stats.g2s.size());
+    //A_ASSERT(stats.g2r.size() == stats.g2s.size());
 
     A_ASSERT(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
     A_ASSERT(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
@@ -432,9 +432,9 @@ static void writeSummary(const FileName &file,
                          "       Genome: %12% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Alignment level\n"
-                         "       Correct:     %13%\n"
-                         "       Incorrect:   %14%\n\n"
-                         "       Precision:   %15$.4f\n\n"
+                         "       Inside region:  %13%\n"
+                         "       Outside region: %14%\n\n"
+                         "       Precision:      %15$.4f\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %16%\n"
                          "       Uncovered:   %17%\n"
@@ -463,8 +463,8 @@ static void writeSummary(const FileName &file,
                                             % r.nBaseSyn()     // 10
                                             % r.nGeneGen()     // 11
                                             % r.nBaseGen()     // 12
-                                            % stats.sa.tp()    // 13
-                                            % stats.sa.fp()    // 14
+                                            % stats.sa.tp()    // 13 (inside region)
+                                            % stats.sa.fp()    // 14 (outside region)
                                             % stats.sa.pc()    // 15
                                             % stats.sb.tp()    // 16
                                             % stats.sb.fn()    // 17
