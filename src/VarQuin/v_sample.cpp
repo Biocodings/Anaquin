@@ -226,13 +226,13 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         {
             const auto &l = j.second.l();
             
-            // Genomic statistics within the region
+            // Genomic statistics for the region
             const auto gs = gStats.inters.at(cID).find(l.key())->stats();
             
-            // Synthetic statistics within the region
+            // Synthetic statistics for the region
             const auto ss = sStats.inters.at(cID).find(l.key())->stats();
             
-            o.info("Calculating coverage for the synthetic and genome");
+            o.info("Calculating coverage for " + j.first);
             
             /*
              * Now we have the data, we'll need to compare coverage and determine the fraction that
@@ -242,7 +242,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             const auto synC = stats2cov(o.meth, ss);
             const auto genC = stats2cov(o.meth, gs);
 
-            Proportion norm = NAN;
+            Proportion norm;
 
             switch (o.meth)
             {
