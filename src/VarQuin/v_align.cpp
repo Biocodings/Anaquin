@@ -423,7 +423,7 @@ static void writeSummary(const FileName &file,
                          "-------Alignments\n\n"
                          "       Synthetic: %4% (%5%%%)\n"
                          "       Genome:    %6% (%7%%%)\n"
-                         "       Dilution:  %8$.4f\n\n"
+                         "       Dilution:  %8$.4f%%\n\n"
                          "-------Reference annotation (Synthetic)\n\n"
                          "       Synthetic: %9% regions\n"
                          "       Synthetic: %10% bases\n\n"
@@ -458,7 +458,7 @@ static void writeSummary(const FileName &file,
                                             % stats.propSyn()  // 5
                                             % stats.nGen       // 6
                                             % stats.propGen()  // 7
-                                            % stats.dilution() // 8
+                                            % (100.0 * stats.dilution()) // 8
                                             % r.nGeneSyn()     // 9
                                             % r.nBaseSyn()     // 10
                                             % r.nGeneGen()     // 11
