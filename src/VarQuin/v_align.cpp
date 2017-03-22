@@ -451,7 +451,7 @@ static void writeSummary(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % (o.gBed + " and " + o.sBed) // 1
+    o.writer->write((boost::format(summary) % o.sBed           // 1
                                             % gen              // 2
                                             % seq              // 3
                                             % stats.nSyn       // 4
