@@ -10,8 +10,10 @@ namespace Anaquin
     {
         struct Options : public AnalyzerOptions
         {
+	    Options() : report(false) {}	
+
             // Generating VarAlign_report.txt?
-            bool report = false;
+            bool report;
             
             FileName rBed; //gBed, sBed;
         };
