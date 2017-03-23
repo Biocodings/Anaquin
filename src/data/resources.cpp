@@ -53,7 +53,6 @@
 #include "resources/plotVGROC.R"
 #include "resources/plotVCROC.R"
 
-#include "resources/sampled.bed"
 #include "resources/AVA033_v001.bed"
 #include "resources/AVA009_v001.vcf"
 #include "resources/MVA011_v001.csv"
@@ -230,22 +229,7 @@ Scripts AVA033Bed()
     return ToString(data_VarQuin_AVA033_v001_bed);
 }
 
-Scripts VarDataMixA()
-{
-    return ToString(data_VarQuin_MVA011_v001_csv);
-}
-
-Scripts VarDataMixF()
-{
-    return ToString(data_VarQuin_MVA012_v001_csv);
-}
-
 Scripts VarDataVCF()
 {
     return ToString(data_VarQuin_AVA009_v001_vcf);
-}
-
-Scripts VarDataBed()
-{
-    return ToString(data_VarQuin_sampled_bed);
 }
