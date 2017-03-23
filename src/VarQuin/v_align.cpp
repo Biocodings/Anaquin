@@ -489,7 +489,7 @@ void VAlign::writeSummary(const FileName &file,
         
         WRITE("ASyn", stats.nSyn);
         WRITE("ASynP", stats.propSyn());
-        WRITE("AGen", stats.nSyn);
+        WRITE("AGen", stats.nGen);
         WRITE("AGenP", stats.propGen());
         WRITE("Dilution", (100.0 * stats.dilution()));
 
