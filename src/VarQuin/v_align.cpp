@@ -565,6 +565,8 @@ void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const 
                                            % "Sn"
                                            % "Pc").str());
 
+    o.logInfo("writeQuins: " + std::to_string(stats.inters.size()));
+    
     // For each chromosome...
     for (const auto &i : stats.inters)
     {
@@ -573,9 +575,13 @@ void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const 
         // Only the synthetic chromosome...
         if (isVarQuin(cID))
         {
+            o.logInfo(i.first + " - " + std::to_string(i.second.data().size()));
+            
             // For each sequin region...
             for (const auto &j : i.second.data())
             {
+                o.logInfo(j.first);
+                
                 const auto &sID = j.first;
 
                 // Data for the chromosome
@@ -633,10 +639,13 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
     VAlign::writeSummary("VarAlign_summary.stats", gen, seqs, stats, o);
 
     /*
-     * Generating VarAlign_quins.stats
+     * Generating VarAlign_sequins.csv
      */
     
-    VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
+    if (!o.report)
+    {
+        VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
+    }
 
     /*
      * Generating VarAlign_queries.stats (for debugging)
