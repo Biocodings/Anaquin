@@ -14,7 +14,7 @@
      Short-read aligner (such as BWA or BowTie) that generates a SAM/BAM alignment file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarAlign –rbed reference.bed –ufiles human.bam -ufiles sequins.bam
+     anaquin VarAlign –rbed reference.bed –ufiles humans.bam -ufiles sequins.bam
 
 <b>TOOL OPTIONS</b>
      Required:

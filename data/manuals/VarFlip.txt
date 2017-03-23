@@ -1,30 +1,30 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-    VarFlip - Compute reverse complement of sequin alignments to the reverse genome.
+    VarFlip - Extracts forward paired-end reads from alignments to the <i>in silico</i> genome.
 
 <b>DESCRIPTION</b>
-    VarFlip is designed to compute reverse complement of sequin reads aligned to the reverse
-    synthetic genome. The tool extracts all reads aligned to the reverse genome, compute their
-    reverse complement and generate a new set of pair-ended sequence files for the sequin reads.
+    VarFlip first extracts alignments to the <i>in silico</i> genome, determine their reverse sequence
+    and generates a new set of paired-end library files (.FASTQ). This new set of reads constitute
+    sequin-derived reads that have been mirrored to the orientation of the human genome.
 
-s<b>SUPPORT SOFTWARE</b>
-     VarFlip takes the standard SAM/BAM file that is supported by all popular alignment softwares.
+<b>SUPPORT SOFTWARE</b>
+     VarFlip takes the standard SAM/BAM file.
      
 <b>USAGE EXAMPLE</b>
      anaquin VarFlip –ufiles aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -ufiles      Generated forward/reverse  alignment file in SAM/BAM format
+        -ufiles      Generated forward/reverse alignment file in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to
-        -edge = 0    Length of window edge in bases
 
 <b>OUTPUTS</b>
-     VarFlip_paired_1.fq  - is the first paired-end sequence file with reads from inputs aligned to the reverse genome.
-     VarFlip_paired_2.fq  - is the second paired-end for VarFlip_paired_1.fq.
-     VarFlip_crossed_1.fq - is the first paired-end sequence file with reads from inputs aligned to both the forward and the reverse genome.
-     VarFlip_crossed_2.fq - is the second paired-end for VarFlip_crossed_1.fq.
-     VarFlip_hanging.fq   - gives hanging paired-end reads aligned to the reverse genome.    
+     VarFlip_summary.stats - gives the summary statistics
+     VarFlip_paired_1.fq   - is the first paired-end sequence file with reads from inputs aligned to the <i>in silico</i> genome.
+     VarFlip_paired_2.fq   - is the second paired-end for VarFlip_paired_1.fq.
+     VarFlip_crossed_1.fq  - is the first paired-end sequence file with reads from inputs aligned to both the human and the <i>in-silico</i> genome.
+     VarFlip_crossed_2.fq  - is the second paired-end for VarFlip_crossed_1.fq.
+     VarFlip_hanging.fq    - gives hanging paired-end reads aligned to the <i>in silico</i> genome.    

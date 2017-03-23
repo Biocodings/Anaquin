@@ -368,7 +368,7 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
+    o.writer->write((boost::format(format) % "Name"
                                            % "ChrID"
                                            % "Start"
                                            % "End"
