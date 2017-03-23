@@ -100,8 +100,6 @@ void VReport::report(const FileName &file, const Options &o)
     
     MarkDown mark;
     
-	std::cout << "----------" << std::endl;
-	
     /*
      * Allele frequency analysis
      */
@@ -143,5 +141,5 @@ void VReport::report(const FileName &file, const Options &o)
     FileWriter::create(tmp, "r2pdf.R", "library(Anaquin)\nlibrary(rmarkdown)\nrender('report.Rmd', 'pdf_document')\n");
     
     System::runCmd("cd " + tmp + "; Rscript " + tmp + "/r2pdf.R");
-    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/VaRReport_report.pdf");
+    System::runCmd("mv " + tmp + "/report.pdf " + o.work + "/VarReport_report.pdf");
 }
