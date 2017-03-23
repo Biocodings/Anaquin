@@ -96,11 +96,10 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
+#define OPT_REPORT  808
 #define OPT_R_IND   809
 #define OPT_U_FILES 909
 #define OPT_EDGE    910
-#define OPT_G_BED   911
-#define OPT_S_BED   912
 #define OPT_ALLELE  913
 #define OPT_U_BASE  914
 
@@ -186,7 +185,7 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_V_FLIP,      { OPT_U_FILES } },
     { TOOL_V_ALLELE,    { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_ALIGN,     { OPT_G_BED,   OPT_S_BED,  OPT_U_FILES  } },
+    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
     { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
@@ -225,6 +224,9 @@ struct Parsing
     // How Anaquin is invoked
     std::string command;
 
+    // Generating a report?
+    bool report = false;
+    
     Proportion sampled = NAN;
     
     Tool tool = 0;
@@ -337,9 +339,6 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
 
-    { "gbed",    required_argument, 0, OPT_G_BED  },
-    { "sbed",    required_argument, 0, OPT_S_BED  },
-
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
@@ -347,6 +346,7 @@ static const struct option long_options[] =
 
     { "edge",    required_argument, 0, OPT_EDGE   },
     { "fuzzy",   required_argument, 0, OPT_FUZZY  },
+    { "report",  required_argument, 0, OPT_REPORT },
     
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
@@ -852,6 +852,7 @@ void parse(int argc, char ** argv)
         switch (opt)
         {
             case OPT_ALLELE: { _p.opts[opt] = val; break; }
+            case OPT_REPORT: { _p.report = true;   break; }
 
             case OPT_EDGE:
             case OPT_FUZZY:
@@ -916,8 +917,6 @@ void parse(int argc, char ** argv)
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
-            case OPT_G_BED:
-            case OPT_S_BED:
             case OPT_MIXTURE:
             {
                 checkFile(_p.opts[opt] = val); break;
@@ -1292,8 +1291,12 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_ALIGN:
                     {
-                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_G_BED);
-                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_S_BED);
+                        /*
+                         * It's important to do it to both genomic and sequins
+                         */
+                        
+                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
@@ -1350,8 +1353,8 @@ void parse(int argc, char ** argv)
                 {
                     VAlign::Options o;
                     
-                    o.gBed = _p.opts.at(OPT_G_BED);
-                    o.sBed = _p.opts.at(OPT_S_BED);
+                    o.rBed   = _p.opts.at(OPT_R_BED);
+                    o.report = _p.report;
 
                     analyze_2<VAlign>(OPT_U_FILES, o);
                     break;

@@ -10,7 +10,10 @@ namespace Anaquin
     {
         struct Options : public AnalyzerOptions
         {
-            FileName gBed, sBed;
+            // Generating VarAlign_report.txt?
+            bool report = false;
+            
+            FileName rBed; //gBed, sBed;
         };
         
         struct Stats : public AlignmentStats
@@ -90,8 +93,27 @@ namespace Anaquin
             std::map<GeneID, Proportion> g2s;
         };
 
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());        
-        static void  report (const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o);
+        
+        static void report(const FileName &, const FileName &, const Options &o = Options());
+        
+        static void writeSummary(const FileName &,
+                                 const FileName &,
+                                 const FileName &,
+                                 const VAlign::Stats &,
+                                 const VAlign::Options &);
+        
+        static void writeQuins(const FileName &,
+                               const VAlign::Stats &,
+                               const VAlign::Options &);
+        
+        static void writeQueries(const FileName &,
+                                 const VAlign::Stats &,
+                                 const VAlign::Options &);
+
+        static void writeBQuins(const FileName &,
+                                const VAlign::Stats &,
+                                const VAlign::Options &);
     };
 }
 

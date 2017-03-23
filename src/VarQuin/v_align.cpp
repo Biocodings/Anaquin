@@ -400,11 +400,11 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
     return stats;
 }
 
-static void writeSummary(const FileName &file,
-                         const FileName &gen,
-                         const FileName &seq,
-                         const VAlign::Stats &stats,
-                         const VAlign::Options &o)
+void VAlign::writeSummary(const FileName &file,
+                          const FileName &gen,
+                          const FileName &seq,
+                          const VAlign::Stats &stats,
+                          const VAlign::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -432,8 +432,8 @@ static void writeSummary(const FileName &file,
                          "       Genome: %12% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Alignment level\n"
-                         "       Inside region:  %13%\n"
-                         "       Outside region: %14%\n\n"
+                         "       Inside regions:  %13%\n"
+                         "       Outside regions: %14%\n\n"
                          "       Precision:      %15$.4f\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %16%\n"
@@ -451,7 +451,7 @@ static void writeSummary(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % o.sBed           // 1
+    o.writer->write((boost::format(summary) % o.rBed           // 1
                                             % gen              // 2
                                             % seq              // 3
                                             % stats.nSyn       // 4
@@ -478,11 +478,45 @@ static void writeSummary(const FileName &file,
                                             % stats.gb.sn()    // 25
                      ).str());
     o.writer->close();
+    
+    // Only for generating a report, easier for parsing. (undocumented)
+    if (o.report)
+    {
+        #define WRITE(x,y) o.writer->write((boost::format("%1%\t%2%")   % x % y).str());
+
+        o.generate("VarAlign_report.csv");
+        o.writer->open("VarAlign_report.csv");
+        
+        WRITE("ASyn", stats.nSyn);
+        WRITE("ASynP", stats.propSyn());
+        WRITE("AGen", stats.nSyn);
+        WRITE("AGenP", stats.propGen());
+        WRITE("Dilution", (100.0 * stats.dilution()));
+
+        WRITE("nGeneSyn", r.nGeneSyn());
+        WRITE("nBaseSyn", r.nBaseSyn());
+        
+        WRITE("RegionTP", stats.sa.tp());
+        WRITE("RegionFP", stats.sa.fp());
+        WRITE("RegionPC", stats.sa.pc());
+        
+        WRITE("BaseTP", stats.sb.tp());
+        WRITE("BaseFN", stats.sb.fn());
+        WRITE("BaseFP", stats.sb.fp());
+        WRITE("BaseSN", stats.sb.sn());
+        WRITE("BasePC", stats.sb.pc());
+        
+        WRITE("GenomeTP", stats.gb.tp());
+        WRITE("GenomeFN", stats.gb.fn());
+        WRITE("GenomeSN", stats.gb.sn());
+        
+        o.writer->close();
+    }
 }
 
-static void writeBQuins(const FileName &file,
-                        const VAlign::Stats &stats,
-                        const VAlign::Options &o)
+void VAlign::writeBQuins(const FileName &file,
+                         const VAlign::Stats &stats,
+                         const VAlign::Options &o)
 {
 #ifdef DEBUG_VALIGN
     const auto format = "%1%\t%2%\t%3%";
@@ -519,7 +553,7 @@ static void writeBQuins(const FileName &file,
 #endif
 }
 
-static void writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
+void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
     o.generate(file);
     o.writer->open(file);
@@ -562,7 +596,7 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.writer->close();
 }
 
-static void writeQueries(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
+void VAlign::writeQueries(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
 #ifdef DEBUG_VALIGN
     o.generate(file);
@@ -596,23 +630,23 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      * Generating VarAlign_summary.stats
      */
     
-    writeSummary("VarAlign_summary.stats", gen, seqs, stats, o);
+    VAlign::writeSummary("VarAlign_summary.stats", gen, seqs, stats, o);
 
     /*
      * Generating VarAlign_quins.stats
      */
     
-    writeQuins("VarAlign_sequins.csv", stats, o);
+    VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
 
     /*
      * Generating VarAlign_queries.stats (for debugging)
      */
     
-    writeQueries("VarAlign_queries.stats", stats, o);
+    VAlign::writeQueries("VarAlign_queries.stats", stats, o);
 
     /*
      * Generating VarAlign_rbase.stats (for debugging)
      */
     
-    writeBQuins("VarAlign_rbase.stats", stats, o);
+    VAlign::writeBQuins("VarAlign_rbase.stats", stats, o);
 }
