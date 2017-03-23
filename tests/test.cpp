@@ -14,11 +14,6 @@ extern std::string RnaDataMixF();
 extern std::string RnaDataMixAB();
 extern std::string RnaStandGTF();
 
-extern std::string VarDataBed();
-extern std::string VarDataVCF();
-extern std::string VarDataMixA();
-extern std::string VarDataMixF();
-
 using namespace Anaquin;
 
 void Test::clear()
@@ -55,22 +50,6 @@ void Test::RnaFoldChange()
     Test::clear();
     Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
     Standard::instance().r_rna.finalize();
-}
-
-void Test::VarQuinBed()
-{
-    Test::clear();
-    Standard::instance().addVSRef(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().r_var.finalize();
-}
-
-void Test::variantA()
-{
-    Test::clear();
-    Standard::instance().addVVar(Reader(VarDataVCF(),  DataMode::String));
-    Standard::instance().addVSRef(Reader(VarDataBed(), DataMode::String));
-    Standard::instance().addVMix(Reader(VarDataMixA(), DataMode::String));
-    Standard::instance().r_var.finalize();
 }
 
 Test Test::test(const std::string &command)
