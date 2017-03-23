@@ -658,4 +658,6 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      */
     
     VAlign::writeBQuins("VarAlign_rbase.stats", stats, o);
+    
+    o.logInfo("VarAlign completed");
 }
