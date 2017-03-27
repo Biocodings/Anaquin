@@ -20,11 +20,14 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaFoldChange.txt',
           'data/manuals/RnaSubsample.txt',
           'data/manuals/RnaKReport.txt',
+
           'data/manuals/VarKReport.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
           'data/manuals/VarFlip.txt',
+	  'data/manuals/VarVReport.txt',
+
           'data/manuals/MetaAlign.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAbund.txt',
@@ -55,8 +58,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/VarQuin/sampled.bed',
           'data/VarQuin/AVA033_v001.bed',
           'data/VarQuin/AVA009_v001.vcf',
-          'data/VarQuin/MVA011_v001.csv',
-          'data/VarQuin/MVA012_v001.csv',
         ]
 tests = [ ]
 

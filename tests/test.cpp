@@ -10,7 +10,6 @@ extern int parse_options(int argc, char ** argv);
 
 extern std::string RnaDataMixA();
 extern std::string RnaDataMixB();
-extern std::string RnaDataMixF();
 extern std::string RnaDataMixAB();
 extern std::string RnaStandGTF();
 

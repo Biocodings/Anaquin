@@ -9,15 +9,18 @@
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
 #include "resources/VarAlign.txt"
+#include "resources/VarKReport.txt"
+#include "resources/VarVReport.txt"
+#include "resources/VarDiscover.txt"
+#include "resources/VarSubsample.txt"
+
 #include "resources/RnaAlign.txt"
 #include "resources/RnaKReport.txt"
-#include "resources/VarKReport.txt"
 #include "resources/RnaAssembly.txt"
-#include "resources/VarDiscover.txt"
 #include "resources/RnaSubsample.txt"
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
-#include "resources/VarSubsample.txt"
+
 #include "resources/MetaAlign.txt"
 #include "resources/MetaSubsample.txt"
 #include "resources/MetaAssembly.txt"
@@ -29,6 +32,11 @@
  */
 
 #include "resources/plotFold.R"
+#include "resources/plotTROC.R"
+#include "resources/plotVLODR.R"
+#include "resources/plotVGROC.R"
+#include "resources/plotVCROC.R"
+#include "resources/plotTLODR.R"
 #include "resources/plotLinear.R"
 #include "resources/plotLogistic.R"
 
@@ -36,27 +44,17 @@
  * RnaQuin Resources
  */
 
-#include "resources/plotTROC.R"
-#include "resources/plotTLODR.R"
-
 #include "resources/A.R.1.gtf"
 #include "resources/MRN027_v001.csv"
 #include "resources/MRN028_v001.csv"
 #include "resources/MRN029_v001.csv"
-#include "resources/MRN030_v001.csv"
 
 /*
  * VarQuin Resources
  */
 
-#include "resources/plotVLODR.R"
-#include "resources/plotVGROC.R"
-#include "resources/plotVCROC.R"
-
 #include "resources/AVA033_v001.bed"
 #include "resources/AVA009_v001.vcf"
-#include "resources/MVA011_v001.csv"
-#include "resources/MVA012_v001.csv"
 
 typedef std::string Scripts;
 
@@ -136,9 +134,14 @@ Scripts VarDiscover()
     return ToString(data_manuals_VarDiscover_txt);
 }
 
-Scripts VarReport()
+Scripts VarKReport()
 {
     return ToString(data_manuals_VarKReport_txt);
+}
+
+Scripts VarVReport()
+{
+    return ToString(data_manuals_VarVReport_txt);
 }
 
 Scripts MetaAlign()
@@ -193,11 +196,6 @@ Scripts RnaDataMixA()
 Scripts RnaDataMixB()
 {
     return ToString(data_RnaQuin_MRN028_v001_csv);
-}
-
-Scripts RnaDataMixF()
-{
-    return ToString(data_RnaQuin_MRN030_v001_csv);
 }
 
 Scripts RnaDataMixAB()

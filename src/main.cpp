@@ -19,7 +19,7 @@
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_report.hpp"
+#include "VarQuin/v_kreport.hpp"
 #include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_diff.hpp"
@@ -67,7 +67,8 @@ typedef std::set<Value> Range;
 #define TOOL_R_GENE      271
 #define TOOL_R_REPORT    272
 #define TOOL_R_SUBSAMPLE 273
-#define TOOL_V_REPORT    274
+#define TOOL_V_KREPORT   274
+#define TOOL_V_VREPORT   275
 #define TOOL_V_ALIGN     276
 #define TOOL_V_FLIP      277
 #define TOOL_V_DISCOVER  278
@@ -84,10 +85,10 @@ typedef std::set<Value> Range;
  * Options specified in the command line
  */
 
-#define OPT_TEST     320
-#define OPT_TOOL     321
-#define OPT_PATH     325
-#define OPT_VERSION  338
+#define OPT_TEST    320
+#define OPT_TOOL    321
+#define OPT_PATH    325
+#define OPT_VERSION 338
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
@@ -154,7 +155,8 @@ static std::map<Value, Tool> _tools =
     { "VarAllele",      TOOL_V_ALLELE    },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VarReport",      TOOL_V_REPORT    },
+    { "VarKReport",     TOOL_V_KREPORT   },
+    { "VarVReport",     TOOL_V_VREPORT   },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
 
@@ -188,7 +190,8 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
-    { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
+    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
+    { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
 
     /*
      * MetaQuin Analysis
@@ -403,7 +406,8 @@ static Scripts manual(Tool tool)
 {
     extern Scripts VarFlip();
     extern Scripts VarAlign();
-    extern Scripts VarReport();
+    extern Scripts VarKReport();
+    extern Scripts VarVReport();
     extern Scripts VarDiscover();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
@@ -430,7 +434,8 @@ static Scripts manual(Tool tool)
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_REPORT:    { return VarReport();      }
+        case TOOL_V_KREPORT:   { return VarKReport();     }
+        case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
         case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
@@ -1263,7 +1268,8 @@ void parse(int argc, char ** argv)
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
-        case TOOL_V_REPORT:
+        case TOOL_V_KREPORT:
+        case TOOL_V_VREPORT:
         case TOOL_V_DISCOVER:
         case TOOL_V_SUBSAMPLE:
         {
@@ -1277,7 +1283,6 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_V_ALLELE:
-                    case TOOL_V_REPORT:
                     {
                         applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
@@ -1338,12 +1343,17 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_REPORT:
+                case TOOL_V_KREPORT:
                 {
-                    VReport::Options o;
+                    VKReport::Options o;
                     o.index = _p.opts[OPT_R_IND];
                     
-                    analyze_1<VReport>(OPT_U_FILES, o);
+                    analyze_1<VKReport>(OPT_U_FILES, o);
+                    break;
+                }
+
+                case TOOL_V_VREPORT:
+                {
                     break;
                 }
 
@@ -1458,8 +1468,6 @@ void parse(int argc, char ** argv)
 
             break;
         }
-
-        default: { assert(false); }
     }
 }
 
