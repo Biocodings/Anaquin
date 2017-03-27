@@ -63,26 +63,13 @@ void System::runCmd(const std::string &cmd)
     system(cmd.c_str());
 }
 
-void System::runScript(const std::string &code, const std::string &prefix, const std::string &args) throw(FailedCommandException)
+void System::runRScript(const std::string &code)
 {
-    const auto f = [&](const std::string &cmd)
-    {
-        std::cout << cmd << std::endl;        
-        const int status = system(cmd.c_str());
-        
-        if (status != 0)
-        {
-            throw FailedCommandException("Failed: " + cmd);
-        }
-    };
-    
-    // Create a copy of the script
     const auto tmp = tmpFile();
-    
+
     std::ofstream out(tmp);
     out << code;
     out.close();
-    
-    // Run the script with given arguments
-    f(prefix + " " + tmp + " " + args);
+
+    System::runCmd("R CMD BATCH " + tmp);
 }

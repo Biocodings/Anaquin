@@ -20,6 +20,7 @@
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_kreport.hpp"
+#include "VarQuin/v_vreport.hpp"
 #include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_diff.hpp"
@@ -42,7 +43,6 @@
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
 
-#include "writers/pdf_writer.hpp"
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 
@@ -652,23 +652,26 @@ template <typename Analyzer> void analyze_0(typename Analyzer::Options o = typen
     }, o);
 }
 
-// Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyze<Analyzer>(_p.opts.at(x), o);
 }
 
-// Analyze for two samples
-template <typename Analyzer> void analyze_2(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        if (_p.inputs.size() != 2)
-        {
-            throw InvalidOptionException("-ufiles need to be specified twice.");
-        }
-
+        A_ASSERT(_p.inputs.size() == 2);
         Analyzer::report(_p.inputs[0], _p.inputs[1], o);
+    }, o);
+}
+
+template <typename Analyzer> void analyze_3(typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        A_ASSERT(_p.inputs.size() == 3);
+        Analyzer::report(_p.inputs[0], _p.inputs[1], _p.inputs[2], o);
     }, o);
 }
 
@@ -1297,7 +1300,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALIGN:
                     {
                         /*
-                         * It's important to do it to both genomic and sequins
+                         * It's important to apply to both genomic and sequins
                          */
                         
                         applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
@@ -1316,7 +1319,10 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
 
-                Standard::instance().r_var.finalize();
+                if (_p.tool != TOOL_V_VREPORT)
+                {
+                    Standard::instance().r_var.finalize();
+                }
             }
 
             const auto checkVCF = [&](const FileName &x)
@@ -1354,6 +1360,13 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_VREPORT:
                 {
+                    VVReport::Options o;
+                    
+                    o.rMix = mixture();
+                    o.rBED = _p.opts.at(OPT_R_BED);
+                    o.rVCF = _p.opts.at(OPT_R_VCF);
+                    
+                    analyze_3<VVReport>(o);
                     break;
                 }
 
@@ -1366,7 +1379,7 @@ void parse(int argc, char ** argv)
                     o.rBed   = _p.opts.at(OPT_R_BED);
                     o.report = _p.report;
 
-                    analyze_2<VAlign>(OPT_U_FILES, o);
+                    analyze_2<VAlign>(o);
                     break;
                 }
 
@@ -1461,7 +1474,7 @@ void parse(int argc, char ** argv)
                         o.edge = stoi(_p.opts[OPT_EDGE]);
                     }
 
-                    analyze_2<VSample>(OPT_U_FILES, o);
+                    analyze_2<VSample>(o);
                     break;
                 }
             }

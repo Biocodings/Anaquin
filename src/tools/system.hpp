@@ -2,6 +2,8 @@
 #define SYSTEM_HPP
 
 #include <vector>
+#include <string>
+#include <sstream>
 #include "data/data.hpp"
 #include "tools/errors.hpp"
 
@@ -47,9 +49,35 @@ namespace Anaquin
         static bool isEmpty(const FileName& file);
 
         static void runCmd(const std::string &);
-        static void runScript(const std::string &, const std::string &, const std::string &) throw(FailedCommandException);
-
+        static void runRScript(const std::string &code);
+        
         static FileName tmpFile();
+
+        static std::string trim(const std::string &str)
+        {
+            std::stringstream ss;
+            
+            auto seenLastClose = false;
+            
+            for (auto iter = str.rbegin(); iter != str.rend(); iter++)
+            {
+                if (*iter == ')')
+                {
+                    seenLastClose = true;
+                }
+                
+                if (!seenLastClose)
+                {
+                    continue;
+                }
+                
+                ss << *iter;
+            }
+            
+            auto tmp = ss.str();
+            std::reverse(tmp.begin(), tmp.end());
+            return tmp;
+        }
     };
 }
 

@@ -1,6 +1,5 @@
 #include <thread>
 #include <boost/format.hpp>
-#include "tools/script.hpp"
 #include "tools/markdown.hpp"
 #include "RnaQuin/r_report.hpp"
 #include "writers/file_writer.hpp"

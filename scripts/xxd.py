@@ -21,12 +21,12 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaSubsample.txt',
           'data/manuals/RnaKReport.txt',
 
-          'data/manuals/VarKReport.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
           'data/manuals/VarFlip.txt',
-	  'data/manuals/VarVReport.txt',
+          'data/manuals/VarKReport.txt',
+          'data/manuals/VarVReport.txt',
 
           'data/manuals/MetaAlign.txt',
           'data/manuals/MetaSubsample.txt',
@@ -37,11 +37,13 @@ data  = [ 'data/manuals/anaquin.txt',
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
     	  'src/r/plotLogistic.R',
+          'src/r/plotTROC.R',
+          'src/r/plotTLODR.R',
+   	      'src/r/plotVLODR.R',
+          'src/r/plotVGROC.R',
+          'src/r/plotVCROC.R',          
 
           # ---------- RnaQuin ----------
-
-          'src/r/plotTROC.R',
-          'src/r/plotTLODR.R',          
 
           'data/RnaQuin/A.R.1.gtf',
           'data/RnaQuin/MRN027_v001.csv',
@@ -50,10 +52,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/RnaQuin/MRN030_v001.csv',
 
           # ---------- VarQuin ----------
-
-   	      'src/r/plotVLODR.R',
-          'src/r/plotVGROC.R',
-          'src/r/plotVCROC.R',          
 
           'data/VarQuin/sampled.bed',
           'data/VarQuin/AVA033_v001.bed',

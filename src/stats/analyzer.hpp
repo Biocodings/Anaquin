@@ -8,7 +8,6 @@
 #include "data/standard.hpp"
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
-#include "writers/pdf_writer.hpp"
 #include "writers/mock_writer.hpp"
 
 // Defined in main.cpp

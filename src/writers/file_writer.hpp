@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
-#include "tools/script.hpp"
+#include "tools/system.hpp"
 #include "writers/writer.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -53,7 +53,7 @@ namespace Anaquin
             {
                 if (isScript)
                 {
-                    *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << Script::trim(x);
+                    *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << System::trim(x);
                 }
                 else
                 {
