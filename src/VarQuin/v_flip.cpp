@@ -5,6 +5,8 @@
 
 using namespace Anaquin;
 
+static const FileName AMBIG_1     = "VarFlip_ambig_1.fq";
+static const FileName AMBIG_2     = "VarFlip_ambig_2.fq";
 static const FileName Paired_1    = "VarFlip_paired_1.fq";
 static const FileName Paired_2    = "VarFlip_paired_2.fq";
 static const FileName Crossed_1   = "VarFlip_crossed_1.fq";
@@ -66,17 +68,34 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
                         std::reverse(second->seq.begin(), second->seq.end());
                     }
                     
-                    /*
-                     * Cross-alignment occurs when paired-end read mapped to both genomes.
-                     */
+                    // Anything mapped to the reverse?
+                    const auto anyReverse = impl.isReverse(first->cID) || impl.isReverse(second->cID);
                     
-                    if (!impl.isReverse(first->cID) || !impl.isReverse(second->cID))
+                    // Anything mapped to the forward?
+                    const auto anyForward = !impl.isReverse(first->cID) || !impl.isReverse(second->cID);
+                    
+                    // Anything not mapped?
+                    const auto anyNMapped = !first->mapped || !second->mapped;
+                    
+                    // Crossed alignment?
+                    const auto crossed = !anyNMapped && anyReverse && anyForward;
+                    
+                    // Ambigious alignment?
+                    const auto ambig = anyReverse && !anyForward && anyNMapped;
+                    
+                    if (ambig)
+                    {
+                        stats.nAmbig++;
+                        impl.ambig(*first, *second);
+                    }
+                    else if (crossed)
                     {
                         stats.nCross++;
                         impl.cross(*first, *second);
                     }
                     else
                     {
+                        stats.nReverse++;
                         impl.paired(*first, *second);
                     }
 
@@ -90,6 +109,7 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
                 // Compute the complement (but not reverse)
                 complement(x.seq);
 
+                // Single-ended alignments
                 impl.single(x);
             }
         }
@@ -112,17 +132,21 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
         // Compute the complement (but not reverse)
         complement(i.second.seq);
 
+        // Alignments without the other mate
         impl.hanging(i.second);
     }
 
     stats.nHang = seenMates.size();
+
+    stats.pSingle = static_cast<Proportion>(stats.nSingle) / (stats.nSingle + stats.nPaired);
+    stats.pPaired = static_cast<Proportion>(stats.nPaired) / (stats.nSingle + stats.nPaired);
     
-    const auto total = stats.nPaired + stats.nSingle + stats.nHang + stats.nCross;
+    const auto total = stats.nAmbig + stats.nReverse + stats.nHang + stats.nCross;
     
-    stats.pHang   = static_cast<Proportion>(stats.nHang)   / total;
-    stats.pCross  = static_cast<Proportion>(stats.nCross)  / total;
-    stats.pPaired = static_cast<Proportion>(stats.nPaired) / total;
-    stats.pSingle = static_cast<Proportion>(stats.nSingle) / total;
+    stats.pHang    = static_cast<Proportion>(stats.nHang)    / total;
+    stats.pAmbig   = static_cast<Proportion>(stats.nAmbig)   / total;
+    stats.pCross   = static_cast<Proportion>(stats.nCross)   / total;
+    stats.pReverse = static_cast<Proportion>(stats.nReverse) / total;
 
     return stats;
 }
@@ -186,7 +210,11 @@ void VFlip::report(const FileName &file, const Options &o)
             hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             c1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             c2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            a2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
+            a1->open(AMBIG_1);
+            a2->open(AMBIG_2);
             p1->open(Paired_1);
             p2->open(Paired_2);
             c1->open(Crossed_1);
@@ -196,6 +224,8 @@ void VFlip::report(const FileName &file, const Options &o)
 
         ~Impl()
         {
+            a1->close();
+            a2->close();
             c1->close();
             c2->close();
             p1->close();
@@ -232,6 +262,18 @@ void VFlip::report(const FileName &file, const Options &o)
             c2->write(y.qual);
         }
         
+        void ambig(const ParserSAM::Data &x, const ParserSAM::Data &y)
+        {
+            a1->write("@" + x.name + "/1");
+            a1->write(x.seq);
+            a1->write("+");
+            a1->write(x.qual);
+            a2->write("@" + y.name + "/2");
+            a2->write(y.seq);
+            a2->write("+");
+            a2->write(y.qual);
+        }
+
         void single(const ParserSAM::Data &x) {}
 
         void hanging(const ParserSAM::Data &x)
@@ -253,7 +295,7 @@ void VFlip::report(const FileName &file, const Options &o)
             }
         }
         
-        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2;
+        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2, a1, a2;
     };
     
     Impl impl(o);

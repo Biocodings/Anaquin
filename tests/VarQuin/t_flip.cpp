@@ -34,6 +34,7 @@ TEST_CASE("VFlip_1")
         
         void single(const ParserSAM::Data &) {}
         
+        void ambig(const ParserSAM::Data &, const ParserSAM::Data &) {}
         void cross(const ParserSAM::Data &, const ParserSAM::Data &) {}
 
         std::map<ReadName, ParserSAM::Data> hangs;
@@ -46,9 +47,9 @@ TEST_CASE("VFlip_1")
     
     const auto r = VFlip::analyze("tests/data/genome.bam", VFlip::Options(), impl);
 
-    REQUIRE(impl.pairs1.size()   == 112);
-    REQUIRE(impl.pairs2.size()   == 112);
-    REQUIRE(impl.unpairs.size()  == 0);
+    REQUIRE(impl.pairs1.size()  == 112);
+    REQUIRE(impl.pairs2.size()  == 112);
+    REQUIRE(impl.unpairs.size() == 0);
     REQUIRE(impl.hangs.size() == 42);
 
     REQUIRE(impl.hangs.count("1-hg38.fwd.NA12878_hets.sim_reads11906977"));
