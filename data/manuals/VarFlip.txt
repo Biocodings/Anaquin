@@ -20,11 +20,14 @@
 
      Optional:
         -o = output  Directory in which output files are written to
+        -edge = 0    Length in nucleotides to trim for each edge (left and right). Trim <i>edge</i> bases on the left and <i>edge</i> bases on the right.
 
 <b>OUTPUTS</b>
      VarFlip_summary.stats - gives the summary statistics
      VarFlip_paired_1.fq   - is the first paired-end sequence file with reads from inputs aligned to the <i>in silico</i> genome.
      VarFlip_paired_2.fq   - is the second paired-end for VarFlip_paired_1.fq.
+     VarFlip_ambig_1.fq    - is the first paired-end sequence file with ambigious reads (only one mate mapped to the <i>in-silico</i> genome)
+     VarFlip_ambig_2.fq    - is the second paired-end for VarFlip_ambig_1.fq
      VarFlip_crossed_1.fq  - is the first paired-end sequence file with reads from inputs aligned to both the human and the <i>in-silico</i> genome.
      VarFlip_crossed_2.fq  - is the second paired-end for VarFlip_crossed_1.fq.
      VarFlip_hanging.fq    - gives hanging paired-end reads aligned to the <i>in silico</i> genome.    
