@@ -10,7 +10,6 @@ static const FileName Paired_2    = "VarFlip_paired_2.fq";
 static const FileName Crossed_1   = "VarFlip_crossed_1.fq";
 static const FileName Crossed_2   = "VarFlip_crossed_2.fq";
 static const FileName HangingFile = "VarFlip_hanging.fq";
-static const FileName SingleFile  = "VarFlip_single.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
@@ -142,16 +141,15 @@ static void writeSummary(const FileName &file,
                          "       Crossed alignments:    %4%\n"
                          "                              %5%\n"
                          "       Hanging alignments:    %6%\n\n"
-                         "       Single alignments:     %7%\n\n"
                          "-------Alignments\n\n"
-                         "       Paired:   %8% (%9%%%)\n"
-                         "       Crossed:  %10% (%11%%%)\n"
-                         "       Hanging:  %12% (%13%%%)\n\n"
+                         "       Paired:   %7% (%8%%%)\n"
+                         "       Crossed:  %9% (%10%%%)\n"
+                         "       Hanging:  %11% (%12%%%)\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %14% (%15%%%)\n"
-                         "       Forward:  %16% (%17%%%)\n"
-                         "       Reverse:  %18% (%19%%%)\n"
-                         "       Dilution: %20$.4f\n";
+                         "       Unmapped: %13% (%14%%%)\n"
+                         "       Forward:  %15% (%16%%%)\n"
+                         "       Reverse:  %17% (%18%%%)\n"
+                         "       Dilution: %19$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
@@ -161,20 +159,19 @@ static void writeSummary(const FileName &file,
                                             % Crossed_1        // 4
                                             % Crossed_2        // 5
                                             % HangingFile      // 6
-                                            % SingleFile       // 7
-                                            % stats.nPaired    // 8
-                                            % stats.pPaired    // 9
-                                            % stats.nCross     // 10
-                                            % stats.pCross     // 11
-                                            % stats.nHang      // 12
-                                            % stats.pHang      // 13
-                                            % stats.nNA        // 14
-                                            % stats.propNA()   // 15
-                                            % stats.nGen       // 16
-                                            % stats.propGen()  // 17
-                                            % stats.nSyn       // 18
-                                            % stats.propSyn()  // 19
-                                            % stats.dilution() // 20
+                                            % stats.nPaired    // 7
+                                            % stats.pPaired    // 8
+                                            % stats.nCross     // 9
+                                            % stats.pCross     // 10
+                                            % stats.nHang      // 11
+                                            % stats.pHang      // 12
+                                            % stats.nNA        // 13
+                                            % stats.propNA()   // 14
+                                            % stats.nGen       // 15
+                                            % stats.propGen()  // 16
+                                            % stats.nSyn       // 17
+                                            % stats.propSyn()  // 18
+                                            % stats.dilution() // 19
                      ).str());
 }
     
@@ -189,14 +186,12 @@ void VFlip::report(const FileName &file, const Options &o)
             hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             c1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             c2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            sing = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
             p1->open(Paired_1);
             p2->open(Paired_2);
             c1->open(Crossed_1);
             c2->open(Crossed_2);
             hg->open(HangingFile);
-            sing->open(SingleFile);
         }
 
         ~Impl()
@@ -206,7 +201,6 @@ void VFlip::report(const FileName &file, const Options &o)
             p1->close();
             p2->close();
             hg->close();
-            sing->close();
         }
         
         bool isReverse(const ChrID &cID)
@@ -238,34 +232,28 @@ void VFlip::report(const FileName &file, const Options &o)
             c2->write(y.qual);
         }
         
-        void single(const ParserSAM::Data &x)
-        {
-            if (isReverseGenome(x.cID))
-            {
-                sing->write("@" + x.name);
-                sing->write(x.seq);
-                sing->write("+");
-                sing->write(x.qual);
-            }
-        }
+        void single(const ParserSAM::Data &x) {}
 
         void hanging(const ParserSAM::Data &x)
         {
-            if (x.isFirstPair)
+            if (isReverse(x.cID) && x.mapped)
             {
-                hg->write("@" + x.name + "/1");
+                if (x.isFirstPair)
+                {
+                    hg->write("@" + x.name + "/1");
+                }
+                else
+                {
+                    hg->write("@" + x.name + "/2");
+                }
+                
+                hg->write(x.seq);
+                hg->write("+");
+                hg->write(x.qual);
             }
-            else
-            {
-                hg->write("@" + x.name + "/2");
-            }
-            
-            hg->write(x.seq);
-            hg->write("+");
-            hg->write(x.qual);
         }
         
-        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2, sing;
+        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2;
     };
     
     Impl impl(o);
