@@ -481,39 +481,41 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       F1 Score:    %30$.4f\n"
                              "       FDR Rate:    %31$.4f\n";
 
+        #define D(x) (isnan(x) ? "NA" : std::to_string(x))
+        
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
-        o.writer->write((boost::format(summary) % VCFRef()                   // 1
-                                                % BedRef()                   // 2
-                                                % MixRef()                   // 3
-                                                % src                        // 4
-                                                % r.countSNPSyn()            // 5
-                                                % r.countIndSyn()            // 6
+        o.writer->write((boost::format(summary) % VCFRef()                      // 1
+                                                % BedRef()                      // 2
+                                                % MixRef()                      // 3
+                                                % src                           // 4
+                                                % r.countSNPSyn()               // 5
+                                                % r.countIndSyn()               // 6
                                                 % (r.countSNPSyn() + r.countIndSyn())
-                                                % stats.vData.countSNPSyn()  // 8
-                                                % stats.vData.countIndSyn()  // 9
-                                                % stats.vData.countVarSyn()  // 10
-                                                % stats.countSNP_TP_Syn()    // 11
-                                                % stats.countInd_TP_Syn()    // 12
-                                                % stats.countVar_TP_Syn()    // 13
-                                                % stats.countSNP_FP_Syn()    // 14
-                                                % stats.countInd_FP_Syn()    // 15
-                                                % stats.countVar_FP_Syn()    // 16
-                                                % stats.countSNP_FnSyn()     // 17
-                                                % stats.countInd_FnSyn()     // 18
-                                                % stats.countVar_FnSyn()     // 19
-                                                % stats.countVarSnSyn()      // 20
-                                                % stats.countVarPC_Syn()     // 21
-                                                % stats.varF1()              // 22
-                                                % (1-stats.countVarPC_Syn()) // 23
-                                                % stats.countSNPSnSyn()      // 24
-                                                % stats.countSNPPC_Syn()     // 25
-                                                % stats.SNPF1()              // 26
-                                                % (1-stats.countSNPPC_Syn()) // 27
-                                                % stats.countIndSnSyn()      // 28
-                                                % stats.countIndPC_Syn()     // 29
-                                                % stats.indelF1()            // 30
-                                                % (1-stats.countIndPC_Syn()) // 31
+                                                % stats.vData.countSNPSyn()     // 8
+                                                % stats.vData.countIndSyn()     // 9
+                                                % stats.vData.countVarSyn()     // 10
+                                                % stats.countSNP_TP_Syn()       // 11
+                                                % stats.countInd_TP_Syn()       // 12
+                                                % stats.countVar_TP_Syn()       // 13
+                                                % stats.countSNP_FP_Syn()       // 14
+                                                % stats.countInd_FP_Syn()       // 15
+                                                % stats.countVar_FP_Syn()       // 16
+                                                % stats.countSNP_FnSyn()        // 17
+                                                % stats.countInd_FnSyn()        // 18
+                                                % stats.countVar_FnSyn()        // 19
+                                                % D(stats.countVarSnSyn())      // 20
+                                                % D(stats.countVarPC_Syn())     // 21
+                                                % D(stats.varF1())              // 22
+                                                % D(1-stats.countVarPC_Syn())   // 23
+                                                % D(stats.countSNPSnSyn())      // 24
+                                                % D(stats.countSNPPC_Syn())     // 25
+                                                % D(stats.SNPF1())              // 26
+                                                % D((1-stats.countSNPPC_Syn())) // 27
+                                                % D(stats.countIndSnSyn())      // 28
+                                                % D(stats.countIndPC_Syn())     // 29
+                                                % D(stats.indelF1())            // 30
+                                                % D(1-stats.countIndPC_Syn())   // 31
                          ).str());
     };
     
