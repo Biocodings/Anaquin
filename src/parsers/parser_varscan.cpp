@@ -158,6 +158,11 @@ void ParserVarScan::parseSomatic(const Reader &r, Functor f)
         
         Tokens::split(line, "\t", toks);
         
+        if (toks[Field::SomaticStatus] == "Unknown")
+        {
+            continue;
+        }
+        
         d.cID = toks[Field::Chrom];
         
         // Always start and end at the same position
