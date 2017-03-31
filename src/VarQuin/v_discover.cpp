@@ -43,7 +43,7 @@ static Scripts createVCROC(const FileName &file, const std::string &score, const
 
 struct VDiscoverImpl : public VCFDataUser
 {
-    VDiscover::Stats *stats;
+    VDiscover::VStats *stats;
     const VDiscover::Options *o;
 
     void process(const ParserVCF::Data &x, const ParserProgress &p)
@@ -159,29 +159,29 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
-    stats.hist = r.vHist();
+    stats.syn.hist = r.vHist();
 
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats.syn.hist)
     {
-        stats.data[i.first];
+        stats.syn.data[i.first];
     }
 
     o.analyze(file);
 
     VDiscoverImpl impl;
     impl.o = &o;
-    impl.stats = &stats;
+    impl.stats = &stats.syn;
 
     // Read the input variants
-    stats.vData = vcfData(file, o.format, &impl);
+    stats.syn.vData = vcfData(file, o.format, &impl);
 
     o.info("Aggregating statistics");
 
-    for (const auto &i : stats.data)
+    for (const auto &i : stats.syn.data)
     {
         const auto &cID = i.first;
         
-        auto &x = stats.data[cID];
+        auto &x = stats.syn.data[cID];
         
         for (const auto &j : i.second.tps)
         {
@@ -219,9 +219,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         x.m_snp.fn() = x.m_snp.nr() - x.m_snp.tp();
         x.m_ind.fn() = x.m_ind.nr() - x.m_ind.tp();
 
-        assert(x.m.nr() >= x.m.fn());
-        assert(x.m_snp.nr() >= x.m_snp.fn());
-        assert(x.m_ind.nr() >= x.m_ind.fn());
+        A_ASSERT(x.m.nr() >= x.m.fn());
+        A_ASSERT(x.m_snp.nr() >= x.m_snp.fn());
+        A_ASSERT(x.m_ind.nr() >= x.m_ind.fn());
     }
     
     return stats;
@@ -252,7 +252,7 @@ static void writeQuins(const FileName &file,
                                            % "QualR"
                                            % "QualV"
                                            % "Type").str());
-    for (const auto &i : stats.hist)
+    for (const auto &i : stats.syn.hist)
     {
         const auto &cID = i.first;
         
@@ -302,7 +302,7 @@ static void writeQuins(const FileName &file,
                     return false;
                 };
 
-                if (!f(stats.data.at(i.first).tps_, "TP") && !f(stats.data.at(i.first).fns_, "FN"))
+                if (!f(stats.syn.data.at(i.first).tps_, "TP") && !f(stats.syn.data.at(i.first).fns_, "FN"))
                 {
                     throw std::runtime_error("Failed to find hash key in writeQuins()");
                 }
@@ -364,7 +364,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "QualV"
                                            % "Type").str());
 
-    for (const auto &i : stats.data)
+    for (const auto &i : stats.syn.data)
     {
         const auto &cID = i.first;
         
@@ -438,6 +438,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
+    const auto &ss = stats.syn;
+
     auto germline = [&]()
     {
         const auto summary = "-------VarDiscover Output Results\n\n"
@@ -492,36 +494,36 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % r.countSNPSyn()               // 5
                                                 % r.countIndSyn()               // 6
                                                 % (r.countSNPSyn() + r.countIndSyn())
-                                                % stats.vData.countSNPSyn()     // 8
-                                                % stats.vData.countIndSyn()     // 9
-                                                % stats.vData.countVarSyn()     // 10
-                                                % stats.countSNP_TP_Syn()       // 11
-                                                % stats.countInd_TP_Syn()       // 12
-                                                % stats.countVar_TP_Syn()       // 13
-                                                % stats.countSNP_FP_Syn()       // 14
-                                                % stats.countInd_FP_Syn()       // 15
-                                                % stats.countVar_FP_Syn()       // 16
-                                                % stats.countSNP_FnSyn()        // 17
-                                                % stats.countInd_FnSyn()        // 18
-                                                % stats.countVar_FnSyn()        // 19
-                                                % D(stats.countVarSnSyn())      // 20
-                                                % D(stats.countVarPC_Syn())     // 21
-                                                % D(stats.varF1())              // 22
-                                                % D(1-stats.countVarPC_Syn())   // 23
-                                                % D(stats.countSNPSnSyn())      // 24
-                                                % D(stats.countSNPPC_Syn())     // 25
-                                                % D(stats.SNPF1())              // 26
-                                                % D((1-stats.countSNPPC_Syn())) // 27
-                                                % D(stats.countIndSnSyn())      // 28
-                                                % D(stats.countIndPC_Syn())     // 29
-                                                % D(stats.indelF1())            // 30
-                                                % D(1-stats.countIndPC_Syn())   // 31
+                                                % ss.vData.countSNPSyn()     // 8
+                                                % ss.vData.countIndSyn()     // 9
+                                                % ss.vData.countVarSyn()     // 10
+                                                % ss.countSNP_TP_Syn()       // 11
+                                                % ss.countInd_TP_Syn()       // 12
+                                                % ss.countVar_TP_Syn()       // 13
+                                                % ss.countSNP_FP_Syn()       // 14
+                                                % ss.countInd_FP_Syn()       // 15
+                                                % ss.countVar_FP_Syn()       // 16
+                                                % ss.countSNP_FnSyn()        // 17
+                                                % ss.countInd_FnSyn()        // 18
+                                                % ss.countVar_FnSyn()        // 19
+                                                % D(ss.countVarSnSyn())      // 20
+                                                % D(ss.countVarPC_Syn())     // 21
+                                                % D(ss.varF1())              // 22
+                                                % D(1-ss.countVarPC_Syn())   // 23
+                                                % D(ss.countSNPSnSyn())      // 24
+                                                % D(ss.countSNPPC_Syn())     // 25
+                                                % D(ss.SNPF1())              // 26
+                                                % D((1-ss.countSNPPC_Syn())) // 27
+                                                % D(ss.countIndSnSyn())      // 28
+                                                % D(ss.countIndPC_Syn())     // 29
+                                                % D(ss.indelF1())            // 30
+                                                % D(1-ss.countIndPC_Syn())   // 31
                          ).str());
     };
     
     auto somatic = [&]()
     {
-        const auto lm = stats.vars.linear(true);
+        const auto lm = ss.vars.linear(true);
 
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
@@ -582,29 +584,29 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % r.countSNPGen()            // 8
                                                 % r.countIndGen()            // 9
                                                 % (r.countSNPGen() + r.countIndGen())
-                                                % stats.vData.countSNPSyn()  // 11
-                                                % stats.vData.countIndSyn()  // 12
-                                                % stats.vData.countVarSyn()  // 13
-                                                % stats.vars.limit.abund     // 14
-                                                % stats.vars.limit.id        // 15
-                                                % stats.countSNP_TP_Syn()    // 16
-                                                % stats.countInd_TP_Syn()    // 17
-                                                % stats.countVar_TP_Syn()    // 18
-                                                % stats.countSNP_FP_Syn()    // 19
-                                                % stats.countInd_FP_Syn()    // 20
-                                                % stats.countVar_FP_Syn()    // 21
-                                                % stats.countSNP_FnSyn()     // 22
-                                                % stats.countInd_FnSyn()     // 23
-                                                % stats.countVar_FnSyn()     // 24
-                                                % stats.countVarSnSyn()      // 25
-                                                % stats.countVarPC_Syn()     // 26
-                                                % (1-stats.countVarPC_Syn()) // 27
-                                                % stats.countSNPSnSyn()      // 28
-                                                % stats.countSNPPC_Syn()     // 29
-                                                % (1-stats.countSNPPC_Syn()) // 30
-                                                % stats.countIndSnSyn()      // 31
-                                                % stats.countIndPC_Syn()     // 32
-                                                % (1-stats.countIndPC_Syn()) // 33
+                                                % ss.vData.countSNPSyn()  // 11
+                                                % ss.vData.countIndSyn()  // 12
+                                                % ss.vData.countVarSyn()  // 13
+                                                % ss.vars.limit.abund     // 14
+                                                % ss.vars.limit.id        // 15
+                                                % ss.countSNP_TP_Syn()    // 16
+                                                % ss.countInd_TP_Syn()    // 17
+                                                % ss.countVar_TP_Syn()    // 18
+                                                % ss.countSNP_FP_Syn()    // 19
+                                                % ss.countInd_FP_Syn()    // 20
+                                                % ss.countVar_FP_Syn()    // 21
+                                                % ss.countSNP_FnSyn()     // 22
+                                                % ss.countInd_FnSyn()     // 23
+                                                % ss.countVar_FnSyn()     // 24
+                                                % ss.countVarSnSyn()      // 25
+                                                % ss.countVarPC_Syn()     // 26
+                                                % (1-ss.countVarPC_Syn()) // 27
+                                                % ss.countSNPSnSyn()      // 28
+                                                % ss.countSNPPC_Syn()     // 29
+                                                % (1-ss.countSNPPC_Syn()) // 30
+                                                % ss.countIndSnSyn()      // 31
+                                                % ss.countIndPC_Syn()     // 32
+                                                % (1-ss.countIndPC_Syn()) // 33
                                                 % lm.m                       // 34
                                                 % lm.r                       // 35
                                                 % lm.R2                      // 36
@@ -638,9 +640,9 @@ void VDiscover::report(const FileName &file, const Options &o)
     // Statistics for the variants
     const auto stats = analyze(file, o);
     
-    o.info("TP: " + std::to_string(stats.countVar_TP_Syn()));
-    o.info("FP: " + std::to_string(stats.countVar_FP_Syn()));
-    o.info("FN: " + std::to_string(stats.countVar_FnSyn()));
+    o.info("TP: " + std::to_string(stats.syn.countVar_TP_Syn()));
+    o.info("FP: " + std::to_string(stats.syn.countVar_FP_Syn()));
+    o.info("FN: " + std::to_string(stats.syn.countVar_FnSyn()));
 
     o.info("Generating statistics");
 

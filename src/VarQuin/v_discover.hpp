@@ -21,7 +21,7 @@ namespace Anaquin
             VarFormat format;
         };
 
-        struct Stats : public MappingStats, public VariantStats
+        struct VStats : public MappingStats, public VariantStats
         {
             struct Data
             {
@@ -243,6 +243,11 @@ namespace Anaquin
             std::map<long, Counts> readR;
             std::map<long, Counts> readV;
             std::map<long, Counts> depth;
+        };
+
+        struct Stats
+        {
+            VStats syn;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
