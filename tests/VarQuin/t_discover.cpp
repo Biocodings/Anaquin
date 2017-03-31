@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "test.hpp"
-#include "VarQuin/v_align.hpp"
+#include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
 
