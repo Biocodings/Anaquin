@@ -130,15 +130,11 @@ static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
                 
                 writeBase(align.cID, l, "FP");
             }
-            else if (isVarQuin(align.cID))
+//            else if (isReverseGenome(align.cID))
             {
                 stats.data[align.cID].fp++;
                 
-                /*
-                 * The read is not aligned within the reference regions. We don't know whether this is
-                 * a TP or FP.
-                 */
-                
+                // Not overlapping with the reference regions
                 writeBase(align.cID, l, "FP");
             }
         }
@@ -182,7 +178,7 @@ VAlign::Stats VAlign::analyze(const FileName &gen, const FileName &seqs, const O
             return;
         }
         
-        stats.update(x, isVarQuin);
+        stats.update(x, isReverseGenome);
         
         if (info.skip)
         {
@@ -573,7 +569,7 @@ void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const 
         const auto &cID = i.first;
         
         // Only the synthetic chromosome...
-        if (isVarQuin(cID))
+        if (isReverseGenome(cID))
         {
             o.logInfo(i.first + " - " + std::to_string(i.second.data().size()));
             
@@ -613,12 +609,9 @@ void VAlign::writeQueries(const FileName &file, const VAlign::Stats &stats, cons
 
     for (const auto &i : stats.data)
     {
-        if (isVarQuin(i.first))
+        for (const auto &j : i.second.afp)
         {
-            for (const auto &j : i.second.afp)
-            {
-                o.writer->write((boost::format(format) % j % "FP").str());
-            }
+            o.writer->write((boost::format(format) % j % "FP").str());
         }
     }
     

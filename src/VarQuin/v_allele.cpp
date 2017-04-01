@@ -18,45 +18,45 @@ VAllele::Stats VAllele::analyze(const FileName &file, const VAllele::Options &o)
 {
     VAllele::Stats stats;
     
-    std::map<SequinID, SequinAllele> seqs;
-    
-    switch (o.format)
-    {
-        case (Format::Salmon):
-        {
-            ParserSalmon::parse(file, [&](const ParserSalmon::Data &x, const ParserProgress &)
-            {
-                if (x.cID == ChrIS)
-                {
-                    if (isRefID(x.id))
-                    {
-                        seqs[baseID(x.id)].ref = x.abund;
-                    }
-                    else
-                    {
-                        seqs[baseID(x.id)].alt = x.abund;
-                    }
-                }
-            });
-
-            break;
-        }
-    }
-
-    const auto &r = Standard::instance().r_var;
-
-    for (const auto &seq : seqs)
-    {
-        const auto exp = r.findAFreq(seq.first);
-        const auto obs = seq.second.alt / (seq.second.ref + seq.second.alt);
-        stats.add(seq.first, exp, obs);
-        
-        if (isnan(stats.limit.abund) || exp < stats.limit.abund)
-        {
-            stats.limit.id = seq.first;
-            stats.limit.abund = exp;
-        }
-    }
+//    std::map<SequinID, SequinAllele> seqs;
+//    
+//    switch (o.format)
+//    {
+//        case (Format::Salmon):
+//        {
+//            ParserSalmon::parse(file, [&](const ParserSalmon::Data &x, const ParserProgress &)
+//            {
+//                if (x.cID == ChrIS)
+//                {
+//                    if (isReverseGenome(x.id)) // ???? TODO
+//                    {
+//                        seqs[baseID(x.id)].ref = x.abund;
+//                    }
+//                    else
+//                    {
+//                        seqs[baseID(x.id)].alt = x.abund;
+//                    }
+//                }
+//            });
+//
+//            break;
+//        }
+//    }
+//
+//    const auto &r = Standard::instance().r_var;
+//
+//    for (const auto &seq : seqs)
+//    {
+//        const auto exp = r.findAFreq(seq.first);
+//        const auto obs = seq.second.alt / (seq.second.ref + seq.second.alt);
+//        stats.add(seq.first, exp, obs);
+//        
+//        if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+//        {
+//            stats.limit.id = seq.first;
+//            stats.limit.abund = exp;
+//        }
+//    }
 
     return stats;
 }

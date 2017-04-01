@@ -534,7 +534,7 @@ void VarRef::readVRef(const Reader &r)
 {
     for (const auto &i : (_impl->vData = vcfData(r)))
     {
-        if (!isVarQuin(i.first))
+        if (!isReverseGenome(i.first))
         {
             Standard::addGenomic(i.first);
         }
@@ -542,7 +542,7 @@ void VarRef::readVRef(const Reader &r)
 }
 
 C2Intervals  VarRef::dInters()    const { return _impl->bData.inters(); }
-ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(isVarQuin); }
+ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(isReverseGenome); }
 
 MC2Intervals VarRef::mInters() const { return _impl->bData.minters(); }
 
@@ -568,11 +568,11 @@ bool VarRef::isGermline() const
 
 bool VarRef::hasRCon(const SequinID &id) const
 {
-    if (!_impl->data.at(Mix_1).count(baseID(id)))
+    if (!_impl->data.at(Mix_1).count(id))
     {
         return false;
     }
-    else if (isnan(_impl->data.at(Mix_1).at(baseID(id)).r->abund))
+    else if (isnan(_impl->data.at(Mix_1).at(id).r->abund))
     {
         return false;
     }
@@ -582,11 +582,11 @@ bool VarRef::hasRCon(const SequinID &id) const
 
 bool VarRef::hasVCon(const SequinID &id) const
 {
-    if (!_impl->data.at(Mix_1).count(baseID(id)))
+    if (!_impl->data.at(Mix_1).count(id))
     {
         return false;
     }
-    else if (isnan(_impl->data.at(Mix_1).at(baseID(id)).v->abund))
+    else if (isnan(_impl->data.at(Mix_1).at(id).v->abund))
     {
         return false;
     }
@@ -596,19 +596,19 @@ bool VarRef::hasVCon(const SequinID &id) const
 
 Concent VarRef::findRCon(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
+    const auto &p = _impl->data.at(Mix_1).at(id);
     return p.r->abund;
 }
 
 Concent VarRef::findVCon(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
+    const auto &p = _impl->data.at(Mix_1).at(id);
     return p.v->abund;
 }
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
+    const auto &p = _impl->data.at(Mix_1).at(id);
     const auto &r = p.r;
     const auto &v = p.v;
 
@@ -650,11 +650,11 @@ Counts VarRef::countVar() const
     return _impl->vData.countVar();
 }
 
-Base VarRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isVarQuin); }
-Base VarRef::nBaseGen() const { return _impl->bData.countBaseGen(isVarQuin); }
+Base VarRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isReverseGenome); }
+Base VarRef::nBaseGen() const { return _impl->bData.countBaseGen(isReverseGenome); }
 
-Counts VarRef::nGeneSyn() const { return _impl->bData.nGeneSyn(isVarQuin); }
-Counts VarRef::nGeneGen() const { return _impl->bData.nGeneGen(isVarQuin); }
+Counts VarRef::nGeneSyn() const { return _impl->bData.nGeneSyn(isReverseGenome); }
+Counts VarRef::nGeneGen() const { return _impl->bData.nGeneGen(isReverseGenome); }
 
 void VarRef::validate()
 {
@@ -690,7 +690,7 @@ void VarRef::validate()
 
         for (const auto &j : data)
         {
-            if (isRefID(j.id))
+            if (isReverseGenome(j.id)) // TODO: This looks incorrect...
             {
                 // Eg: D_1_3_R
                 const auto rID = j.id;
@@ -710,8 +710,8 @@ void VarRef::validate()
                 
                 A_ASSERT(rIter != data.end() && vIter != data.end());
                 
-                _impl->data[i.first][baseID(j.id)].r = &(*rIter);
-                _impl->data[i.first][baseID(j.id)].v = &(*vIter);
+                _impl->data[i.first][j.id].r = &(*rIter);
+                _impl->data[i.first][j.id].v = &(*vIter);
             }
         }
     }

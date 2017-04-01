@@ -21,6 +21,16 @@ extern Path __output__;
 // Defined in main.cpp
 extern std::string __full_command__;
 
+inline std::string type2str(Mutation type)
+{
+    switch (type)
+    {
+        case Mutation::SNP:       { return "SNP";       }
+        case Mutation::Deletion:  { return "Deletion";  }
+        case Mutation::Insertion: { return "Insertion"; }
+    }
+}
+
 static Scripts createVGROC(const FileName &file, const std::string &score, const std::string &refRat)
 {
     return (boost::format(PlotVGROC()) % date()
@@ -97,7 +107,7 @@ struct VDiscoverImpl : public VCFDataUser
                 
                 stats->data.at(cID).af = m.query.alleleFreq();
                 
-                const auto exp = r.findAFreq(baseID(m.match->id));
+                const auto exp = r.findAFreq(m.match->id);
                 const auto obs = m.query.alleleFreq();
                 
                 // Eg: 2821292107
@@ -133,20 +143,20 @@ struct VDiscoverImpl : public VCFDataUser
         // Always work on the queries
         stats->query[cID].af.insert(m.query.alleleFreq());
 
-//        if (isVarQuin(cID))
-//        {
-//            stats->nSyn++;
-//            f();
-//        }
-//        else
-//        {
-//            stats->nGen++;
-//            
-//            if (Standard::isGenomic(cID))
-//            {
-//                f();
-//            }
-//        }
+        if (isReverseGenome(cID))
+        {
+            stats->nSyn++;
+            f();
+        }
+        else
+        {
+            stats->nGen++;
+            
+            if (Standard::isGenomic(cID))
+            {
+                f();
+            }
+        }
     }
 };
 
