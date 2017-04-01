@@ -11,7 +11,6 @@ namespace Anaquin
 {
     typedef std::map<std::string, Counts> Hist;
     
-    typedef std::map<long, Counts> HashHist;
     typedef std::map<SequinID, Counts> SequinHist;
     
     template <typename T> Hist createHist(const T& t)

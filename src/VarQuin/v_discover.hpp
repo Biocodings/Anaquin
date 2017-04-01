@@ -9,6 +9,11 @@
 
 namespace Anaquin
 {
+    // Hask key for mapping a variant
+    typedef long VarHashKey;
+    
+    typedef std::map<VarHashKey, Counts> VarHashTable;
+
     struct VDiscover
     {
         struct Options : public AnalyzerOptions
@@ -206,8 +211,8 @@ namespace Anaquin
             
             VCFData vData;
             
-            // Distribution for the variants
-            std::map<ChrID, HashHist> hist;
+            // Hash table for variants
+            std::map<ChrID, VarHashTable> hash;
 
             std::map<ChrID, Data> data;
 
@@ -247,11 +252,15 @@ namespace Anaquin
 
         struct Stats
         {
-            VStats syn;
+            // Statitics for sequins
+            VStats seqs;
+
+            // Statistics for endogenous sample
+            VStats endo;
         };
 
-        static Stats analyze(const FileName &, const Options &o = Options());
-        static void report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

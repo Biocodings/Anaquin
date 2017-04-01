@@ -94,7 +94,7 @@ struct VDiscoverImpl : public VCFDataUser
             if (matched)
             {
                 const auto key = m.match->key();
-                stats->hist.at(cID).at(key)++;
+                stats->hash.at(cID).at(key)++;
                 
                 stats->data[cID].tps.push_back(m);
                 stats->data[cID].tps_[key] = stats->data[cID].tps.back();
@@ -154,34 +154,47 @@ struct VDiscoverImpl : public VCFDataUser
     }
 };
 
-VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
+VDiscover::Stats VDiscover::analyze(const FileName &hg38, const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
-    stats.syn.hist = r.vHist();
-
-    for (const auto &i : stats.syn.hist)
+    
+    const auto init = [&](VStats &stats)
     {
-        stats.syn.data[i.first];
-    }
+        stats.hash = r.vHist();
+        
+        for (const auto &i : stats.hash)
+        {
+            stats.data[i.first];
+        }
+    };
 
-    o.analyze(file);
+    init(stats.endo);
+    init(stats.seqs);
+
+    o.analyze(hg38);
+    o.analyze(seqs);
 
     VDiscoverImpl impl;
     impl.o = &o;
-    impl.stats = &stats.syn;
+    impl.stats = &stats.seqs;
 
-    // Read the input variants
-    stats.syn.vData = vcfData(file, o.format, &impl);
+    // Analyze for sequins
+    stats.seqs.vData = vcfData(seqs, o.format, &impl);
 
+    impl.stats = &stats.endo;
+
+    // Analyze for endogenous sample
+    stats.endo.vData = vcfData(hg38, o.format, &impl);
+    
     o.info("Aggregating statistics");
 
-    for (const auto &i : stats.syn.data)
+    for (const auto &i : stats.seqs.data)
     {
         const auto &cID = i.first;
         
-        auto &x = stats.syn.data[cID];
+        auto &x = stats.seqs.data[cID];
         
         for (const auto &j : i.second.tps)
         {
@@ -232,7 +245,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%";
 
     o.generate(file);
     o.writer->open(file);
@@ -251,8 +264,9 @@ static void writeQuins(const FileName &file,
                                            % "Qual"
                                            % "QualR"
                                            % "QualV"
+                                           % "FoundEndo"
                                            % "Type").str());
-    for (const auto &i : stats.syn.hist)
+    for (const auto &i : stats.seqs.hash)
     {
         const auto &cID = i.first;
         
@@ -261,11 +275,27 @@ static void writeQuins(const FileName &file,
         {
             const auto &key = j.first;
 
+            auto foundEndo = [&](const VarHashKey &key)
+            {
+                for (const auto &i : stats.endo.hash)
+                {
+                    for (const auto &j : i.second)
+                    {
+                        if (j.first == key)
+                        {
+                            return (bool) j.second;
+                        }
+                    }
+                }
+
+                throw std::runtime_error("Sequin variants must also be found in the human sample (stats.hg38)");
+            };
+            
             // Detected the sequin?
             if (j.second)
             {
                 const auto m = r.findVar(cID, key);
-                assert(m);
+                A_ASSERT(m);
                 
                 // Eg: "SNP"
                 const auto type = type2str(m->type());
@@ -295,6 +325,7 @@ static void writeQuins(const FileName &file,
                                                                % x2ns(t.query.qual)
                                                                % x2ns(t.query.qualR)
                                                                % x2ns(t.query.qualV)
+                                                               % b2s(foundEndo(key))
                                                                % type).str());
                         return true;
                     }
@@ -302,7 +333,7 @@ static void writeQuins(const FileName &file,
                     return false;
                 };
 
-                if (!f(stats.syn.data.at(i.first).tps_, "TP") && !f(stats.syn.data.at(i.first).fns_, "FN"))
+                if (!f(stats.seqs.data.at(i.first).tps_, "TP") && !f(stats.seqs.data.at(i.first).fns_, "FN"))
                 {
                     throw std::runtime_error("Failed to find hash key in writeQuins()");
                 }
@@ -312,7 +343,7 @@ static void writeQuins(const FileName &file,
             else
             {
                 const auto m = r.findVar(i.first, j.first);
-                assert(m);
+                A_ASSERT(m);
                 
                 // Eg: "SNP"
                 const auto type = type2str(m->type());
@@ -332,6 +363,7 @@ static void writeQuins(const FileName &file,
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
+                                                       % b2s(foundEndo(key))
                                                        % type).str());
             }
         }
@@ -364,7 +396,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "QualV"
                                            % "Type").str());
 
-    for (const auto &i : stats.syn.data)
+    for (const auto &i : stats.seqs.data)
     {
         const auto &cID = i.first;
         
@@ -438,7 +470,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
-    const auto &ss = stats.syn;
+    const auto &ss = stats.seqs;
 
     auto germline = [&]()
     {
@@ -633,16 +665,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->close();
 }
 
-void VDiscover::report(const FileName &file, const Options &o)
+void VDiscover::report(const FileName &hg38, const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     // Statistics for the variants
-    const auto stats = analyze(file, o);
+    const auto stats = analyze(hg38, seqs, o);
     
-    o.info("TP: " + std::to_string(stats.syn.countVar_TP_Syn()));
-    o.info("FP: " + std::to_string(stats.syn.countVar_FP_Syn()));
-    o.info("FN: " + std::to_string(stats.syn.countVar_FnSyn()));
+    o.info("TP: " + std::to_string(stats.seqs.countVar_TP_Syn()));
+    o.info("FP: " + std::to_string(stats.seqs.countVar_FP_Syn()));
+    o.info("FN: " + std::to_string(stats.seqs.countVar_FnSyn()));
 
     o.info("Generating statistics");
 
@@ -656,7 +688,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating VarDiscover_summary.stats
      */
     
-    writeSummary("VarDiscover_summary.stats", file, stats, o);
+    writeSummary("VarDiscover_summary.stats", seqs, stats, o);
     
     /*
      * Generating VarDiscover_detected.csv
