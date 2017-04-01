@@ -437,10 +437,11 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                         }
                     }
                 }
-                
-                const auto eRef  = sID != "-" && r.hasRCon(sID) ?  r.findRCon(sID) : NAN;
-                const auto eVar  = sID != "-" && r.hasVCon(sID) ?  r.findVCon(sID) : NAN;
-                const auto eFreq = sID != "-" && r.hasRCon(sID) && r.hasVCon(sID)  ? r.findAFreq(sID) : NAN;
+
+                const auto hasAFreq = r.hasAFreq(sID);
+                const auto eRef  = sID != "-" && hasAFreq ? r.findRCon(sID)  : NAN;
+                const auto eVar  = sID != "-" && hasAFreq ? r.findVCon(sID)  : NAN;
+                const auto eFreq = sID != "-" && hasAFreq ? r.findAFreq(sID) : NAN;
 
                 o.writer->write((boost::format(format) % sID
                                                        % i.query.cID

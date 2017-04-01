@@ -1408,7 +1408,7 @@ void parse(int argc, char ** argv)
                     }
                     else if (ParserVariant::isVariant(file))
                     {
-                        o.format = VarFormat::Anaquin;
+                        o.format = VarFormat::Text;
                     }
                     else
                     {

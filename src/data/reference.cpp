@@ -327,13 +327,13 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
         // Eg: MixA, MixB etc
         const auto mix = i.first;
         
-        // For each of the mixture defined
+        // For each of the sequin
         for (const auto j : i.second)
         {
             // Only if it's a validated sequin
-            if (_data.count(j.id))
+            if (_data.count(j.second->id))
             {
-                _data.at(j.id).mixes[mix] = j.abund;
+                _data.at(j.first).mixes[mix] = j.second->abund;
             }
         }
     }
@@ -498,16 +498,8 @@ void MetaRef::validate()
  * ------------------------- Variant Analysis -------------------------
  */
 
-struct VarRef::VariantPair
-{
-    const MixtureData *r, *v;
-};
-
 struct VarRef::VarRefImpl
 {
-    // Mixture data
-    std::map<Mixture, std::map<SequinID, VariantPair>> data;
-
     VCFData vData;
     BedData bData;
 };
@@ -557,62 +549,36 @@ bool VarRef::isGermline() const
 {
     std::set<Proportion> freqs;
     
-    for (const auto &i : _impl->data.at(Mix_1))
+    for (const auto &i : _mixes.at(Mix_1))
     {
-        freqs.insert(findAFreq(i.first));
+        freqs.insert(i.second->abund);
     }
     
     // Only homozygousa and heterozygous?
     return freqs.size() == 2 && freqs.count(0.5) && freqs.count(1);
 }
 
-bool VarRef::hasRCon(const SequinID &id) const
-{
-    if (!_impl->data.at(Mix_1).count(id))
-    {
-        return false;
-    }
-    else if (isnan(_impl->data.at(Mix_1).at(id).r->abund))
-    {
-        return false;
-    }
-    
-    return true;
-}
-
-bool VarRef::hasVCon(const SequinID &id) const
-{
-    if (!_impl->data.at(Mix_1).count(id))
-    {
-        return false;
-    }
-    else if (isnan(_impl->data.at(Mix_1).at(id).v->abund))
-    {
-        return false;
-    }
-    
-    return true;
-}
-
 Concent VarRef::findRCon(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(id);
-    return p.r->abund;
+    return _mixes.at(Mix_1).at(id + "_R")->abund;
 }
 
 Concent VarRef::findVCon(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(id);
-    return p.v->abund;
+    return _mixes.at(Mix_1).at(id + "_V")->abund;
 }
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(id);
-    const auto &r = p.r;
-    const auto &v = p.v;
+    const auto v = findRCon(id);
+    const auto r = findRCon(id);
+    
+    return v / (r + v);
+}
 
-    return v->abund / (r->abund + v->abund);
+bool VarRef::hasAFreq(const SequinID &id) const
+{
+    return _mixes.at(Mix_1).count(id + "_R");
 }
 
 Counts VarRef::countInd(const ChrID &cID) const
@@ -679,44 +645,6 @@ void VarRef::validate()
         A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
         merge(seqIDs);
     }
-
-    /*
-     * Building allele frequency for the variants
-     */
-
-    for (const auto &i : _mixes)
-    {
-        const auto &data = _mixes.at(i.first);
-
-        for (const auto &j : data)
-        {
-            if (isReverseGenome(j.id)) // TODO: This looks incorrect...
-            {
-                // Eg: D_1_3_R
-                const auto rID = j.id;
-                
-                // Eg: D_1_3_V
-                const auto vID = rID.substr(0, rID.size() - 2) + "_V";
-             
-                auto rIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
-                {
-                    return m.id == rID;
-                });
-                
-                auto vIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
-                {
-                    return m.id == vID;
-                });
-                
-                A_ASSERT(rIter != data.end() && vIter != data.end());
-                
-                _impl->data[i.first][j.id].r = &(*rIter);
-                _impl->data[i.first][j.id].v = &(*vIter);
-            }
-        }
-    }
-    
-    // TODO: If the tool requires mixture, we need to make sure we have _impl->data
 }
 
 const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const

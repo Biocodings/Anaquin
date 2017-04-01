@@ -168,7 +168,7 @@ namespace Anaquin
     {
         VarScan,
         VCF,
-        Anaquin,
+        Text,
     };
 
     struct VCFDataUser
@@ -241,7 +241,7 @@ namespace Anaquin
                 break;
             }
 
-            case VarFormat::Anaquin:
+            case VarFormat::Text:
             {
                 ParserVariant::parse(r, [&](const ParserVariant::Data &x, const ParserProgress &p)
                 {

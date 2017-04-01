@@ -30,7 +30,7 @@ namespace Anaquin
             return mixes.at(m) / (norm ? l.length() : 1);
         }
         
-        // Expected differential
+        // Expected differential fold-change (only defined for two mixtures)
         inline Fold fold() const
         {
             return concent(Mixture::Mix_2) / concent(Mixture::Mix_1);
@@ -67,7 +67,7 @@ namespace Anaquin
             // Add a sequin defined in a mixture file
             inline void add(const SequinID &id, Base length, Concent c, Mixture m)
             {
-                _mixes[m].insert(MixtureData(id, length, c));
+                _mixes[m][id] = std::shared_ptr<MixtureData>(new MixtureData(id, length, c));
                 _rawMIDs.insert(id);
             }
 
@@ -115,20 +115,6 @@ namespace Anaquin
             }
 
             inline SequinHist hist() const { return hist(_data); }
-
-            // Calculate the total length of all sequins in the reference
-            inline Base size() const
-            {
-                Base n = 0;
-                
-                for (const auto &i : _data)
-                {
-                    n += i.second.l.length();
-                }
-
-                assert(n);
-                return n;
-            }
 
             inline void finalize()
             {
@@ -230,13 +216,13 @@ namespace Anaquin
                     // Eg: MixA, MixB etc
                     const auto mix = i.first;
                 
-                    // For each of the mixture defined
+                    // For each of the sequin
                     for (const auto j : i.second)
                     {
                         // Only if it's a validated sequin
-                        if (_data.count(j.id))
+                        if (_data.count(j.second->id))
                         {
-                            _data.at(j.id).mixes[mix] = j.abund;
+                            _data.at(j.second->id).mixes[mix] = j.second->abund;
                         }
                     }
                 }
@@ -251,15 +237,7 @@ namespace Anaquin
 
             inline const MixtureData * findMix(Mixture mix, const SequinID &id) const
             {
-                for (auto &i : _mixes.at(mix))
-                {
-                    if (i.id == id)
-                    {
-                        return &i;
-                    }
-                }
-                
-                return nullptr;
+                return _mixes.at(mix).count(id) ? _mixes.at(mix).at(id).get() : nullptr;
             }
 
             // Validated sequins
@@ -269,7 +247,7 @@ namespace Anaquin
             std::set<SequinID> _rawMIDs;
 
             // Data for mixture (if defined)
-            std::map<Mixture, std::set<MixtureData>> _mixes;
+            std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
     };
 
     /*
@@ -363,9 +341,6 @@ namespace Anaquin
 
             const Variant *findVar(const ChrID &, long key) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
-
-            bool hasRCon(const SequinID &) const;
-            bool hasVCon(const SequinID &) const;
         
             Concent findRCon(const SequinID &) const;
             Concent findVCon(const SequinID &) const;
@@ -373,6 +348,8 @@ namespace Anaquin
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;
 
+            bool hasAFreq(const SequinID &) const;
+        
             // Is this germline? Homozygous?
             bool isGermline() const;
         
