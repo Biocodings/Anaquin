@@ -71,10 +71,10 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
-            // Return number of mixtures
+            // Number of sequins defined in mixture
             inline Counts countMix() const { return _mixes.size(); }
 
-            // Return number of sequins
+            // Number of sequins defined in annotation
             inline Counts countSeqs() const { return _data.size(); }
 
             // Return all validated sequins
