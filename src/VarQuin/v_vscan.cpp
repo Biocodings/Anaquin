@@ -28,7 +28,7 @@ VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, cons
     
     ParserVarScan::parse(Reader(file), [&](const ParserVarScan::Data &x, const ParserProgress &)
     {
-        if (isVarQuin(x.cID))
+        if (isReverseGenome(x.cID))
         {
             stats.nSyn++;
         }
