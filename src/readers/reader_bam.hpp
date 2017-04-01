@@ -60,7 +60,7 @@ namespace Anaquin
                         matched->map(x.l);
                     }
                     
-                    if (isVarQuin(x.cID))
+                    if (isReverseGenome(x.cID))
                     {
                         stats.nSyn++;
                     }
