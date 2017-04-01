@@ -1053,8 +1053,6 @@ void parse(int argc, char ** argv)
                 s.r_rna.finalize();
             }
 
-            #define HACK_ERCC(x) if (x == "ERCC") { x = "isoform"; }
-
             switch (_p.tool)
             {
                 case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
@@ -1087,7 +1085,6 @@ void parse(int argc, char ** argv)
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
 
-                    HACK_ERCC(_p.opts[OPT_METHOD])                    
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
                     
                     const auto &file = _p.inputs[0];
@@ -1127,7 +1124,6 @@ void parse(int argc, char ** argv)
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
                     
-                    HACK_ERCC(_p.opts[OPT_METHOD])
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RFold::Metrics::Gene : RFold::Metrics::Isoform;
                     
                     const auto &file = _p.inputs[0];
@@ -1300,7 +1296,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALIGN:
                     {
                         /*
-                         * It's important to apply to both genomic and sequins
+                         * It's important to apply to both endogenous and sequins
                          */
                         
                         applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
