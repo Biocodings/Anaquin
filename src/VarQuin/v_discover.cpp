@@ -62,14 +62,10 @@ struct VDiscoverImpl : public VCFDataUser
             m.query = query;
             m.match = nullptr;
             
-            const auto isSyn = isVarQuin(query.cID);
-            
-            if (isSyn || Standard::isGenomic(query.cID))
+            if (Standard::isGenomic(query.cID))
             {
                 // Can we match by position?
-                m.match = r.findVar(query.cID, query.l);
-                
-                if (m.match)
+                if ((m.match = r.findVar(query.cID, query.l)))
                 {
                     m.ref = m.match->ref == query.ref;
                     m.alt = m.match->alt == query.alt;
@@ -137,20 +133,20 @@ struct VDiscoverImpl : public VCFDataUser
         // Always work on the queries
         stats->query[cID].af.insert(m.query.alleleFreq());
 
-        if (isVarQuin(cID))
-        {
-            stats->nSyn++;
-            f();
-        }
-        else
-        {
-            stats->nGen++;
-            
-            if (Standard::isGenomic(cID))
-            {
-                f();
-            }
-        }
+//        if (isVarQuin(cID))
+//        {
+//            stats->nSyn++;
+//            f();
+//        }
+//        else
+//        {
+//            stats->nGen++;
+//            
+//            if (Standard::isGenomic(cID))
+//            {
+//                f();
+//            }
+//        }
     }
 };
 
