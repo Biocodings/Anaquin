@@ -264,7 +264,7 @@ static void writeQuins(const FileName &file,
                                            % "Qual"
                                            % "QualR"
                                            % "QualV"
-                                           % "FoundEndo"
+                                           % "hg38"
                                            % "Type").str());
     for (const auto &i : stats.seqs.hash)
     {
