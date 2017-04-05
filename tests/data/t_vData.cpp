@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "tools/vcf_data.hpp"
+#include "data/vData.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("VCF_Synthetic")
+TEST_CASE("ReadVFile_Example")
 {
-    const auto r = vcfData(Reader("data/VarQuin/AVA009_v001.vcf"));
+    const auto r = readVFile(Reader("data/VarQuin/AVA009_v001.vcf"));
     
     REQUIRE(r.countInd()    == 108);
     REQUIRE(r.countIndSyn() == 108);

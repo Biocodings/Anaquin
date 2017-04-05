@@ -59,11 +59,6 @@ namespace Anaquin
         return out.str();
     }
 
-    inline std::string b2s(bool b)
-    {
-        return b ? "Y" : "N";
-    }
-    
     template <typename T> std::string x2ns(const T &x)
     {
         if (isnan(x) || !std::isfinite(x))

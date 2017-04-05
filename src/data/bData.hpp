@@ -1,9 +1,9 @@
-#ifndef BED_DATA_HPP
-#define BED_DATA_HPP
+#ifndef B_DATA_HPP
+#define B_DATA_HPP
 
+#include "tools/tools.hpp"
 #include "data/minters.hpp"
 #include "data/intervals.hpp"
-#include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_bed.hpp"
 
@@ -38,15 +38,15 @@ namespace Anaquin
 
         template <typename F> Counts countBaseSyn(F f) const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
             {
                 return f(cID) ? countBase(cID) : 0;
             });
         }
 
-        inline Counts countBase() const
+        inline Counts length() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
             {
                 return countBase(cID);
             });
@@ -54,20 +54,28 @@ namespace Anaquin
         
         template <typename F> Counts countBaseGen(F f) const
         {
-            return countBase() - countBaseSyn(f);
+            return length() - countBaseSyn(f);
         }
         
         inline Counts nGene() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
             {
                 return nGene(cID);
+            });
+        }
+
+        inline Counts count() const
+        {
+            return countMap(*this, [&](const ChrID &, const BedChrData &x)
+            {
+                return x.r2d.size();
             });
         }
         
         template <typename F> Counts nGeneSyn(F f) const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
             {
                 return f(cID) ? nGene(cID) : 0;
             });
@@ -228,11 +236,11 @@ namespace Anaquin
         }
     };
     
-    inline BedData bedData(const Reader &r)
+    template <typename F> BedData readRData(const Reader &r, F f)
     {
         BedData c2d;
         
-        ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &)
+        ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &p)
         {
             // Name of the region? Locus of the region if not specified.
             const auto rkey = !x.name.empty() ? x.name : x.l.key();
@@ -241,10 +249,17 @@ namespace Anaquin
             
             // Eg: chr1 0 248956422 chr1
             c2d[x.cID].r2d[rkey] = x;
+            
+            f(x, p);
         });
 
         return c2d;
-    }    
+    }
+    
+    inline BedData bedData(const Reader &r)
+    {
+        return readRData(r, [](const ParserBed::Data &, const ParserProgress &) {});
+    }
 }
 
 #endif

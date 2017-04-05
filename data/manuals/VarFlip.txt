@@ -12,11 +12,11 @@
      VarFlip takes the standard SAM/BAM file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarFlip –ufiles aligned.bam
+     anaquin VarFlip –ubam aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -ufiles      Generated forward/reverse alignment file in SAM/BAM format
+        -ubam        Generated forward/reverse alignment file in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to

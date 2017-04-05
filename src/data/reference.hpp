@@ -296,12 +296,12 @@ namespace Anaquin
             void readGBRef(const Reader &);
             void readSBRef(const Reader &);
 
-            Base nBaseSyn() const;
-            Base nBaseGen() const;
+            // Number of reference regions
+            Counts nRegs() const;
 
-            Counts nGeneSyn() const;
-            Counts nGeneGen() const;
-
+            // Total number of bases for
+            Base lRegs() const;
+        
             // Returns number of known variants
             Counts countVar() const;
 
@@ -331,9 +331,6 @@ namespace Anaquin
             C2Intervals  dIntersGen() const;
 
             MC2Intervals mInters() const;
-        
-            // Do we have the chromosome in the reference?
-            bool hasInters(const ChrID &) const;
         
             MergedIntervals<> mInters(const ChrID &) const;
         

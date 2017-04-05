@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "tools/bed_data.hpp"
+#include "data/bData.hpp"
 
 using namespace Anaquin;
 

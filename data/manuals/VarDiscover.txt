@@ -31,14 +31,15 @@
     user-guide for details. 
 
 <b>USAGE EXAMPLE</b>
-     anaquin VarDiscover –rbed reference.bed –rvcf reference.vcf –m mixture.csv –ufiles variants.vcf
+     anaquin VarDiscover –rbed reference.bed –rvcf reference.vcf –m mixture.csv –uhuman human.vcf -useqs seqs.vcf
 
 <b>TOOL OPTIONS</b>
      Required:
         -rvcf        Reference variant annotation file in VCF format
         -rbed        Reference <i>in silico</i> coordinate annotation file in BED format
         -m           Reference VarQuin mixture file in CSV format
-        -ufiles      User-generated variants in VCF format or text format
+        -human       User-generated variants for human sample in VCF format
+        -seqs        User-generated variants for sequins in VCF format
 
      Optional:
         -o = output  Directory in which the output files are written to

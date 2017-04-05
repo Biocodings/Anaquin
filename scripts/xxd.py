@@ -54,8 +54,7 @@ data  = [ 'data/manuals/anaquin.txt',
           # ---------- VarQuin ----------
 
           'data/VarQuin/sampled.bed',
-          'data/VarQuin/AVA033_v001.bed',
-          'data/VarQuin/AVA009_v001.vcf',
+          'data/VarQuin/AVA033_v001.bed',          
         ]
 tests = [ ]
 

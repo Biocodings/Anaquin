@@ -1,7 +1,7 @@
+#include "data/bData.hpp"
+#include "data/vData.hpp"
 #include "data/tokens.hpp"
-#include "tools/bed_data.hpp"
 #include "tools/gtf_data.hpp"
-#include "tools/vcf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "RnaQuin/RnaQuin.hpp"
@@ -465,7 +465,7 @@ void MetaRef::validate()
         return ids;
     };
 
-    if (!_impl->bData.countBase())
+    if (!_impl->bData.length())
     {
         merge(_rawMIDs, _rawMIDs);
     }
@@ -500,7 +500,10 @@ void MetaRef::validate()
 
 struct VarRef::VarRefImpl
 {
-    VCFData vData;
+    // Required for validation
+    std::set<SequinID> vIDs, bIDs;
+    
+    VData vData;
     BedData bData;
 };
 
@@ -508,29 +511,26 @@ VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
 void VarRef::readGBRef(const Reader &r)
 {
-    for (const auto &i : (_impl->bData = bedData(r)))
+    _impl->bData = readRData(r, [&](const ParserBed::Data &x, const ParserProgress &)
     {
-        Standard::addGenomic(i.first);
-    }
+        _impl->bIDs.insert(x.name);
+    });
 }
 
 void VarRef::readSBRef(const Reader &r)
 {
-    for (const auto &i : bedData(r))
+    _impl->bData = readRData(r, [&](const ParserBed::Data &x, const ParserProgress &)
     {
-        _impl->bData[toReverse(i.first)] = i.second;
-    }
+        _impl->bIDs.insert(x.name);
+    });
 }
 
 void VarRef::readVRef(const Reader &r)
 {
-    for (const auto &i : (_impl->vData = vcfData(r)))
+    _impl->vData = readVFile(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
-        if (!isReverseGenome(i.first))
-        {
-            Standard::addGenomic(i.first);
-        }
-    }
+        _impl->vIDs.insert(x.name);
+    });
 }
 
 C2Intervals  VarRef::dInters()    const { return _impl->bData.inters(); }
@@ -542,8 +542,6 @@ MergedIntervals<> VarRef::mInters(const ChrID &cID) const
 {
     return _impl->bData.minters(cID);
 }
-
-bool VarRef::hasInters(const ChrID &cID) const { return _impl->bData.count(cID); }
 
 bool VarRef::isGermline() const
 {
@@ -560,11 +558,21 @@ bool VarRef::isGermline() const
 
 Concent VarRef::findRCon(const SequinID &id) const
 {
+    if (!_mixes.at(Mix_1).count(id + "_R"))
+    {
+        return 0.5;
+    }
+    
     return _mixes.at(Mix_1).at(id + "_R")->abund;
 }
 
 Concent VarRef::findVCon(const SequinID &id) const
 {
+    if (!_mixes.at(Mix_1).count(id + "_V"))
+    {
+        return 0.5;
+    }
+    
     return _mixes.at(Mix_1).at(id + "_V")->abund;
 }
 
@@ -616,34 +624,26 @@ Counts VarRef::countVar() const
     return _impl->vData.countVar();
 }
 
-Base VarRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isReverseGenome); }
-Base VarRef::nBaseGen() const { return _impl->bData.countBaseGen(isReverseGenome); }
-
-Counts VarRef::nGeneSyn() const { return _impl->bData.nGeneSyn(isReverseGenome); }
-Counts VarRef::nGeneGen() const { return _impl->bData.nGeneGen(isReverseGenome); }
+Counts VarRef::nRegs() const { return _impl->bData.count();  }
+Counts VarRef::lRegs() const { return _impl->bData.length(); }
 
 void VarRef::validate()
 {
-    // Try mixture if we don't have a BED reference
-    if (!_impl->bData.countBase())
+    const auto hasVCF = !_impl->vIDs.empty();
+    const auto hasBED = !_impl->bIDs.empty();
+    
+    if (hasVCF && hasBED)
     {
-        merge(_rawMIDs, _rawMIDs);
+        merge(_impl->vIDs);
+    }
+    else if (hasBED)
+    {
+        merge(_impl->bIDs);
     }
     else
     {
-        std::set<SequinID> seqIDs;
-        
-        for (const auto &i : _impl->bData)
-        {
-            for (const auto &j : i.second.r2d)
-            {
-                A_ASSERT(!j.first.empty());
-                seqIDs.insert(j.first);
-            }
-        }
-        
-        A_CHECK(!seqIDs.empty(), "No sequin found in the reference");
-        merge(seqIDs);
+        // Try mixture if we don't have anything else
+        merge(_rawMIDs, _rawMIDs);
     }
 }
 

@@ -76,14 +76,11 @@ namespace Anaquin
             // Add reference mixture for VarQuin
             void addVMix(const Reader &);
         
-            // Add reference variants for VarQuin in VCF format
+            // Add reference variants in VCF format
             inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 
-            // Add reference for genomic regions in BED format
-            inline void addVGRef(const Reader &r) { r_var.readGBRef(r); }
-        
-            // Add reference for sequin regions in BED format
-            inline void addVSRef(const Reader &r) { r_var.readSBRef(r); }
+            // Add sequin regions in BED format
+            inline void addVRef(const Reader &r) { r_var.readGBRef(r); }
         
             VarRef r_var;
 

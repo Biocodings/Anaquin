@@ -1,3 +1,4 @@
+#include "tools/tools.hpp"
 #include "data/standard.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "parsers/parser_sam.hpp"

@@ -54,7 +54,6 @@
  */
 
 #include "resources/AVA033_v001.bed"
-#include "resources/AVA009_v001.vcf"
 
 typedef std::string Scripts;
 
@@ -225,9 +224,4 @@ Scripts PlotVCROC()
 Scripts AVA033Bed()
 {
     return ToString(data_VarQuin_AVA033_v001_bed);
-}
-
-Scripts VarDataVCF()
-{
-    return ToString(data_VarQuin_AVA009_v001_vcf);
 }

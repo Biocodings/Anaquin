@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2016 - Garvan Institute of Medical Research
  *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ *  Ted Wong, Garvan Institute.
  */
 
 #ifndef R_ALIGN_HPP

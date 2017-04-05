@@ -10,15 +10,13 @@ namespace Anaquin
     {
         struct Options : public AnalyzerOptions
         {
-	    Options() : report(false) {}	
+            Options() : report(false) {}
 
             // Generating VarAlign_report.txt?
             bool report;
-            
-            FileName rBed; //gBed, sBed;
         };
-        
-        struct Stats : public AlignmentStats
+
+        struct Performance
         {
             struct Data
             {
@@ -58,41 +56,56 @@ namespace Anaquin
             std::map<ChrID, MergedIntervals<>> inters;
             
             /*
-             * Aggregated statistics
+             * ----------------- Aggregated statistics -----------------
              */
             
             /*
-             * Alignment level for synthetic and genome
+             * Overall performance at the alignment level
              */
             
-            typedef Confusion AlignLevel;
-            
-            AlignLevel sa, ga;
+            Confusion align;
             
             /*
-             * Base level statistics for synthetic and genome
+             * Overall performance at the base level
              */
 
-            Confusion sb;
-            Confusion gb;
+            Confusion base;
             
-            // Sequins to covered (synthetic)
-            std::map<SequinID, Base> s2c;
+            // Sequins to covered
+            std::map<SequinID, Base> covered;
             
-            // Sequins to length (synthetic)
-            std::map<SequinID, Base> s2l;
+            // Sequins to length
+            std::map<SequinID, Base> length;
             
-            // Genes to covered (genome)
-            std::map<GeneID, Base> g2c;
+            // Precision for each region
+            std::map<SequinID, Proportion> r2p;
             
-            // Genes to length (genome)
-            std::map<GeneID, Base> g2l;
+            // Sensitivity for each region
+            std::map<SequinID, Proportion> r2s;
             
-            // Genes to precision
-            std::map<GeneID, Proportion> g2p;
+            // Number of mapped alignments
+            Counts nMap;
             
-            // Sequins to sensitivity
-            std::map<GeneID, Proportion> g2s;
+            // Number of unmapped alignments
+            Counts nNA;
+        };
+        
+        struct Stats
+        {
+            std::shared_ptr<Performance> endo;
+            std::shared_ptr<Performance> seqs;
+            
+            // Proportion of alignments for endogenous
+            inline Proportion pEndo() const
+            {
+                return (Proportion) endo->nMap / (endo->nMap + seqs->nMap);
+            }
+            
+            // Proportion of alignments for endogenous
+            inline Proportion pSeqs() const
+            {
+                return 1.0 - pEndo();
+            }
         };
 
         static Stats analyze(const FileName &, const FileName &, const Options &o);

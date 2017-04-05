@@ -37,7 +37,6 @@
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_sleuth.hpp"
-#include "parsers/parser_varscan.hpp"
 #include "parsers/parser_express.hpp"
 #include "parsers/parser_salmon.hpp"
 #include "parsers/parser_cufflink.hpp"
@@ -62,7 +61,6 @@ typedef std::set<Value> Range;
 #define TOOL_R_ALIGN     266
 #define TOOL_R_ASSEMBLY  267
 #define TOOL_R_EXPRESS   268
-#define TOOL_R_CUFFLINK  269
 #define TOOL_R_FOLD      270
 #define TOOL_R_GENE      271
 #define TOOL_R_REPORT    272
@@ -94,20 +92,20 @@ typedef std::set<Value> Range;
 #define OPT_R_BED   801
 #define OPT_METHOD  802
 #define OPT_R_GTF   803
-#define OPT_R_VCF   805
+#define OPT_R_VCF   804
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
 #define OPT_REPORT  808
 #define OPT_R_IND   809
-#define OPT_U_FILES 909
-#define OPT_EDGE    910
-#define OPT_ALLELE  913
-#define OPT_U_BASE  914
+#define OPT_U_HG    810
+#define OPT_U_SEQS  811
+#define OPT_U_BAM   812
+#define OPT_U_FILES 813
+#define OPT_EDGE    814
+#define OPT_ALLELE  816
+#define OPT_U_BASE  817
 
 using namespace Anaquin;
-
-// Shared with other modules
-bool __hack__ = false;
 
 // Shared with other modules
 bool __showInfo__ = true;
@@ -149,7 +147,6 @@ static std::map<Value, Tool> _tools =
     { "RnaReport",      TOOL_R_REPORT    },
     { "RnaFoldChange",  TOOL_R_FOLD      },
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
-    { "RnaCufflink",    TOOL_R_CUFFLINK  },
     { "RnaGene",        TOOL_R_GENE      },
 
     { "VarAllele",      TOOL_V_ALLELE    },
@@ -179,18 +176,17 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
     { TOOL_R_REPORT,    { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
 
     /*
      * VarQuin Analysis
      */
 
-    { TOOL_V_FLIP,      { OPT_U_FILES } },
+    { TOOL_V_FLIP,      { OPT_U_BAM } },
     { TOOL_V_ALLELE,    { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES, OPT_METHOD  } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
-    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND,   OPT_U_FILES } },
+    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD  } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_HG, OPT_U_SEQS, OPT_MIXTURE } },
+    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES } },
     { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
 
     /*
@@ -336,12 +332,15 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
+    { "uhuman",  required_argument, 0, OPT_U_HG    },
+    { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
 
+    { "ubam",    required_argument, 0, OPT_U_BAM  },
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
@@ -382,24 +381,6 @@ static void printUsage()
 {
     extern Scripts Manual();
     std::cout << fixManual(Manual()) << std::endl;
-}
-
-template <typename F> bool testFile(const FileName &x, F f)
-{
-    try
-    {
-        // Anything found?
-        if (!f(x))
-        {
-            return false;
-        }
-    }
-    catch (...)
-    {
-        return false;
-    }
-    
-    return true;
 }
 
 static Scripts manual(Tool tool)
@@ -480,21 +461,6 @@ FileName mixture()
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
-
-FileName refFile()
-{
-    for (const auto &i : _p.opts)
-    {
-        const auto opt = i.first;
-        
-        if (CHECK_REF(opt))
-        {
-            return _p.opts[opt];
-        }
-    }
-    
-    throw std::runtime_error("No reference file found");
-}
 
 static void printError(const std::string &msg)
 {
@@ -657,12 +623,11 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
     return analyze<Analyzer>(_p.opts.at(x), o);
 }
 
-template <typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer> void analyze_2(Option x1, Option x2, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        A_ASSERT(_p.inputs.size() == 2);
-        Analyzer::report(_p.inputs[0], _p.inputs[1], o);
+        Analyzer::report(_p.opts[x1], _p.opts[x2], o);
     }, o);
 }
 
@@ -675,7 +640,6 @@ template <typename Analyzer> void analyze_3(typename Analyzer::Options o = typen
     }, o);
 }
 
-// Analyze for n samples
 template < typename Analyzer> void analyze_n(typename Analyzer::Options o = typename Analyzer::Options())
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
@@ -921,10 +885,13 @@ void parse(int argc, char ** argv)
                 break;
             }
              
+            case OPT_U_HG:
+            case OPT_U_BAM:
             case OPT_R_IND:
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
+            case OPT_U_SEQS:
             case OPT_MIXTURE:
             {
                 checkFile(_p.opts[opt] = val); break;
@@ -934,7 +901,7 @@ void parse(int argc, char ** argv)
 
             default:
             {
-                throw InvalidOptionException(argv[index]);
+                throw InvalidOptionException(argv[n]);
             }
         }
     }
@@ -991,7 +958,6 @@ void parse(int argc, char ** argv)
         case TOOL_R_REPORT:
         case TOOL_R_EXPRESS:
         case TOOL_R_ASSEMBLY:
-        case TOOL_R_CUFFLINK:
         case TOOL_R_SUBSAMPLE:
         {
             if (__showInfo__)
@@ -1287,20 +1253,10 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
+                    case TOOL_V_ALIGN:
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
-                        break;
-                    }
-
-                    case TOOL_V_ALIGN:
-                    {
-                        /*
-                         * It's important to apply to both endogenous and sequins
-                         */
-                        
-                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addVSRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
@@ -1308,7 +1264,7 @@ void parse(int argc, char ** argv)
                     {
                         applyMix(std::bind(&Standard::addVMix,  &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar,  &s, std::placeholders::_1), OPT_R_VCF);
-                        applyRef(std::bind(&Standard::addVGRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
@@ -1366,16 +1322,13 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_FILES); break; }
+                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 
                 case TOOL_V_ALIGN:
                 {
                     VAlign::Options o;
-                    
-                    o.rBed   = _p.opts.at(OPT_R_BED);
                     o.report = _p.report;
-
-                    analyze_2<VAlign>(o);
+                    analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS, o);
                     break;
                 }
 
@@ -1396,26 +1349,7 @@ void parse(int argc, char ** argv)
                         o.matchAllele = false;
                     }
                     
-                    const auto file = _p.opts.at(OPT_U_FILES);
-                    
-                    if (ParserVarScan::isVarScan(file))
-                    {
-                        o.format = VarFormat::VarScan;
-                    }
-                    else if (checkVCF(file))
-                    {
-                        o.format = VarFormat::VCF;
-                    }
-                    else if (ParserVariant::isVariant(file))
-                    {
-                        o.format = VarFormat::Text;
-                    }
-                    else
-                    {
-                        throw std::runtime_error("Unknown input file type: " + file + ". Input file should be in the format of VCF, VarScan or Anaquin. Please consult our usage guide (Section 6) for details on the supported formats.");
-                    }
-
-                    analyze_2<VDiscover>(o);
+                    analyze_2<VDiscover>(OPT_U_HG, OPT_U_SEQS, o);
                     break;
                 }
 
@@ -1470,7 +1404,7 @@ void parse(int argc, char ** argv)
                         o.edge = stoi(_p.opts[OPT_EDGE]);
                     }
 
-                    analyze_2<VSample>(o);
+                    analyze_2<VSample>(OPT_U_HG, OPT_U_SEQS, o);
                     break;
                 }
             }

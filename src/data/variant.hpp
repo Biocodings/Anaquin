@@ -62,14 +62,14 @@ namespace Anaquin
         
         inline long key() const
         {
-            return var2hash(id, type(), l);
+            return var2hash(name, type(), l);
         }
         
         // Eg: chrIS
         ChrID cID;
 
         // Eg: D_1_10
-        VarID id;
+        VarID name;
 
         // The reference position, with the 1st base having position 1
         Locus l;

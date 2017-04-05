@@ -60,7 +60,7 @@ namespace Anaquin
                 d.cID = standChr(fields[Field::Chrom]);
                 
                 // Eg: D_1_3_R
-                d.id = fields[Field::ID];
+                d.name = fields[Field::ID];
                 
                 // VCF has 1-based position
                 d.l.start = d.l.end = stod(fields[Field::Pos]);

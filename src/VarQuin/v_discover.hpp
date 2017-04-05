@@ -3,8 +3,8 @@
 
 #include <set>
 #include <vector>
+#include "data/vData.hpp"
 #include "stats/analyzer.hpp"
-#include "tools/vcf_data.hpp"
 #include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
@@ -22,11 +22,9 @@ namespace Anaquin
 
             // Matching alleles?
             bool matchAllele = true;
-            
-            VarFormat format;
         };
 
-        struct VStats : public MappingStats, public VariantStats
+        struct Stats : public MappingStats, public VariantStats
         {
             struct Data
             {
@@ -85,7 +83,7 @@ namespace Anaquin
 
             inline Counts countSNP_TP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countSNP_TP(cID);
                 });
@@ -93,7 +91,7 @@ namespace Anaquin
 
             inline Counts countInd_TP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countInd_TP(cID);
                 });
@@ -101,7 +99,7 @@ namespace Anaquin
             
             inline Counts countVar_TP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countVar_TP(cID);
                 });
@@ -109,7 +107,7 @@ namespace Anaquin
             
             inline Counts countSNP_FP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countSNP_FP(cID);
                 });
@@ -117,7 +115,7 @@ namespace Anaquin
             
             inline Counts countInd_FP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countInd_FP(cID);
                 });
@@ -125,7 +123,7 @@ namespace Anaquin
             
             inline Counts countVar_FP_Syn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countVar_FP(cID);
                 });
@@ -133,7 +131,7 @@ namespace Anaquin
             
             inline Counts countSNP_FnSyn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countSNP_FN(cID);
                 });
@@ -141,7 +139,7 @@ namespace Anaquin
             
             inline Counts countInd_FnSyn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countInd_FN(cID);
                 });
@@ -149,13 +147,14 @@ namespace Anaquin
             
             inline Counts countVar_FnSyn() const
             {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
+                return countMap(data, [&](const ChrID &cID, const Data &x)
                 {
                     return countVar_FN(cID);
                 });
             }
 
-            inline Proportion varF1() const
+            // Return the overall F1 score
+            inline Proportion allF1() const
             {
                 const auto sn = countVarSnSyn();
                 const auto pc = countVarPC_Syn();
@@ -173,6 +172,7 @@ namespace Anaquin
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FnSyn());
             }
             
+            // Return the F1 score for indels
             inline Proportion indelF1() const
             {
                 const auto sn = countIndSnSyn();
@@ -196,6 +196,7 @@ namespace Anaquin
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FP_Syn());
             }
 
+            // Return the F1 score for SNPs
             inline Proportion SNPF1() const
             {
                 const auto sn = countSNPSnSyn();
@@ -209,7 +210,7 @@ namespace Anaquin
                 return (Proportion)countInd_TP_Syn() / (countInd_TP_Syn() + countInd_FP_Syn());
             }
             
-            VCFData vData;
+            VData vData;
             
             // Hash table for variants
             std::map<ChrID, VarHashTable> hash;
@@ -250,16 +251,8 @@ namespace Anaquin
             std::map<long, Counts> depth;
         };
 
-        struct Stats
-        {
-            // Statitics for sequins
-            VStats seqs;
-
-            // Statistics for endogenous sample
-            VStats endo;
-        };
-
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o);
+        
         static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }

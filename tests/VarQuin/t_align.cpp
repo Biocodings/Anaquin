@@ -4,18 +4,6 @@
 
 using namespace Anaquin;
 
-TEST_CASE("VAlign_WriteSummary")
-{
-    VAlign::Stats stats;
-    VAlign::Options o;
-
-    REQUIRE_NOTHROW(VAlign::writeSummary("File1", "File2", "File3", stats, o));
-    
-    o.report = true;
-    
-    REQUIRE_NOTHROW(VAlign::writeSummary("File1", "File2", "File3", stats, o));
-}
-
 TEST_CASE("VAlign_ToyExample")
 {
     Test::clear();

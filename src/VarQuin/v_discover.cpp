@@ -51,122 +51,13 @@ static Scripts createVCROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-struct VDiscoverImpl : public VCFDataUser
-{
-    VDiscover::VStats *stats;
-    const VDiscover::Options *o;
-
-    void process(const ParserVCF::Data &x, const ParserProgress &p)
-    {
-        if (p.i && !(p.i % 100000))
-        {
-            o->wait(std::to_string(p.i));
-        }
-        
-        const auto &r = Standard::instance().r_var;
-        
-        VariantMatch m;
-
-        auto match = [&](const ParserVCF::Data &query)
-        {
-            m.query = query;
-            m.match = nullptr;
-            
-            if (Standard::isGenomic(query.cID))
-            {
-                // Can we match by position?
-                if ((m.match = r.findVar(query.cID, query.l)))
-                {
-                    m.ref = m.match->ref == query.ref;
-                    m.alt = m.match->alt == query.alt;
-                }
-            }
-            
-            return m.match;
-        };
-     
-        match(x);
-        
-        const auto &cID = m.query.cID;
-        
-        auto f = [&]()
-        {
-            if (!isnan(m.query.p))     { __countP__++; }
-            if (!isnan(m.query.depth)) { __countD__++; }
-
-            // Matched if the position and alleles agree
-            const auto matched = m.match && (!o->matchAllele || (m.ref && m.alt));
-            
-            if (matched)
-            {
-                const auto key = m.match->key();
-                stats->hash.at(cID).at(key)++;
-                
-                stats->data[cID].tps.push_back(m);
-                stats->data[cID].tps_[key] = stats->data[cID].tps.back();
-                
-                stats->data.at(cID).af = m.query.alleleFreq();
-                
-                const auto exp = r.findAFreq(m.match->id);
-                const auto obs = m.query.alleleFreq();
-                
-                // Eg: 2821292107
-                const auto id = toString(key);
-                
-                // Add for all variants
-                stats->vars.add(id, exp, obs);
-                
-                switch (m.query.type())
-                {
-                    case Mutation::SNP:       { stats->snp.add(id, exp, obs); break; }
-                    case Mutation::Deletion:
-                    case Mutation::Insertion: { stats->ind.add(id, exp, obs); break; }
-                }
-                
-                stats->readR[key] = m.query.readR;
-                stats->readV[key] = m.query.readV;
-                stats->depth[key] = m.query.depth;
-                
-                if (isnan(stats->vars.limit.abund) || exp < stats->vars.limit.abund)
-                {
-                    stats->vars.limit.id = m.match->id;
-                    stats->vars.limit.abund = exp;
-                }
-            }
-            else
-            {
-                // FP because the variant is not found in the reference
-                stats->data[cID].fps.push_back(m);
-            }
-        };
-        
-        // Always work on the queries
-        stats->query[cID].af.insert(m.query.alleleFreq());
-
-        if (isReverseGenome(cID))
-        {
-            stats->nSyn++;
-            f();
-        }
-        else
-        {
-            stats->nGen++;
-            
-            if (Standard::isGenomic(cID))
-            {
-                f();
-            }
-        }
-    }
-};
-
-VDiscover::Stats VDiscover::analyze(const FileName &hg38, const FileName &seqs, const Options &o)
+VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
     
-    const auto init = [&](VStats &stats)
+    const auto init = [&](Stats &stats)
     {
         stats.hash = r.vHist();
         
@@ -176,31 +67,105 @@ VDiscover::Stats VDiscover::analyze(const FileName &hg38, const FileName &seqs, 
         }
     };
 
-    init(stats.endo);
-    init(stats.seqs);
+    init(stats);
 
-    o.analyze(hg38);
-    o.analyze(seqs);
+    o.analyze(file);
 
-    VDiscoverImpl impl;
-    impl.o = &o;
-    impl.stats = &stats.seqs;
+    stats.vData = readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
+    {
+        if (p.i && !(p.i % 100000))
+        {
+            o.wait(std::to_string(p.i));
+        }
+        
+        const auto &r = Standard::instance().r_var;
+        
+        VariantMatch m;
+        
+        auto match = [&](const ParserVCF::Data &query)
+        {
+            m.query = query;
+            m.match = nullptr;
+            
+            // Can we match by position?
+            if ((m.match = r.findVar(query.cID, query.l)))
+            {
+                m.ref = m.match->ref == query.ref;
+                m.alt = m.match->alt == query.alt;
+            }
+            
+            return m.match;
+        };
+        
+        match(x);
+        
+        const auto &cID = m.query.cID;
+        
+        auto f = [&]()
+        {
+            if (!isnan(m.query.p))     { __countP__++; }
+            if (!isnan(m.query.depth)) { __countD__++; }
+            
+            // Matched if the position and alleles agree
+            const auto matched = m.match && (!o.matchAllele || (m.ref && m.alt));
+            
+            if (matched)
+            {
+                const auto key = m.match->key();
+                stats.hash.at(cID).at(key)++;
+                
+                stats.data[cID].tps.push_back(m);
+                stats.data[cID].tps_[key] = stats.data[cID].tps.back();
+                
+                stats.data.at(cID).af = m.query.alleleFreq();
+                
+                const auto exp = r.findAFreq(m.match->name);
+                const auto obs = m.query.alleleFreq();
+                
+                // Eg: 2821292107
+                const auto id = toString(key);
+                
+                // Add for all variants
+                stats.vars.add(id, exp, obs);
+                
+                switch (m.query.type())
+                {
+                    case Mutation::SNP:       { stats.snp.add(id, exp, obs); break; }
+                    case Mutation::Deletion:
+                    case Mutation::Insertion: { stats.ind.add(id, exp, obs); break; }
+                }
+                
+                stats.readR[key] = m.query.readR;
+                stats.readV[key] = m.query.readV;
+                stats.depth[key] = m.query.depth;
+                
+                if (isnan(stats.vars.limit.abund) || exp < stats.vars.limit.abund)
+                {
+                    stats.vars.limit.id = m.match->name;
+                    stats.vars.limit.abund = exp;
+                }
+            }
+            else
+            {
+                // FP because the variant is not found in the reference
+                stats.data[cID].fps.push_back(m);
+            }
+        };
+        
+        // Always work on the queries
+        stats.query[cID].af.insert(m.query.alleleFreq());
 
-    // Analyze for sequins
-    stats.seqs.vData = vcfData(seqs, o.format, &impl);
-
-    impl.stats = &stats.endo;
-
-    // Analyze for endogenous sample
-    stats.endo.vData = vcfData(hg38, o.format, &impl);
+        stats.nSyn++;
+        f();
+    });
     
     o.info("Aggregating statistics");
 
-    for (const auto &i : stats.seqs.data)
+    for (const auto &i : stats.data)
     {
         const auto &cID = i.first;
         
-        auto &x = stats.seqs.data[cID];
+        auto &x = stats.data[cID];
         
         for (const auto &j : i.second.tps)
         {
@@ -251,7 +216,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
 
     o.generate(file);
     o.writer->open(file);
@@ -270,9 +235,8 @@ static void writeQuins(const FileName &file,
                                            % "Qual"
                                            % "QualR"
                                            % "QualV"
-                                           % "hg38"
                                            % "Type").str());
-    for (const auto &i : stats.seqs.hash)
+    for (const auto &i : stats.hash)
     {
         const auto &cID = i.first;
         
@@ -281,22 +245,6 @@ static void writeQuins(const FileName &file,
         {
             const auto &key = j.first;
 
-            auto foundEndo = [&](const VarHashKey &key)
-            {
-                for (const auto &i : stats.endo.hash)
-                {
-                    for (const auto &j : i.second)
-                    {
-                        if (j.first == key)
-                        {
-                            return (bool) j.second;
-                        }
-                    }
-                }
-
-                throw std::runtime_error("Sequin variants must also be found in the human sample (stats.hg38)");
-            };
-            
             // Detected the sequin?
             if (j.second)
             {
@@ -316,22 +264,21 @@ static void writeQuins(const FileName &file,
                     {
                         const auto &t = x.at(key);
                         
-                        o.writer->write((boost::format(format) % m->id
+                        o.writer->write((boost::format(format) % m->name
                                                                % m->cID
                                                                % m->l.start
                                                                % label
                                                                % t.query.readR
                                                                % t.query.readV
                                                                % t.query.depth
-                                                               % r.findRCon(m->id)
-                                                               % r.findVCon(m->id)
-                                                               % r.findAFreq(m->id)
+                                                               % r.findRCon(m->name)
+                                                               % r.findVCon(m->name)
+                                                               % r.findAFreq(m->name)
                                                                % t.query.alleleFreq()
                                                                % ld2ss(t.query.p)
                                                                % x2ns(t.query.qual)
                                                                % x2ns(t.query.qualR)
                                                                % x2ns(t.query.qualV)
-                                                               % b2s(foundEndo(key))
                                                                % type).str());
                         return true;
                     }
@@ -339,7 +286,7 @@ static void writeQuins(const FileName &file,
                     return false;
                 };
 
-                if (!f(stats.seqs.data.at(i.first).tps_, "TP") && !f(stats.seqs.data.at(i.first).fns_, "FN"))
+                if (!f(stats.data.at(i.first).tps_, "TP") && !f(stats.data.at(i.first).fns_, "FN"))
                 {
                     throw std::runtime_error("Failed to find hash key in writeQuins()");
                 }
@@ -354,22 +301,21 @@ static void writeQuins(const FileName &file,
                 // Eg: "SNP"
                 const auto type = type2str(m->type());
                 
-                o.writer->write((boost::format(format) % m->id
+                o.writer->write((boost::format(format) % m->name
                                                        % m->cID
                                                        % m->l.start
                                                        % "FN"
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
-                                                       % r.findRCon(m->id)
-                                                       % r.findVCon(m->id)
-                                                       % r.findAFreq(m->id)
+                                                       % r.findRCon(m->name)
+                                                       % r.findVCon(m->name)
+                                                       % r.findAFreq(m->name)
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
-                                                       % b2s(foundEndo(key))
                                                        % type).str());
             }
         }
@@ -402,7 +348,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "QualV"
                                            % "Type").str());
 
-    for (const auto &i : stats.seqs.data)
+    for (const auto &i : stats.data)
     {
         const auto &cID = i.first;
         
@@ -410,7 +356,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
         {
             for (const auto &i : x)
             {
-                auto sID = (i.match ? i.match->id : "-");
+                auto sID = (i.match ? i.match->name : "-");
                 
                 if (label == "FP")
                 {
@@ -418,10 +364,12 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                      * We know this is a FP, but we can trace it to one of the sequins?
                      */
                     
-                    if (r.hasInters(cID))
+                    MergedIntervals<> inters;
+                    
+                    try
                     {
                         // We'll need it to search for the sequin where the FPs are
-                        const auto inters = r.mInters(cID);
+                        inters = r.mInters(cID);
                         
                         A_ASSERT(inters.size());
                         
@@ -436,6 +384,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                             A_ASSERT(!sID.empty());
                         }
                     }
+                    catch (...) {}
                 }
 
                 const auto hasAFreq = r.hasAFreq(sID);
@@ -477,7 +426,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
-    const auto &ss = stats.seqs;
+    const auto &ss = stats;
 
     auto germline = [&]()
     {
@@ -547,7 +496,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % ss.countVar_FnSyn()        // 19
                                                 % D(ss.countVarSnSyn())      // 20
                                                 % D(ss.countVarPC_Syn())     // 21
-                                                % D(ss.varF1())              // 22
+                                                % D(ss.allF1())              // 22
                                                 % D(1-ss.countVarPC_Syn())   // 23
                                                 % D(ss.countSNPSnSyn())      // 24
                                                 % D(ss.countSNPPC_Syn())     // 25
@@ -672,16 +621,15 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->close();
 }
 
-void VDiscover::report(const FileName &hg38, const FileName &seqs, const Options &o)
+void VDiscover::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    // Statistics for the variants
-    const auto stats = analyze(hg38, seqs, o);
+    const auto ss = analyze(seqs, o);
     
-    o.info("TP: " + std::to_string(stats.seqs.countVar_TP_Syn()));
-    o.info("FP: " + std::to_string(stats.seqs.countVar_FP_Syn()));
-    o.info("FN: " + std::to_string(stats.seqs.countVar_FnSyn()));
+    o.info("TP: " + std::to_string(ss.countVar_TP_Syn()));
+    o.info("FP: " + std::to_string(ss.countVar_FP_Syn()));
+    o.info("FN: " + std::to_string(ss.countVar_FnSyn()));
 
     o.info("Generating statistics");
 
@@ -689,19 +637,19 @@ void VDiscover::report(const FileName &hg38, const FileName &seqs, const Options
      * Generating VarDiscover_sequins.csv
      */
     
-    writeQuins("VarDiscover_sequins.csv", stats, o);
+    writeQuins("VarDiscover_sequins.csv", ss, o);
 
     /*
      * Generating VarDiscover_summary.stats
      */
     
-    writeSummary("VarDiscover_summary.stats", seqs, stats, o);
+    writeSummary("VarDiscover_summary.stats", seqs, ss, o);
     
     /*
      * Generating VarDiscover_detected.csv
      */
     
-    writeDetected("VarDiscover_detected.csv", stats, o);
+    writeDetected("VarDiscover_detected.csv", ss, o);
     
     /*
      * Generating VarDiscover_ROC.R

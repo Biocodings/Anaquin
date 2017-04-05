@@ -123,7 +123,7 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
         }
     }, true);
 
-    o.info("Found: " + std::to_string(seenMates.size()) + " unpaired mates.");
+    o.logInfo("Found: " + std::to_string(seenMates.size()) + " unpaired mates.");
     
     for (auto &i: seenMates)
     {
@@ -164,17 +164,21 @@ static void writeSummary(const FileName &file,
                          "                              %3%\n"
                          "       Crossed alignments:    %4%\n"
                          "                              %5%\n"
-                         "       Hanging alignments:    %6%\n\n"
+                         "       Ambiguous alignments:  %6%\n"
+                         "                              %7%\n"
+                         "       Hanging alignments:    %8%\n\n"
                          "-------Alignments\n\n"
-                         "       Paired:   %7% (%8%%%)\n"
-                         "       Crossed:  %9% (%10%%%)\n"
-                         "       Hanging:  %11% (%12%%%)\n\n"
+                         "       Paired:   %9% (%10%%%)\n"
+                         "       Crossed:  %11% (%12%%%)\n"
+                         "       Hanging:  %13% (%14%%%)\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %13% (%14%%%)\n"
-                         "       Forward:  %15% (%16%%%)\n"
-                         "       Reverse:  %17% (%18%%%)\n"
-                         "       Dilution: %19$.4f\n";
+                         "       Unmapped: %15% (%16%%%)\n"
+                         "       Forward:  %17% (%18%%%)\n"
+                         "       Reverse:  %19% (%20%%%)\n"
+                         "       Dilution: %21$.4f\n";
 
+    #define P(x) (isnan(x) ? "0" : (std::to_string(x)))
+    
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
@@ -183,19 +187,21 @@ static void writeSummary(const FileName &file,
                                             % Crossed_1        // 4
                                             % Crossed_2        // 5
                                             % HangingFile      // 6
-                                            % stats.nPaired    // 7
-                                            % stats.pPaired    // 8
-                                            % stats.nCross     // 9
-                                            % stats.pCross     // 10
-                                            % stats.nHang      // 11
-                                            % stats.pHang      // 12
-                                            % stats.nNA        // 13
-                                            % stats.propNA()   // 14
-                                            % stats.nGen       // 15
-                                            % stats.propGen()  // 16
-                                            % stats.nSyn       // 17
-                                            % stats.propSyn()  // 18
-                                            % stats.dilution() // 19
+                                            % AMBIG_1          // 7
+                                            % AMBIG_2          // 8
+                                            % stats.nPaired    // 9
+                                            % P(stats.pPaired) // 10
+                                            % stats.nCross     // 11
+                                            % P(stats.pCross)  // 12
+                                            % stats.nHang      // 13
+                                            % P(stats.pHang)   // 14
+                                            % stats.nNA        // 15
+                                            % stats.propNA()   // 16
+                                            % stats.nGen       // 17
+                                            % stats.propGen()  // 18
+                                            % stats.nSyn       // 19
+                                            % stats.propSyn()  // 20
+                                            % stats.dilution() // 21
                      ).str());
 }
     

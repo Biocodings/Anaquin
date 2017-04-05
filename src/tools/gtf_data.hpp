@@ -2,6 +2,7 @@
 #define GTF_DATA_HPP
 
 #include "data/hist.hpp"
+#include "tools/tools.hpp"
 #include "data/intervals.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -140,7 +141,7 @@ namespace Anaquin
         
         inline Counts nGene() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return nGene(cID);
             });
@@ -148,7 +149,7 @@ namespace Anaquin
         
         inline Counts countTrans() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return countTrans(cID);
             });
@@ -156,7 +157,7 @@ namespace Anaquin
         
         inline Counts countUExon() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return countUExon(cID);
             });
@@ -164,7 +165,7 @@ namespace Anaquin
 
         inline Counts countUIntr() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return countUIntr(cID);
             });
@@ -192,7 +193,7 @@ namespace Anaquin
 
         inline Counts nGeneSyn() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return isRnaQuin(cID) ? nGene(cID) : 0;
             });
@@ -200,7 +201,7 @@ namespace Anaquin
         
         inline Counts countTransSyn() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return isRnaQuin(cID) ? countTrans(cID) : 0;
             });
@@ -208,7 +209,7 @@ namespace Anaquin
         
         inline Counts countUExonSyn() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return isRnaQuin(cID) ? countUExon(cID) : 0;
             });
@@ -216,7 +217,7 @@ namespace Anaquin
         
         inline Counts countUIntrSyn() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return isRnaQuin(cID) ? countUIntr(cID) : 0;
             });
@@ -455,7 +456,7 @@ namespace Anaquin
         
         inline Base countLenSyn() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return isRnaQuin(cID) ? countLen(cID) : 0;
             });
@@ -463,7 +464,7 @@ namespace Anaquin
         
         inline Base countLenGen() const
         {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return !isRnaQuin(cID) ? countLen(cID) : 0;
             });

@@ -6,8 +6,6 @@
 #include "data/convert.hpp"
 #include "stats/analyzer.hpp"
 
-extern bool __hack__;
-
 namespace Anaquin
 {
     struct ParserGTF
@@ -69,11 +67,6 @@ namespace Anaquin
             
             while (r.nextLine(line))
             {
-                if (__hack__)
-                {
-                    std::cout << line << std::endl;                    
-                }
-                
                 p.i++;
                 boost::split(toks, line, boost::is_any_of("\t"));
                 

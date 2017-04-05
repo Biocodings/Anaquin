@@ -14,13 +14,13 @@
      Short-read aligner (such as BWA or BowTie) that generates a SAM/BAM alignment file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarAlign –rbed reference.bed –ufiles humans.bam -ufiles sequins.bam
+     anaquin VarAlign –rbed reference.bed –uhuman humans.bam -useqs sequins.bam
 
 <b>TOOL OPTIONS</b>
      Required:
         -rbed        Reference annotation file for sequin regions in BED format
-        -ufiles      Generated alignment file for human genome in SAM/BAM format
-        -ufiles      Generated alignment file for <i>in silico</i> genome in SAM/BAM format
+        -uhuman      Generated alignment file for human genome in SAM/BAM format
+        -useqs       Generated alignment file for <i>in silico</i> genome in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to

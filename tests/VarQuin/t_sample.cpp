@@ -10,7 +10,7 @@ extern Scripts AVA033Bed();
 TEST_CASE("VSubsample_Read_10")
 {
     Test::clear();
-    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth  = VSample::Method::Reads;
@@ -64,7 +64,7 @@ TEST_CASE("VSubsample_ZeroProp")
 {
     Test::clear();
     
-    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth = VSample::Method::Prop;
@@ -117,7 +117,7 @@ TEST_CASE("VSubsample_ZeroProp")
 TEST_CASE("VSubsample_Median")
 {
     Test::clear();
-    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
     o.meth = VSample::Method::Median;
@@ -169,7 +169,7 @@ TEST_CASE("VSubsample_Median")
 TEST_CASE("VSubsample_Mean")
 {
     Test::clear();
-    Standard::instance().addVGRef(Reader(AVA033Bed(), DataMode::String));
+    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 
     VSample::Options o;
     o.meth = VSample::Method::Mean;
@@ -223,7 +223,7 @@ TEST_CASE("VSubsample_Edge")
     srand(100);
     
     Test::clear();
-    Standard::instance().addVGRef(Reader("tests/data/test2.bed"));
+    Standard::instance().addVRef(Reader("tests/data/test2.bed"));
     
     VSample::Options o;
     
