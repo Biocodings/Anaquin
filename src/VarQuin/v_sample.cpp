@@ -71,7 +71,10 @@ static ReaderBam::Stats sample(const FileName &file,
 
             if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
             {
-                if (select.at(x.cID).at(inter->l())->select(x.name))
+                // Transform for the trimming region
+                auto l = Locus(inter->l().start + o.edge, inter->l().end - o.edge);
+                
+                if (select.at(x.cID).at(l)->select(x.name))
                 {
                     shouldSampled = true;
                 }
@@ -125,12 +128,16 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     VSample::Stats stats;
     
     // Regions to subsample before trimming
-    const auto refs = r.dInters();
+    const auto trimmed = r.regions(true);
+
+    // Regions without trimming
+    const auto regs = r.regions(false);
     
-    A_CHECK(!refs.empty(), "No sampling regions for sampling");
+    A_ASSERT(!trimmed.empty());
+    A_ASSERT(trimmed.size() == regs.size());
     
     // Checking genomic alignments before sampling
-    const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    const auto gStats = ReaderBam::stats(gen, trimmed, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -146,7 +153,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     });
 
     // Checking synthetic alignments before sampling
-    const auto sStats = ReaderBam::stats(seq, refs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto sStats = ReaderBam::stats(seq, trimmed, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -172,7 +179,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     std::vector<double> allBeforeSynC;
     
     // For each chromosome...
-    for (auto &i : refs)
+    for (auto &i : trimmed)
     {
         const auto cID = i.first;
 
@@ -225,7 +232,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                      * genomic region has higher coverage.
                      */
 
-                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;                    
+                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
+
                     break;
                 }
             }
@@ -271,7 +279,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     }
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seq, norms, stats, refs, o);
+    const auto after = sample(seq, norms, stats, regs, o);
     
     /*
      * Assume our subsampling is working, let's check the coverage for every region.
@@ -284,12 +292,16 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         for (auto &j : i.second.data())
         {
             stats.count++;
-            const auto &l = j.second.l();
             
             // Coverage after subsampling
             const auto cov = stats2cov(o.meth, j.second.stats());
 
-            stats.c2v[i.first][l].after = cov;
+            auto l = j.second.l();
+            
+            // Transform for the trimming region
+            l = Locus(l.start + o.edge, l.end - o.edge);
+
+            stats.c2v[i.first].at(l).after = cov;
             
             // Required for generating summary statistics
             allAfterSynC.push_back(cov);
@@ -307,7 +319,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     stats.totAfter.nGen = stats.totBefore.nGen;
     
     stats.sampAfter.nGen  = gStats.nGen;
-    stats.sampBefore.nGen =  gStats.nGen;
+    stats.sampBefore.nGen = gStats.nGen;
     
     // Remember, the synthetic reads have been mapped to the forward genome
     stats.sampBefore.nSyn = sStats.nGen;

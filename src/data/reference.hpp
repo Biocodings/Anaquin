@@ -325,9 +325,7 @@ namespace Anaquin
             inline Counts countVarSyn() const { return countSNPSyn() + countIndSyn(); }
             inline Counts countVarGen() const { return countSNPGen() + countIndGen(); }
 
-            C2Intervals  dInters()    const;
-            ID2Intervals dIntersSyn() const;
-            C2Intervals  dIntersGen() const;
+            C2Intervals regions(bool trimmed = false) const;
 
             MC2Intervals mInters() const;
         

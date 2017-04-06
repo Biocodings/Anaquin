@@ -504,20 +504,30 @@ struct VarRef::VarRefImpl
     std::set<SequinID> vIDs, bIDs;
     
     VData vData;
+    
+    // Regular regions
     BedData bData;
+    
+    // Trimmed regions
+    BedData tData;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
 void VarRef::readGBRef(const Reader &r, Base trim)
 {
-    RegionOptions o;
-    o.trim = trim;
-    
     _impl->bData = readRegions(r, [&](const ParserBed::Data &x, const ParserProgress &)
     {
         _impl->bIDs.insert(x.name);
-    }, o);
+    });
+    
+    RegionOptions o;
+    o.trim = trim;
+
+    _impl->tData = readRegions(Reader(r), [&](const ParserBed::Data &x, const ParserProgress &) {}, o);
+
+    A_CHECK(!_impl->bData.empty(), "No sampling regions for sampling");
+    A_CHECK(!_impl->tData.empty(), "No sampling regions for sampling");
 }
 
 void VarRef::readVRef(const Reader &r)
@@ -528,8 +538,10 @@ void VarRef::readVRef(const Reader &r)
     });
 }
 
-C2Intervals  VarRef::dInters()    const { return _impl->bData.inters(); }
-ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn(isReverseGenome); }
+C2Intervals VarRef::regions(bool trimmed) const
+{
+    return trimmed ? _impl->tData.inters() : _impl->bData.inters();
+}
 
 MC2Intervals VarRef::mInters() const { return _impl->bData.minters(); }
 
