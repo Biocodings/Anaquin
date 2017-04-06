@@ -80,7 +80,7 @@ namespace Anaquin
             inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 
             // Add sequin regions in BED format
-            inline void addVRef(const Reader &r) { r_var.readGBRef(r); }
+            inline void addVRef(const Reader &r, Base trim = 0) { r_var.readGBRef(r, trim); }
         
             VarRef r_var;
 

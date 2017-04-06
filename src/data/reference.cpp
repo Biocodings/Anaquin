@@ -426,7 +426,7 @@ MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
 void MetaRef::readBed(const Reader &r)
 {
-    for (const auto &i : (_impl->bData = bedData(r)))
+    for (const auto &i : (_impl->bData = readRegions(r)))
     {
         if (!isMetaQuin(i.first))
         {
@@ -509,20 +509,15 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-void VarRef::readGBRef(const Reader &r)
+void VarRef::readGBRef(const Reader &r, Base trim)
 {
-    _impl->bData = readRData(r, [&](const ParserBed::Data &x, const ParserProgress &)
+    RegionOptions o;
+    o.trim = trim;
+    
+    _impl->bData = readRegions(r, [&](const ParserBed::Data &x, const ParserProgress &)
     {
         _impl->bIDs.insert(x.name);
-    });
-}
-
-void VarRef::readSBRef(const Reader &r)
-{
-    _impl->bData = readRData(r, [&](const ParserBed::Data &x, const ParserProgress &)
-    {
-        _impl->bIDs.insert(x.name);
-    });
+    }, o);
 }
 
 void VarRef::readVRef(const Reader &r)

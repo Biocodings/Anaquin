@@ -2,6 +2,7 @@
 #define B_DATA_HPP
 
 #include "tools/tools.hpp"
+#include "tools/errors.hpp"
 #include "data/minters.hpp"
 #include "data/intervals.hpp"
 #include "VarQuin/VarQuin.hpp"
@@ -236,12 +237,22 @@ namespace Anaquin
         }
     };
     
-    template <typename F> BedData readRData(const Reader &r, F f)
+    struct RegionOptions
+    {
+        Base trim = 0;
+    };
+    
+    template <typename F> BedData readRegions(const Reader &r, F f, RegionOptions o = RegionOptions())
     {
         BedData c2d;
         
-        ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &p)
+        ParserBed::parse(r, [&](ParserBed::Data &x, const ParserProgress &p)
         {
+            A_CHECK(x.l.length() >= 2 * o.trim, x.name + " is too narrow for trimming");
+
+            x.l.end   -= o.trim;
+            x.l.start += o.trim;
+
             // Name of the region? Locus of the region if not specified.
             const auto rkey = !x.name.empty() ? x.name : x.l.key();
             
@@ -256,9 +267,9 @@ namespace Anaquin
         return c2d;
     }
     
-    inline BedData bedData(const Reader &r)
+    inline BedData readRegions(const Reader &r)
     {
-        return readRData(r, [](const ParserBed::Data &, const ParserProgress &) {});
+        return readRegions(r, [](const ParserBed::Data &, const ParserProgress &) {});
     }
 }
 

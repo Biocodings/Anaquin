@@ -77,8 +77,6 @@ namespace Anaquin
             Counts reads = NAN;
         };
         
-        static C2Intervals trimInters(const C2Intervals &, const Options &);
-        
         static Stats analyze(const FileName &, const FileName &, const Options  &);
         static void  report (const FileName &, const FileName &, const Options &o = Options());
     };

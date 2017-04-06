@@ -1254,17 +1254,23 @@ void parse(int argc, char ** argv)
                     }
 
                     case TOOL_V_ALIGN:
+                    {
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
+                        break;
+                    }
+                        
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
+                                            _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
                         break;
                     }
 
                     case TOOL_V_DISCOVER:
                     {
-                        applyMix(std::bind(&Standard::addVMix,  &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::addVVar,  &s, std::placeholders::_1), OPT_R_VCF);
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1), OPT_R_BED);
+                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         break;
                     }
 

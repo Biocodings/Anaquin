@@ -3,9 +3,9 @@
 
 using namespace Anaquin;
 
-TEST_CASE("BED_Synthetic")
+TEST_CASE("ReadRegions_Example")
 {
-    const auto r = bedData(Reader("data/VarQuin/AVA017_v001.bed"));
+    const auto r = readRegions(Reader("data/VarQuin/AVA017_v001.bed"));
     
     auto allTrue = [&](const ChrID &)
     {

@@ -293,8 +293,7 @@ namespace Anaquin
             VarRef();
 
             void readVRef(const Reader &);
-            void readGBRef(const Reader &);
-            void readSBRef(const Reader &);
+            void readGBRef(const Reader &, Base trim = 0);
 
             // Number of reference regions
             Counts nRegs() const;

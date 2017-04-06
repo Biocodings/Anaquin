@@ -14,6 +14,7 @@ typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 static ReaderBam::Stats sample(const FileName &file,
                                const NormFactors &norms,
                                VSample::Stats &stats,
+                               const C2Intervals &sampled,
                                const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -28,7 +29,7 @@ static ReaderBam::Stats sample(const FileName &file,
     {
         for (const auto &j : i.second)
         {
-            assert(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
+            A_ASSERT(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
             
             // Create independent random generator for each region
             select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
@@ -42,9 +43,6 @@ static ReaderBam::Stats sample(const FileName &file,
     WriterSAM writer;
     writer.openTerm();
 
-    // Subsampling regions
-    const auto sampled = Standard::instance().r_var.dInters();
-    
     return ReaderBam::stats(file, sampled, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -80,7 +78,7 @@ static ReaderBam::Stats sample(const FileName &file,
             }
             else
             {
-                // Never sample for reads outside the regions
+                // Never throw away reads outside the regions
                 shouldSampled = true;
             }
         }
@@ -115,46 +113,6 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
     }
 }
 
-C2Intervals VSample::trimInters(const C2Intervals &c2i, const VSample::Options &o)
-{
-    if (!o.edge)
-    {
-        return c2i;
-    }
-    
-    C2Intervals c2l_;
-    
-    for (auto &x : c2i)
-    {
-        Intervals<> inters_;
-
-        for (auto &y : x.second.data())
-        {
-            Locus l = Locus(y.second.l().start, y.second.l().end);
-            
-            if (l.length() <= 2 * o.edge)
-            {
-                o.logWarn("Interval " + y.first + " is too narrow for edge width: " + std::to_string(o.edge));
-            }
-            else
-            {
-                // It's important to do that before we manipulate the positions
-                l.add(l.key());
-
-                l.end   -= o.edge;
-                l.start += o.edge;
-            }
-            
-            inters_.add(Interval(y.second.id(), l));
-        }
-        
-        inters_.build();
-        c2l_[x.first] = inters_;
-    }
-
-    return c2l_;
-}
-
 VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
 {
     o.analyze(gen);
@@ -166,10 +124,10 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     VSample::Stats stats;
     
-    // Regions to subsample
+    // Regions to subsample before trimming
     const auto refs = r.dInters();
     
-    A_CHECK(!refs.empty(), "Empty reference sampling regions");
+    A_CHECK(!refs.empty(), "No sampling regions for sampling");
     
     // Checking genomic alignments before sampling
     const auto gStats = ReaderBam::stats(gen, refs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
@@ -186,12 +144,9 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         return ReaderBam::Response::OK;
     });
-    
-    // Trim the intervals
-    const auto trimmed = trimInters(refs, o);
-    
+
     // Checking synthetic alignments before sampling
-    const auto sStats = ReaderBam::stats(seq, trimmed, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto sStats = ReaderBam::stats(seq, refs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -270,7 +225,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                      * genomic region has higher coverage.
                      */
 
-                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
+                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;                    
                     break;
                 }
             }
@@ -282,22 +237,25 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             {
                 o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
                                                                                  % l.start
-                                                                                 % l.end).str());
+                                                                                 % norm).str());
                 
                 // We can't just use NAN...
                 norm = 0.0;
             }
             else if (norm == 1.0)
             {
-                o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3%") % i.first
-                                                                               % l.start
-                                                                               % l.end).str());
+                o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3% (%4%)") % i.first
+                                                                                     % l.start
+                                                                                     % l.end
+                                                                                     % j.first).str());
             }
             else
             {
-                o.logInfo((boost::format("Normalization for %1%-%2% - %3%") % i.first
-                                                                            % l.start
-                                                                            % l.end).str());
+                o.logInfo((boost::format("Normalization is %1% for %2%:%3%-%4% (%5%)") % norm
+                                                                                       % i.first
+                                                                                       % l.start
+                                                                                       % l.end
+                                                                                       % j.first).str());
             }
             
             if (!genC) { stats.noGAlign++; }
@@ -313,7 +271,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     }
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seq, norms, stats, o);
+    const auto after = sample(seq, norms, stats, refs, o);
     
     /*
      * Assume our subsampling is working, let's check the coverage for every region.
