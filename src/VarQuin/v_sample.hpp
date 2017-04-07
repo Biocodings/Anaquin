@@ -20,8 +20,8 @@ namespace Anaquin
         {
             RegionID rID;
             
-            // Alignment coverage for the genome
-            Coverage gen;
+            // Alignment coverage for the endogenous sample
+            Coverage endo;
             
             // Alignment coverage before subsampling
             Coverage before;
@@ -35,8 +35,8 @@ namespace Anaquin
         
         struct GenomeSequins
         {
-            Counts nGen = 0;
-            Counts nSyn = 0;
+            Counts nEndo = 0;
+            Counts nSeqs = 0;
         };
         
         struct Stats
@@ -50,8 +50,8 @@ namespace Anaquin
             // Number of regions without alignment (synthetic)
             Counts noSAlign = 0;
             
-            Coverage afterGen,  afterSyn;
-            Coverage beforeGen, beforeSyn;
+            Coverage afterEndo,  afterSeqs;
+            Coverage beforeEndo, beforeSeqs;
             
             // Summary statistics for normalization
             double normAver, normSD;

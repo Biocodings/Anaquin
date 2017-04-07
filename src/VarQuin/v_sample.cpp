@@ -88,7 +88,7 @@ static ReaderBam::Stats sample(const FileName &file,
         
         if (shouldSampled)
         {
-            stats.totAfter.nSyn++;
+            stats.totAfter.nSeqs++;
             
             // Write SAM read to console
             writer.write(x);
@@ -146,7 +146,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.nGen++;
+            stats.totBefore.nEndo++;
         }
         
         return ReaderBam::Response::OK;
@@ -162,7 +162,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.nSyn++;
+            stats.totBefore.nSeqs++;
         }
 
         return ReaderBam::Response::OK;
@@ -174,9 +174,9 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     // Required for summary statistics
     std::vector<double> allNorms;
 
-    std::vector<double> allAfterSynC;
-    std::vector<double> allBeforeGenC;
-    std::vector<double> allBeforeSynC;
+    std::vector<double> allafterSeqsC;
+    std::vector<double> allbeforeEndoC;
+    std::vector<double> allbeforeSeqsC;
     
     // For each chromosome...
     for (auto &i : trimmed)
@@ -188,10 +188,10 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         {
             const auto &l = j.second.l();
             
-            // Genomic statistics for the region
+            // Endogenous statistics for the region
             const auto gs = gStats.inters.at(cID).find(l.key())->stats();
             
-            // Synthetic statistics for the region
+            // Sequins statistics for the region
             const auto ss = sStats.inters.at(cID).find(l.key())->stats();
             
             o.info("Calculating coverage for " + j.first);
@@ -201,15 +201,15 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
              * the synthetic alignments needs to be sampled.
              */
             
-            const auto genC = stats2cov(o.meth, gs);
-            const auto synC = stats2cov(o.meth, ss);
+            const auto endoC = stats2cov(o.meth, gs);
+            const auto seqsC = stats2cov(o.meth, ss);
 
             Proportion norm;
 
             switch (o.meth)
             {
                 case VSample::Method::Mean:
-                case VSample::Method::Median: { norm = synC ? std::min(genC / synC, 1.0) : NAN; break; }
+                case VSample::Method::Median: { norm = seqsC ? std::min(endoC / seqsC, 1.0) : NAN; break; }
                 case VSample::Method::Prop:
                 {
                     A_ASSERT(!isnan(o.p));
@@ -224,9 +224,6 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                     const auto gAligns = gs.aligns;
                     const auto sAligns = ss.aligns;
 
-                    o.logInfo("Genomic alignments: "   + std::to_string(gAligns));
-                    o.logInfo("Synthetic alignments: " + std::to_string(sAligns));
-
                     /*
                      * Nothing to subsample if no sequin alignments. Subsample everything if the
                      * genomic region has higher coverage.
@@ -238,8 +235,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                 }
             }
 
-            allBeforeGenC.push_back(genC);
-            allBeforeSynC.push_back(synC);
+            allbeforeEndoC.push_back(endoC);
+            allbeforeSeqsC.push_back(seqsC);
             
             if (isnan(norm))
             {
@@ -266,12 +263,12 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                                                                                        % j.first).str());
             }
             
-            if (!genC) { stats.noGAlign++; }
-            if (!synC) { stats.noSAlign++; }
+            if (!endoC) { stats.noGAlign++; }
+            if (!seqsC) { stats.noSAlign++; }
             
             stats.c2v[cID][l].rID    = j.first;
-            stats.c2v[cID][l].gen    = genC;
-            stats.c2v[cID][l].before = synC;
+            stats.c2v[cID][l].endo   = endoC;
+            stats.c2v[cID][l].before = seqsC;
             stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
             
             allNorms.push_back(norm);
@@ -304,28 +301,28 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             stats.c2v[i.first].at(l).after = cov;
             
             // Required for generating summary statistics
-            allAfterSynC.push_back(cov);
+            allafterSeqsC.push_back(cov);
         }
     }
     
-    stats.beforeGen = SS::mean(allBeforeGenC);
-    stats.beforeSyn = SS::mean(allBeforeSynC);
-    stats.afterGen  = stats.beforeGen;
-    stats.afterSyn  = SS::mean(allAfterSynC);
+    stats.beforeEndo = SS::mean(allbeforeEndoC);
+    stats.beforeSeqs = SS::mean(allbeforeSeqsC);
+    stats.afterEndo  = stats.beforeEndo;
+    stats.afterSeqs  = SS::mean(allafterSeqsC);
     
     stats.normSD   = SS::getSD(allNorms);
     stats.normAver = SS::mean(allNorms);
     
-    stats.totAfter.nGen = stats.totBefore.nGen;
+    stats.totAfter.nEndo = stats.totBefore.nEndo;
     
-    stats.sampAfter.nGen  = gStats.nGen;
-    stats.sampBefore.nGen = gStats.nGen;
+    stats.sampAfter.nEndo  = gStats.nGen;
+    stats.sampBefore.nEndo = gStats.nGen;
     
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.nSyn = sStats.nGen;
+    stats.sampBefore.nSeqs = sStats.nGen;
 
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampAfter.nSyn = after.nGen;
+    stats.sampAfter.nSeqs = after.nGen;
 
     return stats;
 }
@@ -357,7 +354,7 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
                                                    % i.first
                                                    % j.first.start
                                                    % j.first.end
-                                                   % j.second.gen
+                                                   % j.second.endo
                                                    % j.second.before
                                                    % j.second.after
                                                    % j.second.norm).str());            
@@ -415,25 +412,25 @@ static void generateSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()              // 1
-                                            % gen                   // 2
-                                            % seq                   // 3
-                                            % stats.count           // 4
-                                            % meth2Str()            // 5
-                                            % stats.totBefore.nSyn  // 6
-                                            % stats.totBefore.nGen  // 7
-                                            % stats.totAfter.nSyn   // 8
-                                            % stats.totAfter.nGen   // 9
-                                            % stats.sampBefore.nSyn // 10
-                                            % stats.sampBefore.nGen // 11
-                                            % stats.sampAfter.nSyn  // 12
-                                            % stats.sampAfter.nGen  // 13
-                                            % stats.normAver        // 14
-                                            % stats.normSD          // 15
-                                            % stats.beforeSyn       // 16
-                                            % stats.beforeGen       // 17
-                                            % stats.afterSyn        // 18
-                                            % stats.afterGen        // 19
+    o.writer->write((boost::format(summary) % BedRef()               // 1
+                                            % gen                    // 2
+                                            % seq                    // 3
+                                            % stats.count            // 4
+                                            % meth2Str()             // 5
+                                            % stats.totBefore.nSeqs  // 6
+                                            % stats.totBefore.nEndo  // 7
+                                            % stats.totAfter.nSeqs   // 8
+                                            % stats.totAfter.nEndo   // 9
+                                            % stats.sampBefore.nSeqs // 10
+                                            % stats.sampBefore.nEndo // 11
+                                            % stats.sampAfter.nSeqs  // 12
+                                            % stats.sampAfter.nEndo  // 13
+                                            % stats.normAver         // 14
+                                            % stats.normSD           // 15
+                                            % stats.beforeSeqs       // 16
+                                            % stats.beforeEndo       // 17
+                                            % stats.afterSeqs        // 18
+                                            % stats.afterEndo        // 19
                      ).str());
     o.writer->close();
 }
