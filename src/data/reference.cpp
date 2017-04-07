@@ -498,12 +498,55 @@ void MetaRef::validate()
  * ------------------------- Variant Analysis -------------------------
  */
 
+struct SeqVariant
+{
+    // Homozygous?
+    Zygosity zyg;
+    
+    // SNP? Indel? CNV?
+    Mutation mut;
+    
+    // Copy number
+    unsigned copy;
+};
+
+struct WGSVariant : public SeqVariant
+{
+    enum class Group
+    {
+        NA12878,
+        VeryLowGC,
+        LowGC,
+        HighGC,
+        VeryHighGC,
+        ShortDinRep,  // Dinucleotide repeats
+        LongDinRep,   // Dinucleotide repeats
+        ShortHompo,
+        LongHompo,
+        ShortQuadRep, // Quad-nucleotide repeats
+        LongQuadRep,  // Quad-nucleotide repeats
+        ShortTrinRep, // Trinucleotide repeats
+        LongTrinRep,  // Trinucleotide repeats
+    } group;
+};
+
+struct CancerVariant : public SeqVariant
+{
+    
+};
+
 struct VarRef::VarRefImpl
 {
     // Required for validation
     std::set<SequinID> vIDs, bIDs;
     
     VData vData;
+    
+    // Information about WGS sequin variants
+    std::map<VarKey, WGSVariant> wVars;
+
+    // Information about WGS sequin variants
+    std::map<VarKey, CancerVariant> cVars;
     
     // Regular regions
     BedData bData;
@@ -534,6 +577,10 @@ void VarRef::readVRef(const Reader &r)
 {
     _impl->vData = readVFile(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
+        A_ASSERT(x.key());
+        
+        
+        
         _impl->vIDs.insert(x.name);
     });
 }

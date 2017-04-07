@@ -3,10 +3,10 @@
 
 #include <map>
 #include <cstring>
-#include "data/data.hpp"
 #include "data/locus.hpp"
 #include "data/reader.hpp"
 #include "data/convert.hpp"
+#include "data/biology.hpp"
 #include "tools/errors.hpp"
 
 namespace Anaquin
@@ -41,9 +41,9 @@ namespace Anaquin
             {
                 std::map<std::string, RNAFeature> mapper =
                 {
-                    { "exon",       Exon },
-                    { "gene",       Gene },
-                    { "transcript", Transcript }
+                    { "exon",       RNAFeature::Exon },
+                    { "gene",       RNAFeature::Gene },
+                    { "transcript", RNAFeature::Transcript }
                 };
                 
                 FILE *file = fopen(r.src().c_str(), "r");

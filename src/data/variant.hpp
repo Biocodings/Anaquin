@@ -3,12 +3,17 @@
 
 #include <map>
 #include <cmath>
-#include "data/data.hpp"
 #include "data/locus.hpp"
+#include "data/biology.hpp"
 #include <boost/format.hpp>
 
 namespace Anaquin
 {
+    template <typename E>
+    constexpr typename std::underlying_type<E>::type to_underlying(E e) {
+        return static_cast<typename std::underlying_type<E>::type>(e);
+    }
+    
     inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
     {
         const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
@@ -17,16 +22,9 @@ namespace Anaquin
                                                            % l.end).str();
         return std::hash<std::string>{}(str);
     }
-    
+
     struct Variant
     {
-        enum Status
-        {
-            Germline,
-            LOH,
-            Somatic
-        };
-
         operator const Locus &() const { return l; }
         
         inline bool operator<(const Locus &x) const { return l < x; }
@@ -35,23 +33,23 @@ namespace Anaquin
         {
             if (alt[0] == '-')
             {
-                return Deletion;
+                return Mutation::Deletion;
             }
             else if (alt[0] == '+')
             {
-                return Insertion;
+                return Mutation::Insertion;
             }
             else if (ref.size() == alt.size())
             {
-                return SNP;
+                return Mutation::SNP;
             }
             else if (ref.size() > alt.size())
             {
-                return Deletion;
+                return Mutation::Deletion;
             }
             else
             {
-                return Insertion;
+                return Mutation::Insertion;
             }
         }
 
@@ -73,9 +71,6 @@ namespace Anaquin
 
         // The reference position, with the 1st base having position 1
         Locus l;
-        
-        // Germline? Somatic? LOH?
-        Status status;
         
         Sequence ref, alt;
         

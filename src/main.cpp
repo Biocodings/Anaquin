@@ -164,7 +164,7 @@ static std::map<Value, Tool> _tools =
     { "MetaSubsample",  TOOL_M_SUBSAMPLE },
 };
 
-static std::map<Tool, std::set<Option>> _required =
+static std::map<Tool, std::set<Option>> _options =
 {
     /*
      * RnaQuin Analysis
@@ -182,11 +182,9 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_V_FLIP,      { OPT_U_BAM } },
-    { TOOL_V_ALLELE,    { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD  } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_HG, OPT_U_SEQS, OPT_MIXTURE } },
-    { TOOL_V_KREPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_HG, OPT_U_SEQS } },
     { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
 
     /*
@@ -311,11 +309,6 @@ struct MissingOptionError : public std::exception
     const std::string range;
 };
 
-struct TooManyOptionsError : public std::runtime_error
-{
-    TooManyOptionsError(const ErrorMsg &msg) : std::runtime_error(msg) {}
-};
-
 struct UnknownFormatError : public std::runtime_error
 {
     UnknownFormatError() : std::runtime_error("Unknown format") {}
@@ -332,7 +325,7 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
-    { "uhuman",  required_argument, 0, OPT_U_HG    },
+    { "uhuman",  optional_argument, 0, OPT_U_HG    },
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
@@ -907,29 +900,37 @@ void parse(int argc, char ** argv)
     }
 
     __output__ = _p.path = checkPath(_p.path);
-
-    auto &s = Standard::instance();
     
     /*
      * Have all the required options given?
      */
     
-    if (_required.count(_p.tool))
+    std::set<Option> required;
+    
+    std::copy_if(_options[_p.tool].begin(), _options[_p.tool].end(), std::inserter(required, required.end()), [&](const Option &x)
     {
-        auto required = _required[_p.tool];
-        
-        for (const auto i : _p.opts)
+        for (auto &o : long_options)
         {
-            if (required.count(i.first))
+            if (o.val == x)
             {
-                required.erase(i.first);
+                return o.has_arg == required_argument;
             }
         }
 
-        if (!required.empty())
+        A_THROW("Option " + std::to_string(x) + " no found");
+    });
+
+    for (const auto i : _p.opts)
+    {
+        if (required.count(i.first))
         {
-            throw MissingOptionError("-" + optToStr(*required.begin()));
+            required.erase(i.first);
         }
+    }
+    
+    if (!required.empty())
+    {
+        throw MissingOptionError("-" + optToStr(*required.begin()));
     }
 
     if (__showInfo__)
@@ -939,6 +940,8 @@ void parse(int argc, char ** argv)
         std::cout << "-----------------------------------------" << std::endl << std::endl;        
     }
 
+    auto &s = Standard::instance();
+    
     switch (_p.tool)
     {
         case TOOL_TEST:
@@ -1355,7 +1358,7 @@ void parse(int argc, char ** argv)
                         o.matchAllele = false;
                     }
                     
-                    analyze_2<VDiscover>(OPT_U_HG, OPT_U_SEQS, o);
+                    analyze_1<VDiscover>(OPT_U_SEQS, o);
                     break;
                 }
 

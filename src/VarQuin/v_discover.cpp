@@ -621,7 +621,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->close();
 }
 
-void VDiscover::report(const FileName &endo, const FileName &seqs, const Options &o)
+void VDiscover::report(const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 

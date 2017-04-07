@@ -1,11 +1,11 @@
 #ifndef B_DATA_HPP
 #define B_DATA_HPP
 
+#include "data/data.hpp"
 #include "tools/tools.hpp"
 #include "tools/errors.hpp"
 #include "data/minters.hpp"
 #include "data/intervals.hpp"
-#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Anaquin
@@ -128,22 +128,6 @@ namespace Anaquin
             return r;
         }
         
-        // Genomic regions mapped by chromosomes
-        inline std::map<ChrID, Intervals<>> intersGen() const
-        {
-            std::map<ChrID, Intervals<>> r;
-            
-            for (const auto &i : *this)
-            {
-                if (Standard::isGenomic(i.first))
-                {
-                    r[i.first] = inters(i.first);
-                }
-            }
-            
-            return r;
-        }
-        
         // Synthetic regions mapped by chromosomes
         template <typename F> ID2Intervals intersSyn(F f) const
         {
@@ -201,21 +185,6 @@ namespace Anaquin
             for (const auto &i : *this)
             {
                 r[i.first] = minters(i.first);
-            }
-            
-            return r;
-        }
-        
-        inline std::map<ChrID, MergedIntervals<>> mintersGen() const
-        {
-            std::map<ChrID, MergedIntervals<>> r;
-            
-            for (const auto &i : *this)
-            {
-                if (Standard::isGenomic(i.first))
-                {
-                    r[i.first] = minters(i.first);
-                }
             }
             
             return r;

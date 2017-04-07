@@ -490,7 +490,7 @@ namespace Anaquin
         {
             switch (x.type)
             {
-                case Transcript:
+                case RNAFeature::Transcript:
                 {
                     td.l   = x.l;
                     td.cID = x.cID;
@@ -503,7 +503,7 @@ namespace Anaquin
                     break;
                 }
 
-                case Gene:
+                case RNAFeature::Gene:
                 {
                     gd.l   = x.l;
                     gd.cID = x.cID;
@@ -513,7 +513,7 @@ namespace Anaquin
                     break;
                 }
 
-                case Exon:
+                case RNAFeature::Exon:
                 {
                     ed.l   = x.l;
                     ed.str = x.str;

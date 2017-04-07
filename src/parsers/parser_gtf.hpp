@@ -36,9 +36,9 @@ namespace Anaquin
         {
             std::map<std::string, RNAFeature> mapper =
             {
-                { "exon",       Exon },
-                { "gene",       Gene },
-                { "transcript", Transcript }
+                { "exon",       RNAFeature::Exon },
+                { "gene",       RNAFeature::Gene },
+                { "transcript", RNAFeature::Transcript }
             };
             
             std::string line;

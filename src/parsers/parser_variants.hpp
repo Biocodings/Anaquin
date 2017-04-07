@@ -25,7 +25,7 @@ namespace Anaquin
             PValue,
         };
 
-        typedef CalledVariant Data;
+        typedef Variant Data;
 
         typedef std::function<void(const Data &, const ParserProgress &)> Functor;
 

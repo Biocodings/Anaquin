@@ -7,6 +7,35 @@
 
 namespace Anaquin
 {
+    enum Strand
+    {
+        Forward,
+        Backward,
+        Either,
+    };
+    
+    enum class RNAFeature
+    {
+        Exon,
+        Gene,
+        Intron,
+        Transcript,
+    };
+
+    enum Mutation
+    {
+        SNP,
+        Insertion,
+        Deletion
+    };
+
+    enum class Zygosity
+    {
+        Homozygous,
+        Heterzygous,
+        Somatic
+    };
+    
     /*
      * Complement DNA string
      */

@@ -1,6 +1,7 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 
+#include <map>
 #include <cmath>
 #include <string>
 
@@ -61,34 +62,14 @@ namespace Anaquin
     
     const ChrID Geno  = "geno";
     
+    typedef std::map<SequinID, Counts> Hist;
+
     enum Mixture
     {
         Mix_1,
         Mix_2,
     };
 
-    enum Strand
-    {
-        Forward,
-        Backward,
-        Either,
-    };
-
-    enum RNAFeature
-    {
-        Exon,
-        Gene,
-        Intron,
-        Transcript,
-    };
-    
-    enum Mutation
-    {
-        SNP,
-        Insertion,
-        Deletion
-    };
-    
     struct Limit
     {
         SequinID id;

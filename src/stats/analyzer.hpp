@@ -26,8 +26,6 @@ namespace Anaquin
         FileName p1, p2;
     };
     
-    typedef std::map<SequinID, Counts> Hist;
-    
     struct HistStats
     {
         // Distribution of counts within sampling regions
