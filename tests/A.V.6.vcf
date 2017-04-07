@@ -1,20 +1,7 @@
 ##fileformat=VCFv4.2
-##FILTER=<ID=OverlapConflict,Description="Discordant high-confidence calls from different pipelines.">
-##FILTER=<ID=PASS,Description="All filters passed">
-##FILTER=<ID=Silver,Description="Medium-confidence call. It can be included in order to achieve even higher completeness of the truth set.">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##GATKCommandLine.SelectVariants=<ID=SelectVariants,Version=3.5-0-g36282e4,Date="Thu Mar 17 15:21:32 AEDT 2016",Epoch=1458188492160,CommandLineOptions="analysis_type=SelectVariants input_file=[] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[] disable_read_filter=[] intervals=null excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=Hg38.clean.fa nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 refactor_NDN_cigar_string=false fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 static_quantized_quals=null round_down_quantized=false disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=SILENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false no_cmdline_in_header=false sites_only=false never_trim_vcf_format_field=false bcf=false bam_compression=null simplifyBAM=false disable_bam_indexing=false generate_md5=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 reference_window_stop=0 logging_level=INFO log_to_file=null help=false version=false variant=(RodBinding name=variant source=NA12878_conf_vars.confident_regions.vcf) discordance=(RodBinding name= source=UNBOUND) concordance=(RodBinding name= source=UNBOUND) out=/ira/sequin_prototyping/NA12878_conf.SNVs.confident_regions.vcf sample_name=[] sample_expressions=null sample_file=null exclude_sample_name=[] exclude_sample_file=[] exclude_sample_expressions=[] selectexpressions=[] invertselect=false excludeNonVariants=false excludeFiltered=false preserveAlleles=false removeUnusedAlternates=false restrictAllelesTo=ALL keepOriginalAC=false keepOriginalDP=false mendelianViolation=false invertMendelianViolation=false mendelianViolationQualThreshold=0.0 select_random_fraction=0.0 remove_fraction_genotypes=0.0 selectTypeToInclude=[SNP] selectTypeToExclude=[] keepIDs=null excludeIDs=null fullyDecode=false justRead=false maxIndelSize=2147483647 minIndelSize=0 maxFilteredGenotypes=2147483647 minFilteredGenotypes=0 maxFractionFilteredGenotypes=1.0 minFractionFilteredGenotypes=0.0 setFilteredGtToNocall=false ALLOW_NONOVERLAPPING_COMMAND_LINE_SAMPLES=false forceValidOutput=false filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
-##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
-##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
-##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
-##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth; some reads may have been filtered">
-##INFO=<ID=bwa_freebayes,Number=2,Type=String,Description="Variant calling method.">
-##INFO=<ID=bwa_gatk3,Number=2,Type=String,Description="Variant calling method.">
-##INFO=<ID=bwa_platypus,Number=2,Type=String,Description="Variant calling method.">
-##INFO=<ID=dist2closest,Number=1,Type=Integer,Description="Distance to closest variant.">
-##INFO=<ID=isaac2,Number=2,Type=String,Description="Variant calling method.">
-##INFO=<ID=metal,Number=1,Type=String,Description="Confidence tranche. Platinum is better than silver.">
-##Method=<ID=bwa_freebayes,Description="Aligner=bwa-mem-0.7.12;VariantCaller=freebayes-0.9.21-15-g8a06a0b">
+##fileDate=06042017
+##reference=file:/ira/SEQUINS/indices/hg38.fwd.fa
+##source=Custom
 ##contig=<ID=chr1,length=248956422>
 ##contig=<ID=chr10,length=133797422>
 ##contig=<ID=chr11,length=135086622>
@@ -470,55 +457,174 @@
 ##contig=<ID=chrX,length=156040895>
 ##contig=<ID=chrY,length=57227415>
 ##contig=<ID=chrY_KI270740v1_random,length=37240>
-##fileDate=2015-08-04
-##reference=file:///ira/sequin_prototyping/Hg38.clean.fa
-##source=IlluminaPlatinumGenomes, version: hg38_2.0.1
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	NA12878
-chr1	26008442	ST_016_R	CTAA	C	.	.	.	.	.
-chr1	90824058	LD_004_R	AAC	A	.	.	.	.	.
-chr1	115251305	LH_007_R	C	CA	.	.	.	.	.
-chr1	197086072	SQ_005_R	TATGC	T	.	.	.	.	.
-chr1	231532131	LD_002_R	A	AAC	.	.	.	.	.
-chr1	236471369	SD_002_R	G	GGT	.	.	.	.	.
-chr1	247187986	SH_008_R	CA	C	.	.	.	.	.
-chr10	6988516	LQ_001_R	G	GGAAA	.	.	.	.	.
-chr10	98852113	LD_100_R	ATG	A	.	.	.	.	.
-chr12	46499028	SQ_006_R	ATCTT	A	.	.	.	.	.
-chr13	30193454	LH_006_R	G	GT	.	.	.	.	.
-chr13	83309638	LT_013_R	TTTA	T	.	.	.	.	.
-chr15	90576936	ST_004_R	A	AAGG	.	.	.	.	.
-chr16	25209092	SH_004_R	C	CT	.	.	.	.	.
-chr16	50901757	LQ_004_R	T	TAAAG	.	.	.	.	.
-chr16	78345639	LH_011_R	CA	C	.	.	.	.	.
-chr17	61077533	SQ_004_R	A	AAAAT	.	.	.	.	.
-chr18	63732185	SQ_002_R	C	CAGAT	.	.	.	.	.
-chr18	77819649	LQ_005_R	TTTTA	T	.	.	.	.	.
-chr19	35910645	LT_018_R	AAAT	A	.	.	.	.	.
-chr20	2015768	LQ_007_R	AAAAT	A	.	.	.	.	.
-chr20	17189850	LH_005_R	C	CA	.	.	.	.	.
-chr21	32340144	SD_005_R	TTC	T	.	.	.	.	.
-chr22	22515401	SQ_001_R	C	CCTTT	.	.	.	.	.
-chr3	72033880	SH_005_R	A	AT	.	.	.	.	.
-chr3	171140422	ST_003_R	T	TCTC	.	.	.	.	.
-chr4	84811429	ST_005_R	C	CTAT	.	.	.	.	.
-chr4	139081242	SQ_009_R	CTTAT	C	.	.	.	.	.
-chr4	189266612	SD_001_R	T	TAG	.	.	.	.	.
-chr5	74230404	SD_006_R	AAT	A	.	.	.	.	.
-chr5	76897302	ST_007_R	TGTG	T	.	.	.	.	.
-chr6	36549329	LT_005_R	C	CTCT	.	.	.	.	.
-chr6	68186859	SH_006_R	CT	C	.	.	.	.	.
-chr6	140286317	LQ_003_R	T	TTTCC	.	.	.	.	.
-chr6	150701417	LD_003_R	T	TTA	.	.	.	.	.
-chr6	164716061	SH_010_R	GA	G	.	.	.	.	.
-chr7	18272913	LT_019_R	GCTA	G	.	.	.	.	.
-chr7	28849447	SD_003_R	G	GGA	.	.	.	.	.
-chr7	93771339	SD_004_R	GCA	G	.	.	.	.	.
-chr8	3494554	LQ_008_R	TGATA	T	.	.	.	.	.
-chr8	9584164	LH_009_R	TA	T	.	.	.	.	.
-chr8	77483037	ST_008_R	AATT	A	.	.	.	.	.
-chr8	98185046	LD_001_R	A	AAC	.	.	.	.	.
-chr8	117790869	LT_001_R	A	AAAC	.	.	.	.	.
-chr8	130573544	LD_006_R	ATC	A	.	.	.	.	.
-chr9	91084894	LH_008_R	CA	C	.	.	.	.	.
-chr9	106379844	SH_003_R	T	TA	.	.	.	.	.
-chrX	31384309	LT_011_R	C	CACT	.	.	.	.	.
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chrX	98156964	GI_005	C	CA	.	.	indel.na12878.HOM.2n
+chr5	84326516	GI_006	AAAATGG	A	.	.	indel.na12878.HOM.2n
+chr1	160205420	GI_030	A	AGCG	.	.	indel.na12878.HOM.2n
+chr11	54648346	GI_044	AG	A	.	.	indel.na12878.HET.2n
+chr11	132015633	GI_045	A	ATATTT	.	.	indel.na12878.HET.2n
+chr1	60005804	GI_048	C	CTT	.	.	indel.na12878.HET.2n
+chr3	173057115	GI_049	C	CT	.	.	indel.na12878.HET.2n
+chr4	167080751	GI_070	TTA	T	.	.	indel.na12878.HET.2n
+chr5	86492394	GI_074	G	GA	.	.	indel.na12878.HET.2n
+chr16	82894696	GI_085	GA	G	.	.	indel.na12878.HET.2n
+chr1	58701656	GI_086	GGAAT	G	.	.	indel.na12878.HET.2n
+chr7	150556566	GI_093	TTG	T	.	.	indel.na12878.HET.2n
+chr2	82976853	GI_094	C	CT	.	.	indel.na12878.HET.2n
+chr1	206094169	GI_097	GGTGTGTGT	G	.	.	indel.na12878.HET.2n
+chr11	124829274	GI_099	A	AGG	.	.	indel.na12878.HET.2n
+chr13	88107780	GS_001	G	A	.	.	SNV.na12878.HOM.2n
+chr4	160613492	GS_002	T	C	.	.	SNV.na12878.HOM_CNV.3n
+chr2	85940423	GS_003	A	C	.	.	SNV.na12878.HOM_CNV.1n
+chr9	85568590	GS_004	T	C	.	.	SNV.na12878.HOM_CNV.3n
+chr9	42927779	GS_007	C	T	.	.	SNV.na12878.HOM_CNV.4n
+chr3	160029899	GS_008	A	G	.	.	SNV.na12878.HOM.2n
+chr3	45647981	GS_009	T	G	.	.	SNV.na12878.HOM_CNV.4n
+chr2	37662840	GS_010	G	A	.	.	SNV.na12878.HOM.2n
+chr8	72748367	GS_011	A	G	.	.	SNV.na12878.HOM.2n
+chr2	15061669	GS_012	C	T	.	.	SNV.na12878.HOM_CNV.1n
+chr8	89181018	GS_013	C	T	.	.	SNV.na12878.HOM_CNV.1n
+chr6	159450082	GS_014	C	T	.	.	SNV.na12878.HOM.2n
+chr1	230128872	GS_015	G	A	.	.	SNV.na12878.HOM.2n
+chr1	248001906	GS_016	T	A	.	.	SNV.na12878.HOM.2n
+chr4	134486116	GS_017	C	G	.	.	SNV.na12878.HOM_CNV.4n
+chr11	85070086	GS_018	A	G	.	.	SNV.na12878.HOM_CNV.3n
+chr11	31667834	GS_019	T	G	.	.	SNV.na12878.HOM.2n
+chr4	34759898	GS_020	C	T	.	.	SNV.na12878.HOM.2n
+chr5	161927179	GS_021	T	C	.	.	SNV.na12878.HOM_CNV.4n
+chr3	115437302	GS_022	C	G	.	.	SNV.na12878.HOM.2n
+chr2	155294876	GS_023	G	C	.	.	SNV.na12878.HOM_CNV.1n
+chr2	110013775	GS_024	G	A	.	.	SNV.na12878.HOM.2n
+chr13	107675605	GS_025	C	T	.	.	SNV.na12878.HOM.2n
+chr12	38017760	GS_026	G	A	.	.	SNV.na12878.HOM_CNV.4n
+chr2	21386285	GS_027	T	C	.	.	SNV.na12878.HOM_CNV.1n
+chr4	117274501	GS_028	A	G	.	.	SNV.na12878.HOM.2n
+chr18	37720537	GS_029	C	A	.	.	SNV.na12878.HOM.2n
+chr15	27986647	GS_031	T	C	.	.	SNV.na12878.HOM_CNV.3n
+chr5	43535889	GS_032	T	C	.	.	SNV.na12878.HOM.2n
+chr2	141264223	GS_033	C	T	.	.	SNV.na12878.HOM.2n
+chr1	24300910	GS_034	G	A	.	.	SNV.na12878.HOM_CNV.3n
+chr3	189655570	GS_035	T	C	.	.	SNV.na12878.HOM.2n
+chr18	7456096	GS_036	T	C	.	.	SNV.na12878.HET.2n
+chr9	93265889	GS_037	G	A	.	.	SNV.na12878.HET.2n
+chr14	50087683	GS_038	T	C	.	.	SNV.na12878.HET.2n
+chr15	92824266	GS_039	G	C	.	.	SNV.na12878.HET.2n
+chr10	25478592	GS_040	C	T	.	.	SNV.na12878.HET.2n
+chr6	89296206	GS_041	T	C	.	.	SNV.na12878.HET.2n
+chr6	42684929	GS_042	G	A	.	.	SNV.na12878.HET.2n
+chr3	173135149	GS_043	G	A	.	.	SNV.na12878.HET.2n
+chr7	113042504	GS_046	T	C	.	.	SNV.na12878.HET.2n
+chr7	79105368	GS_047	T	C	.	.	SNV.na12878.HET.2n
+chr7	104663551	GS_050	G	A	.	.	SNV.na12878.HET.2n
+chr4	145380497	GS_051	T	C	.	.	SNV.na12878.HET.2n
+chr12	107380096	GS_052	C	T	.	.	SNV.na12878.HET.2n
+chr5	67588278	GS_053	C	A	.	.	SNV.na12878.HET.2n
+chr19	14694468	GS_054	C	T	.	.	SNV.na12878.HET.2n
+chr8	138586476	GS_055	C	T	.	.	SNV.na12878.HET.2n
+chr14	86093329	GS_056	A	T	.	.	SNV.na12878.HET.2n
+chr5	153549031	GS_057	G	A	.	.	SNV.na12878.HET.2n
+chr2	42277270	GS_058	C	G	.	.	SNV.na12878.HET.2n
+chr2	38058631	GS_059	C	G	.	.	SNV.na12878.HET.2n
+chr22	24759177	GS_060	A	G	.	.	SNV.na12878.HET.2n
+chr4	21025553	GS_061	T	G	.	.	SNV.na12878.HET.2n
+chr1	238551366	GS_062	C	T	.	.	SNV.na12878.HET.2n
+chr17	13924117	GS_063	G	T	.	.	SNV.na12878.HET.2n
+chr19	50219913	GS_064	A	G	.	.	SNV.na12878.HET.2n
+chr5	149421816	GS_065	A	G	.	.	SNV.na12878.HET.2n
+chr6	20383418	GS_066	C	T	.	.	SNV.na12878.HET.2n
+chr6	102283833	GS_067	T	C	.	.	SNV.na12878.HET.2n
+chr10	10023475	GS_068	C	T	.	.	SNV.na12878.HET.2n
+chr3	194241603	GS_069	G	C	.	.	SNV.na12878.HET.2n
+chr13	109015196	GS_071	A	G	.	.	SNV.na12878.HET.2n
+chr2	228157895	GS_072	C	G	.	.	SNV.na12878.HET.2n
+chr15	57594556	GS_073	T	C	.	.	SNV.na12878.HET.2n
+chr5	19329361	GS_075	G	A	.	.	SNV.na12878.HET.2n
+chr1	105421343	GS_076	T	C	.	.	SNV.na12878.HET.2n
+chr1	9062343	GS_077	A	G	.	.	SNV.na12878.HET.2n
+chr11	86212151	GS_078	G	T	.	.	SNV.na12878.HET.2n
+chr15	93602663	GS_079	G	A	.	.	SNV.na12878.HET.2n
+chr7	101692184	GS_080	A	G	.	.	SNV.na12878.HET.2n
+chr11	24894130	GS_081	C	T	.	.	SNV.na12878.HET.2n
+chr4	31587943	GS_082	T	C	.	.	SNV.na12878.HET.2n
+chr16	54487172	GS_083	T	C	.	.	SNV.na12878.HET.2n
+chr8	5714530	GS_084	A	G	.	.	SNV.na12878.HET.2n
+chr3	7076600	GS_087	T	C	.	.	SNV.na12878.HET.2n
+chr9	33425149	GS_088	T	G	.	.	SNV.na12878.HET.2n
+chr9	95332056	GS_089	G	T	.	.	SNV.na12878.HET.2n
+chr16	89739569	GS_090	G	A	.	.	SNV.na12878.HET.2n
+chr12	71427518	GS_091	C	A	.	.	SNV.na12878.HET.2n
+chr2	214030137	GS_092	C	T	.	.	SNV.na12878.HET.2n
+chr13	71948319	GS_095	T	A	.	.	SNV.na12878.HET.2n
+chr3	61787431	GS_096	T	C	.	.	SNV.na12878.HET.2n
+chr5	53809385	GS_098	G	A	.	.	SNV.na12878.HET.2n
+chr11	42416908	GS_100	G	T	.	.	SNV.na12878.HET.2n
+chr2	10000523	GS_101	A	G	.	.	SNV.na12878.HET.2n
+chr8	99091056	GS_102	A	T	.	.	SNV.na12878.HET.2n
+chr7	1227680	HiGC_02	G	T	.	.	SNV.high_gc.HET.2n
+chr2	178413883	HiGC_03	G	T	.	.	SNV.high_gc.HET.2n
+chr3	146250692	HiGC_08	C	T	.	.	SNV.high_gc.HET.2n
+chr14	103539361	HiGC_09	C	T	.	.	SNV.high_gc.HET.2n
+chr6	17728633	HiGC_10	C	A	.	.	SNV.high_gc.HET.2n
+chr8	98185046	LD_001	A	AAC	.	.	indel.long_dinuc_rep.HET.2n
+chr1	231532131	LD_002	A	AAC	.	.	indel.long_dinuc_rep.HET.2n
+chr6	150701417	LD_003	T	TTA	.	.	indel.long_dinuc_rep.HET.2n
+chr1	90824058	LD_004	AAC	A	.	.	indel.long_dinuc_rep.HET.2n
+chr8	130573544	LD_006	ATC	A	.	.	indel.long_dinuc_rep.HET.2n
+chr10	98852113	LD_100	ATG	A	.	.	indel.long_dinuc_rep.HET.2n
+chr20	17189850	LH_005	C	CA	.	.	indel.long_homopol.HET.2n
+chr13	30193454	LH_006	G	GT	.	.	indel.long_homopol.HET.2n
+chr1	115251305	LH_007	C	CA	.	.	indel.long_homopol.HET.2n
+chr9	91084894	LH_008	CA	C	.	.	indel.long_homopol.HET.2n
+chr8	9584164	LH_009	TA	T	.	.	indel.long_homopol.HET.2n
+chr16	78345639	LH_011	CA	C	.	.	indel.long_homopol.HET.2n
+chr5	129909396	LoGC_01	A	G	.	.	SNV.low_gc.HET.2n
+chr12	126963050	LoGC_02	A	C	.	.	SNV.low_gc.HET.2n
+chr1	178354551	LoGC_03	T	C	.	.	SNV.low_gc.HET.2n
+chr8	76538465	LoGC_04	A	G	.	.	SNV.low_gc.HET.2n
+chr13	38220158	LoGC_05	A	C	.	.	SNV.low_gc.HET.2n
+chr10	6988516	LQ_001	G	GGAAA	.	.	indel.long_quadnuc_rep.HET.2n
+chr6	140286317	LQ_003	T	TTTCC	.	.	indel.long_quadnuc_rep.HET.2n
+chr16	50901757	LQ_004	T	TAAAG	.	.	indel.long_quadnuc_rep.HET.2n
+chr18	77819649	LQ_005	TTTTA	T	.	.	indel.long_quadnuc_rep.HET.2n
+chr20	2015768	LQ_007	AAAAT	A	.	.	indel.long_quadnuc_rep.HET.2n
+chr8	3494554	LQ_008	TGATA	T	.	.	indel.long_quadnuc_rep.HET.2n
+chr8	117790869	LT_001	A	AAAC	.	.	indel.long_trinuc_rep.HET.2n
+chr6	36549329	LT_005	C	CTCT	.	.	indel.long_trinuc_rep.HET.2n
+chrX	31384309	LT_011	C	CACT	.	.	indel.long_trinuc_rep.HET.2n
+chr13	83309638	LT_013	TTTA	T	.	.	indel.long_trinuc_rep.HET.2n
+chr19	35910645	LT_018	AAAT	A	.	.	indel.long_trinuc_rep.HET.2n
+chr7	18272913	LT_019	GCTA	G	.	.	indel.long_trinuc_rep.HET.2n
+chr4	189266612	SD_001	T	TAG	.	.	indel.short_dinuc_rep.HET.2n
+chr1	236471369	SD_002	G	GGT	.	.	indel.short_dinuc_rep.HET.2n
+chr7	28849447	SD_003	G	GGA	.	.	indel.short_dinuc_rep.HET.2n
+chr7	93771339	SD_004	GCA	G	.	.	indel.short_dinuc_rep.HET.2n
+chr21	32340144	SD_005	TTC	T	.	.	indel.short_dinuc_rep.HET.2n
+chr5	74230404	SD_006	AAT	A	.	.	indel.short_dinuc_rep.HET.2n
+chr9	106379844	SH_003	T	TA	.	.	indel.short_hompol.HET.2n
+chr16	25209092	SH_004	C	CT	.	.	indel.short_hompol.HET.2n
+chr3	72033880	SH_005	A	AT	.	.	indel.short_hompol.HET.2n
+chr6	68186859	SH_006	CT	C	.	.	indel.short_hompol.HET.2n
+chr1	247187986	SH_008	CA	C	.	.	indel.short_hompol.HET.2n
+chr6	164716061	SH_010	GA	G	.	.	indel.short_hompol.HET.2n
+chr22	22515401	SQ_001	C	CCTTT	.	.	indel.short_quadnuc_rep.HET.2n
+chr18	63732185	SQ_002	C	CAGAT	.	.	indel.short_quadnuc_rep.HET.2n
+chr17	61077533	SQ_004	A	AAAAT	.	.	indel.short_quadnuc_rep.HET.2n
+chr1	197086072	SQ_005	TATGC	T	.	.	indel.short_quadnuc_rep.HET.2n
+chr12	46499028	SQ_006	ATCTT	A	.	.	indel.short_quadnuc_rep.HET.2n
+chr4	139081242	SQ_009	CTTAT	C	.	.	indel.short_quadnuc_rep.HET.2n
+chr3	171140422	ST_003	T	TCTC	.	.	indel.short_trinuc_rep.HET.2n
+chr15	90576936	ST_004	A	AAGG	.	.	indel.short_trinuc_rep.HET.2n
+chr4	84811429	ST_005	C	CTAT	.	.	indel.short_trinuc_rep.HET.2n
+chr5	76897302	ST_007	TGTG	T	.	.	indel.short_trinuc_rep.HET.2n
+chr8	77483037	ST_008	AATT	A	.	.	indel.short_trinuc_rep.HET.2n
+chr1	26008442	ST_016	CTAA	C	.	.	indel.short_trinuc_rep.HET.2n
+chr9	109497832	VHGC_11	G	T	.	.	SNV.very_high_gc.HET.2n
+chr15	65423178	VHGC_12	G	T	.	.	SNV.very_high_gc.HET.2n
+chr18	37254222	VHGC_13	C	A	.	.	SNV.very_high_gc.HET.2n
+chr5	180291610	VHGC_15	C	T	.	.	SNV.very_high_gc.HET.2n
+chr11	1571668	VHGC_17	G	T	.	.	SNV.very_high_gc.HET.2n
+chr12	37587952	VLGC_01	A	C	.	.	SNV.very_low_gc.HET.2n
+chr12	87708420	VLGC_02	T	G	.	.	SNV.very_low_gc.HET.2n
+chr6	152024873	VLGC_06	A	C	.	.	SNV.very_low_gc.HET.2n
+chr2	125541814	VLGC_09	A	G	.	.	SNV.very_low_gc.HET.2n
+chr18	66964144	VLGC_10	A	C	.	.	SNV.very_low_gc.HET.2n
