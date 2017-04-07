@@ -224,22 +224,21 @@ TEST_CASE("VSubsample_Edge")
     
     Test::clear();
     Standard::instance().addVRef(Reader("tests/data/test2.bed"));
-    
+    auto r1 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", VSample::Options());
+
+    Test::clear();
     VSample::Options o;
-    
-    o.edge = 0;
-    auto r1 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
-    
     o.edge = 300;
+    Standard::instance().addVRef(Reader("tests/data/test2.bed"), o.edge);
     auto r2 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
     
-    REQUIRE(r1.afterGen  == Approx(62.600445186421815));
-    REQUIRE(r1.afterSyn  == Approx(58.537006121313297));
     REQUIRE(r1.beforeGen == Approx(62.600445186421815));
     REQUIRE(r1.beforeSyn == Approx(973.71007234279352));
+    REQUIRE(r1.afterGen  == Approx(62.600445186421815));
+    REQUIRE(r1.afterSyn  == Approx(58.5370061213));
     
-    REQUIRE(r2.afterGen  == Approx(62.600445186421815));
-    REQUIRE(r2.afterSyn  == Approx(49.666110183639397));
-    REQUIRE(r2.beforeGen == Approx(62.600445186421815));
+    REQUIRE(r2.beforeGen == Approx(75.3742690058));
     REQUIRE(r2.beforeSyn == Approx(1185.0868838763577));
+    REQUIRE(r2.afterGen  == Approx(75.3742690058));
+    REQUIRE(r2.afterSyn  == Approx(60.5175292154));
 }
