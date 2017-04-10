@@ -41,17 +41,17 @@ namespace Anaquin
     template <typename T1, typename T2> T2 sum(const std::vector<T1> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const T1 &p)
-                               {
-                                   return c + p;
-                               });
+        {
+            return c + p;
+        });
     }
     
     template <typename T1, typename T2> T2 sum(const std::map<T1, T2> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const std::pair<T1, T2>& p)
-                               {
-                                   return c + p.second;
-                               });
+        {
+            return c + p.second;
+        });
     }
 }
 

@@ -1,22 +1,39 @@
 #include <algorithm>
 #include "data/biology.hpp"
+#include "tools/errors.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
-static const FileName AMBIG_1     = "VarFlip_ambig_1.fq";
-static const FileName AMBIG_2     = "VarFlip_ambig_2.fq";
-static const FileName Paired_1    = "VarFlip_paired_1.fq";
-static const FileName Paired_2    = "VarFlip_paired_2.fq";
-static const FileName Crossed_1   = "VarFlip_crossed_1.fq";
-static const FileName Crossed_2   = "VarFlip_crossed_2.fq";
-static const FileName HangingFile = "VarFlip_hanging.fq";
+static const FileName NMNM_1    = "VarFlip_NMapNMap_1.fq";
+static const FileName NMNM_2    = "VarFlip_NMapNMap_2.fq";
+static const FileName ForNM_1   = "VarFlip_ForNMap_1.fq";
+static const FileName ForNM_2   = "VarFlip_ForNMap_2.fq";
+static const FileName RevNM_1   = "VarFlip_RevNMap_1.fq";
+static const FileName RevNM_2   = "VarFlip_RevNMap_2.fq";
+static const FileName RevRev_1  = "VarFlip_RevRev_1.fq";
+static const FileName RevRev_2  = "VarFlip_RevRev_2.fq";
+static const FileName ForFor_1  = "VarFlip_ForFor_1.fq";
+static const FileName ForFor_2  = "VarFlip_ForFor_2.fq";
+static const FileName ForRev_1  = "VarFlip_ForRev_1.fq";
+static const FileName ForRev_2  = "VarFlip_ForRev_2.fq";
+static const FileName ForHang_1 = "VarFlip_ForHang.fq";
+static const FileName RevHang_1 = "VarFlip_RevHang.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
     Stats stats;
 
+    stats.counts[Status::RevHang]            = 0;
+    stats.counts[Status::ForHang]            = 0;
+    stats.counts[Status::ReverseReverse]     = 0;
+    stats.counts[Status::ForwardForward]     = 0;
+    stats.counts[Status::ForwardReverse]     = 0;
+    stats.counts[Status::ReverseNotMapped]   = 0;
+    stats.counts[Status::ForwardNotMapped]   = 0;
+    stats.counts[Status::NotMappedNotMapped] = 0;
+    
     // Required for pooling paired-end reads
     std::map<ReadName, ParserSAM::Data> seenMates;
     
@@ -27,99 +44,101 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
             o.wait(std::to_string(info.p.i));
         }
 
-        if (impl.isReverse(x.cID))
-        {
-            stats.nSeqs++;
-            
-            if (!x.isPassed || x.isSecondary || x.isSupplement)
-            {
-                return;
-            }
-            
-            if (x.isPaired)
-            {
-                stats.nPaired++;
-                
-                if (!seenMates.count(x.name))
-                {
-                    seenMates[x.name] = x;
-                }
-                else
-                {
-                    auto &seen  = seenMates[x.name];
-                    auto first  = seen.isFirstPair ? &seen : &x;
-                    auto second = seen.isFirstPair ? &x : &seen;
-
-                    if (first->isForward)
-                    {
-                        complement(first->seq);
-                    }
-                    else
-                    {
-                        std::reverse(first->seq.begin(), first->seq.end());
-                    }
-                    
-                    if (second->isForward)
-                    {
-                        complement(second->seq);
-                    }
-                    else
-                    {
-                        std::reverse(second->seq.begin(), second->seq.end());
-                    }
-                    
-                    // Anything mapped to the reverse?
-                    const auto anyReverse = impl.isReverse(first->cID) || impl.isReverse(second->cID);
-                    
-                    // Anything mapped to the forward?
-                    const auto anyForward = !impl.isReverse(first->cID) || !impl.isReverse(second->cID);
-                    
-                    // Anything not mapped?
-                    const auto anyNMapped = !first->mapped || !second->mapped;
-                    
-                    // Crossed alignment?
-                    const auto crossed = !anyNMapped && anyReverse && anyForward;
-                    
-                    // Ambigious alignment?
-                    const auto ambig = anyReverse && !anyForward && anyNMapped;
-                    
-                    if (ambig)
-                    {
-                        stats.nAmbig++;
-                        impl.ambig(*first, *second);
-                    }
-                    else if (crossed)
-                    {
-                        stats.nCross++;
-                        impl.cross(*first, *second);
-                    }
-                    else
-                    {
-                        stats.nReverse++;
-                        impl.paired(*first, *second);
-                    }
-
-                    seenMates.erase(x.name);
-                }
-            }
-            else
-            {
-                stats.nSingle++;
-                
-                // Compute the complement (but not reverse)
-                complement(x.seq);
-
-                // Single-ended alignments
-                impl.single(x);
-            }
-        }
-        else if (!x.mapped)
+        if (x.mapped)
         {
             stats.nNA++;
+        }
+        else if (impl.isReverse(x.cID))
+        {
+            stats.nSeqs++;
         }
         else
         {
             stats.nEndo++;
+        }
+
+        if (!x.isPassed || x.isSecondary || x.isSupplement)
+        {
+            return;
+        }
+        
+        A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
+        
+        if (!seenMates.count(x.name))
+        {
+            seenMates[x.name] = x;
+        }
+        else
+        {
+            auto &seen  = seenMates[x.name];
+            auto first  = seen.isFirstPair ? &seen : &x;
+            auto second = seen.isFirstPair ? &x : &seen;
+            
+            /*
+             * Only complement reads aligned to the reverse genome
+             */
+            
+            if (impl.isReverse(first->cID))
+            {
+                if (first->isForward)
+                {
+                    complement(first->seq);
+                }
+                else
+                {
+                    std::reverse(first->seq.begin(), first->seq.end());
+                }
+            }
+            
+            if (impl.isReverse(second->cID))
+            {
+                if (second->isForward)
+                {
+                    complement(second->seq);
+                }
+                else
+                {
+                    std::reverse(second->seq.begin(), second->seq.end());
+                }
+            }
+            
+            const auto bothRev =  impl.isReverse(first->cID) && impl.isReverse(second->cID);
+            const auto bothFor = !impl.isReverse(first->cID) && !impl.isReverse(second->cID);
+            const auto anyRev  =  impl.isReverse(first->cID) || impl.isReverse(second->cID);
+            const auto anyFor  = !impl.isReverse(first->cID) || !impl.isReverse(second->cID);
+            const auto anyMap  =  first->mapped ||  second->mapped;
+            const auto anyNMap = !first->mapped || !second->mapped;
+            
+            VFlip::Status status;
+            
+            if (bothRev && !anyNMap)
+            {
+                status = Status::ReverseReverse;
+            }
+            else if (bothFor && !anyNMap)
+            {
+                status = Status::ForwardForward;
+            }
+            else if (anyRev && anyFor && !anyNMap)
+            {
+                status = Status::ForwardReverse;
+            }
+            else if (anyNMap && anyMap && anyRev)
+            {
+                status = Status::ReverseNotMapped;
+            }
+            else if (anyNMap && anyMap && anyFor)
+            {
+                status = Status::ForwardNotMapped;
+            }
+            else
+            {
+                status = Status::NotMappedNotMapped;
+            }
+            
+            stats.counts[status]++;
+            impl.process(*first, *second, Status::ReverseReverse);
+            seenMates.erase(x.name);
         }
     }, true);
 
@@ -132,21 +151,17 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
         // Compute the complement (but not reverse)
         complement(i.second.seq);
 
-        // Alignments without the other mate
-        impl.hanging(i.second);
+        if (impl.isReverse(i.second.cID))
+        {
+            stats.counts[Status::RevHang]++;
+            impl.process(i.second, i.second, Status::RevHang);
+        }
+        else
+        {
+            stats.counts[Status::ForHang]++;
+            impl.process(i.second, i.second, Status::ForHang);
+        }
     }
-
-    stats.nHang = seenMates.size();
-
-    stats.pSingle = static_cast<Proportion>(stats.nSingle) / (stats.nSingle + stats.nPaired);
-    stats.pPaired = static_cast<Proportion>(stats.nPaired) / (stats.nSingle + stats.nPaired);
-    
-    const auto total = stats.nAmbig + stats.nReverse + stats.nHang + stats.nCross;
-    
-    stats.pHang    = static_cast<Proportion>(stats.nHang)    / total;
-    stats.pAmbig   = static_cast<Proportion>(stats.nAmbig)   / total;
-    stats.pCross   = static_cast<Proportion>(stats.nCross)   / total;
-    stats.pReverse = static_cast<Proportion>(stats.nReverse) / total;
 
     return stats;
 }
@@ -168,7 +183,7 @@ static void writeSummary(const FileName &file,
                          "                              %7%\n"
                          "       Hanging alignments:    %8%\n\n"
                          "-------Alignments\n\n"
-                         "       Paired:   %9% (%10%%%)\n"
+                         "       RevRev:   %9% (%10%%%)\n"
                          "       Crossed:  %11% (%12%%%)\n"
                          "       Hanging:  %13% (%14%%%)\n\n"
                          "-------Alignments\n\n"
@@ -177,29 +192,32 @@ static void writeSummary(const FileName &file,
                          "       Reverse:  %19% (%20%%%)\n"
                          "       Dilution: %21$.4f\n";
 
-    #define P(x) (isnan(x) ? "0" : (std::to_string(x)))
+    #define C(x) stats.counts.at(x)
+    #define P(x) stats.prop(x)
+
+    typedef VFlip::Status S;
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
-                                            % Paired_1         // 2
-                                            % Paired_2         // 3
-                                            % Crossed_1        // 4
-                                            % Crossed_2        // 5
-                                            % HangingFile      // 6
-                                            % AMBIG_1          // 7
-                                            % AMBIG_2          // 8
-                                            % stats.nPaired    // 9
-                                            % P(stats.pPaired) // 10
-                                            % stats.nCross     // 11
-                                            % P(stats.pCross)  // 12
-                                            % stats.nHang      // 13
-                                            % P(stats.pHang)   // 14
+                                            % "????"          // 2
+                                            % "????"          // 3
+                                            % "????"        // 4
+                                            % "????"        // 5
+                                            % "????"      // 6
+                                            % "????"          // 7
+                                            % "????"          // 8
+                                            % C(S::ReverseReverse) // 9
+                                            % P(S::ReverseReverse) // 10
+                                            % C(S::ForwardReverse) // 11
+                                            % P(S::ForwardReverse) // 12
+                                            % C(S::RevHang)        // 13
+                                            % P(S::RevHang)    // 14
                                             % stats.nNA        // 15
                                             % stats.propNA()   // 16
-                                            % stats.nEndo       // 17
+                                            % stats.nEndo      // 17
                                             % stats.propGen()  // 18
-                                            % stats.nSeqs       // 19
+                                            % stats.nSeqs      // 19
                                             % stats.propSyn()  // 20
                                             % stats.dilution() // 21
                      ).str());
@@ -211,32 +229,32 @@ void VFlip::report(const FileName &file, const Options &o)
     {
         Impl(const Options &o)
         {
-            p1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            p2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            hg = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            c1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            c2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            a2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            auto init = [&](Status status, FileName f1, FileName f2)
+            {
+                w1[status] = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+                w1[status]->open(f1);
+                
+                if (status != Status::ForHang && status != Status::RevHang)
+                {
+                    w2[status] = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+                    w2[status]->open(f2);
+                }
+            };
             
-            a1->open(AMBIG_1);
-            a2->open(AMBIG_2);
-            p1->open(Paired_1);
-            p2->open(Paired_2);
-            c1->open(Crossed_1);
-            c2->open(Crossed_2);
-            hg->open(HangingFile);
+            init(Status::ForHang, ForHang_1, ForHang_1);
+            init(Status::RevHang, RevHang_1, RevHang_1);
+            init(Status::ReverseReverse, RevRev_1, RevRev_2);
+            init(Status::ForwardForward, ForFor_1, ForFor_2);
+            init(Status::ForwardReverse, ForRev_1, ForRev_2);
+            init(Status::ReverseNotMapped, RevNM_1, RevNM_2);
+            init(Status::ForwardNotMapped, ForNM_1, ForNM_2);
+            init(Status::NotMappedNotMapped, NMNM_1, NMNM_2);
         }
 
         ~Impl()
         {
-            a1->close();
-            a2->close();
-            c1->close();
-            c2->close();
-            p1->close();
-            p2->close();
-            hg->close();
+            for (auto &i : w1) { i.second->close(); }
+            for (auto &i : w2) { i.second->close(); }
         }
         
         bool isReverse(const ChrID &cID)
@@ -244,64 +262,65 @@ void VFlip::report(const FileName &file, const Options &o)
             return isReverseGenome(cID);
         }
 
-        void paired(const ParserSAM::Data &x, const ParserSAM::Data &y)
+        void process(const ParserSAM::Data &x, const ParserSAM::Data &y, VFlip::Status status)
         {
-            p1->write("@" + x.name + "/1");
-            p1->write(x.seq);
-            p1->write("+");
-            p1->write(x.qual);
-            p2->write("@" + y.name + "/2");
-            p2->write(y.seq);
-            p2->write("+");
-            p2->write(y.qual);
-        }
+            auto p1 = w1.at(status);
+            auto p2 = w2.count(status) ? w2.at(status) : nullptr;
 
-        void cross(const ParserSAM::Data &x, const ParserSAM::Data &y)
-        {
-            c1->write("@" + x.name + "/1");
-            c1->write(x.seq);
-            c1->write("+");
-            c1->write(x.qual);
-            c2->write("@" + y.name + "/2");
-            c2->write(y.seq);
-            c2->write("+");
-            c2->write(y.qual);
-        }
-        
-        void ambig(const ParserSAM::Data &x, const ParserSAM::Data &y)
-        {
-            a1->write("@" + x.name + "/1");
-            a1->write(x.seq);
-            a1->write("+");
-            a1->write(x.qual);
-            a2->write("@" + y.name + "/2");
-            a2->write(y.seq);
-            a2->write("+");
-            a2->write(y.qual);
-        }
-
-        void single(const ParserSAM::Data &x) {}
-
-        void hanging(const ParserSAM::Data &x)
-        {
-            if (isReverse(x.cID) && x.mapped)
+            auto writePaired = [&]()
             {
-                if (x.isFirstPair)
+                p1->write("@" + x.name + "/1");
+                p1->write(x.seq);
+                p1->write("+");
+                p1->write(x.qual);
+                p2->write("@" + y.name + "/2");
+                p2->write(y.seq);
+                p2->write("+");
+                p2->write(y.qual);
+            };
+            
+            auto writeSingle = [&]()
+            {
+                if (x.mapped)
                 {
-                    hg->write("@" + x.name + "/1");
+                    if (x.isFirstPair)
+                    {
+                        p1->write("@" + x.name + "/1");
+                    }
+                    else
+                    {
+                        p1->write("@" + x.name + "/2");
+                    }
+                    
+                    p1->write(x.seq);
+                    p1->write("+");
+                    p1->write(x.qual);
                 }
-                else
+            };
+            
+            switch (status)
+            {
+                case Status::ReverseReverse:
+                case Status::ForwardReverse:
+                case Status::ForwardForward:
+                case Status::ReverseNotMapped:
+                case Status::ForwardNotMapped:
+                case Status::NotMappedNotMapped:
                 {
-                    hg->write("@" + x.name + "/2");
+                    writePaired();
+                    break;
                 }
-                
-                hg->write(x.seq);
-                hg->write("+");
-                hg->write(x.qual);
+
+                case Status::RevHang:
+                case Status::ForHang:
+                {
+                    writeSingle();
+                    break;
+                }
             }
         }
         
-        std::shared_ptr<FileWriter> p1, p2, hg, c1, c2, a1, a2;
+        std::map<Status, std::shared_ptr<FileWriter>> w1, w2;
     };
     
     Impl impl(o);
