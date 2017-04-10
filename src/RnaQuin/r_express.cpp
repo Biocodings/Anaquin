@@ -14,7 +14,7 @@ struct MultiStats
     SStrings files;
     
     // Eg: 2387648 (15.56%)
-    SCounts nSyn, nGen;
+    SCounts nSeqs, nEndo;
     
     // Linear regression with logarithm
     SLinearStats stats;
@@ -104,7 +104,7 @@ template <typename T> void update(RExpress::Stats &stats,
         
         if (!isnan(exp))
         {
-            stats.nSyn++;
+            stats.nSeqs++;
         }
 
         if (!id.empty())
@@ -117,7 +117,7 @@ template <typename T> void update(RExpress::Stats &stats,
                 o.warn("Duplicate: " + id);
                 
                 ls.sum(id, exp, obs);
-                stats.nSyn--;
+                stats.nSeqs--;
             }
             else
             {
@@ -133,7 +133,7 @@ template <typename T> void update(RExpress::Stats &stats,
     }
     else
     {
-        stats.nGen++;
+        stats.nEndo++;
 
         // We'll need the information to estimate the numbers below and above the LOQ
         stats.gData[x.id].abund = x.abund;
@@ -274,7 +274,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 }
                 
                 // Important, we'll need to reset counting for isoforms
-                stats.nSyn = 0;
+                stats.nSeqs = 0;
                 
                 // Start again at the gene level
                 stats.limit = Limit();
@@ -283,7 +283,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 {
                     const auto input = r.concent(i.first, o.mix);
                     
-                    stats.nSyn++;
+                    stats.nSeqs++;
                     stats.genes.add(i.first, input, i.second);
                     
                     if (isnan(stats.limit.abund) || input < stats.limit.abund)
@@ -376,8 +376,8 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
     {
         const auto lm = lstats[i].linear();
         
-        r.nSyn.add(mStats[i].nSyn);
-        r.nGen.add(mStats[i].nGen);
+        r.nSeqs.add(mStats[i].nSeqs);
+        r.nEndo.add(mStats[i].nEndo);
         
         r.files.add(files[i]);
         r.stats.p.add(lm.p);
@@ -461,10 +461,10 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   % units                  // 3
                                   % MixRef()               // 4
                                   % title                  // 5
-                                  % STRING(ms.nSyn)        // 6
+                                  % STRING(ms.nSeqs)       // 6
                                   % limit.abund            // 7
                                   % limit.id               // 8
-                                  % STRING(ms.nGen)        // 9
+                                  % STRING(ms.nEndo)       // 9
                                   % STRING(ms.stats.sl)    // 10
                                   % STRING(ms.stats.r)     // 11
                                   % STRING(ms.stats.R2)    // 12

@@ -75,7 +75,7 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
         if (!isnan(exp) && !isnan(t.logF_) && std::isfinite(t.logF_))
         {
             stats.add(id, exp, t.logF_);
-            stats.nSyn++;
+            stats.nSeqs++;
         }
     };
     
@@ -130,7 +130,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
     }
     else
     {
-        stats.nGen++;
+        stats.nEndo++;
     }
 }
 
@@ -241,7 +241,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : g2f)
             {
-                stats.nSyn++;
+                stats.nSeqs++;
                 stats.data[i.first].obs = i.second;
                 stats.data[i.first].exp = r.logFoldGene(i.first);                
                 stats.add(i.first, i.second, r.logFoldGene(i.first));
@@ -377,24 +377,24 @@ Scripts RFold::generateSummary(const FileName &src,
                          "       SSE:         %15%, DF: %16%\n"
                          "       SST:         %17%, DF: %18%\n";
 
-    return (boost::format(summary) % src        // 1
-                                   % nSyn       // 2
-                                   % units      // 3
-                                   % MixRef()   // 4
-                                   % title      // 5
-                                   % stats.nSyn // 6
-                                   % stats.nGen // 7
-                                   % lm.m       // 8
-                                   % lm.r       // 9
-                                   % lm.R2      // 10
-                                   % lm.F       // 11
-                                   % lm.p       // 12
-                                   % lm.SSM     // 13
-                                   % lm.SSM_D   // 14
-                                   % lm.SSE     // 15
-                                   % lm.SSE_D   // 16
-                                   % lm.SST     // 17
-                                   % lm.SST_D   // 18
+    return (boost::format(summary) % src         // 1
+                                   % nSyn        // 2
+                                   % units       // 3
+                                   % MixRef()    // 4
+                                   % title       // 5
+                                   % stats.nSeqs // 6
+                                   % stats.nEndo // 7
+                                   % lm.m        // 8
+                                   % lm.r        // 9
+                                   % lm.R2       // 10
+                                   % lm.F        // 11
+                                   % lm.p        // 12
+                                   % lm.SSM      // 13
+                                   % lm.SSM_D    // 14
+                                   % lm.SSE      // 15
+                                   % lm.SSE_D    // 16
+                                   % lm.SST      // 17
+                                   % lm.SST_D    // 18
                      ).str();
 }
 

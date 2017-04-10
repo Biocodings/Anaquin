@@ -20,12 +20,6 @@ namespace Anaquin
         // Empty Implementation
     };
     
-    struct Sample
-    {
-        Path path;
-        FileName p1, p2;
-    };
-    
     struct HistStats
     {
         // Distribution of counts within sampling regions
@@ -47,7 +41,7 @@ namespace Anaquin
     {
         inline Counts total() const
         {
-            return nSyn + nGen + nNA;
+            return nSeqs + nEndo + nNA;
         }
 
         inline Proportion propNA() const
@@ -57,31 +51,31 @@ namespace Anaquin
         
         inline Proportion propGen() const
         {
-            return total() ? static_cast<Proportion>(100.0 * nGen) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * nEndo) / total() : NAN;
         }
 
         inline Proportion propSyn() const
         {
-            return total() ? static_cast<Proportion>(100.0 * nSyn) / total() : NAN;
+            return total() ? static_cast<Proportion>(100.0 * nSeqs) / total() : NAN;
         }
 
         inline Proportion dilution() const
         {
-            return (nSyn + nGen) ? static_cast<Proportion>(nSyn) / (nSyn + nGen) : NAN;
+            return (nSeqs + nEndo) ? static_cast<Proportion>(nSeqs) / (nSeqs + nEndo) : NAN;
         }
 
         Counts nNA  = 0;
-        Counts nGen = 0;
-        Counts nSyn = 0;
+        Counts nEndo = 0;
+        Counts nSeqs = 0;
     };
 
     struct AlignmentStats : public MappingStats
     {
         template <typename T, typename F> void update(const T &t, F f)
         {
-            if      (!t.mapped) { nNA++;  }
-            else if (f(t.cID))  { nSyn++; }
-            else                { nGen++; }
+            if      (!t.mapped) { nNA++;   }
+            else if (f(t.cID))  { nSeqs++; }
+            else                { nEndo++; }
         }
     };
 

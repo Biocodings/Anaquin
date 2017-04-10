@@ -18,8 +18,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_2")
     REQUIRE(r.size() == 3);
     
     REQUIRE(r[0].nNA  == 0);
-    REQUIRE(r[0].nGen == 0);
-    REQUIRE(r[0].nSyn == 132);
+    REQUIRE(r[0].nEndo == 0);
+    REQUIRE(r[0].nSeqs == 132);
     REQUIRE(r[0].isos.size() == 132);
     REQUIRE(r[0].genes.size() == 0);
     REQUIRE(r[0].limit.id == "R2_53_1");
@@ -28,8 +28,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_2")
     REQUIRE(r[0].isos["R2_66_1"].y == Approx(6102.24));
     
     REQUIRE(r[1].nNA  == 0);
-    REQUIRE(r[1].nGen == 0);
-    REQUIRE(r[1].nSyn == 127);
+    REQUIRE(r[1].nEndo == 0);
+    REQUIRE(r[1].nSeqs == 127);
     REQUIRE(r[1].isos.size() == 127);
     REQUIRE(r[1].genes.size() == 0);
     REQUIRE(r[1].limit.id == "R2_45_1");
@@ -38,8 +38,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_2")
     REQUIRE(r[1].isos["R2_66_1"].y == Approx(5513.49));
     
     REQUIRE(r[2].nNA  == 0);
-    REQUIRE(r[2].nGen == 0);
-    REQUIRE(r[2].nSyn == 136);
+    REQUIRE(r[2].nEndo == 0);
+    REQUIRE(r[2].nSeqs == 136);
     REQUIRE(r[2].isos.size() == 136);
     REQUIRE(r[2].genes.size() == 0);
     REQUIRE(r[2].limit.id == "R1_91_1");
@@ -62,8 +62,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_1")
     REQUIRE(r.size() == 3);
     
     REQUIRE(r[0].nNA  == 0);
-    REQUIRE(r[0].nGen == 0);
-    REQUIRE(r[0].nSyn == 74);
+    REQUIRE(r[0].nEndo == 0);
+    REQUIRE(r[0].nSeqs == 74);
     REQUIRE(r[0].isos.size() == 132);
     REQUIRE(r[0].genes.size() == 74);
     REQUIRE(r[0].limit.id == "R1_33");
@@ -72,8 +72,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_1")
     REQUIRE(r[0].genes["R2_66"].y == Approx(240335.2));
     
     REQUIRE(r[1].nNA  == 0);
-    REQUIRE(r[1].nGen == 0);
-    REQUIRE(r[1].nSyn == 73);
+    REQUIRE(r[1].nEndo == 0);
+    REQUIRE(r[1].nSeqs == 73);
     REQUIRE(r[1].isos.size() == 127);
     REQUIRE(r[1].genes.size() == 73);
     REQUIRE(r[1].limit.id == "R1_33");
@@ -82,8 +82,8 @@ TEST_CASE("RExpress_Multiple_Kallisto_1")
     REQUIRE(r[1].genes["R2_66"].y == Approx(240734.5));
     
     REQUIRE(r[2].nNA  == 0);
-    REQUIRE(r[2].nGen == 0);
-    REQUIRE(r[2].nSyn == 72);
+    REQUIRE(r[2].nEndo == 0);
+    REQUIRE(r[2].nSeqs == 72);
     REQUIRE(r[2].isos.size() == 136);
     REQUIRE(r[2].genes.size() == 72);
     REQUIRE(r[2].limit.id == "R1_33");
@@ -122,14 +122,14 @@ TEST_CASE("RExpress_Replicates")
     
     auto r = RExpress::analyze(std::vector<FileName> { "tests/data/A1.gtf", "tests/data/A2.gtf", "tests/data/A3.gtf" }, o);
 
-    REQUIRE(r[0].nSyn   == 136);
-    REQUIRE(r[0].nGen   == 0);
+    REQUIRE(r[0].nSeqs   == 136);
+    REQUIRE(r[0].nEndo   == 0);
     REQUIRE(r[0].dilution() == 1.0);
-    REQUIRE(r[1].nSyn   == 0);
-    REQUIRE(r[1].nGen   == 0);
+    REQUIRE(r[1].nSeqs   == 0);
+    REQUIRE(r[1].nEndo   == 0);
     REQUIRE(isnan(r[1].dilution()));
-    REQUIRE(r[2].nSyn   == 127);
-    REQUIRE(r[2].nGen   == 0);
+    REQUIRE(r[2].nSeqs   == 127);
+    REQUIRE(r[2].nEndo   == 0);
     REQUIRE(r[2].dilution() == 1.0);
 
     REQUIRE(r[0].gData.size() == 0);
@@ -183,8 +183,8 @@ TEST_CASE("RExpress_Guided_Equal")
     
     auto r = RExpress::analyze("tests/data/guidedEqual.gtf", o);
     
-    REQUIRE(r.nSyn == 8);
-    REQUIRE(r.nGen == 0);
+    REQUIRE(r.nSeqs == 8);
+    REQUIRE(r.nEndo == 0);
     REQUIRE(r.dilution() == 1.0);
     
     REQUIRE(r.gData.size() == 0);
@@ -237,8 +237,8 @@ TEST_CASE("RExpress_Guided_Head")
     
     auto r = RExpress::analyze("tests/data/guidedHead.gtf", o);
     
-    REQUIRE(r.nSyn == 3);
-    REQUIRE(r.nGen == 0);
+    REQUIRE(r.nSeqs == 3);
+    REQUIRE(r.nEndo == 0);
     REQUIRE(r.dilution() == 1.0);
     
     REQUIRE(r.gData.size() == 0);
@@ -271,8 +271,8 @@ TEST_CASE("RExpress_Denovo_Genes")
     
     auto r1 = RExpress::analyze("tests/data/denovo.gtf", o);
     
-    REQUIRE(r1.nSyn == 0);
-    REQUIRE(r1.nGen == 293);
+    REQUIRE(r1.nSeqs == 0);
+    REQUIRE(r1.nEndo == 293);
     REQUIRE(r1.dilution() == 0.0);
     
     REQUIRE(r1.gData.size() == 293);
@@ -301,8 +301,8 @@ TEST_CASE("RExpress_Denovo_Isoforms")
 
     auto r1 = RExpress::analyze("tests/data/denovo.gtf", o);
     
-    REQUIRE(r1.nSyn == 0);
-    REQUIRE(r1.nGen == 293);
+    REQUIRE(r1.nSeqs == 0);
+    REQUIRE(r1.nEndo == 293);
     REQUIRE(r1.dilution() == 0.0);
 
     REQUIRE(r1.gData.size() == 293);
@@ -331,8 +331,8 @@ TEST_CASE("RExpress_Guided_Genes")
 
     auto r = RExpress::analyze("tests/data/guided.gtf", o);
 
-    REQUIRE(r.nSyn == 74);
-    REQUIRE(r.nGen == 0);
+    REQUIRE(r.nSeqs == 74);
+    REQUIRE(r.nEndo == 0);
     REQUIRE(r.dilution() == 1.0);
 
     REQUIRE(r.gData.size() == 0);
@@ -358,8 +358,8 @@ TEST_CASE("RExpress_Guided_Isoforms")
     
     auto r = RExpress::analyze("tests/data/guided.gtf", o);
     
-    REQUIRE(r.nSyn == 149);
-    REQUIRE(r.nGen == 0);
+    REQUIRE(r.nSeqs == 149);
+    REQUIRE(r.nEndo == 0);
     REQUIRE(r.dilution() == 1.0);
     
     REQUIRE(r.gData.size() == 0);

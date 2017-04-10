@@ -426,9 +426,9 @@ void VAlign::writeSummary(const FileName &file,
         o.generate("VarAlign_report.csv");
         o.writer->open("VarAlign_report.csv");
         
-//        WRITE("ASyn", seqs.nSyn);
+//        WRITE("ASyn", seqs.nSeqs);
 //        WRITE("ASynP", seqs.propSyn());
-//        WRITE("AGen", seqs.nGen);
+//        WRITE("AGen", seqs.nEndo);
 //        WRITE("AGenP", seqs.propGen());
 //        WRITE("Dilution", (100.0 * seqs.dilution()));
 

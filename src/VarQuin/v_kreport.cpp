@@ -6,6 +6,12 @@
 
 using namespace Anaquin;
 
+struct Sample
+{
+    Path path;
+    FileName p1, p2;
+};
+
 VKReport::Stats VKReport::analyze(const FileName &data, const Options &o)
 {
     if (!System::checkConsole("salmon"))

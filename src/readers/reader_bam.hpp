@@ -62,11 +62,11 @@ namespace Anaquin
                     
                     if (isReverseGenome(x.cID))
                     {
-                        stats.nSyn++;
+                        stats.nSeqs++;
                     }
                     else if (x.cID != "*")
                     {
-                        stats.nGen++;
+                        stats.nEndo++;
                     }
                     else
                     {

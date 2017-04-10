@@ -315,14 +315,14 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     stats.totAfter.nEndo = stats.totBefore.nEndo;
     
-    stats.sampAfter.nEndo  = gStats.nGen;
-    stats.sampBefore.nEndo = gStats.nGen;
+    stats.sampAfter.nEndo  = gStats.nEndo;
+    stats.sampBefore.nEndo = gStats.nEndo;
     
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.nSeqs = sStats.nGen;
+    stats.sampBefore.nSeqs = sStats.nEndo;
 
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampAfter.nSeqs = after.nGen;
+    stats.sampAfter.nSeqs = after.nEndo;
 
     return stats;
 }

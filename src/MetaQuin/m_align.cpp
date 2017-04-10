@@ -384,9 +384,9 @@ static void writeSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
                                             % src                     // 2
-                                            % stats.nSyn              // 3
+                                            % stats.nSeqs             // 3
                                             % (100 * stats.propSyn()) // 4
-                                            % stats.nGen              // 5
+                                            % stats.nEndo             // 5
                                             % (100 * stats.propGen()) // 6
                                             % stats.dilution()        // 7
                                             % r.nMicroSyn()           // 8

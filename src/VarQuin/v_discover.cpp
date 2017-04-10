@@ -155,7 +155,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         // Always work on the queries
         stats.query[cID].af.insert(m.query.alleleFreq());
 
-        stats.nSyn++;
+        stats.nSeqs++;
         f();
     });
     

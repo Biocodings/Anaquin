@@ -1,5 +1,5 @@
-#ifndef V_FLIP_2_HPP
-#define V_FLIP_2_HPP
+#ifndef V_FLIP_HPP
+#define V_FLIP_HPP
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"

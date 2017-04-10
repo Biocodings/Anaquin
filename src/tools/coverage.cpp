@@ -21,11 +21,11 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
         
         if (isReverseGenome(x.cID))
         {
-            stats.nSyn++;
+            stats.nSeqs++;
         }
         else if (x.cID != "*")
         {
-            stats.nGen++;
+            stats.nEndo++;
         }
         else
         {

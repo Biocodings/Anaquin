@@ -34,7 +34,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
         
         if (m.count(id))
         {
-            stats.nSyn++;
+            stats.nSeqs++;
             
             AlignedContig contig;
             
@@ -82,7 +82,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.nGen++;
+            stats.nEndo++;
             o.warn((boost::format("%1% is not a sequin") % id).str());
         }
     });

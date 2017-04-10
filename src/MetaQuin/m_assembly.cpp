@@ -174,9 +174,9 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
     const auto &dn = stats.dnovo;
     
     return (boost::format(summary) % src
-                                   % dn.nSyn
-                                   % dn.nGen
-                                   % (dn.nSyn + dn.nGen)
+                                   % dn.nSeqs
+                                   % dn.nEndo
+                                   % (dn.nSeqs + dn.nEndo)
                                    % BedRef()
                                    % r.data().size()
                                    % dn.N20

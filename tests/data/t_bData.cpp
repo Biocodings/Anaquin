@@ -1,5 +1,6 @@
 #include <catch.hpp>
 #include "data/bData.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 
 using namespace Anaquin;
 

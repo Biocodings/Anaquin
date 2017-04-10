@@ -29,12 +29,12 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
                     
                     if (m)
                     {
-                        stats.nSyn++;
+                        stats.nSeqs++;
                         stats.hist.at(m->id)++;
                     }
                     else
                     {
-                        stats.nGen++;
+                        stats.nEndo++;
                     }
                 }
                 else

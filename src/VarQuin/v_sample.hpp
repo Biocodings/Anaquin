@@ -2,7 +2,7 @@
 #define V_SAMPLE_HPP
 
 #include "stats/analyzer.hpp"
-#include "tools/coverage.hpp"
+//#include "tools/coverage.hpp"
 
 namespace Anaquin
 {
