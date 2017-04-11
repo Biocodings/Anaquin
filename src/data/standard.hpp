@@ -73,9 +73,6 @@ namespace Anaquin
              * ---------------- VarQuin analysis ----------------
              */
 
-            // Add reference mixture for VarQuin
-            void addVMix(const Reader &);
-        
             // Add reference variants in VCF format
             inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 

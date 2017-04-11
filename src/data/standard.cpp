@@ -102,11 +102,6 @@ void Standard::addMMix(const Reader &r)
     readMixture(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
 }
 
-void Standard::addVMix(const Reader &r)
-{
-    readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
-}
-
 void Standard::addRMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");

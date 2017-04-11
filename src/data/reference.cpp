@@ -555,6 +555,7 @@ void VarRef::readGBRef(const Reader &r, Base trim)
     RegionOptions o;
     o.trim = trim;
 
+    // Read trimmed regions
     _impl->tData = readRegions(Reader(r), [&](const ParserBed::Data &x, const ParserProgress &) {}, o);
 
     A_CHECK(!_impl->bData.empty(), "No sampling regions for sampling");
@@ -617,8 +618,8 @@ void VarRef::readVRef(const Reader &r)
         
         SeqVariant s;
 
-        s.zyg   = m2.at(x.opts.at("ZY"));
-        s.copy  = stoi(x.opts.at("CP"));
+        s.zyg  = m2.at(x.opts.at("ZY"));
+        s.copy = stoi(x.opts.at("CP"));
         
         const auto &gr = x.opts.at("GR");
         
@@ -633,6 +634,18 @@ void VarRef::readVRef(const Reader &r)
         }
         
         _impl->vIDs.insert(x.name);
+
+        Concent af;
+        
+        switch (s.zyg)
+        {
+            case Zygosity::Somatic:     { af = stoi(x.opts.at("AF")); break; }
+            case Zygosity::Homozygous:  { af = 1,0; break; }
+            case Zygosity::Heterzygous: { af = 0.5; break; }
+        }
+
+        add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
+        add(x.name + "_R", _impl->bData.lengthReg(x.name), 1-af, Mix_1);
     });
 }
 
@@ -657,27 +670,16 @@ bool VarRef::isGermline() const
         freqs.insert(i.second->abund);
     }
     
-    // Only homozygousa and heterozygous?
-    return freqs.size() == 2 && freqs.count(0.5) && freqs.count(1);
+    return freqs.size() == 3 && freqs.count(0) && freqs.count(0.5) && freqs.count(1);
 }
 
 Concent VarRef::findRCon(const SequinID &id) const
 {
-    if (!_mixes.at(Mix_1).count(id + "_R"))
-    {
-        return 0.5;
-    }
-    
     return _mixes.at(Mix_1).at(id + "_R")->abund;
 }
 
 Concent VarRef::findVCon(const SequinID &id) const
 {
-    if (!_mixes.at(Mix_1).count(id + "_V"))
-    {
-        return 0.5;
-    }
-    
     return _mixes.at(Mix_1).at(id + "_V")->abund;
 }
 
@@ -722,11 +724,6 @@ Counts VarRef::countSNPSyn() const
 Counts VarRef::countSNPGen() const
 {
     return _impl->vData.countSNPGen();
-}
-
-Counts VarRef::countVar() const
-{
-    return _impl->vData.countVar();
 }
 
 Counts VarRef::nRegs() const { return _impl->bData.count();  }

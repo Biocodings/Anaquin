@@ -368,7 +368,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                     
                     try
                     {
-                        // We'll need it to search for the sequin where the FPs are
+                        // We should to search where the FPs are
                         inters = r.mInters(cID);
                         
                         A_ASSERT(inters.size());
@@ -434,42 +434,41 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "-------VarDiscover Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
-                             "       Sequin mixture file:              %3%\n"
-                             "       User identified variants:         %4%\n\n"
+                             "       User identified variants:         %3%\n\n"
                              "-------Reference annotated variants\n\n"
-                             "       Synthetic: %5% SNPs\n"
-                             "       Synthetic: %6% indels\n"
-                             "       Synthetic: %7% variants\n\n"
+                             "       Synthetic: %4% SNPs\n"
+                             "       Synthetic: %5% indels\n"
+                             "       Synthetic: %6% variants\n\n"
                              "-------User identified variants\n\n"
-                             "       Synthetic: %8% SNPs\n"
-                             "       Synthetic: %9% indels\n"
-                             "       Synthetic: %10% variants\n\n"
+                             "       Synthetic: %7% SNPs\n"
+                             "       Synthetic: %8% indels\n"
+                             "       Synthetic: %9% variants\n\n"
                              "-------Identification of synthetic variants\n\n"
-                             "       True Positive:  %11% SNPS\n"
-                             "       True Positive:  %12% indels\n"
-                             "       True Positive:  %13% variants\n\n"
-                             "       False Positive: %14% SNPs\n"
-                             "       False Positive: %15% indels\n"
-                             "       False Positive: %16% variants\n\n"
-                             "       False Negative: %17% SNPs\n"
-                             "       False Negative: %19% indels\n"
-                             "       False Negative: %19% variants\n\n"
+                             "       True Positive:  %10% SNPS\n"
+                             "       True Positive:  %11% indels\n"
+                             "       True Positive:  %12% variants\n\n"
+                             "       False Positive: %13% SNPs\n"
+                             "       False Positive: %14% indels\n"
+                             "       False Positive: %15% variants\n\n"
+                             "       False Negative: %16% SNPs\n"
+                             "       False Negative: %17% indels\n"
+                             "       False Negative: %18% variants\n\n"
                              "-------Diagnostic Performance (Synthetic)\n\n"
                              "       *Variants\n"
-                             "       Sensitivity: %20$.4f\n"
-                             "       Precision:   %21$.4f\n"
-                             "       F1 Score:    %22$.4f\n"
-                             "       FDR Rate:    %23$.4f\n\n"
+                             "       Sensitivity: %19$.4f\n"
+                             "       Precision:   %20$.4f\n"
+                             "       F1 Score:    %21$.4f\n"
+                             "       FDR Rate:    %22$.4f\n\n"
                              "       *SNPs\n"
-                             "       Sensitivity: %24$.4f\n"
-                             "       Precision:   %25$.4f\n"
-                             "       F1 Score:    %26$.4f\n"
-                             "       FDR Rate:    %27$.4f\n\n"
+                             "       Sensitivity: %23$.4f\n"
+                             "       Precision:   %24$.4f\n"
+                             "       F1 Score:    %25$.4f\n"
+                             "       FDR Rate:    %26$.4f\n\n"
                              "       *Indels\n"
-                             "       Sensitivity: %28$.4f\n"
-                             "       Precision:   %29$.4f\n"
-                             "       F1 Score:    %30$.4f\n"
-                             "       FDR Rate:    %31$.4f\n";
+                             "       Sensitivity: %27$.4f\n"
+                             "       Precision:   %28$.4f\n"
+                             "       F1 Score:    %29$.4f\n"
+                             "       FDR Rate:    %30$.4f\n";
 
         #define D(x) (isnan(x) ? "NA" : std::to_string(x))
         
@@ -477,35 +476,34 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
-                                                % MixRef()                      // 3
-                                                % src                           // 4
-                                                % r.countSNPSyn()               // 5
-                                                % r.countIndSyn()               // 6
+                                                % src                           // 3
+                                                % r.countSNPSyn()               // 4
+                                                % r.countIndSyn()               // 5
                                                 % (r.countSNPSyn() + r.countIndSyn())
-                                                % ss.vData.countSNPSyn()     // 8
-                                                % ss.vData.countIndSyn()     // 9
-                                                % ss.vData.countVarSyn()     // 10
-                                                % ss.countSNP_TP_Syn()       // 11
-                                                % ss.countInd_TP_Syn()       // 12
-                                                % ss.countVar_TP_Syn()       // 13
-                                                % ss.countSNP_FP_Syn()       // 14
-                                                % ss.countInd_FP_Syn()       // 15
-                                                % ss.countVar_FP_Syn()       // 16
-                                                % ss.countSNP_FnSyn()        // 17
-                                                % ss.countInd_FnSyn()        // 18
-                                                % ss.countVar_FnSyn()        // 19
-                                                % D(ss.countVarSnSyn())      // 20
-                                                % D(ss.countVarPC_Syn())     // 21
-                                                % D(ss.allF1())              // 22
-                                                % D(1-ss.countVarPC_Syn())   // 23
-                                                % D(ss.countSNPSnSyn())      // 24
-                                                % D(ss.countSNPPC_Syn())     // 25
-                                                % D(ss.SNPF1())              // 26
-                                                % D((1-ss.countSNPPC_Syn())) // 27
-                                                % D(ss.countIndSnSyn())      // 28
-                                                % D(ss.countIndPC_Syn())     // 29
-                                                % D(ss.indelF1())            // 30
-                                                % D(1-ss.countIndPC_Syn())   // 31
+                                                % ss.vData.countSNPSyn()     // 7
+                                                % ss.vData.countIndSyn()     // 8
+                                                % "??" /*ss.vData.countVarSyn()*/     // 9
+                                                % "??" /*ss.countSNP_TP_Syn()*/       // 10
+                                                % ss.countInd_TP_Syn()       // 11
+                                                % ss.countVar_TP_Syn()       // 12
+                                                % ss.countSNP_FP_Syn()       // 13
+                                                % ss.countInd_FP_Syn()       // 14
+                                                % ss.countVar_FP_Syn()       // 15
+                                                % ss.countSNP_FnSyn()        // 16
+                                                % ss.countInd_FnSyn()        // 17
+                                                % ss.countVar_FnSyn()        // 18
+                                                % D(ss.countVarSnSyn())      // 19
+                                                % D(ss.countVarPC_Syn())     // 20
+                                                % D(ss.allF1())              // 21
+                                                % D(1-ss.countVarPC_Syn())   // 22
+                                                % D(ss.countSNPSnSyn())      // 23
+                                                % D(ss.countSNPPC_Syn())     // 24
+                                                % D(ss.SNPF1())              // 25
+                                                % D((1-ss.countSNPPC_Syn())) // 26
+                                                % D(ss.countIndSnSyn())      // 27
+                                                % D(ss.countIndPC_Syn())     // 28
+                                                % D(ss.indelF1())            // 29
+                                                % D(1-ss.countIndPC_Syn())   // 30
                          ).str());
     };
     

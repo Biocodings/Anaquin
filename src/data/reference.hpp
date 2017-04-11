@@ -298,12 +298,9 @@ namespace Anaquin
             // Number of reference regions
             Counts nRegs() const;
 
-            // Total number of bases for
+            // Total number of bases for all reference regions
             Base lRegs() const;
         
-            // Returns number of known variants
-            Counts countVar() const;
-
             // Count SNPs for a chromosome
             Counts countSNP(const ChrID &) const;
         
@@ -322,9 +319,6 @@ namespace Anaquin
             // Counts indels for the genome
             Counts countIndGen() const;
 
-            inline Counts countVarSyn() const { return countSNPSyn() + countIndSyn(); }
-            inline Counts countVarGen() const { return countSNPGen() + countIndGen(); }
-
             C2Intervals regions(bool trimmed = false) const;
 
             MC2Intervals mInters() const;
@@ -335,16 +329,17 @@ namespace Anaquin
 
             const Variant *findVar(const ChrID &, long key) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
-        
+
             Concent findRCon(const SequinID &) const;
             Concent findVCon(const SequinID &) const;
 
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;
 
+            // Allele frequency found? This function can also be used for checking the reference VCF.
             bool hasAFreq(const SequinID &) const;
         
-            // Is this germline? Homozygous?
+            // Is this germline? Otherwise it's somatic.
             bool isGermline() const;
         
         protected:
