@@ -3,6 +3,7 @@
 #include "data/tokens.hpp"
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include "MetaQuin/MetaQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
@@ -496,39 +497,9 @@ void MetaRef::validate()
  * ------------------------- Variant Analysis -------------------------
  */
 
-struct SeqVariant
-{
-    enum class Group
-    {
-        NA12878,
-        VeryLowGC,
-        LowGC,
-        HighGC,
-        VeryHighGC,
-        ShortDinRep,  // Dinucleotide repeats
-        LongDinRep,   // Dinucleotide repeats
-        ShortHompo,
-        LongHompo,
-        ShortQuadRep, // Quad-nucleotide repeats
-        LongQuadRep,  // Quad-nucleotide repeats
-        ShortTrinRep, // Trinucleotide repeats
-        LongTrinRep,  // Trinucleotide repeats
-        Cosmic,
-    } group;
-    
-    // Homozygous?
-    Zygosity zyg;
-    
-    // Copy number
-    unsigned copy = 1;
-    
-    // Valid only for group == Cosmis
-    std::string info;
-};
-
 struct VarRef::VarRefImpl
 {
-    // Required for validation
+    // Optimization (no need to use the whole data-structure)
     std::set<SequinID> vIDs, bIDs;
     
     VData vData;
@@ -544,6 +515,29 @@ struct VarRef::VarRefImpl
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
+
+Counts VarRef::nType(Mutation m) const
+{
+    return _impl->vData.count_(m);
+}
+
+Counts VarRef::nGroup(SeqVariant::Group grp) const
+{
+    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    {
+        return x.group == grp ? 1 : 0;
+    });
+}
+
+std::set<Variant> VarRef::vars() const
+{
+    return _impl->vData.vars();
+}
+
+const SeqVariant & VarRef::findSeqVar(long key) const
+{
+    return _impl->sVars.at(key);
+}
 
 void VarRef::readGBRef(const Reader &r, Base trim)
 {
@@ -625,8 +619,8 @@ void VarRef::readVRef(const Reader &r)
         
         if (boost::starts_with(gr, "COSM"))
         {
-            s.group = Group::Cosmic;
             s.info  = gr;
+            s.group = Group::Cosmic;
         }
         else
         {
@@ -644,6 +638,8 @@ void VarRef::readVRef(const Reader &r)
             case Zygosity::Heterzygous: { af = 0.5; break; }
         }
 
+        _impl->sVars[x.key()] = s;
+        
         add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
         add(x.name + "_R", _impl->bData.lengthReg(x.name), 1-af, Mix_1);
     });
@@ -706,11 +702,6 @@ Counts VarRef::countIndSyn() const
     return _impl->vData.countIndSyn();
 }
 
-Counts VarRef::countIndGen() const
-{
-    return _impl->vData.countIndGen();
-}
-    
 Counts VarRef::countSNP(const ChrID &cID) const
 {
     return _impl->vData.countSNP(cID);
@@ -719,11 +710,6 @@ Counts VarRef::countSNP(const ChrID &cID) const
 Counts VarRef::countSNPSyn() const
 {
     return _impl->vData.countSNPSyn();
-}
-
-Counts VarRef::countSNPGen() const
-{
-    return _impl->vData.countSNPGen();
 }
 
 Counts VarRef::nRegs() const { return _impl->bData.count();  }
@@ -752,11 +738,6 @@ void VarRef::validate()
 const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const
 {
     return _impl->vData.findVar(cID, l);
-}
-
-std::map<ChrID, std::map<long, Counts>> VarRef::vHist() const
-{
-    return _impl->vData.hist();
 }
 
 const Variant * VarRef::findVar(const ChrID &cID, long key) const

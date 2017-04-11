@@ -21,6 +21,45 @@ extern Path __output__;
 // Defined in main.cpp
 extern std::string __full_command__;
 
+
+template <typename T1, typename T2> std::tuple<std::string, double> quantLimit(const std::map<T1, T2> &m)
+{
+    double abund;
+    std::string id;
+    
+    for (auto &i : m)
+    {
+        for (auto &j : i.second)
+        {
+            if (isnan(abund) || i.second.abund < abund)
+            {
+                id = i.second.id;
+                abund = i.second.abund;
+            }
+        }
+    }
+    
+    return std::tuple<std::string, double>(id, abund);
+}
+
+template <typename T> std::tuple<std::string, double> quantLimit(const T &x)
+{
+    double abund;
+    std::string id;
+    
+    for (auto &i : x)
+    {
+        if (isnan(abund) || i.abund < abund)
+        {
+            id = i.id;
+            abund = i.abund;
+        }
+    }
+    
+    return std::tuple<std::string, double>(id, abund);
+}
+
+
 inline std::string type2str(Mutation type)
 {
     switch (type)
@@ -57,21 +96,39 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 
     VDiscover::Stats stats;
     
-    const auto init = [&](Stats &stats)
+    typedef SeqVariant::Group Group;
+    
+    auto muts = std::set<Mutation>
     {
-        stats.hash = r.vHist();
-        
-        for (const auto &i : stats.hash)
-        {
-            stats.data[i.first];
-        }
+        Mutation::SNP,
+        Mutation::Deletion,
+        Mutation::Insertion,
+    };
+    
+    auto grps = std::set<Group>
+    {
+        Group::LowGC,
+        Group::HighGC,
+        Group::Cosmic,
+        Group::NA12878,
+        Group::LongHompo,
+        Group::VeryLowGC,
+        Group::VeryHighGC,
+        Group::ShortDinRep,
+        Group::LongDinRep,
+        Group::ShortHompo,
+        Group::LongQuadRep,
+        Group::LongTrinRep,
+        Group::ShortQuadRep,
+        Group::ShortTrinRep,
     };
 
-    init(stats);
-
+    for (auto &i : grps) { stats.g2c[i]; }
+    for (auto &i : muts) { stats.m2c[i]; }
+    
     o.analyze(file);
 
-    stats.vData = readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
+    readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
     {
         if (p.i && !(p.i % 100000))
         {
@@ -80,133 +137,153 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         
         const auto &r = Standard::instance().r_var;
         
-        VariantMatch m;
-        
-        auto match = [&](const ParserVCF::Data &query)
+        auto findMatch = [&](const ParserVCF::Data &query)
         {
+            VariantMatch m;
+
             m.query = query;
-            m.match = nullptr;
+            m.seqByPos = nullptr;
             
             // Can we match by position?
-            if ((m.match = r.findVar(query.cID, query.l)))
+            if ((m.seqByPos = r.findVar(query.cID, query.l)))
             {
-                m.ref = m.match->ref == query.ref;
-                m.alt = m.match->alt == query.alt;
+                // Match by reference allele?
+                m.ref = m.seqByPos->ref == query.ref;
+                
+                // Match by alternative allele?
+                m.alt = m.seqByPos->alt == query.alt;
             }
             
-            return m.match;
-        };
-        
-        match(x);
-        
-        const auto &cID = m.query.cID;
-        
-        auto f = [&]()
-        {
-            if (!isnan(m.query.p))     { __countP__++; }
-            if (!isnan(m.query.depth)) { __countD__++; }
-            
-            // Matched if the position and alleles agree
-            const auto matched = m.match && (!o.matchAllele || (m.ref && m.alt));
-            
-            if (matched)
+            if (m.seqByPos)
             {
-                const auto key = m.match->key();
-                stats.hash.at(cID).at(key)++;
-                
-                stats.data[cID].tps.push_back(m);
-                stats.data[cID].tps_[key] = stats.data[cID].tps.back();
-                
-                stats.data.at(cID).af = m.query.alleleFreq();
-                
-                const auto exp = r.findAFreq(m.match->name);
-                const auto obs = m.query.alleleFreq();
-                
-                // Eg: 2821292107
-                const auto id = toString(key);
-                
-                // Add for all variants
-                stats.vars.add(id, exp, obs);
-                
-                switch (m.query.type())
-                {
-                    case Mutation::SNP:       { stats.snp.add(id, exp, obs); break; }
-                    case Mutation::Deletion:
-                    case Mutation::Insertion: { stats.ind.add(id, exp, obs); break; }
-                }
-                
-                stats.readR[key] = m.query.readR;
-                stats.readV[key] = m.query.readV;
-                stats.depth[key] = m.query.depth;
-                
-                if (isnan(stats.vars.limit.abund) || exp < stats.vars.limit.abund)
-                {
-                    stats.vars.limit.id = m.match->name;
-                    stats.vars.limit.abund = exp;
-                }
+                m.rReg = m.seqByPos->name;
+                A_ASSERT(!m.rReg.empty());
             }
             else
             {
-                // FP because the variant is not found in the reference
-                stats.data[cID].fps.push_back(m);
+                MergedIntervals<> inters;
+                
+                try
+                {
+                    // We should to search where the FPs are
+                    inters = r.mInters(x.cID);
+                    
+                    A_ASSERT(inters.size());
+                    
+                    const auto m2 = inters.contains(x.l);
+                    
+                    // Can we find the corresponding region for the FP?
+                    if (m2)
+                    {
+                        m.rReg = m2->id();
+                        A_ASSERT(!m.rReg.empty());
+                    }
+                }
+                catch (...) {}
             }
+            
+            return m;
         };
         
-        // Always work on the queries
-        stats.query[cID].af.insert(m.query.alleleFreq());
-
-        stats.nSeqs++;
-        f();
+        const auto m = findMatch(x);
+        
+        if (!isnan(m.query.p))     { __countP__++; }
+        if (!isnan(m.query.depth)) { __countD__++; }
+        
+        // Matched if the position and alleles agree
+        const auto matched = m.seqByPos && m.ref && m.alt;
+        
+        if (matched)
+        {
+            const auto key = m.seqByPos->key();
+            
+            stats.tps.push_back(m);
+            
+            const auto exp = r.findAFreq(m.seqByPos->name);
+            const auto obs = m.query.alleleFreq();
+            
+            // Eg: 2821292107
+            const auto id = toString(key);
+            
+            // Add for all variants
+            stats.oa.add(id, exp, obs);
+            
+            // Add for mutation type
+            stats.m2a[m.query.type()].add(id, exp, obs);
+        }
+        else
+        {
+            // FP because the variant is not found in the reference
+            stats.fps.push_back(m);
+        }
     });
     
     o.info("Aggregating statistics");
 
-    for (const auto &i : stats.data)
+    /*
+     * Determine the quantification limits
+     */
+    
+    stats.oa.limit = stats.oa.limitQuant();
+
+    for (auto &i : stats.m2a)
     {
-        const auto &cID = i.first;
-        
-        auto &x = stats.data[cID];
-        
-        for (const auto &j : i.second.tps)
-        {
-            i.second.m.tp()++;
-            
-            switch (j.query.type())
-            {
-                case Mutation::SNP:       { x.m_snp.tp()++; break; }
-                case Mutation::Deletion:
-                case Mutation::Insertion: { x.m_ind.tp()++; break; }
-            }
-        }
-        
-        for (const auto &j : i.second.fps)
-        {
-            i.second.m.fp()++;
-            
-            switch (j.query.type())
-            {
-                case Mutation::SNP:       { x.m_snp.fp()++; break; }
-                case Mutation::Deletion:
-                case Mutation::Insertion: { x.m_ind.fp()++; break; }
-            }
-        }
-        
-        x.m_snp.nq() = x.dSNP();
-        x.m_snp.nr() = r.countSNP(cID);
-        x.m_ind.nq() = x.dInd();
-        x.m_ind.nr() = r.countInd(cID);
-
-        x.m.nq() = x.m_snp.nq() + x.m_ind.nq();
-        x.m.nr() = x.m_snp.nr() + x.m_ind.nr();
-
-        x.m.fn()     = x.m.nr()     - x.m.tp();
-        x.m_snp.fn() = x.m_snp.nr() - x.m_snp.tp();
-        x.m_ind.fn() = x.m_ind.nr() - x.m_ind.tp();
-
-        A_ASSERT(x.m.nr() >= x.m.fn());
-        A_ASSERT(x.m_snp.nr() >= x.m_snp.fn());
-        A_ASSERT(x.m_ind.nr() >= x.m_ind.fn());
+        i.second.limit = i.second.limitQuant();
     }
+
+    /*
+     * Determine the classification performance
+     */
+
+    auto forTP = [&]()
+    {
+        for (auto &i : stats.tps)
+        {
+            // This shouldn't fail...
+            const auto &sv = r.findSeqVar(i.seqByPos->key());
+            
+            // Overall performance
+            stats.oc.tp()++;
+            
+            // Performance for each group
+            stats.g2c[sv.group].tp()++;
+            
+            // Performance for each mutation
+            stats.m2c[i.query.type()].tp()++;
+        }
+    };
+    
+    auto forFP = [&]()
+    {
+        for (auto &i : stats.fps)
+        {
+            // Overall performance
+            stats.oc.fp()++;
+            
+            // Performance for each mutation
+            stats.m2c[i.query.type()].tp()++;
+        }
+    };
+
+    forTP();
+    forFP();
+
+    for (auto &mut : muts)
+    {
+        stats.m2c[mut].nr() = r.nType(mut);
+        stats.m2c[mut].fn() = stats.m2c[mut].nr() - stats.m2c[mut].tp();
+        stats.oc.nr() += r.nType(mut);
+    }
+
+    stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
+    
+    for (auto &grp : grps)
+    {
+        stats.g2c[grp].nr() = r.nGroup(grp);
+        stats.g2c[grp].fn() = stats.g2c[grp].nr() - stats.g2c[grp].tp();
+    }
+    
+    A_ASSERT(stats.oc.nr() >= stats.oc.fn());
     
     return stats;
 }
@@ -236,88 +313,53 @@ static void writeQuins(const FileName &file,
                                            % "QualR"
                                            % "QualV"
                                            % "Type").str());
-    for (const auto &i : stats.hash)
+    for (const auto &i : r.vars())
     {
-        const auto &cID = i.first;
+        // Can we find this sequin?
+        const auto isTP = stats.findTP(i.name);
         
-        // Search all query variants...
-        for (const auto &j : i.second)
+        // Called variant (if found)
+        const auto c = isTP ? isTP->seqByPos : nullptr;
+        
+        if (isTP)
         {
-            const auto &key = j.first;
-
-            // Detected the sequin?
-            if (j.second)
-            {
-                const auto m = r.findVar(cID, key);
-                A_ASSERT(m);
-                
-                // Eg: "SNP"
-                const auto type = type2str(m->type());
-
-                /*
-                 * Now we need to know the label for this reference variant
-                 */
-                
-                auto f = [&](const std::map<long, VariantMatch> &x, const std::string &label)
-                {
-                    if (x.count(key))
-                    {
-                        const auto &t = x.at(key);
-                        
-                        o.writer->write((boost::format(format) % m->name
-                                                               % m->cID
-                                                               % m->l.start
-                                                               % label
-                                                               % t.query.readR
-                                                               % t.query.readV
-                                                               % t.query.depth
-                                                               % r.findRCon(m->name)
-                                                               % r.findVCon(m->name)
-                                                               % r.findAFreq(m->name)
-                                                               % t.query.alleleFreq()
-                                                               % ld2ss(t.query.p)
-                                                               % x2ns(t.query.qual)
-                                                               % x2ns(t.query.qualR)
-                                                               % x2ns(t.query.qualV)
-                                                               % type).str());
-                        return true;
-                    }
-                    
-                    return false;
-                };
-
-                if (!f(stats.data.at(i.first).tps_, "TP") && !f(stats.data.at(i.first).fns_, "FN"))
-                {
-                    throw std::runtime_error("Failed to find hash key in writeQuins()");
-                }
-            }
-            
-            // Failed to detect the variant
-            else
-            {
-                const auto m = r.findVar(i.first, j.first);
-                A_ASSERT(m);
-                
-                // Eg: "SNP"
-                const auto type = type2str(m->type());
-                
-                o.writer->write((boost::format(format) % m->name
-                                                       % m->cID
-                                                       % m->l.start
-                                                       % "FN"
-                                                       % "NA"
-                                                       % "NA"
-                                                       % "NA"
-                                                       % r.findRCon(m->name)
-                                                       % r.findVCon(m->name)
-                                                       % r.findAFreq(m->name)
-                                                       % "NA"
-                                                       % "NA"
-                                                       % "NA"
-                                                       % "NA"
-                                                       % "NA"
-                                                       % type).str());
-            }
+            o.writer->write((boost::format(format) % i.name
+                                                   % i.cID
+                                                   % i.l.start
+                                                   % "TP"
+                                                   % c->readR
+                                                   % c->readV
+                                                   % c->depth
+                                                   % r.findRCon(i.name)
+                                                   % r.findVCon(i.name)
+                                                   % r.findAFreq(i.name)
+                                                   % c->alleleFreq()
+                                                   % ld2ss(c->p)
+                                                   % x2ns(c->qual)
+                                                   % x2ns(c->qualR)
+                                                   % x2ns(c->qualV)
+                                                   % i.type()).str());
+        }
+        
+        // Failed to detect the variant
+        else
+        {
+            o.writer->write((boost::format(format) % i.name
+                                                   % i.cID
+                                                   % i.l.start
+                                                   % "FN"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % r.findRCon(i.name)
+                                                   % r.findVCon(i.name)
+                                                   % r.findAFreq(i.name)
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % i.type()).str());
         }
     }
     
@@ -348,72 +390,38 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "QualV"
                                            % "Type").str());
 
-    for (const auto &i : stats.data)
+    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
     {
-        const auto &cID = i.first;
-        
-        auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+        for (const auto &i : x)
         {
-            for (const auto &i : x)
-            {
-                auto sID = (i.match ? i.match->name : "-");
-                
-                if (label == "FP")
-                {
-                    /*
-                     * We know this is a FP, but we can trace it to one of the sequins?
-                     */
-                    
-                    MergedIntervals<> inters;
-                    
-                    try
-                    {
-                        // We should to search where the FPs are
-                        inters = r.mInters(cID);
-                        
-                        A_ASSERT(inters.size());
-                        
-                        const auto m = inters.contains(i.query.l);
-                        
-                        // Can we find the corresponding region for the FP?
-                        if (m)
-                        {
-                            sID = m->id();
-                            
-                            // It has to be a sequin (eg: D_3_12)
-                            A_ASSERT(!sID.empty());
-                        }
-                    }
-                    catch (...) {}
-                }
-
-                const auto hasAFreq = r.hasAFreq(sID);
-                const auto eRef  = sID != "-" && hasAFreq ? r.findRCon(sID)  : NAN;
-                const auto eVar  = sID != "-" && hasAFreq ? r.findVCon(sID)  : NAN;
-                const auto eFreq = sID != "-" && hasAFreq ? r.findAFreq(sID) : NAN;
-
-                o.writer->write((boost::format(format) % sID
-                                                       % i.query.cID
-                                                       % i.query.l.start
-                                                       % label
-                                                       % i.query.readR
-                                                       % i.query.readV
-                                                       % i.query.depth
-                                                       % eRef
-                                                       % eVar
-                                                       % eFreq
-                                                       % i.query.alleleFreq()
-                                                       % ld2ss(i.query.p)
-                                                       % x2ns(i.query.qual)
-                                                       % x2ns(i.query.qualR)
-                                                       % x2ns(i.query.qualV)
-                                                       % type2str(i.query.type())).str());
-            }
-        };
-        
-        f(i.second.tps, "TP");
-        f(i.second.fps, "FP");
-    }
+            auto sID = (i.seqByPos ? i.seqByPos->name : "-");
+            
+            const auto hasAFreq = r.hasAFreq(sID);
+            const auto eRef  = sID != "-" && hasAFreq ? r.findRCon(sID)  : NAN;
+            const auto eVar  = sID != "-" && hasAFreq ? r.findVCon(sID)  : NAN;
+            const auto eFreq = sID != "-" && hasAFreq ? r.findAFreq(sID) : NAN;
+            
+            o.writer->write((boost::format(format) % sID
+                                                   % i.query.cID
+                                                   % i.query.l.start
+                                                   % label
+                                                   % i.query.readR
+                                                   % i.query.readV
+                                                   % i.query.depth
+                                                   % eRef
+                                                   % eVar
+                                                   % eFreq
+                                                   % i.query.alleleFreq()
+                                                   % ld2ss(i.query.p)
+                                                   % x2ns(i.query.qual)
+                                                   % x2ns(i.query.qualR)
+                                                   % x2ns(i.query.qualV)
+                                                   % type2str(i.query.type())).str());
+        }
+    };
+    
+    f(stats.tps, "TP");
+    f(stats.fps, "FP");
 
     o.writer->close();
 }
@@ -480,36 +488,36 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % r.countSNPSyn()               // 4
                                                 % r.countIndSyn()               // 5
                                                 % (r.countSNPSyn() + r.countIndSyn())
-                                                % ss.vData.countSNPSyn()     // 7
-                                                % ss.vData.countIndSyn()     // 8
+                                                % "??" //ss.vData.countSNPSyn()     // 7
+                                                % "??" //ss.vData.countIndSyn()     // 8
                                                 % "??" /*ss.vData.countVarSyn()*/     // 9
                                                 % "??" /*ss.countSNP_TP_Syn()*/       // 10
-                                                % ss.countInd_TP_Syn()       // 11
-                                                % ss.countVar_TP_Syn()       // 12
-                                                % ss.countSNP_FP_Syn()       // 13
-                                                % ss.countInd_FP_Syn()       // 14
-                                                % ss.countVar_FP_Syn()       // 15
-                                                % ss.countSNP_FnSyn()        // 16
-                                                % ss.countInd_FnSyn()        // 17
-                                                % ss.countVar_FnSyn()        // 18
-                                                % D(ss.countVarSnSyn())      // 19
-                                                % D(ss.countVarPC_Syn())     // 20
-                                                % D(ss.allF1())              // 21
-                                                % D(1-ss.countVarPC_Syn())   // 22
-                                                % D(ss.countSNPSnSyn())      // 23
-                                                % D(ss.countSNPPC_Syn())     // 24
-                                                % D(ss.SNPF1())              // 25
-                                                % D((1-ss.countSNPPC_Syn())) // 26
-                                                % D(ss.countIndSnSyn())      // 27
-                                                % D(ss.countIndPC_Syn())     // 28
-                                                % D(ss.indelF1())            // 29
-                                                % D(1-ss.countIndPC_Syn())   // 30
+                                                % "??" //ss.countInd_TP_Syn()       // 11
+                                                % "??" //ss.countVar_TP_Syn()       // 12
+                                                % "??" //ss.countSNP_FP_Syn()       // 13
+                                                % "??" //ss.countInd_FP_Syn()       // 14
+                                                % "??" //ss.countVar_FP_Syn()       // 15
+                                                % "??" //ss.countSNP_FnSyn()        // 16
+                                                % "??" //ss.countInd_FnSyn()        // 17
+                                                % "??" //ss.countVar_FnSyn()        // 18
+                                                % "??" //D(ss.countVarSnSyn())      // 19
+                                                % "??" //D(ss.countVarPC_Syn())     // 20
+                                                % "??" //D(ss.allF1())              // 21
+                                                % "??" //D(1-ss.countVarPC_Syn())   // 22
+                                                % "??" //D(ss.countSNPSnSyn())      // 23
+                                                % "??" //D(ss.countSNPPC_Syn())     // 24
+                                                % "??" //D(ss.SNPF1())              // 25
+                                                % "??" //D((1-ss.countSNPPC_Syn())) // 26
+                                                % "??" //D(ss.countIndSnSyn())      // 27
+                                                % "??" //D(ss.countIndPC_Syn())     // 28
+                                                % "??" //D(ss.indelF1())            // 29
+                                                % "??" //D(1-ss.countIndPC_Syn())   // 30
                          ).str());
     };
     
     auto somatic = [&]()
     {
-        const auto lm = ss.vars.linear(true);
+        const auto lm = ss.oa.linear(true);
 
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
@@ -567,32 +575,32 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % r.countSNPSyn()            // 5
                                                 % r.countIndSyn()            // 6
                                                 % (r.countSNPSyn() + r.countIndSyn())
-                                                % r.countSNPGen()            // 8
-                                                % r.countIndGen()            // 9
-                                                % (r.countSNPGen() + r.countIndGen())
-                                                % ss.vData.countSNPSyn()  // 11
-                                                % ss.vData.countIndSyn()  // 12
-                                                % ss.vData.countVarSyn()  // 13
-                                                % ss.vars.limit.abund     // 14
-                                                % ss.vars.limit.id        // 15
-                                                % ss.countSNP_TP_Syn()    // 16
-                                                % ss.countInd_TP_Syn()    // 17
-                                                % ss.countVar_TP_Syn()    // 18
-                                                % ss.countSNP_FP_Syn()    // 19
-                                                % ss.countInd_FP_Syn()    // 20
-                                                % ss.countVar_FP_Syn()    // 21
-                                                % ss.countSNP_FnSyn()     // 22
-                                                % ss.countInd_FnSyn()     // 23
-                                                % ss.countVar_FnSyn()     // 24
-                                                % ss.countVarSnSyn()      // 25
-                                                % ss.countVarPC_Syn()     // 26
-                                                % (1-ss.countVarPC_Syn()) // 27
-                                                % ss.countSNPSnSyn()      // 28
-                                                % ss.countSNPPC_Syn()     // 29
-                                                % (1-ss.countSNPPC_Syn()) // 30
-                                                % ss.countIndSnSyn()      // 31
-                                                % ss.countIndPC_Syn()     // 32
-                                                % (1-ss.countIndPC_Syn()) // 33
+                                                % "??" //r.countSNPGen()            // 8
+                                                % "??" //r.countIndGen()            // 9
+                                                % "??" //(r.countSNPGen() + r.countIndGen())
+                                                % "??" //ss.vData.countSNPSyn()  // 11
+                                                % "??" //ss.vData.countIndSyn()  // 12
+                                                % "??" //ss.vData.countVarSyn()  // 13
+                                                % "??" //ss.vars.limit.abund     // 14
+                                                % "??" //ss.vars.limit.id        // 15
+                                                % "??" //ss.countSNP_TP_Syn()    // 16
+                                                % "??" //ss.countInd_TP_Syn()    // 17
+                                                % "??" //ss.countVar_TP_Syn()    // 18
+                                                % "??" //ss.countSNP_FP_Syn()    // 19
+                                                % "??" //ss.countInd_FP_Syn()    // 20
+                                                % "??" //ss.countVar_FP_Syn()    // 21
+                                                % "??" //ss.countSNP_FnSyn()     // 22
+                                                % "??" //ss.countInd_FnSyn()     // 23
+                                                % "??" //ss.countVar_FnSyn()     // 24
+                                                % "??" //ss.countVarSnSyn()      // 25
+                                                % "??" //ss.countVarPC_Syn()     // 26
+                                                % "??" //(1-ss.countVarPC_Syn()) // 27
+                                                % "??" //ss.countSNPSnSyn()      // 28
+                                                % "??" //ss.countSNPPC_Syn()     // 29
+                                                % "??" //(1-ss.countSNPPC_Syn()) // 30
+                                                % "??" //ss.countIndSnSyn()      // 31
+                                                % "??" //ss.countIndPC_Syn()     // 32
+                                                % "??" //(1-ss.countIndPC_Syn()) // 33
                                                 % lm.m                       // 34
                                                 % lm.r                       // 35
                                                 % lm.R2                      // 36
@@ -622,12 +630,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
 void VDiscover::report(const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
-
     const auto ss = analyze(seqs, o);
     
-    o.info("TP: " + std::to_string(ss.countVar_TP_Syn()));
-    o.info("FP: " + std::to_string(ss.countVar_FP_Syn()));
-    o.info("FN: " + std::to_string(ss.countVar_FnSyn()));
+    o.info("TP: " + std::to_string(ss.oc.tp()));
+    o.info("FP: " + std::to_string(ss.oc.fp()));
+    o.info("FN: " + std::to_string(ss.oc.fn()));
 
     o.info("Generating statistics");
 

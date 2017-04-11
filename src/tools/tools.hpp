@@ -2,6 +2,7 @@
 #define TOOLS_HPP
 
 #include <map>
+#include <cmath>
 #include <string>
 #include <memory>
 #include <iomanip>

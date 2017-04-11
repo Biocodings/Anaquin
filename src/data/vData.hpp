@@ -23,10 +23,32 @@ namespace Anaquin
         
         // Indels to data
         std::map<Base, Variant> i2d;
+        
+        std::map<Mutation, Variant> m2v;
     };
 
     struct VData : public std::map<ChrID, DefaultVarData>
     {
+        inline std::set<Variant> vars() const
+        {
+            std::set<Variant> x;
+            
+            for (const auto &i : *this)
+            {
+                for (const auto &j : i.second.s2d)
+                {
+                    x.insert(j.second);
+                }
+                
+                for (const auto &j : i.second.i2d)
+                {
+                    x.insert(j.second);
+                }
+            }
+            
+            return x;
+        }
+        
         inline std::map<ChrID, std::map<long, Counts>> hist() const
         {
             std::map<ChrID, std::map<long, Counts>> r;
@@ -130,6 +152,19 @@ namespace Anaquin
             return countSNP() - countSNPSyn();
         }
         
+        inline Counts count_(const ChrID &cID, Mutation m) const
+        {
+            return count(cID) ? at(cID).m2v.size() : 0;
+        }
+
+        inline Counts count_(Mutation m) const
+        {
+            return countMap(*this, [&](const ChrID &cID, const DefaultVarData &)
+            {
+                return count_(cID, m);
+            });
+        }
+
         inline Counts countInd(const ChrID &cID) const
         {
             return count(cID) ? at(cID).i2d.size() : 0;
@@ -188,7 +223,8 @@ namespace Anaquin
                     break;
                 }
             }
-            
+
+            c2d[x.cID].m2v[x.type()] = x;
             f(x, p);
         });
         

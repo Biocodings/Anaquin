@@ -7,6 +7,7 @@
 #include "data/minters.hpp"
 #include "data/intervals.hpp"
 #include "RnaQuin/RnaQuin.hpp"
+#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
@@ -284,8 +285,6 @@ namespace Anaquin
      * -------------------- Variant Analysis --------------------
      */
     
-    struct Variant;
-    
     class VarRef : public Reference<SequinData, DefaultStats>
     {
         public:
@@ -301,14 +300,14 @@ namespace Anaquin
             // Total number of bases for all reference regions
             Base lRegs() const;
         
+            Counts nType(Mutation) const;
+            Counts nGroup(SeqVariant::Group) const;
+
             // Count SNPs for a chromosome
             Counts countSNP(const ChrID &) const;
         
             // Counts indels for the synthetic chromosomes
             Counts countSNPSyn() const;
-        
-            // Counts indels for the genome
-            Counts countSNPGen() const;
         
             // Counts indels for a chromosome
             Counts countInd(const ChrID &) const;
@@ -316,18 +315,18 @@ namespace Anaquin
             // Counts indels for the synthetic chromosomes
             Counts countIndSyn() const;
         
-            // Counts indels for the genome
-            Counts countIndGen() const;
-
             C2Intervals regions(bool trimmed = false) const;
 
             MC2Intervals mInters() const;
         
             MergedIntervals<> mInters(const ChrID &) const;
-        
-            std::map<ChrID, std::map<long, Counts>> vHist() const;
 
-            const Variant *findVar(const ChrID &, long key) const;
+            // Returns all reference variants
+            std::set<Variant> vars() const;
+
+            const SeqVariant &findSeqVar(long) const;
+        
+            const Variant *findVar(const ChrID &, long) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
 
             Concent findRCon(const SequinID &) const;

@@ -17,7 +17,6 @@
 
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_kreport.hpp"
 #include "VarQuin/v_vreport.hpp"
@@ -65,12 +64,10 @@ typedef std::set<Value> Range;
 #define TOOL_R_GENE      271
 #define TOOL_R_REPORT    272
 #define TOOL_R_SUBSAMPLE 273
-#define TOOL_V_KREPORT   274
 #define TOOL_V_VREPORT   275
 #define TOOL_V_ALIGN     276
 #define TOOL_V_FLIP      277
 #define TOOL_V_DISCOVER  278
-#define TOOL_V_ALLELE    279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_M_ALIGN     281
 #define TOOL_M_ABUND     282
@@ -102,7 +99,6 @@ typedef std::set<Value> Range;
 #define OPT_U_BAM   812
 #define OPT_U_FILES 813
 #define OPT_EDGE    814
-#define OPT_ALLELE  816
 #define OPT_U_BASE  817
 
 using namespace Anaquin;
@@ -149,10 +145,8 @@ static std::map<Value, Tool> _tools =
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaGene",        TOOL_R_GENE      },
 
-    { "VarAllele",      TOOL_V_ALLELE    },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
-    { "VarKReport",     TOOL_V_KREPORT   },
     { "VarVReport",     TOOL_V_VREPORT   },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarFlip",        TOOL_V_FLIP      },
@@ -346,8 +340,6 @@ static const struct option long_options[] =
     { "o",       required_argument, 0, OPT_PATH },
     { "output",  required_argument, 0, OPT_PATH },
 
-    { "allele",  required_argument, 0, OPT_ALLELE },
-
     {0, 0, 0, 0 }
 };
 
@@ -408,7 +400,6 @@ static Scripts manual(Tool tool)
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
-        case TOOL_V_KREPORT:   { return VarKReport();     }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
@@ -816,8 +807,7 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
-            case OPT_ALLELE: { _p.opts[opt] = val; break; }
-            case OPT_REPORT: { _p.report = true;   break; }
+            case OPT_REPORT: { _p.report = true; break; }
 
             case OPT_EDGE:
             case OPT_FUZZY:
@@ -1235,8 +1225,6 @@ void parse(int argc, char ** argv)
 
         case TOOL_V_FLIP:
         case TOOL_V_ALIGN:
-        case TOOL_V_ALLELE:
-        case TOOL_V_KREPORT:
         case TOOL_V_VREPORT:
         case TOOL_V_DISCOVER:
         case TOOL_V_SUBSAMPLE:
@@ -1303,15 +1291,6 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_KREPORT:
-                {
-                    VKReport::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    
-                    analyze_1<VKReport>(OPT_U_FILES, o);
-                    break;
-                }
-
                 case TOOL_V_VREPORT:
                 {
                     VVReport::Options o;
@@ -1334,23 +1313,9 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_ALLELE:
-                {
-                    VAllele::Options o;
-                    o.format = VAllele::Format::Salmon;
-                    analyze_1<VAllele>(OPT_U_FILES, o);
-                    break;
-                }
-
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
-                    
-                    if (_p.opts.count(OPT_ALLELE) && _p.opts[OPT_ALLELE] == "skip")
-                    {
-                        o.matchAllele = false;
-                    }
-                    
                     analyze_1<VDiscover>(OPT_U_SEQS, o);
                     break;
                 }

@@ -6,30 +6,40 @@
 
 namespace Anaquin
 {
-    struct VariantStats
+    /*
+     * Information specific to sequin variants.
+     */
+    
+    struct SeqVariant
     {
-        // Number of SNPs detected
-        Counts n_snp;
-
-        // Number of indels detected
-        Counts n_ind;
+        enum class Group
+        {
+            NA12878,
+            VeryLowGC,
+            LowGC,
+            HighGC,
+            VeryHighGC,
+            ShortDinRep,  // Dinucleotide repeats
+            LongDinRep,   // Dinucleotide repeats
+            ShortHompo,
+            LongHompo,
+            ShortQuadRep, // Quad-nucleotide repeats
+            LongQuadRep,  // Quad-nucleotide repeats
+            ShortTrinRep, // Trinucleotide repeats
+            LongTrinRep,  // Trinucleotide repeats
+            Cosmic,
+        } group;
+        
+        // Homozygous?
+        Zygosity zyg;
+        
+        // Copy number
+        unsigned copy = 1;
+        
+        // Valid only for group == Cosmis
+        std::string info;
     };
     
-    struct VariantMatch
-    {
-        // The called variant
-        Variant query;
-
-        // Matched by position?
-        const Variant *match = nullptr;
-        
-        // Matched by variant allele? Only if position is matched.
-        bool alt;
-        
-        // Matched by reference allele? Only if position is matched.
-        bool ref;
-    };
-
     // Eg: chrev1, chrev10 etc...
     inline bool isReverseGenome(const ChrID &cID)
     {

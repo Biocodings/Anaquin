@@ -64,7 +64,7 @@ namespace Anaquin
             return (nSeqs + nEndo) ? static_cast<Proportion>(nSeqs) / (nSeqs + nEndo) : NAN;
         }
 
-        Counts nNA  = 0;
+        Counts nNA   = 0;
         Counts nEndo = 0;
         Counts nSeqs = 0;
     };
