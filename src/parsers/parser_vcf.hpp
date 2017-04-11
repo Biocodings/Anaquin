@@ -32,11 +32,10 @@ namespace Anaquin
         {
             std::string line;
             
-            Data d;
+            Data x;
             ParserProgress p;
             
-            std::vector<std::string> t;
-            std::vector<std::string> infos;
+            std::vector<std::string> tmp;
             std::vector<std::string> fields;
             std::vector<std::string> formats;
             
@@ -55,16 +54,16 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", fields);
                 
-                d.cID = standChr(fields[Field::Chrom]);
+                x.cID = standChr(fields[Field::Chrom]);
                 
                 // Eg: D_1_3_R
-                d.name = fields[Field::ID];
+                x.name = fields[Field::ID];
                 
                 // VCF has 1-based position
-                d.l.start = d.l.end = stod(fields[Field::Pos]);
+                x.l.start = x.l.end = stod(fields[Field::Pos]);
                 
                 // Reference allele
-                d.ref = fields[Field::Ref];
+                x.ref = fields[Field::Ref];
                 
                 /*
                  * Additional information
@@ -74,71 +73,65 @@ namespace Anaquin
                 
                 if (fields[Field::Info] != ".")
                 {
+                    static std::vector<std::string> infos;
                     Tokens::split(fields[Field::Info], ";", infos);
                     
                     for (const auto &info : infos)
                     {
-                        /*
-                         * Eg: AA=.;DP=124
-                         *     AA=g;DP=132;HM2
-                         */
-                        
-                        Tokens::split(info, "=", t);
+                        Tokens::split(info, "=", tmp);
                         
                         // Measured allele frequency
-                        if (t[0] == "AF") { d.allF = stof(t[1]); }
+                        if (tmp[0] == "AF") { x.allF = stof(tmp[1]); }
+                        
+                        x.opts[tmp[0]] = tmp[1];
                     }
                 }
 
-                /*
-                 * Anaquin doesn't support multi-alleles (because sequins don't have it)
-                 */
-                
                 std::vector<Sequence> alts;
                 Tokens::split(fields[Field::Alt], ",", alts);
                 
                 // Ignore anything that is not really a variant
-                if ((d.alt = alts[0]) == ".")
+                if ((x.alt = alts[0]) == ".")
                 {
                     continue;
                 }
                 
-                d.qual = fields[Field::Qual] != "." ? s2d(fields[Field::Qual]) : NAN;
+                x.qual = fields[Field::Qual] != "." ? s2d(fields[Field::Qual]) : NAN;
 
                 if (fields.size() > Field::Format)
                 {
                     Tokens::split(fields[Field::Format], ":", formats);
                     
                     // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
-                    Tokens::split(fields[Field::FormatData], ":", t);
+                    Tokens::split(fields[Field::FormatData], ":", tmp);
                     
                     // Check all the format data...
-                    for (auto j = 0; j < t.size(); j++)
+                    for (auto j = 0; j < tmp.size(); j++)
                     {
                         if (formats[j] == "AD")
                         {
                             std::vector<std::string> toks;
-                            Tokens::split(t[j], ",", toks);
+                            Tokens::split(tmp[j], ",", toks);
                             
                             if (toks.size() == 1)
                             {
-                                d.readR = s2d(toks[0]);
-                                d.readV = s2d(toks[0]);
+                                x.readR = s2d(toks[0]);
+                                x.readV = s2d(toks[0]);
                             }
                             else
                             {
-                                d.readR = s2d(toks[0]);
-                                d.readV = s2d(toks[1]);
+                                x.readR = s2d(toks[0]);
+                                x.readV = s2d(toks[1]);
                             }
                         }
                         else if (formats[j] == "DP")
                         {
-                            d.depth = s2d(t[j]);
+                            x.depth = s2d(tmp[j]);
                         }
                     }
                 }
                 
-                f(d, p);
+                f(x, p);
             }
         }
     };

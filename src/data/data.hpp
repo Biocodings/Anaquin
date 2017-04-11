@@ -32,7 +32,6 @@ namespace Anaquin
     typedef long double Probability;
     
     typedef std::string ChrID;
-    typedef std::string VarID;
     typedef std::string GeneID;
     typedef std::string ExonID;
     typedef std::string GenoID;

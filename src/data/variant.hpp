@@ -9,11 +9,6 @@
 
 namespace Anaquin
 {
-    template <typename E>
-    constexpr typename std::underlying_type<E>::type to_underlying(E e) {
-        return static_cast<typename std::underlying_type<E>::type>(e);
-    }
-    
     inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
     {
         const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
@@ -63,11 +58,10 @@ namespace Anaquin
             return var2hash(name, type(), l);
         }
         
-        // Eg: chrIS
         ChrID cID;
 
-        // Eg: D_1_10
-        VarID name;
+        // Eg: GI_005
+        std::string name;
 
         // The reference position, with the 1st base having position 1
         Locus l;
@@ -98,14 +92,9 @@ namespace Anaquin
         // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
         Counts depth = NAN;
         
-        /*
-         * Optional data. Caller specific options and data are saved here.
-         */
-        
-        std::map<std::string, std::string> options;
+        // Optional data
+        std::map<std::string, std::string> opts;
     };
-    
-    typedef Variant CalledVariant;
 }
 
 #endif

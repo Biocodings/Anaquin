@@ -3,8 +3,6 @@
 #include "data/tokens.hpp"
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
-#include "VarQuin/VarQuin.hpp"
-#include "RnaQuin/RnaQuin.hpp"
 #include "MetaQuin/MetaQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
@@ -500,18 +498,6 @@ void MetaRef::validate()
 
 struct SeqVariant
 {
-    // Homozygous?
-    Zygosity zyg;
-    
-    // SNP? Indel? CNV?
-    Mutation mut;
-    
-    // Copy number
-    unsigned copy;
-};
-
-struct WGSVariant : public SeqVariant
-{
     enum class Group
     {
         NA12878,
@@ -527,12 +513,17 @@ struct WGSVariant : public SeqVariant
         LongQuadRep,  // Quad-nucleotide repeats
         ShortTrinRep, // Trinucleotide repeats
         LongTrinRep,  // Trinucleotide repeats
+        Cosmic,
     } group;
-};
-
-struct CancerVariant : public SeqVariant
-{
     
+    // Homozygous?
+    Zygosity zyg;
+    
+    // Copy number
+    unsigned copy = 1;
+    
+    // Valid only for group == Cosmis
+    std::string info;
 };
 
 struct VarRef::VarRefImpl
@@ -542,12 +533,9 @@ struct VarRef::VarRefImpl
     
     VData vData;
     
-    // Information about WGS sequin variants
-    std::map<VarKey, WGSVariant> wVars;
+    // Information about sequin variants
+    std::map<VarKey, SeqVariant> sVars;
 
-    // Information about WGS sequin variants
-    std::map<VarKey, CancerVariant> cVars;
-    
     // Regular regions
     BedData bData;
     
@@ -575,11 +563,74 @@ void VarRef::readGBRef(const Reader &r, Base trim)
 
 void VarRef::readVRef(const Reader &r)
 {
+    auto throwInvalidRef = [&](const std::string &x)
+    {
+        throw std::runtime_error(r.src() + " doesn't seem to be a valid VCF reference file. Reason: " + x);
+    };
+    
     _impl->vData = readVFile(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
         A_ASSERT(x.key());
         
+        typedef SeqVariant::Group Group;
         
+        const auto m1 = std::map<std::string, SeqVariant::Group>
+        {
+            { "NA12878", Group::NA12878 },
+            { "high_gc", Group::HighGC },
+            { "long_dinuc_rep", Group::LongDinRep },
+            { "long_homopol", Group::LongHompo },
+            { "low_gc", Group::LowGC },
+            { "long_quadnuc_rep", Group::LongQuadRep },
+            { "long_trinuc_rep", Group::LongTrinRep },
+            { "short_dinuc_rep", Group::ShortDinRep },
+            { "short_hompol", Group::ShortHompo },
+            { "short_quadnuc_rep", Group::ShortQuadRep },
+            { "very_high_gc", Group::VeryHighGC },
+            { "very_low_gc", Group::VeryLowGC },
+            { "short_trinuc_rep", Group::ShortTrinRep }
+        };
+        
+        const auto m2 = std::map<std::string, Zygosity>
+        {
+            { "HOM",     Zygosity::Homozygous  },
+            { "HET",     Zygosity::Heterzygous },
+            { "HOM_CNV", Zygosity::Homozygous  },
+        };
+        
+        if (!x.opts.count("GR") || !m1.count(x.opts.at("GR")))
+        {
+            if (!x.opts.count("GR") || !boost::starts_with(x.opts.at("GR"), "COSM"))
+            {
+                throwInvalidRef("The GR field is not found or invalid");
+            }
+        }
+        
+        if (!x.opts.count("ZY") || !m2.count(x.opts.at("ZY")))
+        {
+            throwInvalidRef("The ZY field is not found or invalid");
+        }
+        else if (!x.opts.count("CP"))
+        {
+            throwInvalidRef("The CP field is not found or invalid");
+        }
+        
+        SeqVariant s;
+
+        s.zyg   = m2.at(x.opts.at("ZY"));
+        s.copy  = stoi(x.opts.at("CP"));
+        
+        const auto &gr = x.opts.at("GR");
+        
+        if (boost::starts_with(gr, "COSM"))
+        {
+            s.group = Group::Cosmic;
+            s.info  = gr;
+        }
+        else
+        {
+            s.group = m1.at(x.opts.at("GR"));
+        }
         
         _impl->vIDs.insert(x.name);
     });
