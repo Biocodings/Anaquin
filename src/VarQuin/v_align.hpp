@@ -8,14 +8,8 @@ namespace Anaquin
 {
     struct VAlign
     {
-        struct Options : public AnalyzerOptions
-        {
-            Options() : report(false) {}
-
-            // Generating VarAlign_report.txt?
-            bool report;
-        };
-
+        typedef AnalyzerOptions Options;
+        
         struct Performance
         {
             struct Data

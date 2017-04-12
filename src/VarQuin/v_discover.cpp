@@ -3,6 +3,8 @@
 
 using namespace Anaquin;
 
+typedef SeqVariant::Group Group;
+
 // Defined in resources.cpp
 extern Scripts PlotVLODR();
 
@@ -28,6 +30,27 @@ inline std::string type2str(Mutation type)
         case Mutation::SNP:       { return "SNP";       }
         case Mutation::Deletion:  { return "Deletion";  }
         case Mutation::Insertion: { return "Insertion"; }
+    }
+}
+
+inline std::string grp2Str(Group grp)
+{
+    switch (grp)
+    {
+        case Group::NA12878:      { return "NA12878";      }
+        case Group::VeryLowGC:    { return "VeryLowGC";    }
+        case Group::LowGC:        { return "LowGC";        }
+        case Group::HighGC:       { return "HighGC";       }
+        case Group::ShortHompo:   { return "ShortHompo";   }
+        case Group::VeryHighGC:   { return "VeryHighGC";   }
+        case Group::ShortDinRep:  { return "ShortDinRep";  }
+        case Group::LongDinRep:   { return "LongDinRep";   }
+        case Group::LongHompo:    { return "LongHompo";    }
+        case Group::ShortQuadRep: { return "ShortQuadRep"; }
+        case Group::LongQuadRep:  { return "LongQuadRep";  }
+        case Group::ShortTrinRep: { return "ShortTrinRep"; }
+        case Group::LongTrinRep:  { return "LongTrinRep";  }
+        case Group::Cosmic:       { return "Cosmic";       }
     }
 }
 
@@ -256,7 +279,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
 
     o.generate(file);
     o.writer->open(file);
@@ -271,12 +294,16 @@ static void writeQuins(const FileName &file,
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
+                                           % "Group"
                                            % "Type").str());
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
         const auto isTP = stats.findTP(i.name);
-        
+
+        // This shouldn't fail...
+        const auto &sv = r.findSeqVar(i.key());
+
         if (isTP)
         {
             // Called variant (if found)
@@ -293,6 +320,7 @@ static void writeQuins(const FileName &file,
                                                    % c.alleleFreq()
                                                    % ld2ss(c.p)
                                                    % toString(c.qual)
+                                                   % grp2Str(sv.group)
                                                    % type2str(i.type())).str());
         }
 
@@ -310,6 +338,7 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
+                                                   % grp2Str(sv.group)
                                                    % type2str(i.type())).str());
         }
     }
@@ -438,8 +467,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
         const auto fn_SNP = snp.fn();
         const auto fn_Del = del.fn();
         const auto fn_Ins = ins.fn();
-        
-        auto a = snp.sn();
         
         auto ind = del;
         ind += ins;

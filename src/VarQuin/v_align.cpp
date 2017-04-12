@@ -417,40 +417,6 @@ void VAlign::writeSummary(const FileName &file,
                                             % endo->base.sn()       // 23
                      ).str());
     o.writer->close();
-    
-    // Only for generating a report, easier for parsing. (undocumented)
-    if (o.report)
-    {
-        #define WRITE(x,y) o.writer->write((boost::format("%1%\t%2%")   % x % y).str());
-
-        o.generate("VarAlign_report.csv");
-        o.writer->open("VarAlign_report.csv");
-        
-//        WRITE("ASyn", seqs.nSeqs);
-//        WRITE("ASynP", seqs.propSyn());
-//        WRITE("AGen", seqs.nEndo);
-//        WRITE("AGenP", seqs.propGen());
-//        WRITE("Dilution", (100.0 * seqs.dilution()));
-
-        WRITE("nRegs", r.nRegs());
-        WRITE("lRegs", r.lRegs());
-        
-        WRITE("RegionTP", seqs->align.tp());
-        WRITE("RegionFP", seqs->align.fp());
-        WRITE("RegionPC", seqs->align.pc());
-        
-        WRITE("BaseTP", seqs->base.tp());
-        WRITE("BaseFN", seqs->base.fn());
-        WRITE("BaseFP", seqs->base.fp());
-        WRITE("BaseSN", seqs->base.sn());
-        WRITE("BasePC", seqs->base.pc());
-        
-        WRITE("GenomeTP", endo->base.tp());
-        WRITE("GenomeFN", endo->base.fn());
-        WRITE("GenomeSN", endo->base.sn());
-        
-        o.writer->close();
-    }
 }
 
 void VAlign::writeBQuins(const FileName &file,
@@ -574,10 +540,7 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      * Generating VarAlign_sequins.csv
      */
     
-    if (!o.report)
-    {
-        VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
-    }
+    VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
 
     /*
      * Generating VarAlign_queries.stats (for debugging)

@@ -18,7 +18,6 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_kreport.hpp"
 #include "VarQuin/v_vreport.hpp"
 #include "VarQuin/v_discover.hpp"
 
@@ -1307,9 +1306,7 @@ void parse(int argc, char ** argv)
                 
                 case TOOL_V_ALIGN:
                 {
-                    VAlign::Options o;
-                    o.report = _p.report;
-                    analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS, o);
+                    analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS);
                     break;
                 }
 
