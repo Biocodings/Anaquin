@@ -8,12 +8,65 @@
 #include <iomanip>
 #include <numeric>
 #include <sstream>
+#include <sstream>
+#include <iomanip>
 #include <algorithm>
 
 namespace Anaquin
 {
+    inline double s2d(const std::string &x)
+    {
+        if (x == "NA" || x == "-")
+        {
+            return NAN;
+        }
+        
+        try
+        {
+            return stod(x);
+        }
+        catch(...)
+        {
+            throw std::runtime_error("Failed to parse \"" + x + "\". This is not a number.");
+        }
+    }
+    
+    inline long double ss2ld(const std::string &x)
+    {
+        if (x == "NA" || x == "-" || x == "*")
+        {
+            return NAN;
+        }
+        
+        std::istringstream os(x);
+        long double p;
+        os >> p;
+        return p;
+    }
+    
+    // Convert a floating number to scientific notation
+    inline std::string ld2ss(long double p)
+    {
+        if (isnan(p) || !std::isfinite(p))
+        {
+            return "-";
+        }
+
+        std::ostringstream out;
+        
+        // Convert the probability into scientific notation
+        out << std::scientific << p;
+        
+        return out.str();
+    }
+    
     template <typename T> std::string toString(const T &x, unsigned n = 2)
     {
+        if (isnan(x) || !std::isfinite(x))
+        {
+            return "-";
+        }
+        
         std::ostringstream out;
         out << std::fixed << std::setprecision(n) << x;
         return out.str();

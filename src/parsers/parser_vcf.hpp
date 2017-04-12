@@ -1,10 +1,10 @@
 #ifndef PARSER_VCF_HPP
 #define PARSER_VCF_HPP
 
+#include "tools/tools.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
-#include "data/convert.hpp"
 #include "data/biology.hpp"
 #include "parsers/parser.hpp"
 

@@ -2,8 +2,8 @@
 #define PARSER_VARIANT_HPP
 
 #include "data/tokens.hpp"
+#include "tools/tools.hpp"
 #include "data/variant.hpp"
-#include "data/convert.hpp"
 #include "parsers/parser.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -20,8 +20,6 @@ namespace Anaquin
             ReadR,
             ReadV,
             Depth,
-            QualR,
-            QualV,
             PValue,
         };
 
@@ -47,8 +45,6 @@ namespace Anaquin
                     toks[4]  == "ReadR"    &&
                     toks[5]  == "ReadV"    &&
                     toks[6]  == "Depth"    &&
-                    toks[7]  == "QualR"    &&
-                    toks[8]  == "QualV"    &&
                     toks[9]  == "PValue")
                 {
                     return true;
@@ -80,8 +76,6 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.qualR = s2d(toks[QualR]);
-                d.qualV = s2d(toks[QualV]);
                 d.readR = s2d(toks[ReadR]);
                 d.readV = s2d(toks[ReadV]);
                 d.depth = d.readR + d.readV;

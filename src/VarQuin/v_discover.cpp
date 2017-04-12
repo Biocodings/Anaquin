@@ -1,4 +1,4 @@
-#include "data/convert.hpp"
+#include "tools/tools.hpp"
 #include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
@@ -20,45 +20,6 @@ extern Path __output__;
 
 // Defined in main.cpp
 extern std::string __full_command__;
-
-
-template <typename T1, typename T2> std::tuple<std::string, double> quantLimit(const std::map<T1, T2> &m)
-{
-    double abund;
-    std::string id;
-    
-    for (auto &i : m)
-    {
-        for (auto &j : i.second)
-        {
-            if (isnan(abund) || i.second.abund < abund)
-            {
-                id = i.second.id;
-                abund = i.second.abund;
-            }
-        }
-    }
-    
-    return std::tuple<std::string, double>(id, abund);
-}
-
-template <typename T> std::tuple<std::string, double> quantLimit(const T &x)
-{
-    double abund;
-    std::string id;
-    
-    for (auto &i : x)
-    {
-        if (isnan(abund) || i.abund < abund)
-        {
-            id = i.id;
-            abund = i.abund;
-        }
-    }
-    
-    return std::tuple<std::string, double>(id, abund);
-}
-
 
 inline std::string type2str(Mutation type)
 {
@@ -261,7 +222,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             stats.oc.fp()++;
             
             // Performance for each mutation
-            stats.m2c[i.query.type()].tp()++;
+            stats.m2c[i.query.type()].fp()++;
         }
     };
 
@@ -271,6 +232,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     for (auto &mut : muts)
     {
         stats.m2c[mut].nr() = r.nType(mut);
+        stats.m2c[mut].nq() = stats.m2c[mut].tp() + stats.m2c[mut].fp();
         stats.m2c[mut].fn() = stats.m2c[mut].nr() - stats.m2c[mut].tp();
         stats.oc.nr() += r.nType(mut);
     }
@@ -280,6 +242,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     for (auto &grp : grps)
     {
         stats.g2c[grp].nr() = r.nGroup(grp);
+        stats.g2c[grp].nq() = stats.g2c[grp].tp() + stats.g2c[grp].fp();
         stats.g2c[grp].fn() = stats.g2c[grp].nr() - stats.g2c[grp].tp();
     }
     
@@ -293,7 +256,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
 
     o.generate(file);
     o.writer->open(file);
@@ -304,43 +267,35 @@ static void writeQuins(const FileName &file,
                                            % "ReadR"
                                            % "ReadV"
                                            % "Depth"
-                                           % "ExpRef"
-                                           % "ExpVar"
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
-                                           % "QualR"
-                                           % "QualV"
                                            % "Type").str());
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
         const auto isTP = stats.findTP(i.name);
         
-        // Called variant (if found)
-        const auto c = isTP ? isTP->seqByPos : nullptr;
-        
         if (isTP)
         {
+            // Called variant (if found)
+            const auto &c = isTP->query;
+            
             o.writer->write((boost::format(format) % i.name
                                                    % i.cID
                                                    % i.l.start
                                                    % "TP"
-                                                   % c->readR
-                                                   % c->readV
-                                                   % c->depth
-                                                   % r.findRCon(i.name)
-                                                   % r.findVCon(i.name)
+                                                   % c.readR
+                                                   % c.readV
+                                                   % c.depth
                                                    % r.findAFreq(i.name)
-                                                   % c->alleleFreq()
-                                                   % ld2ss(c->p)
-                                                   % x2ns(c->qual)
-                                                   % x2ns(c->qualR)
-                                                   % x2ns(c->qualV)
-                                                   % i.type()).str());
+                                                   % c.alleleFreq()
+                                                   % ld2ss(c.p)
+                                                   % toString(c.qual)
+                                                   % type2str(i.type())).str());
         }
-        
+
         // Failed to detect the variant
         else
         {
@@ -348,18 +303,14 @@ static void writeQuins(const FileName &file,
                                                    % i.cID
                                                    % i.l.start
                                                    % "FN"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % r.findRCon(i.name)
-                                                   % r.findVCon(i.name)
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
                                                    % r.findAFreq(i.name)
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % i.type()).str());
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % type2str(i.type())).str());
         }
     }
     
@@ -369,37 +320,28 @@ static void writeQuins(const FileName &file,
 static void writeDetected(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
+    o.writer->write((boost::format(format) % "Name"
                                            % "ChrID"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
                                            % "ReadV"
                                            % "Depth"
-                                           % "ExpRef"
-                                           % "ExpVar"
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
-                                           % "QualR"
-                                           % "QualV"
                                            % "Type").str());
 
     auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
     {
         for (const auto &i : x)
         {
-            auto sID = (i.seqByPos ? i.seqByPos->name : "-");
-            
-            const auto hasAFreq = r.hasAFreq(sID);
-            const auto eRef  = sID != "-" && hasAFreq ? r.findRCon(sID)  : NAN;
-            const auto eVar  = sID != "-" && hasAFreq ? r.findVCon(sID)  : NAN;
-            const auto eFreq = sID != "-" && hasAFreq ? r.findAFreq(sID) : NAN;
+            auto sID = (i.seqByPos && i.alt && i.ref ? i.seqByPos->name : "-");
             
             o.writer->write((boost::format(format) % sID
                                                    % i.query.cID
@@ -408,14 +350,10 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                                    % i.query.readR
                                                    % i.query.readV
                                                    % i.query.depth
-                                                   % eRef
-                                                   % eVar
-                                                   % eFreq
+                                                   % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
                                                    % i.query.alleleFreq()
                                                    % ld2ss(i.query.p)
-                                                   % x2ns(i.query.qual)
-                                                   % x2ns(i.query.qualR)
-                                                   % x2ns(i.query.qualV)
+                                                   % toString(i.query.qual)
                                                    % type2str(i.query.type())).str());
         }
     };
@@ -443,14 +381,14 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
-                             "-------Reference annotated variants\n\n"
-                             "       Synthetic: %4% SNPs\n"
-                             "       Synthetic: %5% indels\n"
-                             "       Synthetic: %6% variants\n\n"
-                             "-------User identified variants\n\n"
-                             "       Synthetic: %7% SNPs\n"
-                             "       Synthetic: %8% indels\n"
-                             "       Synthetic: %9% variants\n\n"
+                             "-------Reference variants by type\n\n"
+                             "       %4% SNPs\n"
+                             "       %5% indels\n"
+                             "       %6% variants\n\n"
+                             "-------Called variants by type\n\n"
+                             "       %7% SNPs\n"
+                             "       %8% indels\n"
+                             "       %9% variants\n\n"
                              "-------Identification of synthetic variants\n\n"
                              "       True Positive:  %10% SNPS\n"
                              "       True Positive:  %11% indels\n"
@@ -476,42 +414,68 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "       Sensitivity: %27$.4f\n"
                              "       Precision:   %28$.4f\n"
                              "       F1 Score:    %29$.4f\n"
-                             "       FDR Rate:    %30$.4f\n";
+                             "       FDR Rate:    %30$.4f";
 
-        #define D(x) (isnan(x) ? "NA" : std::to_string(x))
+        #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
+        const auto &m2c = stats.m2c;
+        const auto &snp = m2c.at(Mutation::SNP);
+        const auto &del = m2c.at(Mutation::Deletion);
+        const auto &ins = m2c.at(Mutation::Insertion);
+        
+        const auto c_nSNP = snp.nq();
+        const auto c_nDel = del.nq();
+        const auto c_nIns = ins.nq();
+        
+        const auto tp_SNP = snp.tp();
+        const auto tp_Del = del.tp();
+        const auto tp_Ins = ins.tp();
+
+        const auto fp_SNP = snp.fp();
+        const auto fp_Del = del.fp();
+        const auto fp_Ins = ins.fp();
+        
+        const auto fn_SNP = snp.fn();
+        const auto fn_Del = del.fn();
+        const auto fn_Ins = ins.fn();
+        
+        auto a = snp.sn();
+        
+        auto ind = del;
+        ind += ins;
+
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % src                           // 3
-                                                % r.countSNPSyn()               // 4
-                                                % r.countIndSyn()               // 5
-                                                % (r.countSNPSyn() + r.countIndSyn())
-                                                % "??" //ss.vData.countSNPSyn()     // 7
-                                                % "??" //ss.vData.countIndSyn()     // 8
-                                                % "??" /*ss.vData.countVarSyn()*/     // 9
-                                                % "??" /*ss.countSNP_TP_Syn()*/       // 10
-                                                % "??" //ss.countInd_TP_Syn()       // 11
-                                                % "??" //ss.countVar_TP_Syn()       // 12
-                                                % "??" //ss.countSNP_FP_Syn()       // 13
-                                                % "??" //ss.countInd_FP_Syn()       // 14
-                                                % "??" //ss.countVar_FP_Syn()       // 15
-                                                % "??" //ss.countSNP_FnSyn()        // 16
-                                                % "??" //ss.countInd_FnSyn()        // 17
-                                                % "??" //ss.countVar_FnSyn()        // 18
-                                                % "??" //D(ss.countVarSnSyn())      // 19
-                                                % "??" //D(ss.countVarPC_Syn())     // 20
-                                                % "??" //D(ss.allF1())              // 21
-                                                % "??" //D(1-ss.countVarPC_Syn())   // 22
-                                                % "??" //D(ss.countSNPSnSyn())      // 23
-                                                % "??" //D(ss.countSNPPC_Syn())     // 24
-                                                % "??" //D(ss.SNPF1())              // 25
-                                                % "??" //D((1-ss.countSNPPC_Syn())) // 26
-                                                % "??" //D(ss.countIndSnSyn())      // 27
-                                                % "??" //D(ss.countIndPC_Syn())     // 28
-                                                % "??" //D(ss.indelF1())            // 29
-                                                % "??" //D(1-ss.countIndPC_Syn())   // 30
+                                                % r.countSNP()                  // 4
+                                                % r.countInd()                  // 5
+                                                % (r.countSNP() + r.countInd()) // 6
+                                                % c_nSNP                        // 7
+                                                % (c_nDel + c_nIns)             // 8
+                                                % (c_nSNP + c_nDel + c_nIns)    // 9
+                                                % tp_SNP                        // 10
+                                                % (tp_Del + tp_Ins)             // 11
+                                                % (tp_SNP + tp_Del + tp_Ins)    // 12
+                                                % fp_SNP                        // 13
+                                                % (fp_Del + fp_Ins)             // 14
+                                                % (fp_SNP + fp_Del + fp_Ins)    // 15
+                                                % fn_SNP                        // 16
+                                                % (fn_Del + fn_Ins)             // 17
+                                                % (fn_SNP + fn_Del + fn_Ins)    // 18
+                                                % D(stats.oc.sn())              // 19
+                                                % D(stats.oc.pc())              // 20
+                                                % D(stats.oc.F1())              // 21
+                                                % D(1-stats.oc.pc())            // 22
+                                                % D(snp.sn())                   // 23
+                                                % D(snp.pc())                   // 24
+                                                % D(snp.F1())                   // 25
+                                                % D(1-snp.pc())                 // 26
+                                                % D(ind.sn())                   // 27
+                                                % D(ind.pc())                   // 28
+                                                % D(ind.F1())                   // 29
+                                                % D(1-ind.pc())                 // 30
                          ).str());
     };
     
@@ -572,9 +536,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                                 % BedRef()                   // 2
                                                 % MixRef()                   // 3
                                                 % src                        // 4
-                                                % r.countSNPSyn()            // 5
-                                                % r.countIndSyn()            // 6
-                                                % (r.countSNPSyn() + r.countIndSyn())
+                                                % r.countSNP()            // 5
+                                                % r.countInd()            // 6
+                                                % (r.countSNP() + r.countInd())
                                                 % "??" //r.countSNPGen()            // 8
                                                 % "??" //r.countIndGen()            // 9
                                                 % "??" //(r.countSNPGen() + r.countIndGen())

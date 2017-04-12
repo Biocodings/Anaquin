@@ -4,7 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include "data/convert.hpp"
+#include "tools/tools.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/RnaQuin.hpp"
@@ -308,7 +308,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
                                          % l.length()
                                          % "NA"
                                          % "NA"
-                                         % x2ns(fold)
+                                         % toString(fold)
                                          % "NA"
                                          % "NA"
                                          % "NA"
@@ -322,14 +322,14 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         
         ss << (boost::format(format) % id
                                      % l.length()
-                                     % x2ns(x.samp1)
-                                     % x2ns(x.samp2)
-                                     % x2ns(fold)
-                                     % x2ns(x.obs)
-                                     % x2ns(x.se)
+                                     % toString(x.samp1)
+                                     % toString(x.samp2)
+                                     % toString(fold)
+                                     % toString(x.obs)
+                                     % toString(x.se)
                                      % ld2ss(x.p)
                                      % ld2ss(x.q)
-                                     % x2ns(x.mean)).str() << std::endl;
+                                     % toString(x.mean)).str() << std::endl;
     }
 
     return ss.str();

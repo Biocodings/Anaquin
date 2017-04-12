@@ -1,5 +1,4 @@
 #include "tools/tools.hpp"
-#include "data/convert.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/MetaQuin.hpp"
 #include "parsers/parser_sam.hpp"
@@ -400,12 +399,12 @@ static void writeSummary(const FileName &file,
                                             % stats.sb.fn()           // 16
                                             % stats.sb.fp()           // 17
                                             % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 18
-                                            % prop2Str(stats.sb.sn())         // 19
-                                            % prop2Str(stats.sb.pc())         // 20
+                                            % toString(stats.sb.sn())         // 19
+                                            % toString(stats.sb.pc())         // 20
                                             % stats.gb.tp()                   // 21
                                             % stats.gb.fn()                   // 22
                                             % (stats.gb.tp() + stats.gb.fn()) // 23
-                                            % prop2Str(stats.gb.sn())         // 24
+                                            % toString(stats.gb.sn())         // 24
                      ).str());
     o.writer->close();
 }

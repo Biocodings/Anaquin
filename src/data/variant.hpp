@@ -74,12 +74,6 @@ namespace Anaquin
         // Quality score (eg: QUAL in VCF (62.74))
         double qual = NAN;
         
-        // Quality of the reference (eg: provided by VarScan)
-        double qualR = NAN;
-        
-        // Quality of the variant (eg: provided by VarScan)
-        double qualV = NAN;
-
         // P-value (not always provided)
         Probability p = NAN;
         

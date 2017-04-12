@@ -24,7 +24,7 @@ namespace Anaquin
         // Indels to data
         std::map<Base, Variant> i2d;
         
-        std::map<Mutation, Variant> m2v;
+        std::map<Mutation, std::set<Variant>> m2v;
     };
 
     struct VData : public std::map<ChrID, DefaultVarData>
@@ -154,7 +154,7 @@ namespace Anaquin
         
         inline Counts count_(const ChrID &cID, Mutation m) const
         {
-            return count(cID) ? at(cID).m2v.size() : 0;
+            return count(cID) && at(cID).m2v.count(m) ? at(cID).m2v.at(m).size() : 0;
         }
 
         inline Counts count_(Mutation m) const
@@ -224,7 +224,7 @@ namespace Anaquin
                 }
             }
 
-            c2d[x.cID].m2v[x.type()] = x;
+            c2d[x.cID].m2v[x.type()].insert(x);
             f(x, p);
         });
         

@@ -174,7 +174,7 @@ namespace Anaquin
                     
                     while (l.end < i.second.l.length())
                     {
-                        r.add(MergedInterval(toString(i.first) + "_" + toString(l.start), l));
+                        r.add(MergedInterval(i.first + "_" + toString(l.start), l));
                         
                         l.start = l.end + 1;
                         l.end = l.start + BIN_SIZE;

@@ -5,7 +5,7 @@
 #include <cstring>
 #include "data/locus.hpp"
 #include "data/reader.hpp"
-#include "data/convert.hpp"
+#include "tools/tools.hpp"
 #include "data/biology.hpp"
 #include "tools/errors.hpp"
 

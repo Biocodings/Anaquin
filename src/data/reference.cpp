@@ -669,22 +669,9 @@ bool VarRef::isGermline() const
     return freqs.size() == 3 && freqs.count(0) && freqs.count(0.5) && freqs.count(1);
 }
 
-Concent VarRef::findRCon(const SequinID &id) const
-{
-    return _mixes.at(Mix_1).at(id + "_R")->abund;
-}
-
-Concent VarRef::findVCon(const SequinID &id) const
-{
-    return _mixes.at(Mix_1).at(id + "_V")->abund;
-}
-
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
-    const auto v = findRCon(id);
-    const auto r = findRCon(id);
-    
-    return v / (r + v);
+    return _mixes.at(Mix_1).at(id + "_V")->abund;
 }
 
 bool VarRef::hasAFreq(const SequinID &id) const
@@ -692,24 +679,14 @@ bool VarRef::hasAFreq(const SequinID &id) const
     return _mixes.at(Mix_1).count(id + "_R");
 }
 
-Counts VarRef::countInd(const ChrID &cID) const
+Counts VarRef::countInd() const
 {
-    return _impl->vData.countInd(cID);
+    return _impl->vData.countInd();
 }
 
-Counts VarRef::countIndSyn() const
+Counts VarRef::countSNP() const
 {
-    return _impl->vData.countIndSyn();
-}
-
-Counts VarRef::countSNP(const ChrID &cID) const
-{
-    return _impl->vData.countSNP(cID);
-}
-
-Counts VarRef::countSNPSyn() const
-{
-    return _impl->vData.countSNPSyn();
+    return _impl->vData.countSNP();
 }
 
 Counts VarRef::nRegs() const { return _impl->bData.count();  }

@@ -303,17 +303,8 @@ namespace Anaquin
             Counts nType(Mutation) const;
             Counts nGroup(SeqVariant::Group) const;
 
-            // Count SNPs for a chromosome
-            Counts countSNP(const ChrID &) const;
-        
-            // Counts indels for the synthetic chromosomes
-            Counts countSNPSyn() const;
-        
-            // Counts indels for a chromosome
-            Counts countInd(const ChrID &) const;
-        
-            // Counts indels for the synthetic chromosomes
-            Counts countIndSyn() const;
+            Counts countSNP() const;
+            Counts countInd() const;
         
             C2Intervals regions(bool trimmed = false) const;
 
@@ -328,9 +319,6 @@ namespace Anaquin
         
             const Variant *findVar(const ChrID &, long) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
-
-            Concent findRCon(const SequinID &) const;
-            Concent findVCon(const SequinID &) const;
 
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;
