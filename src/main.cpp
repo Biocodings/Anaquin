@@ -176,7 +176,7 @@ static std::map<Tool, std::set<Option>> _options =
 
     { TOOL_V_FLIP,      { OPT_U_BAM } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD  } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_HG, OPT_U_SEQS } },
     { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
 
@@ -318,7 +318,7 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
-    { "uhuman",  optional_argument, 0, OPT_U_HG    },
+    { "uhuman",  required_argument, 0, OPT_U_HG    },
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
@@ -1075,9 +1075,7 @@ void parse(int argc, char ** argv)
                 {
                     RFold::Options o;
 
-                    if (_p.opts[OPT_METHOD] != "gene"    &&
-                        _p.opts[OPT_METHOD] != "isoform" &&
-                        _p.opts[OPT_METHOD] != "ERCC")
+                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
                     {
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
