@@ -37,20 +37,20 @@ inline std::string grp2Str(Group grp)
 {
     switch (grp)
     {
-        case Group::NA12878:      { return "NA12878";      }
-        case Group::VeryLowGC:    { return "VeryLowGC";    }
-        case Group::LowGC:        { return "LowGC";        }
-        case Group::HighGC:       { return "HighGC";       }
-        case Group::ShortHompo:   { return "ShortHompo";   }
-        case Group::VeryHighGC:   { return "VeryHighGC";   }
-        case Group::ShortDinRep:  { return "ShortDinRep";  }
-        case Group::LongDinRep:   { return "LongDinRep";   }
-        case Group::LongHompo:    { return "LongHompo";    }
-        case Group::ShortQuadRep: { return "ShortQuadRep"; }
-        case Group::LongQuadRep:  { return "LongQuadRep";  }
-        case Group::ShortTrinRep: { return "ShortTrinRep"; }
-        case Group::LongTrinRep:  { return "LongTrinRep";  }
-        case Group::Cosmic:       { return "Cosmic";       }
+        case Group::Cosmic:        { return "Cosmic";                    }
+        case Group::LowGC:         { return "LowGC";                     }
+        case Group::HighGC:        { return "HighGC";                    }
+        case Group::NA12878:       { return "NA12878";                   }
+        case Group::VeryLowGC:     { return "VeryLowGC";                 }
+        case Group::VeryHighGC:    { return "VeryHighGC";                }
+        case Group::LongHompo:     { return "LongHomopolymer";           }
+        case Group::ShortHompo:    { return "ShortHomopolymer";          }
+        case Group::ShortDinRep:   { return "ShortDinucleotideRepeat";   }
+        case Group::LongDinRep:    { return "LongDinucleotideRepeat";    }
+        case Group::ShortQuadRep:  { return "ShortQuadNucleotideRepeat"; }
+        case Group::LongQuadRep:   { return "LongQuadNucleotideRepeat";  }
+        case Group::ShortTrinRep:  { return "ShortTrinucleotideRepeat";  }
+        case Group::LongTrinRep:   { return "LongTrinucleotideRepeat";   }
     }
 }
 

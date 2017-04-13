@@ -571,19 +571,19 @@ void VarRef::readVRef(const Reader &r)
         
         const auto m1 = std::map<std::string, SeqVariant::Group>
         {
-            { "NA12878", Group::NA12878 },
-            { "high_gc", Group::HighGC },
-            { "long_dinuc_rep", Group::LongDinRep },
-            { "long_homopol", Group::LongHompo },
-            { "low_gc", Group::LowGC },
-            { "long_quadnuc_rep", Group::LongQuadRep },
-            { "long_trinuc_rep", Group::LongTrinRep },
-            { "short_dinuc_rep", Group::ShortDinRep },
-            { "short_hompol", Group::ShortHompo },
+            { "NA12878",           Group::NA12878 },
+            { "high_gc",           Group::HighGC },
+            { "long_dinuc_rep",    Group::LongDinRep },
+            { "long_homopol",      Group::LongHompo },
+            { "low_gc",            Group::LowGC },
+            { "long_quadnuc_rep",  Group::LongQuadRep },
+            { "long_trinuc_rep",   Group::LongTrinRep },
+            { "short_dinuc_rep",   Group::ShortDinRep },
+            { "short_hompol",      Group::ShortHompo },
             { "short_quadnuc_rep", Group::ShortQuadRep },
-            { "very_high_gc", Group::VeryHighGC },
-            { "very_low_gc", Group::VeryLowGC },
-            { "short_trinuc_rep", Group::ShortTrinRep }
+            { "very_high_gc",      Group::VeryHighGC },
+            { "very_low_gc",       Group::VeryLowGC },
+            { "short_trinuc_rep",  Group::ShortTrinRep }
         };
         
         const auto m2 = std::map<std::string, Zygosity>
