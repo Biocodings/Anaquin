@@ -23,26 +23,9 @@ namespace Anaquin
          */
         
         static void transA();
-        static void RnaQuin_B();
         static void RnaQuin_AB();
         static void RnaFoldChange();
 
-        /*
-         * Variant analayis
-         */
-
-        /*
-         * Fusion analayis
-         */
-        
-        /*
-         * Ladder analayis
-         */
-        
-        /*
-         * Metagenomics analayis
-         */
-        
         static Test test(const std::string &);
     };
 }

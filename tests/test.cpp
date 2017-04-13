@@ -9,7 +9,6 @@
 extern int parse_options(int argc, char ** argv);
 
 extern std::string RnaDataMixA();
-extern std::string RnaDataMixB();
 extern std::string RnaDataMixAB();
 extern std::string RnaStandGTF();
 
@@ -25,14 +24,6 @@ void Test::transA()
     Test::clear();
     Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
     Standard::instance().addRMix(Reader(RnaDataMixA(), DataMode::String));
-    Standard::instance().r_rna.finalize();
-}
-
-void Test::RnaQuin_B()
-{
-    Test::clear();
-    Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
-    Standard::instance().addRMix(Reader(RnaDataMixB(), DataMode::String));
     Standard::instance().r_rna.finalize();
 }
 

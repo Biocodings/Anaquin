@@ -371,7 +371,6 @@ static Scripts manual(Tool tool)
 {
     extern Scripts VarFlip();
     extern Scripts VarAlign();
-    extern Scripts VarKReport();
     extern Scripts VarVReport();
     extern Scripts VarDiscover();
     extern Scripts VarSubsample();

@@ -25,7 +25,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
           'data/manuals/VarFlip.txt',
-          'data/manuals/VarKReport.txt',
           'data/manuals/VarVReport.txt',
 
           'data/manuals/MetaAlign.txt',
@@ -41,15 +40,13 @@ data  = [ 'data/manuals/anaquin.txt',
           'src/r/plotTLODR.R',
    	      'src/r/plotVLODR.R',
           'src/r/plotVGROC.R',
-          'src/r/plotVCROC.R',          
+          'src/r/plotVCROC.R',
 
           # ---------- RnaQuin ----------
 
           'data/RnaQuin/A.R.1.gtf',
           'data/RnaQuin/MRN027_v001.csv',
-          'data/RnaQuin/MRN028_v001.csv',
           'data/RnaQuin/MRN029_v001.csv',          
-          'data/RnaQuin/MRN030_v001.csv',
 
           # ---------- VarQuin ----------
 

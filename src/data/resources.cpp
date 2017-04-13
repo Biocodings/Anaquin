@@ -1,4 +1,3 @@
-
 #include <string>
 #include <algorithm>
 
@@ -9,7 +8,6 @@
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
 #include "resources/VarAlign.txt"
-#include "resources/VarKReport.txt"
 #include "resources/VarVReport.txt"
 #include "resources/VarDiscover.txt"
 #include "resources/VarSubsample.txt"
@@ -46,7 +44,6 @@
 
 #include "resources/A.R.1.gtf"
 #include "resources/MRN027_v001.csv"
-#include "resources/MRN028_v001.csv"
 #include "resources/MRN029_v001.csv"
 
 /*
@@ -133,11 +130,6 @@ Scripts VarDiscover()
     return ToString(data_manuals_VarDiscover_txt);
 }
 
-Scripts VarKReport()
-{
-    return ToString(data_manuals_VarKReport_txt);
-}
-
 Scripts VarVReport()
 {
     return ToString(data_manuals_VarVReport_txt);
@@ -190,11 +182,6 @@ Scripts RnaStandGTF()
 Scripts RnaDataMixA()
 {
     return ToString(data_RnaQuin_MRN027_v001_csv);
-}
-
-Scripts RnaDataMixB()
-{
-    return ToString(data_RnaQuin_MRN028_v001_csv);
 }
 
 Scripts RnaDataMixAB()
