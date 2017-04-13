@@ -177,7 +177,7 @@ static std::map<Tool, std::set<Option>> _options =
     { TOOL_V_FLIP,      { OPT_U_BAM } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_HG, OPT_U_SEQS } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_SEQS } },
     { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
 
     /*

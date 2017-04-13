@@ -6,13 +6,14 @@
 #    %2%
 #
 
+#
+# Construct ROC curve for WGS by genotypes (SNPS and Indels). This is a template, feel free to modify it.
+#
+
 library(plyr)
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')
-
-# Remove false positives that are not called within the sequin regions
-data <- data[data$ID != '-',]
 
 # How to rank the ROC points
 score <- %5%
@@ -21,18 +22,9 @@ score <- %5%
 data$Unique <- paste(paste(data$ID, data$Pos, sep='_'), data$Type, sep='_')
 
 # Calculate the allele frequency
-data$AlleleF <- round(data$ExpRef / data$ExpVar)
-
-# Required for the next step
-if (nrow(data[is.nan(data$AlleleF),]))
-{
-    data[is.nan(data$AlleleF),]$AlleleF <- 2
-}
-
-# Give better names for the groups
-data$AlleleF <- revalue(as.factor(data$AlleleF), c('0'='Homozygous', '1'='Heterozygous', '2'='FP'))
+data$ExpFreq <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.000000'='Heterozygous', '-'='FP'))
 
 # Create Anaquin data for PlotROC
-anaquin <- AnaquinData(analysis='PlotROC', seqs=data$Unique, ratio=data$AlleleF, score=score, label=data$Label)
+anaquin <- AnaquinData(analysis='PlotROC', seqs=data$Unique, ratio=data$ExpFreq, score=score, label=data$Label)
 
-plotROC(anaquin, title='ROC Plot', legTitle='Zygosity', refRats=%6%)
+plotROC(anaquin, title='ROC Plot (ranked by VCF Depth)', legTitle='Genotype', refRats=%6%)
