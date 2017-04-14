@@ -349,7 +349,7 @@ static void writeQuins(const FileName &file,
 static void writeDetected(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
     
     o.generate(file);
     o.writer->open(file);
@@ -364,6 +364,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
+                                           % "Group"
                                            % "Type").str());
 
     auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
@@ -371,8 +372,9 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
         for (const auto &i : x)
         {
             auto sID = (i.seqByPos && i.alt && i.ref ? i.seqByPos->name : "-");
-            
-            o.writer->write((boost::format(format) % sID
+            const auto grp = sID != "-" ?  grp2Str(r.findSeqVar(i.seqByPos->key()).group) : "-";
+
+            o.writer->write((boost::format(format) % (i.rReg.empty() ? "-" : i.rReg)
                                                    % i.query.cID
                                                    % i.query.l.start
                                                    % label
@@ -383,6 +385,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                                    % i.query.alleleFreq()
                                                    % ld2ss(i.query.p)
                                                    % toString(i.query.qual)
+                                                   % grp
                                                    % type2str(i.query.type())).str());
         }
     };

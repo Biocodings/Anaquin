@@ -7,7 +7,7 @@
 #
 
 #
-# Construct ROC curve for WGS by genotypes (SNPS and Indels). This is a template, feel free to modify it.
+# Construct ROC curves for WGS. This is a template, feel free to modify it.
 #
 
 library(plyr)
@@ -15,16 +15,35 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')
 
+# Only the sequin region (remove it for all variants)
+data <- data[data$Name != '-',]
+
 # How to rank the ROC points
 score <- %5%
 
 # Construct unique identifiers for the variants
 data$Unique <- paste(paste(data$ID, data$Pos, sep='_'), data$Type, sep='_')
 
-# Calculate the allele frequency
-data$ExpFreq <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.000000'='Heterozygous', '-'='FP'))
+#
+# 1. ROC for all true-positives
+#
 
-# Create Anaquin data for PlotROC
-anaquin <- AnaquinData(analysis='PlotROC', seqs=data$Unique, ratio=data$ExpFreq, score=score, label=data$Label)
+x <- ROCData(seqs=data$Unique, score=score, group=data$Label, label=data$Label)
+plotROC(x, title='ROC Plot (ranked by VCF Depth)', legTitle='Sequins', refGroup=%6%)
 
-plotROC(anaquin, title='ROC Plot (ranked by VCF Depth)', legTitle='Genotype', refRats=%6%)
+#
+# 2. ROC by genotype
+#
+
+# Recode the allele frequency group
+data$FreqGrp <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.000000'='Heterozygous', '-'='FP'))
+
+x <- ROCData(seqs=data$Unique, group=data$FreqGrp, score=score, label=data$Label)
+plotROC(x, title='ROC Plot (ranked by VCF Depth)', legTitle='Genotype', refGroup=%6%)
+
+#
+# 3. ROC by groups
+#
+
+x <- ROCData(seqs=data$Unique, group=data$Group, score=score, label=data$Label)
+plotROC(x, title='ROC Plot (ranked by VCF Depth)', refGroup='-')
