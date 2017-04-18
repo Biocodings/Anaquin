@@ -8,6 +8,7 @@ typedef SeqVariant::Group Group;
 extern Scripts PlotVLODR();
 extern Scripts PlotVGROC();
 extern Scripts PlotVCROC();
+extern Scripts PlotAllele();
 
 extern Path __output__;
 extern std::string __full_command__;
@@ -669,7 +670,8 @@ void VDiscover::report(const FileName &seqs, const Options &o)
                                                "log2(data$ExpFreq)",
                                                "log2(data$ObsFreq)",
                                                "input",
-                                                true));
+                                                true,
+                                                PlotAllele()));
         o.writer->close();
 
         /*

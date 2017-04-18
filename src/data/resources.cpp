@@ -35,6 +35,7 @@
 #include "resources/plotVGROC.R"
 #include "resources/plotVCROC.R"
 #include "resources/plotTLODR.R"
+#include "resources/plotAllele.R"
 #include "resources/plotLinear.R"
 #include "resources/plotLogistic.R"
 
@@ -71,10 +72,8 @@ Scripts PlotFold()
     return ToString(src_r_plotFold_R);
 }
 
-Scripts PlotLogistic()
-{
-    return ToString(src_r_plotLogistic_R);
-}
+Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
+Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
 /*
  * Manuals

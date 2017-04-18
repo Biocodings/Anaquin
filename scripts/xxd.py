@@ -41,6 +41,7 @@ data  = [ 'data/manuals/anaquin.txt',
    	      'src/r/plotVLODR.R',
           'src/r/plotVGROC.R',
           'src/r/plotVCROC.R',
+          'src/r/plotAllele.R',          
 
           # ---------- RnaQuin ----------
 
