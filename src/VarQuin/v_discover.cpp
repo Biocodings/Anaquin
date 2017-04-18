@@ -5,31 +5,20 @@ using namespace Anaquin;
 
 typedef SeqVariant::Group Group;
 
-// Defined in resources.cpp
 extern Scripts PlotVLODR();
-
-// Defined in resources.cpp
 extern Scripts PlotVGROC();
-
-// Defined in resources.cpp
 extern Scripts PlotVCROC();
 
-static Counts __countD__ = 0;
-static Counts __countP__ = 0;
-
-// Defined in main.cpp
 extern Path __output__;
-
-// Defined in main.cpp
 extern std::string __full_command__;
 
-inline std::string type2str(Mutation type)
+inline std::string type2str(Variation type)
 {
     switch (type)
     {
-        case Mutation::SNP:       { return "SNP";       }
-        case Mutation::Deletion:  { return "Deletion";  }
-        case Mutation::Insertion: { return "Insertion"; }
+        case Variation::SNP:       { return "SNP";       }
+        case Variation::Deletion:  { return "Deletion";  }
+        case Variation::Insertion: { return "Insertion"; }
     }
 }
 
@@ -82,11 +71,11 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     
     typedef SeqVariant::Group Group;
     
-    auto muts = std::set<Mutation>
+    auto muts = std::set<Variation>
     {
-        Mutation::SNP,
-        Mutation::Deletion,
-        Mutation::Insertion,
+        Variation::SNP,
+        Variation::Deletion,
+        Variation::Insertion,
     };
     
     auto grps = std::set<Group>
@@ -170,9 +159,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         };
         
         const auto m = findMatch(x);
-        
-        if (!isnan(m.query.p))     { __countP__++; }
-        if (!isnan(m.query.depth)) { __countD__++; }
         
         // Matched if the position and alleles agree
         const auto matched = m.seqByPos && m.ref && m.alt;
@@ -451,9 +437,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
         const auto &m2c = stats.m2c;
-        const auto &snp = m2c.at(Mutation::SNP);
-        const auto &del = m2c.at(Mutation::Deletion);
-        const auto &ins = m2c.at(Mutation::Insertion);
+        const auto &snp = m2c.at(Variation::SNP);
+        const auto &del = m2c.at(Variation::Deletion);
+        const auto &ins = m2c.at(Variation::Insertion);
         
         const auto c_nSNP = snp.nq();
         const auto c_nDel = del.nq();
@@ -517,99 +503,94 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                              "-------VarDiscover Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
-                             "       Sequin mixture file:              %3%\n"
-                             "       User identified variants:         %4%\n\n"
+                             "       User identified variants:         %3%\n\n"
                              "-------Reference variant annotations\n\n"
-                             "       Synthetic: %5% SNPs\n"
-                             "       Synthetic: %6% indels\n"
-                             "       Synthetic: %7% variants\n\n"
+                             "       Synthetic: %4% SNPs\n"
+                             "       Synthetic: %5% indels\n"
+                             "       Synthetic: %6% variants\n\n"
                              "-------User identified variants\n\n"
-                             "       Synthetic: %11% SNPs\n"
-                             "       Synthetic: %12% indels\n"
-                             "       Synthetic: %13% variants\n\n"
-                             "       Detection Sensitivity: %14% (attomol/ul) (%15%)\n\n"
+                             "       Synthetic: %7% SNPs\n"
+                             "       Synthetic: %8% indels\n"
+                             "       Synthetic: %9% variants\n\n"
+                             "       Detection Sensitivity: %10% (attomol/ul) (%11%)\n\n"
                              "-------Identification of synthetic variants\n\n"
-                             "       True Positive:  %16% SNPS\n"
-                             "       True Positive:  %17% indels\n"
-                             "       True Positive:  %18% variants\n\n"
-                             "       False Positive: %19% SNPs\n"
-                             "       False Positive: %20% indels\n"
-                             "       False Positive: %21% variants\n\n"
-                             "       False Negative: %22% SNPs\n"
-                             "       False Negative: %23% indels\n"
-                             "       False Negative: %24% variants\n\n"
+                             "       True Positive:  %12% SNPS\n"
+                             "       True Positive:  %13% indels\n"
+                             "       True Positive:  %14% variants\n\n"
+                             "       False Positive: %15% SNPs\n"
+                             "       False Positive: %16% indels\n"
+                             "       False Positive: %17% variants\n\n"
+                             "       False Negative: %18% SNPs\n"
+                             "       False Negative: %19% indels\n"
+                             "       False Negative: %20% variants\n\n"
                              "-------Diagnostic Performance (Synthetic)\n\n"
                              "       *Variants\n"
-                             "       Sensitivity: %25$.4f\n"
-                             "       Precision:   %26$.4f\n"
-                             "       FDR Rate:    %27$.4f\n\n"
+                             "       Sensitivity: %21$.4f\n"
+                             "       Precision:   %22$.4f\n"
+                             "       FDR Rate:    %23$.4f\n\n"
                              "       *SNPs\n"
-                             "       Sensitivity: %28$.4f\n"
-                             "       Precision:   %29$.4f\n"
-                             "       FDR Rate:    %30$.4f\n\n"
+                             "       Sensitivity: %24$.4f\n"
+                             "       Precision:   %25$.4f\n"
+                             "       FDR Rate:    %26$.4f\n\n"
                              "       *Indels\n"
-                             "       Sensitivity: %31$.4f\n"
-                             "       Precision:   %32$.4f\n"
-                             "       FDR Rate:    %33$.4f\n\n"
+                             "       Sensitivity: %27$.4f\n"
+                             "       Precision:   %28$.4f\n"
+                             "       FDR Rate:    %29$.4f\n\n"
                              "-------Overall linear regression (log2 scale)\n\n"
-                             "      Slope:       %34%\n"
-                             "      Correlation: %35%\n"
-                             "      R2:          %36%\n"
-                             "      F-statistic: %37%\n"
-                             "      P-value:     %38%\n"
-                             "      SSM:         %39%, DF: %40%\n"
-                             "      SSE:         %41%, DF: %42%\n"
-                             "      SST:         %43%, DF: %44%\n";
+                             "      Slope:       %30%\n"
+                             "      Correlation: %31%\n"
+                             "      R2:          %32%\n"
+                             "      F-statistic: %33%\n"
+                             "      P-value:     %34%\n"
+                             "      SSM:         %35%, DF: %36%\n"
+                             "      SSE:         %37%, DF: %38%\n"
+                             "      SST:         %39%, DF: %40%\n";
         o.generate(file);
         o.writer->open("VarDiscover_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                   // 1
                                                 % BedRef()                   // 2
-                                                % MixRef()                   // 3
-                                                % src                        // 4
-                                                % r.countSNP()            // 5
-                                                % r.countInd()            // 6
-                                                % (r.countSNP() + r.countInd())
-                                                % "??" //r.countSNPGen()            // 8
-                                                % "??" //r.countIndGen()            // 9
-                                                % "??" //(r.countSNPGen() + r.countIndGen())
-                                                % "??" //ss.vData.countSNPSyn()  // 11
-                                                % "??" //ss.vData.countIndSyn()  // 12
-                                                % "??" //ss.vData.countVarSyn()  // 13
-                                                % "??" //ss.vars.limit.abund     // 14
-                                                % "??" //ss.vars.limit.id        // 15
-                                                % "??" //ss.countSNP_TP_Syn()    // 16
-                                                % "??" //ss.countInd_TP_Syn()    // 17
-                                                % "??" //ss.countVar_TP_Syn()    // 18
-                                                % "??" //ss.countSNP_FP_Syn()    // 19
-                                                % "??" //ss.countInd_FP_Syn()    // 20
-                                                % "??" //ss.countVar_FP_Syn()    // 21
-                                                % "??" //ss.countSNP_FnSyn()     // 22
-                                                % "??" //ss.countInd_FnSyn()     // 23
-                                                % "??" //ss.countVar_FnSyn()     // 24
-                                                % "??" //ss.countVarSnSyn()      // 25
-                                                % "??" //ss.countVarPC_Syn()     // 26
-                                                % "??" //(1-ss.countVarPC_Syn()) // 27
-                                                % "??" //ss.countSNPSnSyn()      // 28
-                                                % "??" //ss.countSNPPC_Syn()     // 29
-                                                % "??" //(1-ss.countSNPPC_Syn()) // 30
-                                                % "??" //ss.countIndSnSyn()      // 31
-                                                % "??" //ss.countIndPC_Syn()     // 32
-                                                % "??" //(1-ss.countIndPC_Syn()) // 33
-                                                % lm.m                       // 34
-                                                % lm.r                       // 35
-                                                % lm.R2                      // 36
-                                                % lm.F                       // 37
-                                                % lm.p                       // 38
-                                                % lm.SSM                     // 39
-                                                % lm.SSM_D                   // 40
-                                                % lm.SSE                     // 41
-                                                % lm.SSE_D                   // 42
-                                                % lm.SST                     // 43
-                                                % lm.SST_D                   // 44
+                                                % src                        // 3
+                                                % r.countSNP()            // 4
+                                                % r.countInd()            // 5
+                                                % (r.countSNP() + r.countInd()) // 6
+                                                % "??" //r.countSNPGen()            // 7
+                                                % "??" //r.countIndGen()            // 8
+                                                % "??" //(r.countSNPGen() + r.countIndGen()) // 9
+                                                % "??" //ss.vData.countSNPSyn()  // 10
+                                                % "??" //ss.vData.countIndSyn()  // 11
+                                                % "??" //ss.vData.countVarSyn()  // 12
+                                                % "??" //ss.vars.limit.abund     // 13
+                                                % "??" //ss.vars.limit.id        // 14
+                                                % "??" //ss.countSNP_TP_Syn()    // 15
+                                                % "??" //ss.countInd_TP_Syn()    // 16
+                                                % "??" //ss.countVar_TP_Syn()    // 17
+                                                % "??" //ss.countSNP_FP_Syn()    // 18
+                                                % "??" //ss.countInd_FP_Syn()    // 19
+                                                % "??" //ss.countVar_FP_Syn()    // 20
+                                                % "??" //ss.countSNP_FnSyn()     // 21
+                                                % "??" //ss.countInd_FnSyn()     // 22
+                                                % "??" //ss.countVar_FnSyn()     // 23
+                                                % "??" //ss.countVarSnSyn()      // 24
+                                                % "??" //ss.countVarPC_Syn()     // 25
+                                                % "??" //(1-ss.countVarPC_Syn()) // 26
+                                                % "??" //ss.countSNPSnSyn()      // 27
+                                                % "??" //ss.countSNPPC_Syn()     // 28
+                                                % "??" //(1-ss.countSNPPC_Syn()) // 29
+                                                % lm.m                       // 30
+                                                % lm.r                       // 31
+                                                % lm.R2                      // 32
+                                                % lm.F                       // 33
+                                                % lm.p                       // 34
+                                                % lm.SSM                     // 35
+                                                % lm.SSM_D                   // 36
+                                                % lm.SSE                     // 37
+                                                % lm.SSE_D                   // 38
+                                                % lm.SST                     // 39
+                                                % lm.SST_D                   // 40
                          ).str());
     };
     
-    if (r.isGermline())
+    if (r.isGermlineRef())
     {
         germline();
     }
@@ -657,20 +638,20 @@ void VDiscover::report(const FileName &seqs, const Options &o)
     o.generate("VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
     
-    if (__countP__ >= __countD__)
-    {
-        o.info("P-value for scoring");
-        o.writer->write(createVCROC("VarDiscover_detected.csv", "1-data$Pval", "-1"));
-    }
-    else
-    {
+//    if (__countP__ >= __countD__)
+//    {
+//        o.info("P-value for scoring");
+//        o.writer->write(createVCROC("VarDiscover_detected.csv", "1-data$Pval", "-1"));
+//    }
+//    else
+//    {
         o.info("Depth for scoring");
         o.writer->write(createVGROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
-    }
+//    }
     
     o.writer->close();
     
-    if (!r.isGermline())
+    if (!r.isGermlineRef())
     {
         /*
          * Generating VarDiscover_allele.R

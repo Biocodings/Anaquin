@@ -9,7 +9,7 @@
 
 namespace Anaquin
 {
-    inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
+    inline long var2hash(const SequinID &id, Variation type, const Locus &l)
     {
         const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
                                                            % type
@@ -18,33 +18,37 @@ namespace Anaquin
         return std::hash<std::string>{}(str);
     }
 
+    /*
+     * Representation for a variant
+     */
+    
     struct Variant
     {
         operator const Locus &() const { return l; }
         
         inline bool operator<(const Locus &x) const { return l < x; }
 
-        inline Mutation type() const
+        inline Variation type() const
         {
             if (alt[0] == '-')
             {
-                return Mutation::Deletion;
+                return Variation::Deletion;
             }
             else if (alt[0] == '+')
             {
-                return Mutation::Insertion;
+                return Variation::Insertion;
             }
             else if (ref.size() == alt.size())
             {
-                return Mutation::SNP;
+                return Variation::SNP;
             }
             else if (ref.size() > alt.size())
             {
-                return Mutation::Deletion;
+                return Variation::Deletion;
             }
             else
             {
-                return Mutation::Insertion;
+                return Variation::Insertion;
             }
         }
 

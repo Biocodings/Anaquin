@@ -30,6 +30,9 @@ namespace Anaquin
             Cosmic,
         } group;
         
+        // Germline? Somatic?
+        Mutation mut;
+        
         // Homozygous?
         Zygosity zyg;
         

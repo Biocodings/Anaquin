@@ -32,7 +32,6 @@ namespace Anaquin
         {
             std::string line;
             
-            Data x;
             ParserProgress p;
             
             std::vector<std::string> tmp;
@@ -41,6 +40,7 @@ namespace Anaquin
             
             while (r.nextLine(line))
             {
+                Data x;
                 p.i++;
                 
                 if (p.stopped)
@@ -82,8 +82,11 @@ namespace Anaquin
                         
                         // Measured allele frequency
                         if (tmp[0] == "AF") { x.allF = stof(tmp[1]); }
-                        
-                        x.opts[tmp[0]] = tmp[1];
+
+                        else if (tmp.size() == 2)
+                        {
+                            x.opts[tmp[0]] = tmp[1];
+                        }
                     }
                 }
 

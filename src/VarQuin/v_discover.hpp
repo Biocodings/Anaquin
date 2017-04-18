@@ -51,8 +51,8 @@ namespace Anaquin
             // Performance for different group (only sequins)
             std::map<SeqVariant::Group, Confusion> g2c;
 
-            // Performance for different mutation
-            std::map<Mutation, Confusion> m2c;
+            // Performance for different variation
+            std::map<Variation, Confusion> m2c;
 
             // Overall performance
             Confusion oc;
@@ -63,8 +63,8 @@ namespace Anaquin
             
             struct AlleleStats : public SequinStats, public LimitStats {};
 
-            // Performance for each mutation
-            std::map<Mutation, AlleleStats> m2a;
+            // Performance for each variation
+            std::map<Variation, AlleleStats> m2a;
 
             // Overall performance
             AlleleStats oa;

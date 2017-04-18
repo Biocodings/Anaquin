@@ -2,7 +2,6 @@
 #define BIOLOGY_HPP
 
 #include <map>
-#include <string>
 #include "tools/errors.hpp"
 
 namespace Anaquin
@@ -22,7 +21,7 @@ namespace Anaquin
         Transcript,
     };
 
-    enum Mutation
+    enum Variation
     {
         SNP,
         Insertion,
@@ -32,7 +31,12 @@ namespace Anaquin
     enum class Zygosity
     {
         Homozygous,
-        Heterzygous,
+        Heterzygous
+    };
+    
+    enum class Mutation
+    {
+        Germline,
         Somatic
     };
     
@@ -50,7 +54,7 @@ namespace Anaquin
 
         std::transform(x.begin(), x.end(), x.begin(), [&](char c)
         {
-            A_CHECK(m.count(c), "Unknown DNA base: " + std::to_string(c));
+            A_ASSERT(m.count(c));
             return m[c];
         });
     }

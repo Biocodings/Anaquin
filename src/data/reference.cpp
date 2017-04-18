@@ -516,7 +516,7 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Counts VarRef::nType(Mutation m) const
+Counts VarRef::nType(Variation m) const
 {
     return _impl->vData.count_(m);
 }
@@ -633,11 +633,17 @@ void VarRef::readVRef(const Reader &r)
         
         switch (s.zyg)
         {
-            case Zygosity::Somatic:     { af = stoi(x.opts.at("AF")); break; }
             case Zygosity::Homozygous:  { af = 1,0; break; }
             case Zygosity::Heterzygous: { af = 0.5; break; }
         }
 
+        if (!isnan(x.allF))
+        {
+            af = x.allF;
+        }
+
+        s.mut = s.group == Group::Cosmic ? Mutation::Somatic : Mutation::Germline;
+        
         _impl->sVars[x.key()] = s;
         
         add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
@@ -657,16 +663,17 @@ MergedIntervals<> VarRef::mInters(const ChrID &cID) const
     return _impl->bData.minters(cID);
 }
 
-bool VarRef::isGermline() const
+bool VarRef::isGermlineRef() const
 {
-    std::set<Proportion> freqs;
-    
-    for (const auto &i : _mixes.at(Mix_1))
+    for (auto &i : _impl->sVars)
     {
-        freqs.insert(i.second->abund);
+        if (i.second.mut == Mutation::Somatic)
+        {
+            return false;
+        }
     }
     
-    return freqs.size() == 3 && freqs.count(0) && freqs.count(0.5) && freqs.count(1);
+    return true;
 }
 
 Proportion VarRef::findAFreq(const SequinID &id) const
