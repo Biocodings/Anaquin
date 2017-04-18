@@ -16,16 +16,16 @@ namespace Anaquin
 
         enum Field
         {
-            Chrom,
-            Pos,
-            ID,
-            Ref,
-            Alt,
-            Qual,
-            Filter,
-            Info,
-            Format,
-            FormatData
+            Chrom  = 0,
+            Pos    = 1,
+            ID     = 2,
+            Ref    = 3,
+            Alt    = 4,
+            Qual   = 5,
+            Filter = 6,
+            Info   = 7,
+            Format = 8,
+            Sample = 9
         };
 
         template <typename F> static void parse(const Reader &r, F f)
@@ -106,12 +106,16 @@ namespace Anaquin
                     Tokens::split(fields[Field::Format], ":", formats);
                     
                     // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
-                    Tokens::split(fields[Field::FormatData], ":", tmp);
+                    Tokens::split(fields[Field::Sample], ":", tmp);
                     
                     // Check all the format data...
                     for (auto j = 0; j < tmp.size(); j++)
                     {
-                        if (formats[j] == "AD")
+                        if (formats[j] == "AF")
+                        {
+                            x.allF = stof(tmp[j]);
+                        }
+                        else if (formats[j] == "AD")
                         {
                             std::vector<std::string> toks;
                             Tokens::split(tmp[j], ",", toks);

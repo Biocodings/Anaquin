@@ -44,10 +44,10 @@ namespace Anaquin
         return p;
     }
     
-    // Convert a floating number to scientific notation
+    // Convert floating number to scientific notation
     inline std::string ld2ss(long double p)
     {
-        if (isnan(p) || !std::isfinite(p))
+        if (isnan(p) || !isfinite(p))
         {
             return "-";
         }
@@ -62,7 +62,7 @@ namespace Anaquin
     
     template <typename T> std::string toString(const T &x, unsigned n = 2)
     {
-        if (isnan(x) || !std::isfinite(x))
+        if (isnan(x) || !isfinite(x))
         {
             return "-";
         }

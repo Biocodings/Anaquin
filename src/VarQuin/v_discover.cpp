@@ -170,7 +170,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             stats.tps.push_back(m);
             
             const auto exp = r.findAFreq(m.seqByPos->name);
-            const auto obs = m.query.alleleFreq();
+            const auto obs = m.query.allF;
+            
+            A_ASSERT(!isnan(exp) && !isnan(obs));
             
             // Eg: 2821292107
             const auto id = toString(key);
@@ -303,7 +305,7 @@ static void writeQuins(const FileName &file,
                                                    % c.readV
                                                    % c.depth
                                                    % r.findAFreq(i.name)
-                                                   % c.alleleFreq()
+                                                   % c.allF
                                                    % ld2ss(c.p)
                                                    % toString(c.qual)
                                                    % grp2Str(sv.group)
@@ -368,7 +370,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                                    % i.query.readV
                                                    % i.query.depth
                                                    % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
-                                                   % i.query.alleleFreq()
+                                                   % i.query.allF
                                                    % ld2ss(i.query.p)
                                                    % toString(i.query.qual)
                                                    % grp

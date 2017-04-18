@@ -19,7 +19,7 @@ namespace Anaquin
     }
 
     /*
-     * Representation for a variant
+     * Representation for a VCF variant
      */
     
     struct Variant
@@ -52,7 +52,8 @@ namespace Anaquin
             }
         }
 
-        inline Proportion alleleFreq() const
+        // Proportion of reads for the variant
+        inline Proportion propV() const
         {
             return static_cast<Proportion>(readV) / (readR + readV);
         }
