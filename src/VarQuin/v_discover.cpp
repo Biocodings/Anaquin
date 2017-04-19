@@ -641,16 +641,14 @@ void VDiscover::report(const FileName &seqs, const Options &o)
     o.generate("VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
     
-//    if (__countP__ >= __countD__)
-//    {
-//        o.info("P-value for scoring");
-//        o.writer->write(createVCROC("VarDiscover_detected.csv", "1-data$Pval", "-1"));
-//    }
-//    else
-//    {
-        o.info("Depth for scoring");
+    if (r.isGermlineRef())
+    {
         o.writer->write(createVGROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
-//    }
+    }
+    else
+    {
+        o.writer->write(createVCROC("VarDiscover_detected.csv", "data$ObsFreq", "'FP'"));
+    }
     
     o.writer->close();
     
