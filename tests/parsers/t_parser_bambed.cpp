@@ -13,7 +13,8 @@ TEST_CASE("ParserBAMBED_1")
     ID2Intervals c2i;
     c2i["chr10"] = chr10;
 
-    const auto r = ParserBAMBED::stats("tests/data/sampled.bam", c2i, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto r = ParserBAMBED::parse("tests/data/sampled.bam", c2i,
+                    [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         return Response::OK;
     }).inters.stats();

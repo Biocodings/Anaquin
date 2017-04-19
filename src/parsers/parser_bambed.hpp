@@ -24,7 +24,7 @@ namespace Anaquin
          * Builds support for BED regions on top of SAM/BAM alignments
          */
         
-        template <typename F> static ParserBAMBED::Stats stats(const FileName &file,
+        template <typename F> static ParserBAMBED::Stats parse(const FileName &file,
                                                                const C2Intervals &c2l,
                                                                F f)
         {
