@@ -46,7 +46,7 @@ namespace Anaquin
             Anaquin            
         };
         
-        struct Options : public DoubleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             Options() {}
             Format format;

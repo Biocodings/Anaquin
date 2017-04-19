@@ -38,7 +38,7 @@ namespace Anaquin
                 Counts tp, fp;
 
                 // FP alignments (overlaps)
-                std::vector<ReadID> afp;
+                std::vector<ReadName> afp;
 
                 std::map<GeneID, Base> lGaps;
                 std::map<GeneID, Base> rGaps;

@@ -37,6 +37,12 @@ namespace Anaquin
         Limit limit;
     };
 
+    struct SingleMappingStats
+    {
+        Counts nNA  = 0;
+        Counts nMap = 0;
+    };
+    
     struct MappingStats
     {
         inline Counts total() const
@@ -157,31 +163,9 @@ namespace Anaquin
         // Empty Implementation
     };
 
-    struct IndexOptions : public AnalyzerOptions
-    {
-        FileName index;
-    };
-
-    struct SingleMixtureOption : public AnalyzerOptions
-    {
-        Mixture mix = Mix_1;
-    };
-
     struct FuzzyOptions : public AnalyzerOptions
     {
         double fuzzy;
-    };
-
-    struct ReportOptions : public AnalyzerOptions
-    {
-        FileName mix;
-        FileName index;
-    };
-
-    struct DoubleMixtureOptions : public AnalyzerOptions
-    {
-        Mixture mix_1 = Mix_1;
-        Mixture mix_2 = Mix_2;
     };
 }
 

@@ -10,7 +10,7 @@ namespace Anaquin
         operator const Locus &() const { return l; }
 
         // Eg: B7_591:6:155:12:674
-        ReadID name;
+        ReadName name;
 
         // Primary alignment
         ChrID cID;

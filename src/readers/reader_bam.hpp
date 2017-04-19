@@ -2,14 +2,13 @@
 #define READER_BAM_HPP
 
 #include "data/intervals.hpp"
-#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_sam.hpp"
 
 namespace Anaquin
 {
     struct ReaderBam
     {
-        struct Stats : public AlignmentStats
+        struct Stats : public SingleMappingStats
         {
             ID2Intervals inters;
         };
@@ -59,14 +58,10 @@ namespace Anaquin
                     {
                         matched->map(x.l);
                     }
-                    
-                    if (isReverseGenome(x.cID))
+
+                    if (x.cID != "*")
                     {
-                        stats.nSeqs++;
-                    }
-                    else if (x.cID != "*")
-                    {
-                        stats.nEndo++;
+                        stats.nMap++;
                     }
                     else
                     {

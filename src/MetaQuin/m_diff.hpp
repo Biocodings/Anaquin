@@ -21,7 +21,7 @@ namespace Anaquin
         
         typedef MAbund::Format Format;
         
-        struct Options : public DoubleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             Format format;
         };

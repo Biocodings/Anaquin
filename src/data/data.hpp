@@ -35,7 +35,6 @@ namespace Anaquin
     typedef std::string GeneID;
     typedef std::string ExonID;
     typedef std::string GenoID;
-    typedef std::string ReadID;
     typedef std::string TransID;
     typedef std::string GenomeID;
     typedef std::string SequinID;

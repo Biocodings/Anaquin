@@ -128,16 +128,16 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     VSample::Stats stats;
     
     // Regions to subsample before trimming
-    const auto trimmed = r.regions(true);
+    const auto tRegs = r.regions(true);
 
     // Regions without trimming
     const auto regs = r.regions(false);
     
-    A_ASSERT(!trimmed.empty());
-    A_ASSERT(trimmed.size() == regs.size());
+    A_ASSERT(!tRegs.empty());
+    A_ASSERT(tRegs.size() == regs.size());
     
     // Checking endogenous alignments before sampling
-    const auto eStats = ReaderBam::stats(gen, trimmed, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    const auto eStats = ReaderBam::stats(gen, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -152,8 +152,11 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         return ReaderBam::Response::OK;
     });
 
+    // Reads aligned to the sequins should be trimmed
+    std::set<ReadName> trimmed;
+
     // Checking sequin alignments before sampling
-    const auto sStats = ReaderBam::stats(seq, trimmed, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto sStats = ReaderBam::stats(seq, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -179,7 +182,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     std::vector<double> allbeforeSeqsC;
     
     // For each chromosome...
-    for (auto &i : trimmed)
+    for (auto &i : tRegs)
     {
         const auto cID = i.first;
 
@@ -315,14 +318,14 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     stats.totAfter.nEndo = stats.totBefore.nEndo;
     
-    stats.sampAfter.nEndo  = eStats.nEndo;
-    stats.sampBefore.nEndo = eStats.nEndo;
+    stats.sampAfter.nEndo  = eStats.nMap;
+    stats.sampBefore.nEndo = eStats.nMap;
     
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.nSeqs = sStats.nEndo;
+    stats.sampBefore.nSeqs = sStats.nMap;
 
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampAfter.nSeqs = after.nEndo;
+    stats.sampAfter.nSeqs = after.nMap;
 
     return stats;
 }
