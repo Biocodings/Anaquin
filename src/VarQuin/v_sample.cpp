@@ -2,7 +2,7 @@
 #include "tools/random.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "writers/writer_sam.hpp"
-#include "readers/reader_bam.hpp"
+#include "parsers/parser_bambed.hpp"
 
 // Defined in main.cpp
 extern Anaquin::FileName BedRef();
@@ -11,11 +11,11 @@ using namespace Anaquin;
 
 typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
-static ReaderBam::Stats sample(const FileName &file,
-                               const NormFactors &norms,
-                               VSample::Stats &stats,
-                               const C2Intervals &sampled,
-                               const VSample::Options &o)
+static ParserBAMBED::Stats sample(const FileName &file,
+                                  const NormFactors &norms,
+                                  VSample::Stats &stats,
+                                  const C2Intervals &sampled,
+                                  const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
     
@@ -43,7 +43,9 @@ static ReaderBam::Stats sample(const FileName &file,
     WriterSAM writer;
     writer.openTerm();
 
-    return ReaderBam::stats(file, sampled, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    return ParserBAMBED::stats(file, sampled, [&](const ParserSAM::Data &x,
+                                                  const ParserSAM::Info &info,
+                                                  const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -93,10 +95,10 @@ static ReaderBam::Stats sample(const FileName &file,
             // Write SAM read to console
             writer.write(x);
             
-            return ReaderBam::Response::OK;
+            return ParserBAMBED::Response::OK;
         }
 
-        return ReaderBam::Response::SKIP_EVERYTHING;
+        return ParserBAMBED::Response::SKIP_EVERYTHING;
     });
 }
 
@@ -137,7 +139,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     A_ASSERT(tRegs.size() == regs.size());
     
     // Checking endogenous alignments before sampling
-    const auto eStats = ReaderBam::stats(gen, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    const auto eStats = ParserBAMBED::stats(gen, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -149,14 +151,14 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             stats.totBefore.nEndo++;
         }
         
-        return ReaderBam::Response::OK;
+        return ParserBAMBED::Response::OK;
     });
 
     // Reads aligned to the sequins should be trimmed
     std::set<ReadName> trimmed;
 
     // Checking sequin alignments before sampling
-    const auto sStats = ReaderBam::stats(seq, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto sStats = ParserBAMBED::stats(seq, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -168,7 +170,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             stats.totBefore.nSeqs++;
         }
 
-        return ReaderBam::Response::OK;
+        return ParserBAMBED::Response::OK;
     });
     
     // Normalization for each region

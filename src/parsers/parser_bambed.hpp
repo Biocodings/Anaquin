@@ -1,12 +1,12 @@
-#ifndef READER_BAM_HPP
-#define READER_BAM_HPP
+#ifndef PARSER_BAMBED_HPP
+#define PARSER_BAMBED_HPP
 
 #include "data/intervals.hpp"
 #include "parsers/parser_sam.hpp"
 
 namespace Anaquin
 {
-    struct ReaderBam
+    struct ParserBAMBED
     {
         struct Stats : public SingleMappingStats
         {
@@ -20,11 +20,15 @@ namespace Anaquin
             SKIP_EVERYTHING
         };
         
-        template <typename F> static ReaderBam::Stats stats(const FileName &file,
-                                                            const C2Intervals &c2l,
-                                                            F f)
+        /*
+         * Builds support for BED regions on top of SAM/BAM alignments
+         */
+        
+        template <typename F> static ParserBAMBED::Stats stats(const FileName &file,
+                                                               const C2Intervals &c2l,
+                                                               F f)
         {
-            ReaderBam::Stats stats;
+            ParserBAMBED::Stats stats;
 
             // For each chromosome...
             for (const auto &i : c2l)

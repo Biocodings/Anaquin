@@ -1,9 +1,11 @@
 #include <catch.hpp>
-#include "readers/reader_bam.hpp"
+#include "parsers/parser_bambed.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("ReaderBam_1")
+typedef ParserBAMBED::Response Response;
+
+TEST_CASE("ParserBAMBED_1")
 {
     Intervals<> chr10;
     chr10.add(Interval("Everything", Locus(10020, 133777009)));
@@ -11,9 +13,9 @@ TEST_CASE("ReaderBam_1")
     ID2Intervals c2i;
     c2i["chr10"] = chr10;
 
-    const auto r = ReaderBam::stats("tests/data/sampled.bam", c2i, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    const auto r = ParserBAMBED::stats("tests/data/sampled.bam", c2i, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
-        return ReaderBam::Response::OK;
+        return Response::OK;
     }).inters.stats();
     
     /*
