@@ -2,7 +2,6 @@
 #define V_SAMPLE_HPP
 
 #include "stats/analyzer.hpp"
-//#include "tools/coverage.hpp"
 
 namespace Anaquin
 {
@@ -70,6 +69,9 @@ namespace Anaquin
             
             Base edge = 0;
 
+            // Trim alignment edge effects?
+            Base trim = 150;
+            
             // Defined only if meth==Prop
             Proportion p = NAN;
             
@@ -77,7 +79,7 @@ namespace Anaquin
             Counts reads = NAN;
         };
         
-        static Stats analyze(const FileName &, const FileName &, const Options  &);
+        static Stats analyze(const FileName &, const FileName &, const Options &);
         static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
 }

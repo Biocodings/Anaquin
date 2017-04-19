@@ -136,8 +136,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     A_ASSERT(!trimmed.empty());
     A_ASSERT(trimmed.size() == regs.size());
     
-    // Checking genomic alignments before sampling
-    const auto gStats = ReaderBam::stats(gen, trimmed, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    // Checking endogenous alignments before sampling
+    const auto eStats = ReaderBam::stats(gen, trimmed, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -152,7 +152,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         return ReaderBam::Response::OK;
     });
 
-    // Checking synthetic alignments before sampling
+    // Checking sequin alignments before sampling
     const auto sStats = ReaderBam::stats(seq, trimmed, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -189,7 +189,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             const auto &l = j.second.l();
             
             // Endogenous statistics for the region
-            const auto gs = gStats.inters.at(cID).find(l.key())->stats();
+            const auto gs = eStats.inters.at(cID).find(l.key())->stats();
             
             // Sequins statistics for the region
             const auto ss = sStats.inters.at(cID).find(l.key())->stats();
@@ -315,8 +315,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     stats.totAfter.nEndo = stats.totBefore.nEndo;
     
-    stats.sampAfter.nEndo  = gStats.nEndo;
-    stats.sampBefore.nEndo = gStats.nEndo;
+    stats.sampAfter.nEndo  = eStats.nEndo;
+    stats.sampBefore.nEndo = eStats.nEndo;
     
     // Remember, the synthetic reads have been mapped to the forward genome
     stats.sampBefore.nSeqs = sStats.nEndo;
