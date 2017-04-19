@@ -1150,45 +1150,45 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_M_FOLD:
                 {
-                    MDiff::Options o;
-                    
-                    if (_p.inputs.size() == 2 && ParserSAM::isBAM(Reader(_p.inputs[0]))
-                                              && ParserSAM::isBAM(Reader(_p.inputs[1])))
-                    {
-                        o.format = MDiff::Format::BAM;
-                    }
-                    else if (_p.inputs.size() == 4)
-                    {
-                        // TODO: Please fix this
-                        o.format = MDiff::Format::RayMeta;
-                    }
-                    else
-                    {
-                        throw UnknownFormatError();
-                    }
-
-                    analyze_n<MDiff>(o);
+//                    MDiff::Options o;
+//                    
+//                    if (_p.inputs.size() == 2 && ParserSAM::isBAM(Reader(_p.inputs[0]))
+//                                              && ParserSAM::isBAM(Reader(_p.inputs[1])))
+//                    {
+//                        o.format = MDiff::Format::BAM;
+//                    }
+//                    else if (_p.inputs.size() == 4)
+//                    {
+//                        // TODO: Please fix this
+//                        o.format = MDiff::Format::RayMeta;
+//                    }
+//                    else
+//                    {
+//                        throw UnknownFormatError();
+//                    }
+//
+//                    analyze_n<MDiff>(o);
                     break;
                 }
 
                 case TOOL_M_ABUND:
                 {
-                    MAbund::Options o;
-                    
-                    if (_p.inputs.size() == 1 && ParserSAM::isBAM(Reader(_p.inputs[0])))
-                    {
-                        o.format = MAbund::Format::BAM;
-                    }
-                    else if (_p.inputs.size() == 2 && ParserBlat::isBlat(Reader(_p.inputs[1])))
-                    {
-                        o.format = MAbund::Format::RayMeta;
-                    }
-                    else
-                    {
-                        throw UnknownFormatError();
-                    }
-                    
-                    analyze_n<MAbund>(o);
+//                    MAbund::Options o;
+//                    
+//                    if (_p.inputs.size() == 1 && ParserSAM::isBAM(Reader(_p.inputs[0])))
+//                    {
+//                        o.format = MAbund::Format::BAM;
+//                    }
+//                    else if (_p.inputs.size() == 2 && ParserBlat::isBlat(Reader(_p.inputs[1])))
+//                    {
+//                        o.format = MAbund::Format::RayMeta;
+//                    }
+//                    else
+//                    {
+//                        throw UnknownFormatError();
+//                    }
+//                    
+//                    analyze_n<MAbund>(o);
                     break;
                 }
 
