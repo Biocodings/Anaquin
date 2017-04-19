@@ -54,8 +54,6 @@ namespace Anaquin
                 void *_h;
         };
         
-        static bool isBAM(const Reader &);
-        
         typedef std::function<void (Data &, const Info &)> Functor;
         
         /*

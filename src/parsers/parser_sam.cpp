@@ -5,11 +5,6 @@
 
 using namespace Anaquin;
 
-bool ParserSAM::isBAM(const Reader &r)
-{
-    return boost::algorithm::ends_with(r.src(), ".sam") || boost::algorithm::ends_with(r.src(), ".bam");
-}
-
 bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
 {
     assert(_h && _b);
