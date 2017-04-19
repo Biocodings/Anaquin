@@ -6,6 +6,10 @@
 
 namespace Anaquin
 {
+    /*
+     * Builds support for BED regions on top of SAM/BAM alignments
+     */
+
     struct ParserBAMBED
     {
         struct Stats : public SingleMappingStats
@@ -19,10 +23,6 @@ namespace Anaquin
             SKIP_MATCH,
             SKIP_EVERYTHING
         };
-        
-        /*
-         * Builds support for BED regions on top of SAM/BAM alignments
-         */
         
         template <typename F> static ParserBAMBED::Stats parse(const FileName &file,
                                                                const C2Intervals &c2l,
