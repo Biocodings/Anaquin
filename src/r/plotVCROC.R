@@ -6,28 +6,35 @@
 #    %2%
 #
 
+#
+# Construct ROC curves for somatic mutation. This is a template, feel free to modify it.
+#
+
+library(plyr)
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')
 
-# Remove false positives that are not called within the sequin regions
-data <- data[data$ID != 'NA',]
+data <- data[data$Name != '-',]
+data <- data[data$Group == 'Cosmic' | data$Group == '-',]
 
 # How to rank the ROC points
 score <- %5%
 
-# FP don't have a sequin ID. We'll need to construct unique identifiers.
-data$unique <- as.factor(seq(1:length(data$ID)))#paste(paste(data$ID, data$Pos, sep='_'), data$Type, sep='_')
+# Construct unique identifiers for the variants
+data$Unique <- paste(paste(data$Name, data$Pos, sep='_'), data$Type, sep='_')
 
-data$AlleleF <- round(data$ExpRef / data$ExpVar)
+# Recode the allele frequency
+data$ExpFreq <- revalue(as.factor(data$ExpFreq), c('-'='FP'))
 
-# Give dummy allele frequency for FP
-if (nrow(data[is.nan(data$AlleleF),]))
-{
-    data[is.nan(data$AlleleF),]$AlleleF <- -1
-}
+#
+# 1. ROC for all true-positives
+#
 
-# Create Anaquin data for PlotROC
-anaquin <- AnaquinData(analysis='PlotROC', seqs=data$unique, ratio=data$AlleleF, score=score, label=data$Label)
+plotROC(data$Unique, score, data$Label, data$Label, title='ROC Plot (ranked by Allele Frequency)', legTitle='Sequins', refGroup=%6%)
 
-plotROC(anaquin, title='ROC Plot', legTitle='Allele Freq.', refRats=%6%)
+#
+# 2. ROC by zygosity
+#
+
+plotROC(data$Unique, score, data$ExpFreq, data$Label, title='ROC Plot (ranked by Allele Frequency)', legTitle='z', refGroup=%6%)
