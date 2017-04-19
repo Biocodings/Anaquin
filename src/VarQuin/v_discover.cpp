@@ -13,9 +13,18 @@ extern Scripts PlotAllele();
 extern Path __output__;
 extern std::string __full_command__;
 
-inline std::string type2str(Variation type)
+inline std::string zyg2str(Zygosity x)
 {
-    switch (type)
+    switch (x)
+    {
+        case Zygosity::Homozygous:  { return "Homozygous"; }
+        case Zygosity::Heterzygous: { return "Heterzygous"; }
+    }
+}
+
+inline std::string var2str(Variation x)
+{
+    switch (x)
     {
         case Variation::SNP:       { return "SNP";       }
         case Variation::Deletion:  { return "Deletion";  }
@@ -23,9 +32,9 @@ inline std::string type2str(Variation type)
     }
 }
 
-inline std::string grp2Str(Group grp)
+inline std::string grp2Str(Group x)
 {
-    switch (grp)
+    switch (x)
     {
         case Group::Cosmic:        { return "Cosmic";                    }
         case Group::LowGC:         { return "LowGC";                     }
@@ -268,12 +277,12 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                                           % "ChrID"
+                                           % "Chrom"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
@@ -283,6 +292,7 @@ static void writeQuins(const FileName &file,
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
+                                           % "Zygosity"
                                            % "Group"
                                            % "Type").str());
     for (const auto &i : r.vars())
@@ -309,8 +319,9 @@ static void writeQuins(const FileName &file,
                                                    % c.allF
                                                    % ld2ss(c.p)
                                                    % toString(c.qual)
+                                                   % zyg2str(sv.zyg)
                                                    % grp2Str(sv.group)
-                                                   % type2str(i.type())).str());
+                                                   % var2str(i.type())).str());
         }
 
         // Failed to detect the variant
@@ -327,8 +338,9 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
+                                                   % zyg2str(sv.zyg)
                                                    % grp2Str(sv.group)
-                                                   % type2str(i.type())).str());
+                                                   % var2str(i.type())).str());
         }
     }
     
@@ -375,7 +387,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                                    % ld2ss(i.query.p)
                                                    % toString(i.query.qual)
                                                    % grp
-                                                   % type2str(i.query.type())).str());
+                                                   % var2str(i.query.type())).str());
         }
     };
     
