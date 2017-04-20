@@ -89,6 +89,7 @@ typedef std::set<Value> Range;
 #define OPT_METHOD  802
 #define OPT_R_GTF   803
 #define OPT_R_VCF   804
+#define OPT_TRIM    805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
 #define OPT_REPORT  808
@@ -325,6 +326,7 @@ static const struct option long_options[] =
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
+    { "trim",    required_argument, 0, OPT_TRIM    },
 
     { "ubam",    required_argument, 0, OPT_U_BAM  },
     { "rbed",    required_argument, 0, OPT_R_BED  },
@@ -865,7 +867,9 @@ void parse(int argc, char ** argv)
                 
                 break;
             }
-             
+
+            case OPT_TRIM: { _p.opts[opt] = val; break; }
+
             case OPT_U_HG:
             case OPT_U_BAM:
             case OPT_R_IND:
@@ -1317,6 +1321,20 @@ void parse(int argc, char ** argv)
                 case TOOL_V_SUBSAMPLE:
                 {
                     VSample::Options o;
+                    
+                    if (_p.opts.count(OPT_TRIM))
+                    {
+                        const auto &x = _p.opts.at(OPT_TRIM);
+                        
+                        if (x == "leftRight")
+                        {
+                            o.trim = 1;
+                        }
+                        else if (x != "none")
+                        {
+                            throw InvalidValueException("-trim", x);
+                        }
+                    }
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];

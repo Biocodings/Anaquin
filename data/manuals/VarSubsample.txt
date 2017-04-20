@@ -24,8 +24,9 @@
         -useqs          Generated alignments for sequins in SAM/BAM format 
 
      Optional:
-        -o = output  Directory in which the output files are written to
-        -edge = 0    Egde window width in nucleotide bases
+        -o = output     Directory in which the output files are written to
+        -edge = 0       Egde window width in nucleotide bases
+        -trim = none    How to trim artificials reads aligned to the sequin boundaries. Possible values include none and leftRight.
 
 <b>OUTPUTS</b>
      Subsampled alignments are directly written to the console. Users are recommended to pipe outputs to a new file. For

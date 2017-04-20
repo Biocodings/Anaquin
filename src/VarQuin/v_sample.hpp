@@ -70,7 +70,7 @@ namespace Anaquin
             Base edge = 0;
 
             // Trim alignment edge effects?
-            Base trim = 150;
+            Base trim = 0;
             
             // Defined only if meth==Prop
             Proportion p = NAN;

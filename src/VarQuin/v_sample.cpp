@@ -4,7 +4,6 @@
 #include "writers/writer_sam.hpp"
 #include "parsers/parser_bambed.hpp"
 
-// Defined in main.cpp
 extern Anaquin::FileName BedRef();
 
 using namespace Anaquin;
@@ -15,6 +14,7 @@ static ParserBAMBED::Stats sample(const FileName &file,
                                   const NormFactors &norms,
                                   VSample::Stats &stats,
                                   const C2Intervals &sampled,
+                                  const std::set<ReadName> &trimmed,
                                   const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -53,16 +53,21 @@ static ParserBAMBED::Stats sample(const FileName &file,
         }
         
         /*
-         * We should sample:
+         * We should sample :
          *
-         *    - Anything that is not mapped
-         *    - Anything outside the sampling regions
-         *    - Inside the region with probability
+         *   - Anything that is not mapped
+         *   - Anything outside the sampling regions
+         *   - Inside the region with probability
          */
 
         auto shouldSampled = !x.mapped;
         
-        if (!shouldSampled)
+        if (trimmed.count(x.name))
+        {
+            // Never sample anything that we should trim
+            shouldSampled = false;
+        }
+        else if (!shouldSampled)
         {
             Interval *inter;
             
@@ -124,6 +129,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     o.analyze(seq);
 
     o.logInfo("Edge: " + std::to_string(o.edge));
+    o.logInfo("Trim: " + std::to_string(o.trim));
     
     const auto &r = Standard::instance().r_var;
     
@@ -169,7 +175,26 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         {
             stats.totBefore.nSeqs++;
         }
+        
+        if (o.trim)
+        {
+            // Match globally (without trimming)?
+            const auto g = x.mapped && regs.count(x.cID) ? regs.at(x.cID).overlap(x.l) : nullptr;
 
+            // Consider only global matching
+            if (g && g->l().contains(x.l))
+            {
+                const auto lTrim = std::abs(x.l.start - g->l().start) <= o.trim;
+                const auto rTrim = std::abs(x.l.end - g->l().end) <= o.trim;
+
+                if (lTrim || rTrim)
+                {
+                    // Wait until sampling so we can purge both paired-end mates
+                    trimmed.insert(x.name);
+                }
+            }
+        }
+        
         return ParserBAMBED::Response::OK;
     });
     
@@ -281,7 +306,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     }
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seq, norms, stats, regs, o);
+    const auto after = sample(seq, norms, stats, regs, trimmed, o);
     
     /*
      * Assume our subsampling is working, let's check the coverage for every region.
