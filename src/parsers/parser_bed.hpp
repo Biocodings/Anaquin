@@ -29,49 +29,46 @@ namespace Anaquin
 
         template <typename F> static void parse(const Reader &r, F f)
         {
-            protectParse("BED", [&]()
+            Data d;
+            ParserProgress p;
+            
+            std::vector<std::string> sizes, starts, tokens;
+            
+            while (r.nextTokens(tokens, "\t"))
             {
-                Data d;
-                ParserProgress p;
-                
-                std::vector<std::string> sizes, starts, tokens;
-                
-                while (r.nextTokens(tokens, "\t"))
+                // Empty line?
+                if (tokens.size() == 1)
                 {
-                    // Empty line?
-                    if (tokens.size() == 1)
-                    {
-                        return;
-                    }
-                    
-                    // Name of the chromosome
-                    d.cID = tokens[0];
-                    
-                    /*
-                     * https://genome.ucsc.edu/FAQ/FAQformat.html#format1
-                     *
-                     * The starting position requires to increment because BED position is a 0-based.
-                     * The end position requies no increment because it is "not included in the display".
-                     */
-                    
-                    d.l = Locus(stod(tokens[1])+1, stod(tokens[2]));
-                    
-                    if (tokens.size() >= 6)
-                    {
-                        // Defines the strand, either '+' or '-'
-                        d.strand = tokens[5] == "+" ? Strand::Forward : Strand::Backward;
-                    }
-                    
-                    if (tokens.size() >= 4)
-                    {
-                        // Name of the BED line (eg: gene)
-                        d.name = tokens[3];
-                    }
-                    
-                    f(d, p);
-                    p.i++;
+                    return;
                 }
-            });
+                
+                // Name of the chromosome
+                d.cID = tokens[0];
+                
+                /*
+                 * https://genome.ucsc.edu/FAQ/FAQformat.html#format1
+                 *
+                 * The starting position requires to increment because BED position is a 0-based.
+                 * The end position requies no increment because it is "not included in the display".
+                 */
+                
+                d.l = Locus(stod(tokens[1])+1, stod(tokens[2]));
+                
+                if (tokens.size() >= 6)
+                {
+                    // Defines the strand, either '+' or '-'
+                    d.strand = tokens[5] == "+" ? Strand::Forward : Strand::Backward;
+                }
+                
+                if (tokens.size() >= 4)
+                {
+                    // Name of the BED line (eg: gene)
+                    d.name = tokens[3];
+                }
+                
+                f(d, p);
+                p.i++;
+            }
         }
     };
 }

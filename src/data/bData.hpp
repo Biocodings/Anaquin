@@ -230,8 +230,11 @@ namespace Anaquin
         
         ParserBed::parse(r, [&](ParserBed::Data &x, const ParserProgress &p)
         {
-            A_CHECK(x.l.length() >= 2 * o.trim, x.name + " is too narrow for trimming");
-
+            if (x.l.length() < 2 * o.trim)
+            {
+                throw std::runtime_error(x.name + " is too narrow. You have requested for edge " + std::to_string(o.trim) + ".");
+            }
+            
             x.l.end   -= o.trim;
             x.l.start += o.trim;
 
