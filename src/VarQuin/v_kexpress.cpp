@@ -87,7 +87,7 @@ static void writeQuins(const FileName &file, const VKExpress::Stats &stats, cons
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name" % "Exp" % "Obs").str());
+    o.writer->write((boost::format(format) % "Name" % "Expected" % "Observed").str());
 
     for (const auto &i : stats)
     {
@@ -101,13 +101,13 @@ static void writeRLinear(const FileName &file, const VKExpress::Stats &stats, co
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VKExpress_sequins.csv",
+    o.writer->write(RWriter::createRLinear("VarKExpress_sequins.csv",
                                            o.work,
                                            "Expected Concentration vs Observed Abundance",
                                            "Expected Concentration (log2)",
                                            "Observed Abundance (log2)",
-                                           "log2(data$Exp)",
-                                           "log2(data$Obs)",
+                                           "log2(data$Expected)",
+                                           "log2(data$Observed)",
                                            "input",
                                            true,
                                            PlotLinear_()));
@@ -128,10 +128,10 @@ void VKExpress::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating VKExpress_sequins.csv
+     * Generating VarKExpress_sequins.csv
      */
     
-    writeQuins("VKExpress_sequins.csv", stats, o);
+    writeQuins("VarKExpress_sequins.csv", stats, o);
     
     /*
      * Generating VarKExpress_linear.R
