@@ -19,6 +19,7 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_kexpress.hpp"
 #include "VarQuin/v_vreport.hpp"
 #include "VarQuin/v_discover.hpp"
 
@@ -37,7 +38,6 @@
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_express.hpp"
-#include "parsers/parser_salmon.hpp"
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
 
@@ -64,6 +64,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_GENE     271
 #define TOOL_R_REPORT   272
 #define TOOL_R_SAMPLE   273
+#define TOOL_V_KEXPRESS 274
 #define TOOL_V_VREPORT  275
 #define TOOL_V_ALIGN    276
 #define TOOL_V_FLIP     277
@@ -153,6 +154,7 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   TOOL_V_SAMPLE },
     { "VarTrim",        TOOL_V_TRIM      },
     { "VarFlip",        TOOL_V_FLIP      },
+    { "VarKExpress",    TOOL_V_KEXPRESS  },
 
     { "MetaFoldChange", TOOL_M_FOLD      },
     { "MetaAlign",      TOOL_M_ALIGN     },
@@ -183,7 +185,8 @@ static std::map<Tool, std::set<Option>> _options =
     { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS } },
     { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
     { TOOL_V_DISCOVER, { OPT_R_VCF,   OPT_U_SEQS } },
-    { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_SEQS } },
+    { TOOL_V_KEXPRESS, { OPT_MIXTURE, OPT_U_SEQS } },
 
     /*
      * MetaQuin Analysis
@@ -1135,9 +1138,9 @@ void parse(int argc, char ** argv)
         {
             switch (_p.tool)
             {
-                case TOOL_M_FOLD:      { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
-                case TOOL_M_ABUND:     { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-                case TOOL_M_ALIGN:     { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_FOLD:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
+                case TOOL_M_ABUND:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_ALIGN:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
                 case TOOL_M_SAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
 
                 case TOOL_M_ASSEMBLY:
@@ -1228,9 +1231,10 @@ void parse(int argc, char ** argv)
         case TOOL_V_FLIP:
         case TOOL_V_TRIM:
         case TOOL_V_ALIGN:
+        case TOOL_V_SAMPLE:
         case TOOL_V_VREPORT:
         case TOOL_V_DISCOVER:
-        case TOOL_V_SAMPLE:
+        case TOOL_V_KEXPRESS:
         {
             if (__showInfo__)
             {
@@ -1266,6 +1270,12 @@ void parse(int argc, char ** argv)
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
+                        
+                    case TOOL_V_KEXPRESS:
+                    {
+                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        break;
+                    }
 
                     default: { break; }
                 }
@@ -1275,28 +1285,6 @@ void parse(int argc, char ** argv)
                     Standard::instance().r_var.finalize();
                 }
             }
-
-            const auto checkVCF = [&](const FileName &x)
-            {
-                Counts n = 0;
-                
-                try
-                {
-                    ParserVCF::parse(Reader(x), [&](const ParserVCF::Data &, ParserProgress &p)
-                    {
-                        if (n++ >= 30)
-                        {
-                            p.stopped = true;
-                        }
-                    });
-                }
-                catch (...)
-                {
-                    n = 0;
-                }
-                
-                return n;
-            };
 
             switch (_p.tool)
             {
@@ -1311,6 +1299,8 @@ void parse(int argc, char ** argv)
                     analyze_3<VVReport>(o);
                     break;
                 }
+                    
+                case TOOL_V_KEXPRESS: { analyze_1<VKExpress>(OPT_U_SEQS); break; }
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 

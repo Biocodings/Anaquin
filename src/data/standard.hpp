@@ -79,6 +79,9 @@ namespace Anaquin
             // Add sequin regions in BED format
             inline void addVRef(const Reader &r, Base trim = 0) { r_var.readGBRef(r, trim); }
         
+            // Add mixture (e.g: ladder) in CSV format
+            void addVMix(const Reader &);
+        
             VarRef r_var;
 
         private:

@@ -93,10 +93,10 @@ static void generateSummary(const FileName &file,
 
     const auto summary = "-------VarTrim Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       Alignment file:  %2%\n"
+                         "       Alignment file:  %2%\n\n"
                          "-------Reference regions\n\n"
                          "       Regions: %3% regions\n"
-                         "       Method: %4%\n\n"
+                         "       Method:  %4%\n\n"
                          "-------Trimming\n\n"
                          "       Left:  %5%\n"
                          "       Right: %6%\n\n"

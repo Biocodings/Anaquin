@@ -38,6 +38,7 @@
 #include "resources/plotTLODR.R"
 #include "resources/plotAllele.R"
 #include "resources/plotLinear.R"
+#include "resources/plotLinear_.R"
 #include "resources/plotLogistic.R"
 
 /*
@@ -66,6 +67,11 @@ Scripts Manual()
 Scripts PlotLinear()
 {
     return ToString(src_r_plotLinear_R);
+}
+
+Scripts PlotLinear_()
+{
+    return ToString(src_r_plotLinear__R);
 }
 
 Scripts PlotFold()

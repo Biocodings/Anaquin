@@ -87,6 +87,13 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
+void Standard::addVMix(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
+    
+    readMixture(Reader(r), r_var, Mix_1, ID_Length_Mix, 2);
+}
+
 void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");

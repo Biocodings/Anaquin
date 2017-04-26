@@ -36,6 +36,7 @@ data  = [ 'data/manuals/anaquin.txt',
 
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
+          'src/r/plotLinear_.R',
     	  'src/r/plotLogistic.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',
