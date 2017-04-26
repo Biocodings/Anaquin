@@ -21,6 +21,8 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     const auto shouldL = o.meth == Method::Left  || o.meth == Method::LeftRight;
     const auto shouldR = o.meth == Method::Right || o.meth == Method::LeftRight;
     
+    std::vector<Interval *> multi;
+    
     // Check trimming reads...
     ParserBAMBED::parse(file, regs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
@@ -28,11 +30,22 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
         {
             o.logWait(std::to_string(info.p.i));
         }
+
+        multi.clear();
+        const auto m = x.mapped && regs.count(x.cID) ? regs.at(x.cID).contains(x.l, &multi) : nullptr;
         
-        const auto m = x.mapped && regs.count(x.cID) ? regs.at(x.cID).overlap(x.l) : nullptr;
-        
-        if (m && m->l().contains(x.l))
+        if (m)
         {
+            std::sort(multi.begin(), multi.end(), [&](const Interval * x, const Interval * y)
+            {
+                return x->l().length() < y->l().length();
+            });
+
+
+            
+            // The smallest region
+            const auto m = multi.front();
+            
             const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
             const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
             
