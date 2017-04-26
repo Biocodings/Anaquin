@@ -15,6 +15,7 @@
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
+#include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_sample.hpp"
@@ -54,26 +55,27 @@ typedef int Option;
 typedef std::string Value;
 typedef std::set<Value> Range;
 
-#define TOOL_TEST        264
-#define TOOL_HELP        265
-#define TOOL_R_ALIGN     266
-#define TOOL_R_ASSEMBLY  267
-#define TOOL_R_EXPRESS   268
-#define TOOL_R_FOLD      270
-#define TOOL_R_GENE      271
-#define TOOL_R_REPORT    272
-#define TOOL_R_SUBSAMPLE 273
-#define TOOL_V_VREPORT   275
-#define TOOL_V_ALIGN     276
-#define TOOL_V_FLIP      277
-#define TOOL_V_DISCOVER  278
-#define TOOL_V_SUBSAMPLE 280
-#define TOOL_M_ALIGN     281
-#define TOOL_M_ABUND     282
-#define TOOL_M_FOLD      283
-#define TOOL_M_SUBSAMPLE 284
-#define TOOL_M_ASSEMBLY  285
-#define TOOL_M_REPORT    286
+#define TOOL_TEST       264
+#define TOOL_HELP       265
+#define TOOL_R_ALIGN    266
+#define TOOL_R_ASSEMBLY 267
+#define TOOL_R_EXPRESS  268
+#define TOOL_R_FOLD     270
+#define TOOL_R_GENE     271
+#define TOOL_R_REPORT   272
+#define TOOL_R_SAMPLE   273
+#define TOOL_V_VREPORT  275
+#define TOOL_V_ALIGN    276
+#define TOOL_V_FLIP     277
+#define TOOL_V_DISCOVER 278
+#define TOOL_V_TRIM     279
+#define TOOL_V_SAMPLE   280
+#define TOOL_M_ALIGN    281
+#define TOOL_M_ABUND    282
+#define TOOL_M_FOLD     283
+#define TOOL_M_SAMPLE   284
+#define TOOL_M_ASSEMBLY 285
+#define TOOL_M_REPORT   286
 
 /*
  * Options specified in the command line
@@ -142,20 +144,21 @@ static std::map<Value, Tool> _tools =
     { "RnaExpression",  TOOL_R_EXPRESS   },
     { "RnaReport",      TOOL_R_REPORT    },
     { "RnaFoldChange",  TOOL_R_FOLD      },
-    { "RnaSubsample",   TOOL_R_SUBSAMPLE },
+    { "RnaSubsample",   TOOL_R_SAMPLE },
     { "RnaGene",        TOOL_R_GENE      },
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarVReport",     TOOL_V_VREPORT   },
-    { "VarSubsample",   TOOL_V_SUBSAMPLE },
+    { "VarSubsample",   TOOL_V_SAMPLE },
+    { "VarTrim",        TOOL_V_TRIM      },
     { "VarFlip",        TOOL_V_FLIP      },
 
     { "MetaFoldChange", TOOL_M_FOLD      },
     { "MetaAlign",      TOOL_M_ALIGN     },
     { "MetaAbund",      TOOL_M_ABUND     },
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
-    { "MetaSubsample",  TOOL_M_SUBSAMPLE },
+    { "MetaSubsample",  TOOL_M_SAMPLE },
 };
 
 static std::map<Tool, std::set<Option>> _options =
@@ -164,31 +167,32 @@ static std::map<Tool, std::set<Option>> _options =
      * RnaQuin Analysis
      */
     
-    { TOOL_R_SUBSAMPLE, { OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_FOLD,      { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_REPORT,    { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
-    { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_SAMPLE,   { OPT_U_FILES, OPT_METHOD } },
+    { TOOL_R_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_FOLD,     { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
+    { TOOL_R_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
+    { TOOL_R_REPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
+    { TOOL_R_ALIGN,    { OPT_R_GTF, OPT_U_FILES } },
 
     /*
      * VarQuin Analysis
      */
 
-    { TOOL_V_FLIP,      { OPT_U_BAM } },
-    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_HG, OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_SEQS } },
-    { TOOL_V_VREPORT,   { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_FLIP,     { OPT_U_BAM  } },
+    { TOOL_V_TRIM,     { OPT_R_BED,   OPT_U_SEQS } },
+    { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS } },
+    { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
+    { TOOL_V_DISCOVER, { OPT_R_VCF,   OPT_U_SEQS } },
+    { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_FILES } },
 
     /*
      * MetaQuin Analysis
      */
 
-    { TOOL_M_FOLD,      { OPT_U_FILES } },
-    { TOOL_M_ALIGN,     { OPT_R_BED, OPT_U_FILES } },
-    { TOOL_M_ASSEMBLY,  { OPT_R_BED, OPT_U_FILES } },
-    { TOOL_M_SUBSAMPLE, { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
+    { TOOL_M_FOLD,     { OPT_U_FILES } },
+    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_M_SAMPLE,   { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
 };
 
 /*
@@ -339,7 +343,6 @@ static const struct option long_options[] =
     { "report",  required_argument, 0, OPT_REPORT },
     
     { "o",       required_argument, 0, OPT_PATH },
-    { "output",  required_argument, 0, OPT_PATH },
 
     {0, 0, 0, 0 }
 };
@@ -372,6 +375,7 @@ static void printUsage()
 static Scripts manual(Tool tool)
 {
     extern Scripts VarFlip();
+    extern Scripts VarTrim();
     extern Scripts VarAlign();
     extern Scripts VarVReport();
     extern Scripts VarDiscover();
@@ -395,14 +399,15 @@ static Scripts manual(Tool tool)
         case TOOL_R_EXPRESS:   { return RnaExpression();  }
         case TOOL_R_REPORT:    { return RnaReport();      }
         case TOOL_R_FOLD:      { return RnaFoldChange();  }
-        case TOOL_R_SUBSAMPLE: { return RnaSubsample();   }
+        case TOOL_R_SAMPLE:    { return RnaSubsample();   }
         case TOOL_V_FLIP:      { return VarFlip();        }
+        case TOOL_V_TRIM:      { return VarTrim();        }
         case TOOL_V_ALIGN:     { return VarAlign();       }
-        case TOOL_V_SUBSAMPLE: { return VarSubsample();   }
+        case TOOL_V_SAMPLE:    { return VarSubsample();   }
         case TOOL_V_DISCOVER:  { return VarDiscover();    }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
-        case TOOL_M_SUBSAMPLE: { return MetaAbund();      }
+        case TOOL_M_SAMPLE:    { return MetaAbund();      }
         case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
         case TOOL_M_ABUND:     { return MetaSubsample();  }
         case TOOL_M_FOLD:      { return MetaFoldChange(); }
@@ -687,14 +692,14 @@ void parse(int argc, char ** argv)
         _p.command += std::string(argv[i]) + " ";
     }
 
-    assert(!_p.command.empty());
+    A_ASSERT(!_p.command.empty());
 
     int next, index;
 
     // Attempt to parse and store a floating point from string
     auto parseDouble = [&](const std::string &str, double &r)
     {
-        assert(next);
+        A_ASSERT(next);
         
         try
         {
@@ -709,7 +714,7 @@ void parse(int argc, char ** argv)
     // Attempt to parse and store an integer from string
     auto parseInt = [&](const std::string &str, unsigned &r)
     {
-        assert(next);
+        A_ASSERT(next);
         
         try
         {
@@ -757,7 +762,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == TOOL_V_SUBSAMPLE || _p.tool == TOOL_R_SUBSAMPLE)
+    if (_p.tool == TOOL_V_SAMPLE || _p.tool == TOOL_R_SAMPLE || _p.tool == TOOL_V_TRIM)
     {
         __showInfo__ = false;
     }
@@ -775,7 +780,7 @@ void parse(int argc, char ** argv)
         return;
     }
     
-    assert(_p.tool);
+    A_ASSERT(_p.tool);
 
     unsigned n = 2;
 
@@ -831,10 +836,10 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_R_FOLD:
                     case TOOL_R_EXPRESS:
-                    case TOOL_V_SUBSAMPLE: { _p.opts[opt] = val; break; }
+                    case TOOL_V_SAMPLE: { _p.opts[opt] = val; break; }
 
-                    case TOOL_M_SUBSAMPLE:
-                    case TOOL_R_SUBSAMPLE:
+                    case TOOL_M_SAMPLE:
+                    case TOOL_R_SAMPLE:
                     {
                         parseDouble(_p.opts[opt] = val, _p.sampled);
                         
@@ -943,7 +948,6 @@ void parse(int argc, char ** argv)
 #else
             A_THROW("UNIT_TEST is not defined");
 #endif
-
             break;
         }
 
@@ -953,14 +957,14 @@ void parse(int argc, char ** argv)
         case TOOL_R_REPORT:
         case TOOL_R_EXPRESS:
         case TOOL_R_ASSEMBLY:
-        case TOOL_R_SUBSAMPLE:
+        case TOOL_R_SAMPLE:
         {
             if (__showInfo__)
             {
                 std::cout << "[INFO]: RNA-Seq Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_R_SUBSAMPLE)
+            if (_p.tool != TOOL_R_SAMPLE)
             {
                 switch (_p.tool)
                 {
@@ -1027,7 +1031,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_R_SUBSAMPLE:
+                case TOOL_R_SAMPLE:
                 {
                     RSample::Options o;
                     o.p = _p.sampled;
@@ -1039,9 +1043,7 @@ void parse(int argc, char ** argv)
                 {
                     RExpress::Options o;
                     
-                    if (_p.opts[OPT_METHOD] != "gene"    &&
-                        _p.opts[OPT_METHOD] != "isoform" &&
-                        _p.opts[OPT_METHOD] != "ERCC")
+                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
                     {
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
@@ -1129,14 +1131,14 @@ void parse(int argc, char ** argv)
         case TOOL_M_ABUND:
         case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
-        case TOOL_M_SUBSAMPLE:
+        case TOOL_M_SAMPLE:
         {
             switch (_p.tool)
             {
                 case TOOL_M_FOLD:      { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
                 case TOOL_M_ABUND:     { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
                 case TOOL_M_ALIGN:     { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-                case TOOL_M_SUBSAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case TOOL_M_SAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
 
                 case TOOL_M_ASSEMBLY:
                 {
@@ -1196,7 +1198,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_M_SUBSAMPLE:
+                case TOOL_M_SAMPLE:
                 {
                     MSample::Options o;
                     o.p = _p.sampled;
@@ -1224,10 +1226,11 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_V_FLIP:
+        case TOOL_V_TRIM:
         case TOOL_V_ALIGN:
         case TOOL_V_VREPORT:
         case TOOL_V_DISCOVER:
-        case TOOL_V_SUBSAMPLE:
+        case TOOL_V_SAMPLE:
         {
             if (__showInfo__)
             {
@@ -1244,10 +1247,16 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case TOOL_V_SUBSAMPLE:
+                    case TOOL_V_SAMPLE:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
                                             _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
+                        break;
+                    }
+
+                    case TOOL_V_TRIM:
+                    {
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         break;
                     }
 
@@ -1311,6 +1320,27 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
+                case TOOL_V_TRIM:
+                {
+                    VTrim::Options o;
+                    
+                    if (_p.opts.count(OPT_METHOD))
+                    {
+                        const auto &x = _p.opts.at(OPT_METHOD);
+                        
+                        if (x == "leftRight")  { o.meth = VTrim::Method::LeftRight; }
+                        else if (x == "left")  { o.meth = VTrim::Method::Left;      }
+                        else if (x == "right") { o.meth = VTrim::Method::Right;     }
+                        else
+                        {
+                            throw InvalidValueException("-method", x);
+                        }
+                    }
+
+                    analyze_1<VTrim>(OPT_U_SEQS, o);
+                    break;
+                }
+
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
@@ -1318,23 +1348,9 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_SUBSAMPLE:
+                case TOOL_V_SAMPLE:
                 {
                     VSample::Options o;
-                    
-                    if (_p.opts.count(OPT_TRIM))
-                    {
-                        const auto &x = _p.opts.at(OPT_TRIM);
-                        
-                        if (x == "leftRight")
-                        {
-                            o.trim = 1;
-                        }
-                        else if (x != "none")
-                        {
-                            throw InvalidValueException("-trim", x);
-                        }
-                    }
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];

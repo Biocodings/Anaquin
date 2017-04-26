@@ -22,10 +22,11 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaKReport.txt',
 
           'data/manuals/VarAlign.txt',
-          'data/manuals/VarSubsample.txt',
-          'data/manuals/VarDiscover.txt',
           'data/manuals/VarFlip.txt',
+          'data/manuals/VarTrim.txt',          
           'data/manuals/VarVReport.txt',
+          'data/manuals/VarDiscover.txt',
+          'data/manuals/VarSubsample.txt',
 
           'data/manuals/MetaAlign.txt',
           'data/manuals/MetaSubsample.txt',

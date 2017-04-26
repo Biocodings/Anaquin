@@ -7,6 +7,7 @@
 
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
+#include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
 #include "resources/VarVReport.txt"
 #include "resources/VarDiscover.txt"
@@ -112,6 +113,11 @@ Scripts RnaFoldChange()
 Scripts VarAlign()
 {
     return ToString(data_manuals_VarAlign_txt);
+}
+
+Scripts VarTrim()
+{
+    return ToString(data_manuals_VarTrim_txt);
 }
 
 Scripts VarFlip()
