@@ -1399,7 +1399,7 @@ void parse(int argc, char ** argv)
     }
 }
 
-int parse_options(int argc, char ** argv)
+extern int parse_options(int argc, char ** argv)
 {
     char cwd[1024];
     

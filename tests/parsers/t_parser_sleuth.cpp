@@ -12,7 +12,7 @@ TEST_CASE("ParserSleuth_1")
 
 TEST_CASE("ParserSleuth_2")
 {
-    Test::transA();
+    transA();
 
     std::vector<ParserSleuth::Data> x;
     

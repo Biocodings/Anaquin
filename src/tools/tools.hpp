@@ -11,9 +11,26 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <boost/algorithm/string/replace.hpp>
+
+/*
+ * Provides useful but not always effecient implementation
+ */
 
 namespace Anaquin
 {
+    inline std::string remove(const std::string &s1, const std::string &s2)
+    {
+        auto x = s1;
+        boost::replace_all(x, s2, "");
+        return x;
+    }
+
+    inline bool hasSub(const std::string &s1, const std::string &s2)
+    {
+        return s1.find(s2) != std::string::npos;
+    }
+
     inline double s2d(const std::string &x)
     {
         if (x == "NA" || x == "-")

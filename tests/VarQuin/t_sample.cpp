@@ -9,7 +9,7 @@ extern Scripts AVA033Bed();
 
 TEST_CASE("VSubsample_Read_10")
 {
-    Test::clear();
+    clrTest();
     Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
@@ -62,7 +62,7 @@ TEST_CASE("VSubsample_Read_10")
 
 TEST_CASE("VSubsample_ZeroProp")
 {
-    Test::clear();
+    clrTest();
     
     Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
@@ -116,7 +116,7 @@ TEST_CASE("VSubsample_ZeroProp")
 
 TEST_CASE("VSubsample_Median")
 {
-    Test::clear();
+    clrTest();
     Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
     
     VSample::Options o;
@@ -168,7 +168,7 @@ TEST_CASE("VSubsample_Median")
 
 TEST_CASE("VSubsample_Mean")
 {
-    Test::clear();
+    clrTest();
     Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 
     VSample::Options o;
@@ -222,11 +222,11 @@ TEST_CASE("VSubsample_Edge")
 {
     srand(100);
     
-    Test::clear();
+    clrTest();
     Standard::instance().addVRef(Reader("tests/data/test2.bed"));
     auto r1 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", VSample::Options());
 
-    Test::clear();
+    clrTest();
     VSample::Options o;
     o.edge = 300;
     Standard::instance().addVRef(Reader("tests/data/test2.bed"), o.edge);

@@ -24,12 +24,9 @@ SequinStats::Data SequinStats::data(bool shouldLog) const
 {
     Data r;
     
-    auto f = [&](double v)
+    auto f = [&](double x)
     {
-        // Don't log zero...
-        assert(!shouldLog || v);
-        
-        return shouldLog ? (v ? log2(v) : 0) : v;
+        return shouldLog ? (log2(x ? x : 1)) : x;
     };
     
     for (const auto &p : *this)

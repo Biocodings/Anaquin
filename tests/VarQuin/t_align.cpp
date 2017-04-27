@@ -4,9 +4,9 @@
 
 using namespace Anaquin;
 
-TEST_CASE("VAlign_ToyExample")
+TEST_CASE("VAlign_1")
 {
-    Test::clear();
+    clrTest();
 
-    REQUIRE_NOTHROW(Test::test("VarAlign -report 1 -rbed data/VarQuin/A.R.9.bed -ufiles tests/VarQuin_G_NA12878.bam -ufiles tests/VarQuin_G_Sequins.bam"));
+    REQUIRE_NOTHROW(runTest("VarAlign -report 1 -rbed data/VarQuin/A.R.9.bed -ufiles tests/VarQuin_G_NA12878.bam -ufiles tests/VarQuin_G_Sequins.bam"));
 }

@@ -1,10 +1,12 @@
 #include "tools/tools.hpp"
+#include "data/tokens.hpp"
 #include "VarQuin/v_kexpress.hpp"
 #include "parsers/parser_salmon.hpp"
 
 using namespace Anaquin;
 
-extern Scripts PlotLinear_();
+extern Scripts PlotKLadder();
+extern Scripts PlotKAllele();
 
 typedef VKExpress::Software Software;
 
@@ -81,7 +83,67 @@ static Scripts generateSummary(const FileName &src, const VKExpress::Stats &stat
             ).str();
 }
 
-static void writeQuins(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+static bool isCancer(const std::string &x)
+{
+    return hasSub(x, "_R") || hasSub(x, "_V");
+}
+
+static void writeCancer(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "ExpRef"
+                                           % "ExpVar"
+                                           % "ObsRef"
+                                           % "ObsVar").str());
+    
+    std::set<SequinID> ids;
+    std::map<SequinID, Concent> er, ev;
+    std::map<SequinID, Measured> mr, mv;
+    
+    auto f = [&](const std::string &x)
+    {
+        return remove(remove(x, "_R"), "_V");
+    };
+
+    for (const auto &i : stats)
+    {
+        const auto &sID = i.first;
+        
+        if (isCancer(sID))
+        {
+            if (hasSub(sID, "_R"))
+            {
+                er[f(sID)] = i.second.x;
+                mr[f(sID)] = i.second.y;
+            }
+            else
+            {
+                ev[f(sID)] = i.second.x;
+                mv[f(sID)] = i.second.y;
+            }
+        }
+    }
+
+    for (const auto &i : mr)
+    {
+        const auto &id = i.first;
+
+        o.writer->write((boost::format(format) % i.first
+                                               % er.at(id)
+                                               % ev.at(id)
+                                               % (mr.count(id) ? mr.at(id) : 0)
+                                               % (mv.count(id) ? mv.at(id) : 0)
+                         ).str());
+    }
+    
+    o.writer->close();
+}
+
+static void writeLadder(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%";
     
@@ -91,17 +153,35 @@ static void writeQuins(const FileName &file, const VKExpress::Stats &stats, cons
 
     for (const auto &i : stats)
     {
-        o.writer->write((boost::format(format) % i.first % i.second.x % i.second.y).str());
+        if (!isCancer(i.first))
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % i.second.x
+                                                   % i.second.y).str());
+        }
     }
     
     o.writer->close();
 }
 
-static void writeRLinear(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+static void writeRAllele(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+{
+    extern std::string __full_command__;
+
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(PlotKAllele()) % date()
+                                                  % __full_command__
+                                                  % o.work
+                                                  % "VarKExpress_cancer.csv").str());
+    o.writer->close();
+}
+
+static void writeRLadder(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarKExpress_sequins.csv",
+    o.writer->write(RWriter::createRLinear("VarKExpress_ladder.csv",
                                            o.work,
                                            "Expected Concentration vs Observed Abundance",
                                            "Expected Concentration (log2)",
@@ -110,7 +190,7 @@ static void writeRLinear(const FileName &file, const VKExpress::Stats &stats, co
                                            "log2(data$Observed)",
                                            "input",
                                            true,
-                                           PlotLinear_()));
+                                           PlotKLadder()));
     o.writer->close();
 }
 
@@ -122,20 +202,32 @@ void VKExpress::report(const FileName &file, const Options &o)
      * Generating VKExpress_summary.stats
      */
     
-    o.generate("VKExpress_summary.stats");
-    o.writer->open("VKExpress_summary.stats");
+    o.generate("VarKExpress_summary.stats");
+    o.writer->open("VarKExpress_summary.stats");
     o.writer->write(generateSummary(file, stats, o));
     o.writer->close();
-    
+
     /*
-     * Generating VarKExpress_sequins.csv
+     * Generating VarKExpress_cancer.csv
      */
     
-    writeQuins("VarKExpress_sequins.csv", stats, o);
-    
+    writeCancer("VarKExpress_cancer.csv", stats, o);
+
     /*
-     * Generating VarKExpress_linear.R
+     * Generating VarKExpress_ladder.csv
      */
     
-    writeRLinear("VarKExpress_linear.R", stats, o);
+    writeLadder("VarKExpress_ladder.csv", stats, o);
+    
+    /*
+     * Generating VarKExpress_allele.R
+     */
+    
+    writeRAllele("VarKExpress_allele.R", stats, o);
+    
+    /*
+     * Generating VarKExpress_ladder.R
+     */
+    
+    writeRLadder("VarKExpress_ladder.R", stats, o);
 }

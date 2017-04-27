@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("RSample_OverSubsampled")
 {
-    Test::clear();
+    clrTest();
     
     RSample::Options o;
 
@@ -26,9 +26,9 @@ TEST_CASE("RSample_OverSubsampled")
 
 TEST_CASE("RSample_Negative")
 {
-    Test::clear();
+    clrTest();
     
-    const auto r = Test::test("RnaSubsample -method -0.5 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method -0.5 -ufiles tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -36,9 +36,9 @@ TEST_CASE("RSample_Negative")
 
 TEST_CASE("RSample_Zero")
 {
-    Test::clear();
+    clrTest();
     
-    const auto r = Test::test("RnaSubsample -method 0.00 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 0.00 -ufiles tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -46,9 +46,9 @@ TEST_CASE("RSample_Zero")
 
 TEST_CASE("RSample_One")
 {
-    Test::clear();
+    clrTest();
     
-    const auto r = Test::test("RnaSubsample -method 1.00 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 1.00 -ufiles tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -56,9 +56,9 @@ TEST_CASE("RSample_One")
 
 TEST_CASE("RSample_Ten")
 {
-    Test::clear();
+    clrTest();
     
-    const auto r = Test::test("RnaSubsample -method 10 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 10 -ufiles tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n***********************\n");
     REQUIRE(r.status == 1);

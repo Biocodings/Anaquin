@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("RExpress_Multiple_Kallisto_2")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -50,7 +50,7 @@ TEST_CASE("RExpress_Multiple_Kallisto_2")
 
 TEST_CASE("RExpress_Multiple_Kallisto_1")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -94,7 +94,7 @@ TEST_CASE("RExpress_Multiple_Kallisto_1")
 
 TEST_CASE("RExpress_Guided_Invalid")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -103,9 +103,9 @@ TEST_CASE("RExpress_Guided_Invalid")
     
     REQUIRE_THROWS(RExpress::analyze("tests/data/guidedInvalid.gtf", o));
     
-    Test::clear();
+    clrTest();
     
-    const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/guidedInvalid.gtf");
+    const auto r2 = runTest("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/guidedInvalid.gtf");
     
     REQUIRE(r2.error == "***********************\n[ERRO]: Failed to parse \"ABCD\". This is not a number.\n***********************\n");
     REQUIRE(r2.status == 1);
@@ -113,7 +113,7 @@ TEST_CASE("RExpress_Guided_Invalid")
 
 TEST_CASE("RExpress_Replicates")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -174,7 +174,7 @@ TEST_CASE("RExpress_Replicates")
 
 TEST_CASE("RExpress_Guided_Equal")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -218,9 +218,9 @@ TEST_CASE("RExpress_Guided_Equal")
     REQUIRE(isnan(ls.r));
     REQUIRE(isnan(ls.R2));
     
-    Test::clear();
+    clrTest();
     
-    const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/guidedEqual.gtf");
+    const auto r2 = runTest("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/guidedEqual.gtf");
     
     REQUIRE(r2.error == "");
     REQUIRE(r2.status == 0);
@@ -228,7 +228,7 @@ TEST_CASE("RExpress_Guided_Equal")
 
 TEST_CASE("RExpress_Guided_Head")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -262,7 +262,7 @@ TEST_CASE("RExpress_Guided_Head")
 
 TEST_CASE("RExpress_Denovo_Genes")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     
@@ -282,9 +282,9 @@ TEST_CASE("RExpress_Denovo_Genes")
     REQUIRE(r1.limit.id.empty());
     REQUIRE(isnan(r1.limit.abund));
     
-    Test::clear();
+    clrTest();
     
-    const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/denovo.gtf");
+    const auto r2 = runTest("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method gene -ufiles tests/data/denovo.gtf");
     
     REQUIRE(r2.error == "***********************\n[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n***********************\n");
     REQUIRE(r2.status == 1);
@@ -292,8 +292,8 @@ TEST_CASE("RExpress_Denovo_Genes")
 
 TEST_CASE("RExpress_Denovo_Isoforms")
 {
-    Test::transA();
-    
+    transA();
+
     auto o = RExpress::Options();
     
     o.format = RExpress::Format::GTF;
@@ -312,9 +312,9 @@ TEST_CASE("RExpress_Denovo_Isoforms")
     REQUIRE(r1.limit.id.empty());
     REQUIRE(isnan(r1.limit.abund));
     
-    Test::clear();
+    clrTest();
     
-    const auto r2 = Test::test("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method isoform -ufiles tests/data/denovo.gtf");
+    const auto r2 = runTest("RnaExpression -m data/RnaQuin/MRN027_v001.csv -method isoform -ufiles tests/data/denovo.gtf");
     
     REQUIRE(r2.error == "***********************\n[ERRO]: Failed to find anything on the in-silico chromosome: tests/data/denovo.gtf\n***********************\n");
     REQUIRE(r2.status == 1);
@@ -322,7 +322,7 @@ TEST_CASE("RExpress_Denovo_Isoforms")
 
 TEST_CASE("RExpress_Guided_Genes")
 {
-    Test::transA();
+    transA();
  
     auto o = RExpress::Options();
     
@@ -349,7 +349,7 @@ TEST_CASE("RExpress_Guided_Genes")
 
 TEST_CASE("RExpress_Guided_Isoforms")
 {
-    Test::transA();
+    transA();
     
     auto o = RExpress::Options();
     

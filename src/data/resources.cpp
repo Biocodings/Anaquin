@@ -38,7 +38,8 @@
 #include "resources/plotTLODR.R"
 #include "resources/plotAllele.R"
 #include "resources/plotLinear.R"
-#include "resources/plotLinear_.R"
+#include "resources/plotKAllele.R"
+#include "resources/plotKLadder.R"
 #include "resources/plotLogistic.R"
 
 /*
@@ -64,22 +65,15 @@ Scripts Manual()
     return ToString(data_manuals_anaquin_txt);
 }
 
-Scripts PlotLinear()
-{
-    return ToString(src_r_plotLinear_R);
-}
-
-Scripts PlotLinear_()
-{
-    return ToString(src_r_plotLinear__R);
-}
-
 Scripts PlotFold()
 {
     return ToString(src_r_plotFold_R);
 }
 
+Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
+Scripts PlotKLadder()  { return ToString(src_r_plotKLadder_R);  }
 Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
+Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
 /*

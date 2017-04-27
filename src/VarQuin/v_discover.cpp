@@ -512,7 +512,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     
     auto somatic = [&]()
     {
-        const auto lm = ss.oa.linear(true);
+        const auto lm = ss.oa.linear();
 
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"

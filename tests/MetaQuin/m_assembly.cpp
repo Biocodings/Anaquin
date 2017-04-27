@@ -7,7 +7,7 @@ using namespace Anaquin;
 
 TEST_CASE("MetaAssembly_1")
 {
-    Test::clear();
+    clrTest();
 
     Standard::instance().addMMix(Reader("tests/data/M.R.10.csv"));
     Standard::instance().addMBed(Reader("tests/data/A.R.15.bed"));

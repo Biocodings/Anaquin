@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("RnaFoldChange_Sleuth_1")
 {
-    Test::RnaQuin_AB();
+    RnaQuin_AB();
     
     auto o = RFold::Options();
     
@@ -32,7 +32,7 @@ TEST_CASE("RnaFoldChange_Sleuth_1")
 
 TEST_CASE("RnaFoldChange_Sleuth_2")
 {
-    Test::RnaQuin_AB();
+    RnaQuin_AB();
     
     auto o = RFold::Options();
     
@@ -57,10 +57,10 @@ TEST_CASE("RnaFoldChange_Sleuth_2")
 
 TEST_CASE("RnaFoldChange_Guide")
 {
-    Test::clear();
+    clrTest();
     
-    const auto r1 = Test::test("RnaFoldChange -o 5.5.3 -m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
-    const auto r2 = Test::test("RnaFoldChange –o 5.5.3 –m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
+    const auto r1 = runTest("RnaFoldChange -o 5.5.3 -m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
+    const auto r2 = runTest("RnaFoldChange –o 5.5.3 –m data/RnaQuin/MRN029_v001.csv -method gene -ufiles tests/data/DESeq2.txt");
     
     REQUIRE(r1.status == 0);
     REQUIRE(r2.status == 0);

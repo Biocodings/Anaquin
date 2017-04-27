@@ -5,6 +5,10 @@
 
 namespace Anaquin
 {
+    /*
+     * This tool provides k-mers analysis for cancers and ladders
+     */
+    
     struct VKExpress
     {
         enum class Software
@@ -19,6 +23,7 @@ namespace Anaquin
         
         struct Stats : public LimitStats, public SequinStats
         {
+            // Empty Implementation
         };
 
         static Stats analyze(const FileName &, const Options &o);

@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("VFlip_1")
 {
-    Test::clear();
+    clrTest();
     
     struct Impl : public VFlip::Impl
     {

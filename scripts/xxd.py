@@ -36,14 +36,15 @@ data  = [ 'data/manuals/anaquin.txt',
 
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
-          'src/r/plotLinear_.R',
+          'src/r/plotKLadder.R',
     	  'src/r/plotLogistic.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',
    	      'src/r/plotVLODR.R',
           'src/r/plotVGROC.R',
           'src/r/plotVCROC.R',
-          'src/r/plotAllele.R',          
+          'src/r/plotAllele.R',
+          'src/r/plotKAllele.R',
 
           # ---------- RnaQuin ----------
 
