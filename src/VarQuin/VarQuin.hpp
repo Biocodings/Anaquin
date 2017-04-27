@@ -12,9 +12,9 @@ namespace Anaquin
     
     struct SeqVariant
     {
-        enum class Group
+        enum class Context
         {
-            NA12878,
+            Generic,
             VeryLowGC,
             LowGC,
             HighGC,
@@ -27,20 +27,13 @@ namespace Anaquin
             LongQuadRep,  // Quad-nucleotide repeats
             ShortTrinRep, // Trinucleotide repeats
             LongTrinRep,  // Trinucleotide repeats
-            Cosmic,
-        } group;
+            Cancer,
+        } ctx;
         
-        // Germline? Somatic?
-        Mutation mut;
-        
-        // Homozygous?
-        Zygosity zyg;
+        Genotype gt;
         
         // Copy number
         unsigned copy = 1;
-        
-        // Valid only for group == Cosmis
-        std::string info;
     };
     
     // Eg: chrev1, chrev10 etc...

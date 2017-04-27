@@ -220,10 +220,10 @@ void VKExpress::report(const FileName &file, const Options &o)
     writeLadder("VarKExpress_ladder.csv", stats, o);
     
     /*
-     * Generating VarKExpress_allele.R
+     * Generating VarKExpress_cancer.R
      */
     
-    writeRAllele("VarKExpress_allele.R", stats, o);
+    writeRAllele("VarKExpress_cancer.R", stats, o);
     
     /*
      * Generating VarKExpress_ladder.R

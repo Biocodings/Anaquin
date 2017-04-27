@@ -1,5 +1,5 @@
-#ifndef V_DISCOVER_HPP
-#define V_DISCOVER_HPP
+#ifndef V_WGS_HPP
+#define V_WGS_HPP
 
 #include <set>
 #include <vector>
@@ -31,8 +31,8 @@ namespace Anaquin
         // Does the variant fall into one of the reference regions?
         SequinID rReg;
     };
-    
-    struct VDiscover
+
+    struct VWGS
     {
         typedef AnalyzerOptions Options;
         
@@ -48,8 +48,8 @@ namespace Anaquin
              * Performance statistics
              */
             
-            // Performance for different group (only sequins)
-            std::map<SeqVariant::Group, Confusion> g2c;
+            // Performance for different context (only sequins)
+            std::map<SeqVariant::Context, Confusion> g2c;
 
             // Performance for different variation
             std::map<Variation, Confusion> m2c;

@@ -15,13 +15,14 @@
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
+#include "VarQuin/v_wgs.hpp"
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_report.hpp"
+#include "VarQuin/v_cancer.hpp"
 #include "VarQuin/v_kexpress.hpp"
-#include "VarQuin/v_vreport.hpp"
-#include "VarQuin/v_discover.hpp"
 
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
@@ -60,15 +61,16 @@ typedef std::set<Value> Range;
 #define TOOL_R_ALIGN    266
 #define TOOL_R_ASSEMBLY 267
 #define TOOL_R_EXPRESS  268
-#define TOOL_R_FOLD     270
-#define TOOL_R_GENE     271
-#define TOOL_R_REPORT   272
-#define TOOL_R_SAMPLE   273
-#define TOOL_V_KEXPRESS 274
-#define TOOL_V_VREPORT  275
-#define TOOL_V_ALIGN    276
-#define TOOL_V_FLIP     277
-#define TOOL_V_DISCOVER 278
+#define TOOL_R_FOLD     269
+#define TOOL_R_GENE     270
+#define TOOL_R_REPORT   271
+#define TOOL_R_SAMPLE   272
+#define TOOL_V_KEXPRESS 273
+#define TOOL_V_VREPORT  274
+#define TOOL_V_ALIGN    275
+#define TOOL_V_FLIP     276
+#define TOOL_V_WGS      277
+#define TOOL_V_CANCER   278
 #define TOOL_V_TRIM     279
 #define TOOL_V_SAMPLE   280
 #define TOOL_M_ALIGN    281
@@ -149,9 +151,10 @@ static std::map<Value, Tool> _tools =
     { "RnaGene",        TOOL_R_GENE      },
 
     { "VarAlign",       TOOL_V_ALIGN     },
-    { "VarDiscover",    TOOL_V_DISCOVER  },
+    { "VarWGS",         TOOL_V_WGS       },
+    { "VarCancer",      TOOL_V_CANCER    },
     { "VarVReport",     TOOL_V_VREPORT   },
-    { "VarSubsample",   TOOL_V_SAMPLE },
+    { "VarSubsample",   TOOL_V_SAMPLE    },
     { "VarTrim",        TOOL_V_TRIM      },
     { "VarFlip",        TOOL_V_FLIP      },
     { "VarKExpress",    TOOL_V_KEXPRESS  },
@@ -184,7 +187,7 @@ static std::map<Tool, std::set<Option>> _options =
     { TOOL_V_TRIM,     { OPT_R_BED,   OPT_U_SEQS } },
     { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS } },
     { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_DISCOVER, { OPT_R_VCF,   OPT_U_SEQS } },
+    { TOOL_V_WGS, { OPT_R_VCF,   OPT_U_SEQS } },
     { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_SEQS } },
     { TOOL_V_KEXPRESS, { OPT_MIXTURE, OPT_U_SEQS } },
 
@@ -407,7 +410,7 @@ static Scripts manual(Tool tool)
         case TOOL_V_TRIM:      { return VarTrim();        }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SAMPLE:    { return VarSubsample();   }
-        case TOOL_V_DISCOVER:  { return VarDiscover();    }
+        case TOOL_V_WGS:  { return VarDiscover();    }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SAMPLE:    { return MetaAbund();      }
@@ -1228,12 +1231,13 @@ void parse(int argc, char ** argv)
             break;
         }
 
+        case TOOL_V_WGS:
         case TOOL_V_FLIP:
         case TOOL_V_TRIM:
         case TOOL_V_ALIGN:
+        case TOOL_V_CANCER:
         case TOOL_V_SAMPLE:
         case TOOL_V_VREPORT:
-        case TOOL_V_DISCOVER:
         case TOOL_V_KEXPRESS:
         {
             if (__showInfo__)
@@ -1264,7 +1268,8 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_V_DISCOVER:
+                    case TOOL_V_WGS:
+                    case TOOL_V_CANCER:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
@@ -1331,10 +1336,17 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_DISCOVER:
+                case TOOL_V_WGS:
                 {
-                    VDiscover::Options o;
-                    analyze_1<VDiscover>(OPT_U_SEQS, o);
+                    VWGS::Options o;
+                    analyze_1<VWGS>(OPT_U_SEQS, o);
+                    break;
+                }
+
+                case TOOL_V_CANCER:
+                {
+                    VCancer::Options o;
+                    analyze_1<VCancer>(OPT_U_SEQS, o);
                     break;
                 }
 

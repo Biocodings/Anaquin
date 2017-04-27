@@ -9,7 +9,7 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- data[data$Label == 'TP' & data$Group == 'Cosmic',]
+data <- data[data$Context == 'Cancer' & data$ObsFreq != '-',]
 
 # Convert from factor representation
 data$ObsFreq <- as.numeric(as.character(data$ObsFreq))

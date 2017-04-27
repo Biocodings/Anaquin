@@ -521,11 +521,11 @@ Counts VarRef::nType(Variation m) const
     return _impl->vData.count_(m);
 }
 
-Counts VarRef::nGroup(SeqVariant::Group grp) const
+Counts VarRef::nContext(SeqVariant::Context ctx) const
 {
     return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
     {
-        return x.group == grp ? 1 : 0;
+        return x.ctx == ctx ? 1 : 0;
     });
 }
 
@@ -567,83 +567,60 @@ void VarRef::readVRef(const Reader &r)
     {
         A_ASSERT(x.key());
         
-        typedef SeqVariant::Group Group;
+        typedef SeqVariant::Context Context;
         
-        const auto m1 = std::map<std::string, SeqVariant::Group>
+        const auto m1 = std::map<std::string, SeqVariant::Context>
         {
-            { "NA12878",           Group::NA12878 },
-            { "high_gc",           Group::HighGC },
-            { "long_dinuc_rep",    Group::LongDinRep },
-            { "long_homopol",      Group::LongHompo },
-            { "low_gc",            Group::LowGC },
-            { "long_quadnuc_rep",  Group::LongQuadRep },
-            { "long_trinuc_rep",   Group::LongTrinRep },
-            { "short_dinuc_rep",   Group::ShortDinRep },
-            { "short_hompol",      Group::ShortHompo },
-            { "short_quadnuc_rep", Group::ShortQuadRep },
-            { "very_high_gc",      Group::VeryHighGC },
-            { "very_low_gc",       Group::VeryLowGC },
-            { "short_trinuc_rep",  Group::ShortTrinRep }
+            { "cancer",     Context::Cancer       },
+            { "generic",    Context::Generic      },
+            { "high_gc",    Context::HighGC       },
+            { "long_di",    Context::LongDinRep   },
+            { "long_homo",  Context::LongHompo    },
+            { "low_gc",     Context::LowGC        },
+            { "long_quad",  Context::LongQuadRep  },
+            { "long_tri",   Context::LongTrinRep  },
+            { "short_di",   Context::ShortDinRep  },
+            { "short_homo", Context::ShortHompo   },
+            { "short_quad", Context::ShortQuadRep },
+            { "v_high_gc",  Context::VeryHighGC   },
+            { "v_low_gc",   Context::VeryLowGC    },
+            { "short_tri",  Context::ShortTrinRep }
         };
         
-        const auto m2 = std::map<std::string, Zygosity>
+        const auto m2 = std::map<std::string, Genotype>
         {
-            { "HOM",     Zygosity::Homozygous  },
-            { "HET",     Zygosity::Heterzygous },
-            { "HOM_CNV", Zygosity::Homozygous  },
+            { "SOM",     Genotype::Somatic     },
+            { "HOM",     Genotype::Homozygous  },
+            { "HOM_CNV", Genotype::Homozygous  },
+            { "HET",     Genotype::Heterzygous },
         };
         
-        if (!x.opts.count("GR") || !m1.count(x.opts.at("GR")))
+        if (!x.opts.count("CX") || !m1.count(x.opts.at("CX")))
         {
-            if (!x.opts.count("GR") || !boost::starts_with(x.opts.at("GR"), "COSM"))
-            {
-                throwInvalidRef("The GR field is not found or invalid");
-            }
+            throwInvalidRef("The CX field is not found or invalid");
         }
-        
-        if (!x.opts.count("ZY") || !m2.count(x.opts.at("ZY")))
+        else if (!x.opts.count("GT") || !m2.count(x.opts.at("GT")))
         {
-            throwInvalidRef("The ZY field is not found or invalid");
-        }
-        else if (!x.opts.count("CP"))
-        {
-            throwInvalidRef("The CP field is not found or invalid");
+            throwInvalidRef("The GT field is not found or invalid");
         }
         
         SeqVariant s;
 
-        s.zyg  = m2.at(x.opts.at("ZY"));
+        s.gt   = m2.at(x.opts.at("GT"));
+        s.ctx  = m1.at(x.opts.at("CX"));
         s.copy = stoi(x.opts.at("CP"));
-        
-        const auto &gr = x.opts.at("GR");
-        
-        if (boost::starts_with(gr, "COSM"))
-        {
-            s.info  = gr;
-            s.group = Group::Cosmic;
-        }
-        else
-        {
-            s.group = m1.at(x.opts.at("GR"));
-        }
         
         _impl->vIDs.insert(x.name);
 
         Concent af;
         
-        switch (s.zyg)
+        switch (s.gt)
         {
-            case Zygosity::Homozygous:  { af = 1,0; break; }
-            case Zygosity::Heterzygous: { af = 0.5; break; }
+            case Genotype::Somatic:     { af = x.allF; break; }
+            case Genotype::Homozygous:  { af = 1,0;    break; }
+            case Genotype::Heterzygous: { af = 0.5;    break; }
         }
 
-        if (!isnan(x.allF))
-        {
-            af = x.allF;
-        }
-
-        s.mut = s.group == Group::Cosmic ? Mutation::Somatic : Mutation::Germline;
-        
         _impl->sVars[x.key()] = s;
         
         add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
@@ -661,19 +638,6 @@ MC2Intervals VarRef::mInters() const { return _impl->bData.minters(); }
 MergedIntervals<> VarRef::mInters(const ChrID &cID) const
 {
     return _impl->bData.minters(cID);
-}
-
-bool VarRef::isGermlineRef() const
-{
-    for (auto &i : _impl->sVars)
-    {
-        if (i.second.mut == Mutation::Somatic)
-        {
-            return false;
-        }
-    }
-    
-    return true;
 }
 
 Proportion VarRef::findAFreq(const SequinID &id) const

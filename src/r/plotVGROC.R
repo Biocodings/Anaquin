@@ -40,10 +40,7 @@ data$FreqGrp <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.0
 plotROC(data$Unique, score, data$FreqGrp, data$Label, title='ROC Plot (ranked by VCF Depth)', legTitle='Genotype', refGroup=%6%)
 
 #
-# 3. ROC by groups
+# 3. ROC by context
 #
 
-plotROC(data$Unique, score, data$Group, data$Label, title='ROC Plot (ranked by VCF Depth)', refGroup='-')
-
-
-
+plotROC(data$Unique, score, data$Context, data$Label, title='ROC Plot (ranked by VCF Depth)', refGroup='-')

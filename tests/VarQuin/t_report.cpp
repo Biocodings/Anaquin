@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "test.hpp"
-#include "VarQuin/v_vreport.hpp"
+#include "VarQuin/v_report.hpp"
 
 using namespace Anaquin;
 

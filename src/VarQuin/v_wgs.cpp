@@ -1,9 +1,9 @@
 #include "tools/tools.hpp"
-#include "VarQuin/v_discover.hpp"
+#include "VarQuin/v_wgs.hpp"
 
 using namespace Anaquin;
 
-typedef SeqVariant::Group Group;
+typedef SeqVariant::Context Context;
 
 extern Scripts PlotVLODR();
 extern Scripts PlotVGROC();
@@ -13,12 +13,13 @@ extern Scripts PlotAllele();
 extern Path __output__;
 extern std::string __full_command__;
 
-inline std::string zyg2str(Zygosity x)
+inline std::string gt2str(Genotype x)
 {
     switch (x)
     {
-        case Zygosity::Homozygous:  { return "Homozygous"; }
-        case Zygosity::Heterzygous: { return "Heterzygous"; }
+        case Genotype::Somatic:     { return "Somatic";     }
+        case Genotype::Homozygous:  { return "Homozygous";  }
+        case Genotype::Heterzygous: { return "Heterzygous"; }
     }
 }
 
@@ -32,24 +33,24 @@ inline std::string var2str(Variation x)
     }
 }
 
-inline std::string grp2Str(Group x)
+inline std::string ctx2Str(Context x)
 {
     switch (x)
     {
-        case Group::Cosmic:        { return "Cosmic";                    }
-        case Group::LowGC:         { return "LowGC";                     }
-        case Group::HighGC:        { return "HighGC";                    }
-        case Group::NA12878:       { return "NA12878";                   }
-        case Group::VeryLowGC:     { return "VeryLowGC";                 }
-        case Group::VeryHighGC:    { return "VeryHighGC";                }
-        case Group::LongHompo:     { return "LongHomopolymer";           }
-        case Group::ShortHompo:    { return "ShortHomopolymer";          }
-        case Group::ShortDinRep:   { return "ShortDinucleotideRepeat";   }
-        case Group::LongDinRep:    { return "LongDinucleotideRepeat";    }
-        case Group::ShortQuadRep:  { return "ShortQuadNucleotideRepeat"; }
-        case Group::LongQuadRep:   { return "LongQuadNucleotideRepeat";  }
-        case Group::ShortTrinRep:  { return "ShortTrinucleotideRepeat";  }
-        case Group::LongTrinRep:   { return "LongTrinucleotideRepeat";   }
+        case Context::Cancer:        { return "Cancer";                    }
+        case Context::LowGC:         { return "LowGC";                     }
+        case Context::HighGC:        { return "HighGC";                    }
+        case Context::Generic:       { return "Generic";                   }
+        case Context::VeryLowGC:     { return "VeryLowGC";                 }
+        case Context::VeryHighGC:    { return "VeryHighGC";                }
+        case Context::LongHompo:     { return "LongHomopolymer";           }
+        case Context::ShortHompo:    { return "ShortHomopolymer";          }
+        case Context::ShortDinRep:   { return "ShortDinucleotideRepeat";   }
+        case Context::LongDinRep:    { return "LongDinucleotideRepeat";    }
+        case Context::ShortQuadRep:  { return "ShortQuadNucleotideRepeat"; }
+        case Context::LongQuadRep:   { return "LongQuadNucleotideRepeat";  }
+        case Context::ShortTrinRep:  { return "ShortTrinucleotideRepeat";  }
+        case Context::LongTrinRep:   { return "LongTrinucleotideRepeat";   }
     }
 }
 
@@ -63,23 +64,13 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-static Scripts createVCROC(const FileName &file, const std::string &score, const std::string &refRat)
-{
-    return (boost::format(PlotVCROC()) % date()
-                                       % __full_command__
-                                       % __output__
-                                       % file
-                                       % score
-                                       % refRat).str();
-}
-
-VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
+VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VDiscover::Stats stats;
+    VWGS::Stats stats;
     
-    typedef SeqVariant::Group Group;
+    typedef SeqVariant::Context Context;
     
     auto muts = std::set<Variation>
     {
@@ -88,22 +79,22 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         Variation::Insertion,
     };
     
-    auto grps = std::set<Group>
+    auto grps = std::set<Context>
     {
-        Group::LowGC,
-        Group::HighGC,
-        Group::Cosmic,
-        Group::NA12878,
-        Group::LongHompo,
-        Group::VeryLowGC,
-        Group::VeryHighGC,
-        Group::ShortDinRep,
-        Group::LongDinRep,
-        Group::ShortHompo,
-        Group::LongQuadRep,
-        Group::LongTrinRep,
-        Group::ShortQuadRep,
-        Group::ShortTrinRep,
+        Context::LowGC,
+        Context::HighGC,
+        Context::Cancer,
+        Context::Generic,
+        Context::LongHompo,
+        Context::VeryLowGC,
+        Context::VeryHighGC,
+        Context::ShortDinRep,
+        Context::LongDinRep,
+        Context::ShortHompo,
+        Context::LongQuadRep,
+        Context::LongTrinRep,
+        Context::ShortQuadRep,
+        Context::ShortTrinRep,
     };
 
     for (auto &i : grps) { stats.g2c[i]; }
@@ -228,7 +219,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             stats.oc.tp()++;
             
             // Performance for each group
-            stats.g2c[sv.group].tp()++;
+            stats.g2c[sv.ctx].tp()++;
             
             // Performance for each mutation
             stats.m2c[i.query.type()].tp()++;
@@ -262,7 +253,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     
     for (auto &grp : grps)
     {
-        stats.g2c[grp].nr() = r.nGroup(grp);
+        stats.g2c[grp].nr() = r.nContext(grp);
         stats.g2c[grp].nq() = stats.g2c[grp].tp() + stats.g2c[grp].fp();
         stats.g2c[grp].fn() = stats.g2c[grp].nr() - stats.g2c[grp].tp();
     }
@@ -273,8 +264,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VDiscover::Stats &stats,
-                       const VDiscover::Options &o)
+                       const VWGS::Stats &stats,
+                       const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
@@ -292,8 +283,8 @@ static void writeQuins(const FileName &file,
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
-                                           % "Zygosity"
-                                           % "Group"
+                                           % "Genotype"
+                                           % "Context"
                                            % "Type").str());
     for (const auto &i : r.vars())
     {
@@ -319,8 +310,8 @@ static void writeQuins(const FileName &file,
                                                    % c.allF
                                                    % ld2ss(c.p)
                                                    % toString(c.qual)
-                                                   % zyg2str(sv.zyg)
-                                                   % grp2Str(sv.group)
+                                                   % gt2str(sv.gt)
+                                                   % ctx2Str(sv.ctx)
                                                    % var2str(i.type())).str());
         }
 
@@ -338,8 +329,8 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
-                                                   % zyg2str(sv.zyg)
-                                                   % grp2Str(sv.group)
+                                                   % gt2str(sv.gt)
+                                                   % ctx2Str(sv.ctx)
                                                    % var2str(i.type())).str());
         }
     }
@@ -347,7 +338,7 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeDetected(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+static void writeDetected(const FileName &file, const VWGS::Stats &stats, const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -365,7 +356,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                            % "ObsFreq"
                                            % "Pval"
                                            % "Qual"
-                                           % "Group"
+                                           % "Context"
                                            % "Type").str());
 
     auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
@@ -373,7 +364,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
         for (const auto &i : x)
         {
             auto sID = (i.seqByPos && i.alt && i.ref ? i.seqByPos->name : "-");
-            const auto grp = sID != "-" ?  grp2Str(r.findSeqVar(i.seqByPos->key()).group) : "-";
+            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.seqByPos->key()).ctx) : "-";
 
             o.writer->write((boost::format(format) % (i.rReg.empty() ? "-" : i.rReg)
                                                    % i.query.cID
@@ -386,7 +377,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
                                                    % i.query.allF
                                                    % ld2ss(i.query.p)
                                                    % toString(i.query.qual)
-                                                   % grp
+                                                   % ctx
                                                    % var2str(i.query.type())).str());
         }
     };
@@ -397,7 +388,7 @@ static void writeDetected(const FileName &file, const VDiscover::Stats &stats, c
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VWGS::Stats &stats, const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -405,12 +396,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
-    const auto &ss = stats;
-
     auto germline = [&]()
     {
-        const auto summary = "-------VarDiscover Output Results\n\n"
-                             "-------VarDiscover Output\n\n"
+        const auto summary = "-------VarWGS Output Results\n\n"
+                             "-------VarWGS Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
@@ -476,7 +465,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
         ind += ins;
 
         o.generate(file);
-        o.writer->open("VarDiscover_summary.stats");
+        o.writer->open("VarWGS_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % src                           // 3
@@ -510,116 +499,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          ).str());
     };
     
-    auto somatic = [&]()
-    {
-        const auto lm = ss.oa.linear();
-
-        const auto summary = "-------VarDiscover Output Results\n\n"
-                             "-------VarDiscover Output\n\n"
-                             "       Reference variant annotations:    %1%\n"
-                             "       Reference coordinate annotations: %2%\n"
-                             "       User identified variants:         %3%\n\n"
-                             "-------Reference variant annotations\n\n"
-                             "       Synthetic: %4% SNPs\n"
-                             "       Synthetic: %5% indels\n"
-                             "       Synthetic: %6% variants\n\n"
-                             "-------User identified variants\n\n"
-                             "       Synthetic: %7% SNPs\n"
-                             "       Synthetic: %8% indels\n"
-                             "       Synthetic: %9% variants\n\n"
-                             "       Detection Sensitivity: %10% (attomol/ul) (%11%)\n\n"
-                             "-------Identification of synthetic variants\n\n"
-                             "       True Positive:  %12% SNPS\n"
-                             "       True Positive:  %13% indels\n"
-                             "       True Positive:  %14% variants\n\n"
-                             "       False Positive: %15% SNPs\n"
-                             "       False Positive: %16% indels\n"
-                             "       False Positive: %17% variants\n\n"
-                             "       False Negative: %18% SNPs\n"
-                             "       False Negative: %19% indels\n"
-                             "       False Negative: %20% variants\n\n"
-                             "-------Diagnostic Performance (Synthetic)\n\n"
-                             "       *Variants\n"
-                             "       Sensitivity: %21$.4f\n"
-                             "       Precision:   %22$.4f\n"
-                             "       FDR Rate:    %23$.4f\n\n"
-                             "       *SNPs\n"
-                             "       Sensitivity: %24$.4f\n"
-                             "       Precision:   %25$.4f\n"
-                             "       FDR Rate:    %26$.4f\n\n"
-                             "       *Indels\n"
-                             "       Sensitivity: %27$.4f\n"
-                             "       Precision:   %28$.4f\n"
-                             "       FDR Rate:    %29$.4f\n\n"
-                             "-------Overall linear regression (log2 scale)\n\n"
-                             "      Slope:       %30%\n"
-                             "      Correlation: %31%\n"
-                             "      R2:          %32%\n"
-                             "      F-statistic: %33%\n"
-                             "      P-value:     %34%\n"
-                             "      SSM:         %35%, DF: %36%\n"
-                             "      SSE:         %37%, DF: %38%\n"
-                             "      SST:         %39%, DF: %40%\n";
-        o.generate(file);
-        o.writer->open("VarDiscover_summary.stats");
-        o.writer->write((boost::format(summary) % VCFRef()                   // 1
-                                                % BedRef()                   // 2
-                                                % src                        // 3
-                                                % r.countSNP()            // 4
-                                                % r.countInd()            // 5
-                                                % (r.countSNP() + r.countInd()) // 6
-                                                % "??" //r.countSNPGen()            // 7
-                                                % "??" //r.countIndGen()            // 8
-                                                % "??" //(r.countSNPGen() + r.countIndGen()) // 9
-                                                % "??" //ss.vData.countSNPSyn()  // 10
-                                                % "??" //ss.vData.countIndSyn()  // 11
-                                                % "??" //ss.vData.countVarSyn()  // 12
-                                                % "??" //ss.vars.limit.abund     // 13
-                                                % "??" //ss.vars.limit.id        // 14
-                                                % "??" //ss.countSNP_TP_Syn()    // 15
-                                                % "??" //ss.countInd_TP_Syn()    // 16
-                                                % "??" //ss.countVar_TP_Syn()    // 17
-                                                % "??" //ss.countSNP_FP_Syn()    // 18
-                                                % "??" //ss.countInd_FP_Syn()    // 19
-                                                % "??" //ss.countVar_FP_Syn()    // 20
-                                                % "??" //ss.countSNP_FnSyn()     // 21
-                                                % "??" //ss.countInd_FnSyn()     // 22
-                                                % "??" //ss.countVar_FnSyn()     // 23
-                                                % "??" //ss.countVarSnSyn()      // 24
-                                                % "??" //ss.countVarPC_Syn()     // 25
-                                                % "??" //(1-ss.countVarPC_Syn()) // 26
-                                                % "??" //ss.countSNPSnSyn()      // 27
-                                                % "??" //ss.countSNPPC_Syn()     // 28
-                                                % "??" //(1-ss.countSNPPC_Syn()) // 29
-                                                % lm.m                       // 30
-                                                % lm.r                       // 31
-                                                % lm.R2                      // 32
-                                                % lm.F                       // 33
-                                                % lm.p                       // 34
-                                                % lm.SSM                     // 35
-                                                % lm.SSM_D                   // 36
-                                                % lm.SSE                     // 37
-                                                % lm.SSE_D                   // 38
-                                                % lm.SST                     // 39
-                                                % lm.SST_D                   // 40
-                         ).str());
-    };
-    
-    if (r.isGermlineRef())
-    {
-        germline();
-    }
-    else
-    {
-        somatic();
-    }
-
+    germline();
     o.writer->close();
 }
 
-void VDiscover::report(const FileName &seqs, const Options &o)
+void VWGS::report(const FileName &seqs, const Options &o)
 {
-    const auto &r = Standard::instance().r_var;
     const auto ss = analyze(seqs, o);
     
     o.info("TP: " + std::to_string(ss.oc.tp()));
@@ -629,68 +514,30 @@ void VDiscover::report(const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarDiscover_sequins.csv
+     * Generating VarWGS_sequins.csv
      */
     
-    writeQuins("VarDiscover_sequins.csv", ss, o);
+    writeQuins("VarWGS_sequins.csv", ss, o);
 
     /*
-     * Generating VarDiscover_summary.stats
+     * Generating VarWGS_summary.stats
      */
     
-    writeSummary("VarDiscover_summary.stats", seqs, ss, o);
+    writeSummary("VarWGS_summary.stats", seqs, ss, o);
     
     /*
-     * Generating VarDiscover_detected.csv
+     * Generating VarWGS_detected.csv
      */
     
-    writeDetected("VarDiscover_detected.csv", ss, o);
+    writeDetected("VarWGS_detected.csv", ss, o);
     
     /*
-     * Generating VarDiscover_ROC.R
+     * Generating VarWGS_ROC.R
      */
     
-    o.generate("VarDiscover_ROC.R");
-    o.writer->open("VarDiscover_ROC.R");
+    o.generate("VarWGS_ROC.R");
+    o.writer->open("VarWGS_ROC.R");
     
-    if (r.isGermlineRef())
-    {
-        o.writer->write(createVGROC("VarDiscover_detected.csv", "data$Depth", "'FP'"));
-    }
-    else
-    {
-        o.writer->write(createVCROC("VarDiscover_detected.csv", "data$ObsFreq", "'FP'"));
-    }
-    
+    o.writer->write(createVGROC("VarWGS_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
-    
-    if (!r.isGermlineRef())
-    {
-        /*
-         * Generating VarDiscover_allele.R
-         */
-        
-        o.generate("VarDiscover_allele.R");
-        o.writer->open("VarDiscover_allele.R");
-        o.writer->write(RWriter::createRLinear("VarDiscover_sequins.csv",
-                                               o.work,
-                                               "Allele Frequency",
-                                               "Expected Allele Frequency (log2)",
-                                               "Measured Allele Frequency (log2)",
-                                               "log2(data$ExpFreq)",
-                                               "log2(data$ObsFreq)",
-                                               "input",
-                                                true,
-                                                PlotAllele()));
-        o.writer->close();
-
-        /*
-         * Generating VarDiscover_LODR.R
-         */
-        
-        o.generate("VarDiscover_LODR.R");
-        o.writer->open("VarDiscover_LODR.R");
-        o.writer->write(RWriter::createScript("VarDiscover_detected.csv", PlotVLODR()));
-        o.writer->close();
-    }
 }

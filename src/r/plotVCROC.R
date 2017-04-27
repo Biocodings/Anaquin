@@ -16,7 +16,7 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', sep='\t')
 
 data <- data[data$Name != '-',]
-data <- data[data$Group == 'Cosmic' | data$Group == '-',]
+data <- data[data$Context == 'Cancer' | data$Context == '-',]
 
 # How to rank the ROC points
 score <- %5%

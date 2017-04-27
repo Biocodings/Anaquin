@@ -301,7 +301,7 @@ namespace Anaquin
             Base lRegs() const;
         
             Counts nType(Variation) const;
-            Counts nGroup(SeqVariant::Group) const;
+            Counts nContext(SeqVariant::Context) const;
 
             Counts countSNP() const;
             Counts countInd() const;
@@ -325,10 +325,7 @@ namespace Anaquin
 
             // Allele frequency found? This function can also be used for checking the reference VCF.
             bool hasAFreq(const SequinID &) const;
-        
-            // Is this a germline reference?
-            bool isGermlineRef() const;
-        
+
         protected:
 
             void validate() override;

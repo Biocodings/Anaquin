@@ -28,8 +28,9 @@ namespace Anaquin
         Deletion
     };
 
-    enum class Zygosity
+    enum class Genotype
     {
+        Somatic,
         Homozygous,
         Heterzygous
     };
