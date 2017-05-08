@@ -19,7 +19,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
             std::cout << std::to_string(info.p.i) << std::endl;
         }
         
-        if (isReverseGenome(x.cID))
+        if (isReverseChr(x.cID))
         {
             stats.nSeqs++;
         }

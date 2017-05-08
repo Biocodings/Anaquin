@@ -37,10 +37,10 @@ namespace Anaquin
     };
     
     // Eg: chrev1, chrev10 etc...
-    inline bool isReverseGenome(const ChrID &cID)
+    inline bool isReverseChr(const ChrID &x)
     {
-        A_ASSERT(!cID.empty());
-        return cID.find("rev") != std::string::npos;
+        A_ASSERT(!x.empty());
+        return x.find("rev") != std::string::npos;
     }
 }
 

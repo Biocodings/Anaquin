@@ -5,10 +5,6 @@
 
 namespace Anaquin
 {
-    /*
-     * This tool provides k-mers analysis for cancers and ladders
-     */
-    
     struct VKExpress
     {
         enum class Software

@@ -6,20 +6,11 @@
 
 using namespace Anaquin;
 
-static const FileName NMNM_1    = "VarFlip_NMapNMap_1.fq";
-static const FileName NMNM_2    = "VarFlip_NMapNMap_2.fq";
-static const FileName ForNM_1   = "VarFlip_ForNMap_1.fq";
-static const FileName ForNM_2   = "VarFlip_ForNMap_2.fq";
-static const FileName RevNM_1   = "VarFlip_RevNMap_1.fq";
-static const FileName RevNM_2   = "VarFlip_RevNMap_2.fq";
-static const FileName RevRev_1  = "VarFlip_RevRev_1.fq";
-static const FileName RevRev_2  = "VarFlip_RevRev_2.fq";
-static const FileName ForFor_1  = "VarFlip_ForFor_1.fq";
-static const FileName ForFor_2  = "VarFlip_ForFor_2.fq";
-static const FileName ForRev_1  = "VarFlip_ForRev_1.fq";
-static const FileName ForRev_2  = "VarFlip_ForRev_2.fq";
-static const FileName ForHang_1 = "VarFlip_ForHang.fq";
-static const FileName RevHang_1 = "VarFlip_RevHang.fq";
+static const FileName HANG_1    = "VarFlip_hanging.fq";
+static const FileName FLIPPED_1 = "VarFlip_flipped_1.fq";
+static const FileName FLIPPED_2 = "VarFlip_flipped_2.fq";
+static const FileName AMBIG_1   = "VarFlip_ambiguous_1.fq";
+static const FileName AMBIG_2   = "VarFlip_ambiguous_2.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
@@ -44,7 +35,7 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
             o.wait(std::to_string(info.p.i));
         }
 
-        if (x.mapped)
+        if (!x.mapped)
         {
             stats.nNA++;
         }
@@ -174,52 +165,43 @@ static void writeSummary(const FileName &file,
     const auto summary = "-------VarFlip Output Results\n\n"
                          "-------VarFlip Inputs\n\n"
                          "       Alignment file: %1%\n\n"
+                         "-------Alignments\n\n"
+                         "       Unmapped: %2% (%3%%%)\n"
+                         "       Forward:  %4% (%5%%%)\n"
+                         "       Reverse:  %6% (%7%%%)\n"
+                         "       Dilution: %8$.4f\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Paired-end alignments: %2%\n"
-                         "                              %3%\n"
-                         "       Crossed alignments:    %4%\n"
-                         "                              %5%\n"
-                         "       Ambiguous alignments:  %6%\n"
-                         "                              %7%\n"
-                         "       Hanging alignments:    %8%\n\n"
-                         "-------Alignments\n\n"
-                         "       RevRev:   %9% (%10%%%)\n"
-                         "       Crossed:  %11% (%12%%%)\n"
-                         "       Hanging:  %13% (%14%%%)\n\n"
-                         "-------Alignments\n\n"
-                         "       Unmapped: %15% (%16%%%)\n"
-                         "       Forward:  %17% (%18%%%)\n"
-                         "       Reverse:  %19% (%20%%%)\n"
-                         "       Dilution: %21$.4f\n";
+                         "       Flipped reads:   %9% (%10%%%)\n"
+                         "       Ambiguous reads: %11% (%12%%%)\n"
+                         "       Hanging reads:   %13% (%14%%%)\n";
 
     #define C(x) stats.counts.at(x)
-    #define P(x) stats.prop(x)
 
     typedef VFlip::Status S;
     
+    const auto cf = C(S::ReverseReverse) + C(S::ReverseNotMapped);
+    const auto ca = C(S::ForwardForward) + C(S::ForwardReverse) + C(S::ForwardNotMapped) + C(S::NotMappedNotMapped);
+    const auto ch = C(S::RevHang) + C(S::ForHang);
+    const auto pf = 100.0 * cf / (cf + ca + ch);
+    const auto pa = 100.0 * ca / (cf + ca + ch);
+    const auto ph = 100.0 * ch / (cf + ca + ch);
+
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % align            // 1
-                                            % "????"          // 2
-                                            % "????"          // 3
-                                            % "????"        // 4
-                                            % "????"        // 5
-                                            % "????"      // 6
-                                            % "????"          // 7
-                                            % "????"          // 8
-                                            % C(S::ReverseReverse) // 9
-                                            % P(S::ReverseReverse) // 10
-                                            % C(S::ForwardReverse) // 11
-                                            % P(S::ForwardReverse) // 12
-                                            % C(S::RevHang)        // 13
-                                            % P(S::RevHang)    // 14
-                                            % stats.nNA        // 15
-                                            % stats.propNA()   // 16
-                                            % stats.nEndo      // 17
-                                            % stats.propGen()  // 18
-                                            % stats.nSeqs      // 19
-                                            % stats.propSyn()  // 20
-                                            % stats.dilution() // 21
+                                            % stats.nNA        // 2
+                                            % stats.propNA()   // 3
+                                            % stats.nEndo      // 4
+                                            % stats.propGen()  // 5
+                                            % stats.nSeqs      // 6
+                                            % stats.propSyn()  // 7
+                                            % stats.dilution() // 8
+                                            % cf               // 9
+                                            % pf               // 10
+                                            % ca               // 11
+                                            % pa               // 12
+                                            % ch               // 13
+                                            % ph               // 14
                      ).str());
 }
     
@@ -229,45 +211,33 @@ void VFlip::report(const FileName &file, const Options &o)
     {
         Impl(const Options &o)
         {
-            auto init = [&](Status status, FileName f1, FileName f2)
-            {
-                w1[status] = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-                w1[status]->open(f1);
-                
-                if (status != Status::ForHang && status != Status::RevHang)
-                {
-                    w2[status] = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-                    w2[status]->open(f2);
-                }
-            };
-            
-            init(Status::ForHang, ForHang_1, ForHang_1);
-            init(Status::RevHang, RevHang_1, RevHang_1);
-            init(Status::ReverseReverse, RevRev_1, RevRev_2);
-            init(Status::ForwardForward, ForFor_1, ForFor_2);
-            init(Status::ForwardReverse, ForRev_1, ForRev_2);
-            init(Status::ReverseNotMapped, RevNM_1, RevNM_2);
-            init(Status::ForwardNotMapped, ForNM_1, ForNM_2);
-            init(Status::NotMappedNotMapped, NMNM_1, NMNM_2);
+            h1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            a2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            f1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            f2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+
+            h1->open(HANG_1);
+            a1->open(AMBIG_1);
+            a2->open(AMBIG_2);
+            f1->open(FLIPPED_1);
+            f2->open(FLIPPED_2);
         }
 
         ~Impl()
         {
-            for (auto &i : w1) { i.second->close(); }
-            for (auto &i : w2) { i.second->close(); }
+            h1->close();
+            a1->close();
+            a2->close();
+            f1->close();
+            f2->close();
         }
         
-        bool isReverse(const ChrID &cID)
-        {
-            return isReverseGenome(cID);
-        }
+        bool isReverse(const ChrID &cID) { return isReverseChr(cID); }
 
         void process(const ParserSAM::Data &x, const ParserSAM::Data &y, VFlip::Status status)
         {
-            auto p1 = w1.at(status);
-            auto p2 = w2.count(status) ? w2.at(status) : nullptr;
-
-            auto writePaired = [&]()
+            auto writePaired = [&](std::shared_ptr<FileWriter> p1, std::shared_ptr<FileWriter> p2)
             {
                 p1->write("@" + x.name + "/1");
                 p1->write(x.seq);
@@ -279,7 +249,7 @@ void VFlip::report(const FileName &file, const Options &o)
                 p2->write(y.qual);
             };
             
-            auto writeSingle = [&]()
+            auto writeSingle = [&](std::shared_ptr<FileWriter> p1)
             {
                 if (x.mapped)
                 {
@@ -301,26 +271,33 @@ void VFlip::report(const FileName &file, const Options &o)
             switch (status)
             {
                 case Status::ReverseReverse:
+                case Status::ReverseNotMapped:
+                {
+                    writePaired(f1, f2);
+                    break;
+                }
+
                 case Status::ForwardReverse:
                 case Status::ForwardForward:
-                case Status::ReverseNotMapped:
                 case Status::ForwardNotMapped:
                 case Status::NotMappedNotMapped:
                 {
-                    writePaired();
+                    writePaired(a1, a2);
                     break;
                 }
 
                 case Status::RevHang:
                 case Status::ForHang:
                 {
-                    writeSingle();
+                    writeSingle(h1);
                     break;
                 }
             }
         }
-        
-        std::map<Status, std::shared_ptr<FileWriter>> w1, w2;
+
+        std::shared_ptr<FileWriter> h1;
+        std::shared_ptr<FileWriter> a1, a2;
+        std::shared_ptr<FileWriter> f1, f2;
     };
     
     Impl impl(o);

@@ -28,11 +28,6 @@ namespace Anaquin
         struct Stats : public MappingStats
         {
             std::map<VFlip::Status, Counts> counts;
-            
-            inline Proportion prop(Status status) const
-            {
-                return ((Proportion) counts.at(status)) / sum(counts);
-            }
         };
 
         struct Impl

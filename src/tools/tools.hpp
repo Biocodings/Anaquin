@@ -5,20 +5,59 @@
 #include <cmath>
 #include <string>
 #include <memory>
+#include <vector>
 #include <iomanip>
 #include <numeric>
 #include <sstream>
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/replace.hpp>
-
-/*
- * Provides useful but not always effecient implementation
- */
 
 namespace Anaquin
 {
+    typedef std::string Tok;
+    typedef std::vector<Tok> Toks;
+    
+    template <typename T> static void split(const Tok &x, const Tok &d, T &r)
+    {
+        r.clear();
+        boost::split(r, x, boost::is_any_of(d));
+    }
+
+    inline Tok join(const Toks &x, const std::string &d)
+    {
+        return boost::algorithm::join(x, d);
+    }
+    
+    // Eg: "C_12_D" to "C_12"
+    inline Tok first(const Tok &x, const Tok &d)
+    {
+        Toks toks;
+        toks.clear();
+        split(x, d, toks);
+        return toks.front();
+    }
+
+    // Eg: "C_12_D" to "D"
+    inline Tok last(const Tok &x, const Tok &d)
+    {
+        Toks toks;
+        toks.clear();
+        split(x, d, toks);
+        return toks.back();
+    }
+    
+    // Eg: "C_12_D" to "C_12"
+    inline Tok noLast(const Tok &x, const Tok &d)
+    {
+        Toks toks;
+        split(x, d, toks);
+        toks.pop_back();
+        return join(toks, d);
+    }
+
     inline std::string remove(const std::string &s1, const std::string &s2)
     {
         auto x = s1;

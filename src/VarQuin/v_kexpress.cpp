@@ -145,19 +145,20 @@ static void writeCancer(const FileName &file, const VKExpress::Stats &stats, con
 
 static void writeLadder(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%";
+    const auto format = "%1%\t%2%\t%3%\t%4%";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name" % "Expected" % "Observed").str());
+    o.writer->write((boost::format(format) % "Name" % "Expected" % "Observed" % "Fold").str());
 
     for (const auto &i : stats)
     {
         if (!isCancer(i.first))
         {
-            o.writer->write((boost::format(format) % i.first
+            o.writer->write((boost::format(format) % noLast(i.first, "_")
                                                    % i.second.x
-                                                   % i.second.y).str());
+                                                   % i.second.y
+                                                   % last(i.first, "_")).str());
         }
     }
     

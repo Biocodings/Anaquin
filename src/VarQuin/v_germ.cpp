@@ -1,5 +1,5 @@
 #include "tools/tools.hpp"
-#include "VarQuin/v_wgs.hpp"
+#include "VarQuin/v_germ.hpp"
 
 using namespace Anaquin;
 
@@ -64,11 +64,11 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
+VGermline::Stats VGermline::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VWGS::Stats stats;
+    VGermline::Stats stats;
     
     typedef SeqVariant::Context Context;
     
@@ -264,8 +264,8 @@ VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VWGS::Stats &stats,
-                       const VWGS::Options &o)
+                       const VGermline::Stats &stats,
+                       const VGermline::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
@@ -338,7 +338,7 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeDetected(const FileName &file, const VWGS::Stats &stats, const VWGS::Options &o)
+static void writeDetected(const FileName &file, const VGermline::Stats &stats, const VGermline::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -388,7 +388,7 @@ static void writeDetected(const FileName &file, const VWGS::Stats &stats, const 
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VWGS::Stats &stats, const VWGS::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VGermline::Stats &stats, const VGermline::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -503,7 +503,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
     o.writer->close();
 }
 
-void VWGS::report(const FileName &seqs, const Options &o)
+void VGermline::report(const FileName &seqs, const Options &o)
 {
     const auto ss = analyze(seqs, o);
     

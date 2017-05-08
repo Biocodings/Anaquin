@@ -1,5 +1,5 @@
-#ifndef V_WGS_HPP
-#define V_WGS_HPP
+#ifndef V_GERMLINE_HPP
+#define V_GERMLINE_HPP
 
 #include <set>
 #include <vector>
@@ -32,7 +32,7 @@ namespace Anaquin
         SequinID rReg;
     };
 
-    struct VWGS
+    struct VGermline
     {
         typedef AnalyzerOptions Options;
         
