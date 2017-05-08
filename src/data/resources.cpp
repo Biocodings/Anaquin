@@ -26,10 +26,7 @@
 #include "resources/MetaAbund.txt"
 #include "resources/MetaFoldChange.txt"
 
-/*
- * Scripts
- */
-
+#include "resources/plotCNV.R"
 #include "resources/plotFold.R"
 #include "resources/plotTROC.R"
 #include "resources/plotVLODR.R"
@@ -70,6 +67,7 @@ Scripts PlotFold()
     return ToString(src_r_plotFold_R);
 }
 
+Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }
 Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
 Scripts PlotKLadder()  { return ToString(src_r_plotKLadder_R);  }
 Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }

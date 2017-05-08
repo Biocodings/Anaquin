@@ -43,12 +43,11 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
+template <typename Reference> void readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2, const std::string &post = "")
 {
     auto f = [&](const std::string &delim)
     {
         const auto t = Reader(r);
-
         Counts n = 0;
         
         ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
@@ -67,13 +66,13 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                 case ID_Length_Mix:
                 {
                     n++;
-                    ref.add(seq, stoi(d[1]), con, m); break;
+                    ref.add(seq + post, stoi(d[1]), con, m); break;
                 }
                     
                 case ID_Mix:
                 {
                     n++;
-                    ref.add(seq, 0.0, con, m); break;
+                    ref.add(seq + post, 0.0, con, m); break;
                 }
             }
         }, delim);
@@ -87,39 +86,45 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
+void Standard::addCNV(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV.");
+    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_CNV");
+}
+
 void Standard::addVMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
     
-    readMixture(Reader(r), r_var, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readMixture(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
-    readMixture(Reader(r), r_meta, Mix_2, ID_Length_Mix, 3);
+    readLadder(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_meta, Mix_2, ID_Length_Mix, 3);
 }
 
 void Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
     
-    readMixture(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addRMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
 
-    readMixture(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::addRDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readMixture(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
-    readMixture(Reader(r), r_rna, Mix_2, ID_Length_Mix, 3);
+    readLadder(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_rna, Mix_2, ID_Length_Mix, 3);
 }

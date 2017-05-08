@@ -82,6 +82,8 @@ namespace Anaquin
             // Add mixture (e.g: ladder) in CSV format
             void addVMix(const Reader &);
         
+            void addCNV(const Reader &);
+        
             VarRef r_var;
 
         private:

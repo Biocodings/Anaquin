@@ -88,10 +88,9 @@ namespace Anaquin
         
         inline void sum(const SequinID &id, double x, double y)
         {
-            assert((*this)[id].x == x);            
-            (*this)[id].y += y;
+            if (!count(id)) { add(id, x, y); } else { (*this)[id].y += y; }
         }
-        
+
         Limit limitQuant() const;
         
         // Return the x-values and y-values after filtering

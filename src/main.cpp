@@ -96,15 +96,18 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   804
 #define OPT_TRIM    805
 #define OPT_MIXTURE 806
-#define OPT_FUZZY   807
-#define OPT_REPORT  808
-#define OPT_R_IND   809
-#define OPT_U_HG    810
-#define OPT_U_SEQS  811
-#define OPT_U_BAM   812
-#define OPT_U_FILES 813
-#define OPT_EDGE    814
-#define OPT_U_BASE  817
+#define OPT_AF_MIX  807
+#define OPT_CON_MIX 808
+#define OPT_CNV_MIX 809
+#define OPT_FUZZY   810
+#define OPT_REPORT  811
+#define OPT_R_IND   812
+#define OPT_U_HG    813
+#define OPT_U_SEQS  814
+#define OPT_U_BAM   815
+#define OPT_U_FILES 816
+#define OPT_EDGE    817
+#define OPT_U_BASE  818
 
 using namespace Anaquin;
 
@@ -189,7 +192,7 @@ static std::map<Tool, std::set<Option>> _options =
     { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
     { TOOL_V_GERMLINE, { OPT_R_VCF,   OPT_U_SEQS } },
     { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_SEQS } },
-    { TOOL_V_KEXPRESS, { OPT_MIXTURE, OPT_U_SEQS } },
+    { TOOL_V_KEXPRESS, { OPT_U_SEQS } },
 
     /*
      * MetaQuin Analysis
@@ -333,6 +336,10 @@ static const struct option long_options[] =
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
+    { "af",      required_argument, 0, OPT_AF_MIX  },
+    { "cnv",     required_argument, 0, OPT_CNV_MIX },
+    { "con",     required_argument, 0, OPT_CON_MIX },
+
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
@@ -473,6 +480,12 @@ template <typename Mixture> void applyMix(Mixture mix)
     
     std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
     mix(Reader(mixture()));
+}
+
+template <typename F> void addLadder(F f, Option key)
+{
+    std::cout << "[INFO]: Ladder: " << _p.opts[key] << std::endl;
+    f(Reader(_p.opts[key]));
 }
 
 template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
@@ -879,7 +892,10 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_TRIM: { _p.opts[opt] = val; break; }
+            case OPT_TRIM:
+            case OPT_AF_MIX:
+            case OPT_CNV_MIX:
+            case OPT_CON_MIX: { _p.opts[opt] = val; break; }
 
             case OPT_U_HG:
             case OPT_U_BAM:
@@ -1278,7 +1294,8 @@ void parse(int argc, char ** argv)
                         
                     case TOOL_V_KEXPRESS:
                     {
-                        applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                        addLadder(std::bind(&Standard::addVMix, &s, std::placeholders::_1), OPT_AF_MIX);
+                        addLadder(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_CNV_MIX);
                         break;
                     }
 
@@ -1305,7 +1322,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_V_KEXPRESS: { analyze_1<VKExpress>(OPT_U_SEQS); break; }
+                case TOOL_V_KEXPRESS: { analyze_2<VKExpress>(OPT_U_SEQS, OPT_U_BAM); break; }
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 

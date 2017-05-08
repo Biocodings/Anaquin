@@ -34,6 +34,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaFoldChange.txt',
           'data/manuals/MetaAssembly.txt',
 
+          'src/r/plotCNV.R',          
           'src/r/plotFold.R',
           'src/r/plotLinear.R',
           'src/r/plotKLadder.R',

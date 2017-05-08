@@ -1,16 +1,16 @@
-#include "tools/tools.hpp"
 #include "data/tokens.hpp"
 #include "VarQuin/v_kexpress.hpp"
 #include "parsers/parser_salmon.hpp"
 
 using namespace Anaquin;
 
+extern Scripts PlotCNV();
 extern Scripts PlotKLadder();
 extern Scripts PlotKAllele();
 
 typedef VKExpress::Software Software;
 
-VKExpress::Stats VKExpress::analyze(const FileName &file, const Options &o)
+VKExpress::Stats VKExpress::analyze(const FileName &file, const FileName &cnv, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -29,6 +29,16 @@ VKExpress::Stats VKExpress::analyze(const FileName &file, const Options &o)
                     stats.add(x.name, m->concent(), x.abund);
                 }
             });
+            
+            ParserSalmon::parse(Reader(cnv), [&](const ParserSalmon::Data &x, const ParserProgress &)
+            {
+                auto a = noLast(x.name, "_");
+                
+                    if (r.match(a + "_CNV"))
+                    {
+                        stats.add(a + "_CNV", r.match(a + "_CNV")->concent(), x.abund);
+                    }
+            });
         }
     }
 
@@ -37,9 +47,6 @@ VKExpress::Stats VKExpress::analyze(const FileName &file, const Options &o)
 
 static Scripts generateSummary(const FileName &src, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
-    // Defined in resources.cpp
-    extern FileName MixRef();
-    
     const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
@@ -65,7 +72,7 @@ static Scripts generateSummary(const FileName &src, const VKExpress::Stats &stat
     
     return (boost::format(format) % src           // 1
                                   % r.countSeqs() // 2
-                                  % MixRef()      // 3
+                                  % "????" //MixRef()      // 3
                                   % stats.size()  // 4
                                   % limit.abund   // 5
                                   % limit.id      // 6
@@ -86,6 +93,31 @@ static Scripts generateSummary(const FileName &src, const VKExpress::Stats &stat
 static bool isCancer(const std::string &x)
 {
     return hasSub(x, "_R") || hasSub(x, "_V");
+}
+
+static bool isCNV(const SequinID &x) { return hasSub(x, "_CNV"); }
+
+static void writeCNV(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Expected"
+                                           % "Observed").str());
+    
+    for (const auto &i : stats)
+    {
+        if (isCNV(i.first))
+        {
+            o.writer->write((boost::format(format) % noLast(i.first, "_")
+                                                   % i.second.x
+                                                   % i.second.y).str());
+        }
+    }
+    
+    o.writer->close();
 }
 
 static void writeCancer(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
@@ -153,7 +185,7 @@ static void writeConjoint(const FileName &file, const VKExpress::Stats &stats, c
 
     for (const auto &i : stats)
     {
-        if (!isCancer(i.first))
+        if (!isCancer(i.first) && !isCNV(i.first))
         {
             o.writer->write((boost::format(format) % i.first
                                                    % noLast(i.first, "_")
@@ -163,6 +195,19 @@ static void writeConjoint(const FileName &file, const VKExpress::Stats &stats, c
         }
     }
     
+    o.writer->close();
+}
+
+static void writeCNVR(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+{
+    extern std::string __full_command__;
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(PlotCNV()) % date()
+                                              % __full_command__
+                                              % o.work
+                                              % "VarKExpress_CNV.csv").str());
     o.writer->close();
 }
 
@@ -196,9 +241,9 @@ static void writeConjointR(const FileName &file, const VKExpress::Stats &stats, 
     o.writer->close();
 }
 
-void VKExpress::report(const FileName &file, const Options &o)
+void VKExpress::report(const FileName &file, const FileName &file2, const Options &o)
 {
-    const auto stats = analyze(file, o);
+    const auto stats = analyze(file, file2, o);
     
     /*
      * Generating VKExpress_summary.stats
@@ -209,6 +254,18 @@ void VKExpress::report(const FileName &file, const Options &o)
     o.writer->write(generateSummary(file, stats, o));
     o.writer->close();
 
+    /*
+     * Generating VarKExpress_CNV.csv
+     */
+    
+    writeCNV("VarKExpress_CNV.csv", stats, o);
+    
+    /*
+     * Generating VarKExpress_CNV.R
+     */
+    
+    writeCNVR("VarKExpress_CNV.R", stats, o);
+    
     /*
      * Generating VarKExpress_cancer.csv
      */
