@@ -143,19 +143,20 @@ static void writeCancer(const FileName &file, const VKExpress::Stats &stats, con
     o.writer->close();
 }
 
-static void writeLadder(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+static void writeConjoint(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name" % "Expected" % "Observed" % "Fold").str());
+    o.writer->write((boost::format(format) % "Name" % "Sequin" % "Expected" % "Observed" % "Fold").str());
 
     for (const auto &i : stats)
     {
         if (!isCancer(i.first))
         {
-            o.writer->write((boost::format(format) % noLast(i.first, "_")
+            o.writer->write((boost::format(format) % i.first
+                                                   % noLast(i.first, "_")
                                                    % i.second.x
                                                    % i.second.y
                                                    % last(i.first, "_")).str());
@@ -165,7 +166,7 @@ static void writeLadder(const FileName &file, const VKExpress::Stats &stats, con
     o.writer->close();
 }
 
-static void writeRAllele(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+static void writeCancerR(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
     extern std::string __full_command__;
 
@@ -178,11 +179,11 @@ static void writeRAllele(const FileName &file, const VKExpress::Stats &stats, co
     o.writer->close();
 }
 
-static void writeRLadder(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
+static void writeConjointR(const FileName &file, const VKExpress::Stats &stats, const VKExpress::Options &o)
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarKExpress_ladder.csv",
+    o.writer->write(RWriter::createRLinear("VarKExpress_conjoint.csv",
                                            o.work,
                                            "Expected Concentration vs Observed Abundance",
                                            "Expected Concentration (log2)",
@@ -215,20 +216,20 @@ void VKExpress::report(const FileName &file, const Options &o)
     writeCancer("VarKExpress_cancer.csv", stats, o);
 
     /*
-     * Generating VarKExpress_ladder.csv
+     * Generating VarKExpress_conjoint.csv
      */
     
-    writeLadder("VarKExpress_ladder.csv", stats, o);
+    writeConjoint("VarKExpress_conjoint.csv", stats, o);
     
     /*
      * Generating VarKExpress_cancer.R
      */
     
-    writeRAllele("VarKExpress_cancer.R", stats, o);
+    writeCancerR("VarKExpress_cancer.R", stats, o);
     
     /*
-     * Generating VarKExpress_ladder.R
+     * Generating VarKExpress_conjoint.R
      */
     
-    writeRLadder("VarKExpress_ladder.R", stats, o);
+    writeConjointR("VarKExpress_conjoint.R", stats, o);
 }
