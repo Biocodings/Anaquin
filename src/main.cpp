@@ -336,9 +336,9 @@ static const struct option long_options[] =
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
-    { "af",      required_argument, 0, OPT_AF_MIX  },
-    { "cnv",     required_argument, 0, OPT_CNV_MIX },
-    { "con",     required_argument, 0, OPT_CON_MIX },
+    { "af",      required_argument, 0, OPT_AF_MIX  }, // Ladder for allele frequency
+    { "cnv",     required_argument, 0, OPT_CNV_MIX }, // Ladder for copy number variation
+    { "con",     required_argument, 0, OPT_CON_MIX }, // Ladder for conjoint k-mers
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -1326,11 +1326,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 
-                case TOOL_V_ALIGN:
-                {
-                    analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS);
-                    break;
-                }
+                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS); break; }
 
                 case TOOL_V_TRIM:
                 {
