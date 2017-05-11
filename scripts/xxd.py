@@ -24,8 +24,9 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarFlip.txt',
           'data/manuals/VarTrim.txt',          
+          'data/manuals/VarCancer.txt',
           'data/manuals/VarVReport.txt',
-          'data/manuals/VarDiscover.txt',
+          'data/manuals/VarGermline.txt',
           'data/manuals/VarSubsample.txt',
 
           'data/manuals/MetaAlign.txt',
@@ -55,7 +56,6 @@ data  = [ 'data/manuals/anaquin.txt',
 
           # ---------- VarQuin ----------
 
-          'data/VarQuin/sampled.bed',
           'data/VarQuin/AVA033_v001.bed',          
         ]
 tests = [ ]

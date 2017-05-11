@@ -390,8 +390,9 @@ static Scripts manual(Tool tool)
     extern Scripts VarFlip();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
+    extern Scripts VarCancer();
     extern Scripts VarVReport();
-    extern Scripts VarDiscover();
+    extern Scripts VarGermline();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
     extern Scripts RnaReport();
@@ -415,9 +416,10 @@ static Scripts manual(Tool tool)
         case TOOL_R_SAMPLE:    { return RnaSubsample();   }
         case TOOL_V_FLIP:      { return VarFlip();        }
         case TOOL_V_TRIM:      { return VarTrim();        }
+        case TOOL_V_CANCER:    { return VarCancer();      }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SAMPLE:    { return VarSubsample();   }
-        case TOOL_V_GERMLINE:  { return VarDiscover();    }
+        case TOOL_V_GERMLINE:  { return VarGermline();    }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SAMPLE:    { return MetaAbund();      }

@@ -9,8 +9,9 @@
 #include "resources/VarFlip.txt"
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
+#include "resources/VarCancer.txt"
 #include "resources/VarVReport.txt"
-#include "resources/VarDiscover.txt"
+#include "resources/VarGermline.txt"
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
@@ -128,9 +129,14 @@ Scripts VarSubsample()
     return ToString(data_manuals_VarSubsample_txt);
 }
 
-Scripts VarDiscover()
+Scripts VarGermline()
 {
-    return ToString(data_manuals_VarDiscover_txt);
+    return ToString(data_manuals_VarGermline_txt);
+}
+
+Scripts VarCancer()
+{
+    return ToString(data_manuals_VarCancer_txt);
 }
 
 Scripts VarVReport()
