@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("ReadRegions_Example")
 {
-    const auto r = readRegions(Reader("data/VarQuin/AVA017_v001.bed"));
+    const auto r = readRegions(Reader("tests/test2.bed"));
     
     auto allTrue = [&](const ChrID &)
     {

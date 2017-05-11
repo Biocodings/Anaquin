@@ -192,18 +192,21 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
         
         classifyAlign(p, x);
     };
-
-    /*
-     * Analyzing endogenous alignments
-     */
     
-    o.analyze(endo);
-    
-    ParserSAM::parse(endo, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    if (!endo.empty())
     {
-        classify(x, info, *(stats.endo));
-    });
-    
+        /*
+         * Analyzing endogenous alignments
+         */
+        
+        o.analyze(endo);
+        
+        ParserSAM::parse(endo, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+        {
+            classify(x, info, *(stats.endo));
+        });
+    }
+
     /*
      * Analyzing sequin alignments
      */
@@ -360,62 +363,106 @@ void VAlign::writeSummary(const FileName &file,
     const auto &endo = stats.endo;
     const auto &seqs = stats.seqs;
 
-    const auto summary = "-------VarAlign Summary Statistics\n\n"
-                         "       Reference annotation file: %1%\n"
-                         "       Genome alignment file: %2%\n"
-                         "       Synthetic alignment file: %3%\n\n"
-                         "-------Alignments\n\n"
-                         "       Genome:    %4% (%5%%%)\n"
-                         "       Synthetic: %6% (%7%%%)\n"
-                         "       Dilution:  %8$.4f%%\n\n"
-                         "-------Reference regions\n\n"
-                         "       Regions: %9% regions\n"
-                         "       Regions: %10% bases\n\n"
-                         "-------Comparison of alignments to annotation (Synthetic)\n\n"
-                         "       *Alignment level\n"
-                         "       Inside regions:  %11%\n"
-                         "       Outside regions: %12%\n\n"
-                         "       Precision:      %13$.4f\n\n"
-                         "       *Nucleotide level\n"
-                         "       Covered:     %14%\n"
-                         "       Uncovered:   %15%\n"
-                         "       Erroneous:   %16%\n"
-                         "       Total:       %17%\n\n"
-                         "       Sensitivity: %18$.4f\n"
-                         "       Precision:   %19$.4f\n\n"
-                         "-------Comparison of alignments to annotation (Genome)\n\n"
-                         "       *Nucleotide level\n"
-                         "       Covered:     %20%\n"
-                         "       Uncovered:   %21%\n"
-                         "       Total:       %22%\n\n"
-                         "       Sensitivity: %23$.4f\n";
+    const auto summary1 = "-------VarAlign Summary Statistics\n\n"
+                          "       Reference annotation file: %1%\n"
+                          "       Genome alignment file: %2%\n"
+                          "       Synthetic alignment file: %3%\n\n"
+                          "-------Alignments\n\n"
+                          "       Genome:    %4% (%5%%%)\n"
+                          "       Synthetic: %6% (%7%%%)\n"
+                          "       Dilution:  %8$.4f%%\n\n"
+                          "-------Reference regions\n\n"
+                          "       Regions: %9% regions\n"
+                          "       Regions: %10% bases\n\n"
+                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                          "       *Alignment level\n"
+                          "       Inside regions:  %11%\n"
+                          "       Outside regions: %12%\n\n"
+                          "       Precision:      %13$.4f\n\n"
+                          "       *Nucleotide level\n"
+                          "       Covered:     %14%\n"
+                          "       Uncovered:   %15%\n"
+                          "       Erroneous:   %16%\n"
+                          "       Total:       %17%\n\n"
+                          "       Sensitivity: %18$.4f\n"
+                          "       Precision:   %19$.4f\n\n"
+                          "-------Comparison of alignments to annotation (Genome)\n\n"
+                          "       *Nucleotide level\n"
+                          "       Covered:     %20%\n"
+                          "       Uncovered:   %21%\n"
+                          "       Total:       %22%\n\n"
+                          "       Sensitivity: %23$.4f\n";
 
+    const auto summary2 = "-------VarAlign Summary Statistics\n\n"
+                          "       Reference annotation file: %1%\n"
+                          "       Synthetic alignment file: %2%\n\n"
+                          "-------Alignments\n\n"
+                          "       Synthetic: %3% \n\n"
+                          "-------Reference regions\n\n"
+                          "       Regions: %4% regions\n"
+                          "       Regions: %5% bases\n\n"
+                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                          "       *Alignment level\n"
+                          "       Inside regions:  %6%\n"
+                          "       Outside regions: %7%\n\n"
+                          "       Precision:      %8$.4f\n\n"
+                          "       *Nucleotide level\n"
+                          "       Covered:     %9%\n"
+                          "       Uncovered:   %10%\n"
+                          "       Erroneous:   %11%\n"
+                          "       Total:       %12%\n\n"
+                          "       Sensitivity: %13$.4f\n"
+                          "       Precision:   %14$.4f\n";
+    
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()              // 1
-                                            % gen                   // 2
-                                            % seq                   // 3
-                                            % endo->nMap            // 4
-                                            % stats.pEndo()         // 5
-                                            % seqs->nMap            // 6
-                                            % stats.pSeqs()         // 7
-                                            % (100 * stats.pSeqs()) // 8
-                                            % r.nRegs()             // 9
-                                            % r.lRegs()             // 10
-                                            % seqs->align.tp()      // 11
-                                            % seqs->align.fp()      // 12
-                                            % seqs->align.pc()      // 13
-                                            % seqs->base.tp()       // 14
-                                            % seqs->base.fn()       // 15
-                                            % seqs->base.fp()       // 16
-                                            % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 17
-                                            % seqs->base.sn()       // 18
-                                            % seqs->base.pc()       // 19
-                                            % endo->base.tp()       // 20
-                                            % endo->base.fn()       // 21
-                                            % (endo->base.tp() + endo->base.fn()) // 22
-                                            % endo->base.sn()       // 23
-                     ).str());
+    
+    if (!gen.empty())
+    {
+        o.writer->write((boost::format(summary1) % BedRef()              // 1
+                                                 % gen                   // 2
+                                                 % seq                   // 3
+                                                 % endo->nMap            // 4
+                                                 % stats.pEndo()         // 5
+                                                 % seqs->nMap            // 6
+                                                 % stats.pSeqs()         // 7
+                                                 % (100 * stats.pSeqs()) // 8
+                                                 % r.nRegs()             // 9
+                                                 % r.lRegs()             // 10
+                                                 % seqs->align.tp()      // 11
+                                                 % seqs->align.fp()      // 12
+                                                 % seqs->align.pc()      // 13
+                                                 % seqs->base.tp()       // 14
+                                                 % seqs->base.fn()       // 15
+                                                 % seqs->base.fp()       // 16
+                                                 % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 17
+                                                 % seqs->base.sn()       // 18
+                                                 % seqs->base.pc()       // 19
+                                                 % endo->base.tp()       // 20
+                                                 % endo->base.fn()       // 21
+                                                 % (endo->base.tp() + endo->base.fn()) // 22
+                                                 % endo->base.sn()       // 23
+                         ).str());
+    }
+    else
+    {
+        o.writer->write((boost::format(summary2) % BedRef()              // 1
+                                                 % seq                   // 2
+                                                 % seqs->nMap            // 3
+                                                 % r.nRegs()             // 4
+                                                 % r.lRegs()             // 5
+                                                 % seqs->align.tp()      // 6
+                                                 % seqs->align.fp()      // 7
+                                                 % seqs->align.pc()      // 8
+                                                 % seqs->base.tp()       // 9
+                                                 % seqs->base.fn()       // 10
+                                                 % seqs->base.fp()       // 11
+                                                 % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 12
+                                                 % seqs->base.sn()       // 13
+                                                 % seqs->base.pc()       // 14
+                         ).str());
+    }
+
     o.writer->close();
 }
 

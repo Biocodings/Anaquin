@@ -141,32 +141,32 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "Test",           TOOL_TEST        },
-    { "Help",           TOOL_HELP        },
+    { "Test",           TOOL_TEST       },
+    { "Help",           TOOL_HELP       },
 
-    { "RnaAlign",       TOOL_R_ALIGN     },
-    { "RnaAssembly",    TOOL_R_ASSEMBLY  },
-    { "RnaExpress",     TOOL_R_EXPRESS   },
-    { "RnaExpression",  TOOL_R_EXPRESS   },
-    { "RnaReport",      TOOL_R_REPORT    },
-    { "RnaFoldChange",  TOOL_R_FOLD      },
-    { "RnaSubsample",   TOOL_R_SAMPLE },
-    { "RnaGene",        TOOL_R_GENE      },
+    { "RnaAlign",       TOOL_R_ALIGN    },
+    { "RnaAssembly",    TOOL_R_ASSEMBLY },
+    { "RnaExpress",     TOOL_R_EXPRESS  },
+    { "RnaExpression",  TOOL_R_EXPRESS  },
+    { "RnaReport",      TOOL_R_REPORT   },
+    { "RnaFoldChange",  TOOL_R_FOLD     },
+    { "RnaSubsample",   TOOL_R_SAMPLE   },
+    { "RnaGene",        TOOL_R_GENE     },
 
-    { "VarAlign",       TOOL_V_ALIGN     },
-    { "VarWGS",         TOOL_V_GERMLINE       },
-    { "VarCancer",      TOOL_V_CANCER    },
-    { "VarVReport",     TOOL_V_VREPORT   },
-    { "VarSubsample",   TOOL_V_SAMPLE    },
-    { "VarTrim",        TOOL_V_TRIM      },
-    { "VarFlip",        TOOL_V_FLIP      },
-    { "VarKExpress",    TOOL_V_KEXPRESS  },
+    { "VarAlign",       TOOL_V_ALIGN    },
+    { "VarGermline",    TOOL_V_GERMLINE },
+    { "VarCancer",      TOOL_V_CANCER   },
+    { "VarVReport",     TOOL_V_VREPORT  },
+    { "VarSubsample",   TOOL_V_SAMPLE   },
+    { "VarTrim",        TOOL_V_TRIM     },
+    { "VarFlip",        TOOL_V_FLIP     },
+    { "VarKExpress",    TOOL_V_KEXPRESS },
 
-    { "MetaFoldChange", TOOL_M_FOLD      },
-    { "MetaAlign",      TOOL_M_ALIGN     },
-    { "MetaAbund",      TOOL_M_ABUND     },
-    { "MetaAssembly",   TOOL_M_ASSEMBLY  },
-    { "MetaSubsample",  TOOL_M_SAMPLE },
+    { "MetaFoldChange", TOOL_M_FOLD     },
+    { "MetaAlign",      TOOL_M_ALIGN    },
+    { "MetaAbund",      TOOL_M_ABUND    },
+    { "MetaAssembly",   TOOL_M_ASSEMBLY },
+    { "MetaSubsample",  TOOL_M_SAMPLE   },
 };
 
 static std::map<Tool, std::set<Option>> _options =
@@ -188,7 +188,7 @@ static std::map<Tool, std::set<Option>> _options =
 
     { TOOL_V_FLIP,     { OPT_U_BAM  } },
     { TOOL_V_TRIM,     { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS } },
+    { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_SEQS } },
     { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
     { TOOL_V_GERMLINE, { OPT_R_VCF,   OPT_U_SEQS } },
     { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_SEQS } },
@@ -635,7 +635,8 @@ template <typename Analyzer> void analyze_2(Option x1, Option x2, typename Analy
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::report(_p.opts[x1], _p.opts[x2], o);
+        #define D(x) _p.opts.count(x) ? _p.opts[x] : ""        
+        Analyzer::report(D(x1), D(x2), o);
     }, o);
 }
 
