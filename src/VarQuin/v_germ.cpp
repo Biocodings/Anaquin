@@ -398,16 +398,38 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
 
     auto germline = [&]()
     {
-        const auto summary = "-------VarWGS Output Results\n\n"
-                             "-------VarWGS Output\n\n"
+        const auto summary = "-------VarGermline Output Results\n\n"
+                             "-------VarGermline Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
                              "-------Reference variants by type\n\n"
-                             "       %4% SNPs\n"
-                             "       %5% indels\n"
-                             "       %6% variants\n\n"
-                             "-------Called variants by type\n\n"
+                             "       SNPs:   %4%\n"
+                             "       Indels: %5%\n"
+                             "       Total:  %6%\n\n"
+                             "-------Reference variants by context\n\n"
+                             "       Generic:      %31%\n"
+                             "       VeryLowGC:    %32%\n"
+                             "       LowGC:        %33%\n"
+                             "       HighGC:       %34%\n"
+                             "       VeryHighGC:   %35%\n"
+                             "       ShortDinRep:  %36%\n"
+                             "       LongDinRep:   %37%\n"
+                             "       ShortHompo:   %38%\n"
+                             "       LongHompo:    %39%\n"
+                             "       ShortQuadRep: %40%\n"
+                             "       LongQuadRep:  %41%\n"
+                             "       ShortTrinRep: %42%\n"
+                             "       LongTrinRep:  %43%\n\n"
+                             "-------Reference variants by zygosity\n\n"
+                             "       Homozygosity:  %44% \n"
+                             "       Heterzygosity: %45%\n\n"
+                             "-------Reference variants by copy number\n\n"
+                             "       CNV 1-fold: %46%\n"
+                             "       CNV 2-fold: %47%\n"
+                             "       CNV 3-fold: %48%\n"
+                             "       CNV 4-fold: %49%\n\n"
+                             "-------Called variants by genotype\n\n"
                              "       %7% SNPs\n"
                              "       %8% indels\n"
                              "       %9% variants\n\n"
@@ -465,7 +487,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
         ind += ins;
 
         o.generate(file);
-        o.writer->open("VarWGS_summary.stats");
+        o.writer->open("VarGermline_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % src                           // 3
@@ -496,6 +518,25 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                                                 % D(ind.pc())                   // 28
                                                 % D(ind.F1())                   // 29
                                                 % D(1-ind.pc())                 // 30
+                                                % D(r.nContext(Context::Generic))      // 31
+                                                % D(r.nContext(Context::VeryLowGC))    // 32
+                                                % D(r.nContext(Context::LowGC))        // 33
+                                                % D(r.nContext(Context::HighGC))       // 34
+                                                % D(r.nContext(Context::VeryHighGC))   // 35
+                                                % D(r.nContext(Context::ShortDinRep))  // 36
+                                                % D(r.nContext(Context::LongDinRep))   // 37
+                                                % D(r.nContext(Context::ShortHompo))   // 38
+                                                % D(r.nContext(Context::LongHompo))    // 39
+                                                % D(r.nContext(Context::ShortQuadRep)) // 40
+                                                % D(r.nContext(Context::LongQuadRep))  // 41
+                                                % D(r.nContext(Context::ShortTrinRep)) // 42
+                                                % D(r.nContext(Context::LongTrinRep))  // 43
+                                                % D(r.nGeno(Genotype::Homozygous))     // 44
+                                                % D(r.nGeno(Genotype::Heterzygous))    // 45
+                                                % D(r.nCNV(1)) // 46
+                                                % D(r.nCNV(2)) // 47
+                                                % D(r.nCNV(3)) // 48
+                                                % D(r.nCNV(4)) // 49
                          ).str());
     };
     
@@ -514,30 +555,30 @@ void VGermline::report(const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarWGS_sequins.csv
+     * Generating VarGermline_sequins.csv
      */
     
-    writeQuins("VarWGS_sequins.csv", ss, o);
+    writeQuins("VarGermline_sequins.csv", ss, o);
 
     /*
-     * Generating VarWGS_summary.stats
+     * Generating VarGermline_summary.stats
      */
     
-    writeSummary("VarWGS_summary.stats", seqs, ss, o);
+    writeSummary("VarGermline_summary.stats", seqs, ss, o);
     
     /*
-     * Generating VarWGS_detected.csv
+     * Generating VarGermline_detected.csv
      */
     
-    writeDetected("VarWGS_detected.csv", ss, o);
+    writeDetected("VarGermline_detected.csv", ss, o);
     
     /*
-     * Generating VarWGS_ROC.R
+     * Generating VarGermline_ROC.R
      */
     
-    o.generate("VarWGS_ROC.R");
-    o.writer->open("VarWGS_ROC.R");
+    o.generate("VarGermline_ROC.R");
+    o.writer->open("VarGermline_ROC.R");
     
-    o.writer->write(createVGROC("VarWGS_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createVGROC("VarGermline_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
 }

@@ -1,8 +1,6 @@
 #ifndef V_GERMLINE_HPP
 #define V_GERMLINE_HPP
 
-#include <set>
-#include <vector>
 #include "data/vData.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"

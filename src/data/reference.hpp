@@ -299,7 +299,9 @@ namespace Anaquin
 
             // Total number of bases for all reference regions
             Base lRegs() const;
-        
+
+            Counts nCNV(int)  const;
+            Counts nGeno(Genotype)  const;
             Counts nType(Variation) const;
             Counts nContext(SeqVariant::Context) const;
 

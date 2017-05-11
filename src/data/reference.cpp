@@ -516,16 +516,32 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Counts VarRef::nType(Variation m) const
-{
-    return _impl->vData.count_(m);
-}
-
-Counts VarRef::nContext(SeqVariant::Context ctx) const
+Counts VarRef::nCNV(int c) const
 {
     return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
     {
-        return x.ctx == ctx ? 1 : 0;
+        return x.copy == c ? 1 : 0;
+    });
+}
+
+Counts VarRef::nGeno(Genotype g) const
+{
+    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    {
+        return x.gt == g ? 1 : 0;
+    });
+}
+
+Counts VarRef::nType(Variation x) const
+{
+    return _impl->vData.count_(x);
+}
+
+Counts VarRef::nContext(SeqVariant::Context c) const
+{
+    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    {
+        return x.ctx == c ? 1 : 0;
     });
 }
 
