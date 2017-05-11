@@ -1,10 +1,10 @@
 <b>ANAQUIN MANUAL
 
 <b>NAME</b>
-     VarDiscover - Assess the identification of variants from alignments to the <i>in silico</i> genome
+     VarCancer - Assess the identification of variants from alignments to the <i>in silico</i> genome
 
 <b>DESCRIPTION</b>
-    VarDiscover can be used for analyzing the identification of variants and quantifying synthetic variant
+    VarCancer can be used for analyzing the identification of variants and quantifying synthetic variant
     allele frequency on the <i>in silico</i> genome, and provides several useful statistics to describe the
     identification of variants, including:
     
