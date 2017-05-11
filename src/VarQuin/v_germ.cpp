@@ -434,7 +434,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       %8% indels\n"
                              "       %9% variants\n\n"
                              "-------Identification of synthetic variants\n\n"
-                             "       True Positive:  %10% SNPS\n"
+                             "       True Positive:  %10% SNPs\n"
                              "       True Positive:  %11% indels\n"
                              "       True Positive:  %12% variants\n\n"
                              "       False Positive: %13% SNPs\n"
@@ -443,7 +443,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       False Negative: %16% SNPs\n"
                              "       False Negative: %17% indels\n"
                              "       False Negative: %18% variants\n\n"
-                             "-------Diagnostic Performance (Synthetic)\n\n"
+                             "-------Diagnostic Performance by type (Synthetic)\n\n"
                              "       *Variants\n"
                              "       Sensitivity: %19$.4f\n"
                              "       Precision:   %20$.4f\n"
@@ -458,7 +458,34 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       Sensitivity: %27$.4f\n"
                              "       Precision:   %28$.4f\n"
                              "       F1 Score:    %29$.4f\n"
-                             "       FDR Rate:    %30$.4f";
+                             "       FDR Rate:    %30$.4f\n\n"
+                             "-------Diagnostic Performance by context (Synthetic)\n\n"
+                             "       *LowGC\n"
+                             "       Sensitivity: %50$.4f\n\n"
+                             "       *HighGC\n"
+                             "       Sensitivity: %51$.4f\n\n"
+                             "       *Generic\n"
+                             "       Sensitivity: %52$.4f\n\n"
+                             "       *LongHomopolymer\n"
+                             "       Sensitivity: %53$.4f\n\n"
+                             "       *VeryLowGC\n"
+                             "       Sensitivity: %54$.4f\n\n"
+                             "       *VeryHighGC\n"
+                             "       Sensitivity: %55$.4f\n\n"
+                             "       *ShortDinRep\n"
+                             "       Sensitivity: %56$.4f\n\n"
+                             "       *LongDinRep\n"
+                             "       Sensitivity: %57$.4f\n\n"
+                             "       *ShortHompo\n"
+                             "       Sensitivity: %58$.4f\n\n"
+                             "       *LongQuadRep\n"
+                             "       Sensitivity: %59$.4f\n\n"
+                             "       *LongTrinRep\n"
+                             "       Sensitivity: %60$.4f\n\n"
+                             "       *ShortQuadRep\n"
+                             "       Sensitivity: %61$.4f\n\n"
+                             "       *ShortTrinRep\n"
+                             "       Sensitivity: %62$.4f";
 
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
@@ -485,6 +512,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
         
         auto ind = del;
         ind += ins;
+
+        #define CSN(x) D(stats.g2c.at(x).sn())
 
         o.generate(file);
         o.writer->open("VarGermline_summary.stats");
@@ -533,10 +562,23 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                                                 % D(r.nContext(Context::LongTrinRep))  // 43
                                                 % D(r.nGeno(Genotype::Homozygous))     // 44
                                                 % D(r.nGeno(Genotype::Heterzygous))    // 45
-                                                % D(r.nCNV(1)) // 46
-                                                % D(r.nCNV(2)) // 47
-                                                % D(r.nCNV(3)) // 48
-                                                % D(r.nCNV(4)) // 49
+                                                % D(r.nCNV(1))                         // 46
+                                                % D(r.nCNV(2))                         // 47
+                                                % D(r.nCNV(3))                         // 48
+                                                % D(r.nCNV(4))                         // 49
+                                                % CSN(Context::LowGC)                  // 50
+                                                % CSN(Context::HighGC)                 // 51
+                                                % CSN(Context::Generic)                // 52
+                                                % CSN(Context::LongHompo)              // 53
+                                                % CSN(Context::VeryLowGC)              // 54
+                                                % CSN(Context::VeryHighGC)             // 55
+                                                % CSN(Context::ShortDinRep)            // 56
+                                                % CSN(Context::LongDinRep)             // 57
+                                                % CSN(Context::ShortHompo)             // 58
+                                                % CSN(Context::LongQuadRep)            // 59
+                                                % CSN(Context::LongTrinRep)            // 60
+                                                % CSN(Context::ShortQuadRep)           // 61
+                                                % CSN(Context::ShortTrinRep)           // 62
                          ).str());
     };
     
