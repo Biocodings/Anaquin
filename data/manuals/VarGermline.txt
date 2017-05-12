@@ -30,7 +30,7 @@
     Toolkit (GATK).
 
 <b>USAGE EXAMPLE</b>
-     anaquin VarGermline -rvcf A.V.6.vcf -rbed A.V.5.bed -useqs variants.vcf
+     anaquin VarGermline -rvcf reference.vcf -rbed reference.bed -useqs variants.vcf
 
 <b>TOOL OPTIONS</b>
      Required:
