@@ -268,7 +268,7 @@ static void writeQuins(const FileName &file,
                        const VGermline::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
 
     o.generate(file);
     o.writer->open(file);
@@ -281,7 +281,6 @@ static void writeQuins(const FileName &file,
                                            % "Depth"
                                            % "ExpFreq"
                                            % "ObsFreq"
-                                           % "Pval"
                                            % "Qual"
                                            % "Genotype"
                                            % "Context"
@@ -308,7 +307,6 @@ static void writeQuins(const FileName &file,
                                                    % c.depth
                                                    % r.findAFreq(i.name)
                                                    % c.allF
-                                                   % ld2ss(c.p)
                                                    % toString(c.qual)
                                                    % gt2str(sv.gt)
                                                    % ctx2Str(sv.ctx)
@@ -326,7 +324,6 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % r.findAFreq(i.name)
-                                                   % "-"
                                                    % "-"
                                                    % "-"
                                                    % gt2str(sv.gt)
