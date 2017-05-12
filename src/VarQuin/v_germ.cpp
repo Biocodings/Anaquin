@@ -285,7 +285,7 @@ static void writeQuins(const FileName &file,
                                            % "Qual"
                                            % "Genotype"
                                            % "Context"
-                                           % "Type").str());
+                                           % "Mutation").str());
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
@@ -346,7 +346,7 @@ static void writeDetected(const FileName &file, const VGermline::Stats &stats, c
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                                           % "ChrID"
+                                           % "Chrom"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"
@@ -357,7 +357,7 @@ static void writeDetected(const FileName &file, const VGermline::Stats &stats, c
                                            % "Pval"
                                            % "Qual"
                                            % "Context"
-                                           % "Type").str());
+                                           % "Mutation").str());
 
     auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
     {
@@ -403,7 +403,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
-                             "-------Reference variants by type\n\n"
+                             "-------Reference variants by mutation\n\n"
                              "       SNPs:   %4%\n"
                              "       Indels: %5%\n"
                              "       Total:  %6%\n\n"
@@ -429,11 +429,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       CNV 2-fold: %47%\n"
                              "       CNV 3-fold: %48%\n"
                              "       CNV 4-fold: %49%\n\n"
-                             "-------Called variants by genotype\n\n"
+                             "-------Called variants by mutation\n\n"
                              "       %7% SNPs\n"
                              "       %8% indels\n"
                              "       %9% variants\n\n"
-                             "-------Identification of synthetic variants\n\n"
+                             "-------Diagnostic performance by mutation\n\n"
                              "       True Positive:  %10% SNPs\n"
                              "       True Positive:  %11% indels\n"
                              "       True Positive:  %12% variants\n\n"
@@ -443,7 +443,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       False Negative: %16% SNPs\n"
                              "       False Negative: %17% indels\n"
                              "       False Negative: %18% variants\n\n"
-                             "-------Diagnostic Performance by type (Synthetic)\n\n"
                              "       *Variants\n"
                              "       Sensitivity: %19$.4f\n"
                              "       Precision:   %20$.4f\n"
@@ -459,7 +458,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
                              "       Precision:   %28$.4f\n"
                              "       F1 Score:    %29$.4f\n"
                              "       FDR Rate:    %30$.4f\n\n"
-                             "-------Diagnostic Performance by context (Synthetic)\n\n"
+                             "-------Diagnostic performance by context\n\n"
                              "       *Low GC\n"
                              "       Sensitivity: %50$.4f\n\n"
                              "       *High GC\n"
