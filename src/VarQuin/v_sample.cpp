@@ -14,6 +14,7 @@ static ParserBAMBED::Stats sample(const FileName &file,
                                   const NormFactors &norms,
                                   VSample::Stats &stats,
                                   const C2Intervals &sampled,
+                                  const C2Intervals &trimmed,
                                   const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -94,6 +95,11 @@ static ParserBAMBED::Stats sample(const FileName &file,
             // Write SAM read to console
             writer.write(x);
             
+            if (trimmed.count(x.cID) && trimmed.at(x.cID).overlap(x.l))
+            {
+                trimmed.at(x.cID).overlap(x.l)->map(x.l);
+            }
+            
             return ParserBAMBED::Response::OK;
         }
 
@@ -128,7 +134,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     VSample::Stats stats;
     
-    // Regions to subsample before trimming
+    // Regions to subsample after trimming
     const auto tRegs = r.regions(true);
 
     // Regions without trimming
@@ -175,9 +181,9 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     // Required for summary statistics
     std::vector<double> allNorms;
 
-    std::vector<double> allafterSeqsC;
-    std::vector<double> allbeforeEndoC;
-    std::vector<double> allbeforeSeqsC;
+    std::vector<double> allAfterSeqsC;
+    std::vector<double> allBeforeEndoC;
+    std::vector<double> allBeforeSeqsC;
     
     // For each chromosome...
     for (auto &i : tRegs)
@@ -236,8 +242,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                 }
             }
 
-            allbeforeEndoC.push_back(endoC);
-            allbeforeSeqsC.push_back(seqsC);
+            allBeforeEndoC.push_back(endoC);
+            allBeforeSeqsC.push_back(seqsC);
             
             if (isnan(norm))
             {
@@ -277,14 +283,14 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     }
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seq, norms, stats, regs, o);
+    const auto after = sample(seq, norms, stats, regs, tRegs, o);
     
     /*
      * Assume our subsampling is working, let's check the coverage for every region.
      */
     
     // For each chromosome...
-    for (auto &i : after.inters)
+    for (auto &i : tRegs)
     {
         // For each region...
         for (auto &j : i.second.data())
@@ -294,22 +300,17 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             // Coverage after subsampling
             const auto cov = stats2cov(o.meth, j.second.stats());
 
-            auto l = j.second.l();
-            
-            // Transform for the trimming region
-            l = Locus(l.start + o.edge, l.end - o.edge);
-
-            stats.c2v[i.first].at(l).after = cov;
+            stats.c2v[i.first].at(j.second.l()).after = cov;
             
             // Required for generating summary statistics
-            allafterSeqsC.push_back(cov);
+            allAfterSeqsC.push_back(cov);
         }
     }
     
-    stats.beforeEndo = SS::mean(allbeforeEndoC);
-    stats.beforeSeqs = SS::mean(allbeforeSeqsC);
+    stats.beforeEndo = SS::mean(allBeforeEndoC);
+    stats.beforeSeqs = SS::mean(allBeforeSeqsC);
     stats.afterEndo  = stats.beforeEndo;
-    stats.afterSeqs  = SS::mean(allafterSeqsC);
+    stats.afterSeqs  = SS::mean(allAfterSeqsC);
     
     stats.normSD   = SS::getSD(allNorms);
     stats.normAver = SS::mean(allNorms);
