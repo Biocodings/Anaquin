@@ -25,7 +25,7 @@
 
      Optional:
         -o = output     Directory in which the output files are written to
-        -edge = 0       Egde window width in nucleotide bases
+        -edge = 0       Egde effects width in nucleotide bases
         -trim = none    How to trim artificials reads aligned to the sequin boundaries. Possible values include none and leftRight.
 
 <b>OUTPUTS</b>

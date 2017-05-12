@@ -1,7 +1,7 @@
 <b>Anaquin Manual</b>
 
 <b>NAME</b>
-    VarAlign - Measures the read alignment from sequins to the <i>in silico</i> genome.
+    VarAlign - Measures the read alignments from sequins to the <i>in silico</i> genome.
 
 <b>DESCRIPTION</b>
     VarAlign calculates several useful statistics from an alignment file.
@@ -19,10 +19,10 @@
 <b>TOOL OPTIONS</b>
      Required:
         -rbed        Reference annotation file for sequin regions in BED format
-        -uhuman      Generated alignment file for human genome in SAM/BAM format
         -useqs       Generated alignment file for <i>in silico</i> genome in SAM/BAM format
 
      Optional:
+        -uhuman      Generated alignment file for human genome in SAM/BAM format
         -o = output  Directory in which output files are written to
 
 <b>OUTPUTS</b>

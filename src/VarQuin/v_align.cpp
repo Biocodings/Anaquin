@@ -374,24 +374,24 @@ void VAlign::writeSummary(const FileName &file,
                           "-------Reference regions\n\n"
                           "       Regions: %9% regions\n"
                           "       Regions: %10% bases\n\n"
+                          "-------Comparison of alignments to annotation (Genome)\n\n"
+                          "       *Nucleotide level\n"
+                          "       Covered:     %20%\n"
+                          "       Uncovered:   %21%\n"
+                          "       Total:       %22%\n\n"
+                          "       Sensitivity: %23$.4f\n\n"
                           "-------Comparison of alignments to annotation (Synthetic)\n\n"
                           "       *Alignment level\n"
                           "       Inside regions:  %11%\n"
                           "       Outside regions: %12%\n\n"
-                          "       Precision:      %13$.4f\n\n"
+                          "       Precision:       %13$.4f\n\n"
                           "       *Nucleotide level\n"
                           "       Covered:     %14%\n"
                           "       Uncovered:   %15%\n"
                           "       Erroneous:   %16%\n"
                           "       Total:       %17%\n\n"
                           "       Sensitivity: %18$.4f\n"
-                          "       Precision:   %19$.4f\n\n"
-                          "-------Comparison of alignments to annotation (Genome)\n\n"
-                          "       *Nucleotide level\n"
-                          "       Covered:     %20%\n"
-                          "       Uncovered:   %21%\n"
-                          "       Total:       %22%\n\n"
-                          "       Sensitivity: %23$.4f\n";
+                          "       Precision:   %19$.4f\n";
 
     const auto summary2 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
@@ -571,9 +571,9 @@ void VAlign::writeQueries(const FileName &file, const VAlign::Stats &stats, cons
 #endif
 }
 
-void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
+void VAlign::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
-    const auto stats = analyze(gen, seqs, o);
+    const auto stats = analyze(endo, seqs, o);
 
     o.info("Generating statistics");
     
@@ -581,7 +581,7 @@ void VAlign::report(const FileName &gen, const FileName &seqs, const Options &o)
      * Generating VarAlign_summary.stats
      */
     
-    VAlign::writeSummary("VarAlign_summary.stats", gen, seqs, stats, o);
+    VAlign::writeSummary("VarAlign_summary.stats", endo, seqs, stats, o);
 
     /*
      * Generating VarAlign_sequins.csv
