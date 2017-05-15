@@ -511,7 +511,7 @@ void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const 
     o.writer->open(file);
     
     const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
-    o.writer->write((boost::format(format) % "ID"
+    o.writer->write((boost::format(format) % "Name"
                                            % "Length"
                                            % "Reads"
                                            % "Sn"
@@ -581,25 +581,23 @@ void VAlign::report(const FileName &endo, const FileName &seqs, const Options &o
      * Generating VarAlign_summary.stats
      */
     
-    VAlign::writeSummary("VarAlign_summary.stats", endo, seqs, stats, o);
+    writeSummary("VarAlign_summary.stats", endo, seqs, stats, o);
 
     /*
      * Generating VarAlign_sequins.csv
      */
     
-    VAlign::writeQuins("VarAlign_sequins.csv", stats, o);
+    writeQuins("VarAlign_sequins.csv", stats, o);
 
     /*
      * Generating VarAlign_queries.stats (for debugging)
      */
     
-    VAlign::writeQueries("VarAlign_queries.stats", stats, o);
+    writeQueries("VarAlign_queries.stats", stats, o);
 
     /*
      * Generating VarAlign_rbase.stats (for debugging)
      */
     
-    VAlign::writeBQuins("VarAlign_rbase.stats", stats, o);
-    
-    o.logInfo("VarAlign completed");
+    writeBQuins("VarAlign_rbase.stats", stats, o);
 }
