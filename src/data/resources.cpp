@@ -5,13 +5,13 @@
  * Manuals
  */
 
+#include "resources/VarWGS.txt"
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
 #include "resources/VarCancer.txt"
 #include "resources/VarVReport.txt"
-#include "resources/VarGermline.txt"
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
@@ -129,9 +129,9 @@ Scripts VarSubsample()
     return ToString(data_manuals_VarSubsample_txt);
 }
 
-Scripts VarGermline()
+Scripts VarWGS()
 {
-    return ToString(data_manuals_VarGermline_txt);
+    return ToString(data_manuals_VarWGS_txt);
 }
 
 Scripts VarCancer()

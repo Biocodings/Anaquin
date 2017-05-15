@@ -1,5 +1,5 @@
 #include "tools/tools.hpp"
-#include "VarQuin/v_germ.hpp"
+#include "VarQuin/v_wgs.hpp"
 
 using namespace Anaquin;
 
@@ -64,11 +64,11 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-VGermline::Stats VGermline::analyze(const FileName &file, const Options &o)
+VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VGermline::Stats stats;
+    VWGS::Stats stats;
     
     typedef SeqVariant::Context Context;
     
@@ -264,8 +264,8 @@ VGermline::Stats VGermline::analyze(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VGermline::Stats &stats,
-                       const VGermline::Options &o)
+                       const VWGS::Stats &stats,
+                       const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -335,7 +335,7 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeDetected(const FileName &file, const VGermline::Stats &stats, const VGermline::Options &o)
+static void writeDetected(const FileName &file, const VWGS::Stats &stats, const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -385,7 +385,7 @@ static void writeDetected(const FileName &file, const VGermline::Stats &stats, c
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VGermline::Stats &stats, const VGermline::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VWGS::Stats &stats, const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -395,8 +395,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
 
     auto germline = [&]()
     {
-        const auto summary = "-------VarGermline Output Results\n\n"
-                             "-------VarGermline Output\n\n"
+        const auto summary = "-------VarWGS Output Results\n\n"
+                             "-------VarWGS Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
@@ -512,7 +512,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
         #define CSN(x) D(stats.g2c.at(x).sn())
 
         o.generate(file);
-        o.writer->open("VarGermline_summary.stats");
+        o.writer->open("VarWGS_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % src                           // 3
@@ -582,7 +582,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VGerml
     o.writer->close();
 }
 
-void VGermline::report(const FileName &seqs, const Options &o)
+void VWGS::report(const FileName &seqs, const Options &o)
 {
     const auto ss = analyze(seqs, o);
     
@@ -593,30 +593,30 @@ void VGermline::report(const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarGermline_sequins.csv
+     * Generating VarWGS_sequins.csv
      */
     
-    writeQuins("VarGermline_sequins.csv", ss, o);
+    writeQuins("VarWGS_sequins.csv", ss, o);
 
     /*
-     * Generating VarGermline_summary.stats
+     * Generating VarWGS_summary.stats
      */
     
-    writeSummary("VarGermline_summary.stats", seqs, ss, o);
+    writeSummary("VarWGS_summary.stats", seqs, ss, o);
     
     /*
-     * Generating VarGermline_detected.csv
+     * Generating VarWGS_detected.csv
      */
     
-    writeDetected("VarGermline_detected.csv", ss, o);
+    writeDetected("VarWGS_detected.csv", ss, o);
     
     /*
-     * Generating VarGermline_ROC.R
+     * Generating VarWGS_ROC.R
      */
     
-    o.generate("VarGermline_ROC.R");
-    o.writer->open("VarGermline_ROC.R");
+    o.generate("VarWGS_ROC.R");
+    o.writer->open("VarWGS_ROC.R");
     
-    o.writer->write(createVGROC("VarGermline_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createVGROC("VarWGS_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
 }

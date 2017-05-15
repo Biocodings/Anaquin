@@ -15,7 +15,7 @@
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
-#include "VarQuin/v_germ.hpp"
+#include "VarQuin/v_wgs.hpp"
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
@@ -65,11 +65,11 @@ typedef std::set<Value> Range;
 #define TOOL_R_GENE     270
 #define TOOL_R_REPORT   271
 #define TOOL_R_SAMPLE   272
-#define TOOL_V_KEXPRESS 273
+#define TOOL_V_KABUND   273
 #define TOOL_V_VREPORT  274
 #define TOOL_V_ALIGN    275
 #define TOOL_V_FLIP     276
-#define TOOL_V_GERMLINE      277
+#define TOOL_V_WGS      277
 #define TOOL_V_CANCER   278
 #define TOOL_V_TRIM     279
 #define TOOL_V_SAMPLE   280
@@ -154,13 +154,13 @@ static std::map<Value, Tool> _tools =
     { "RnaGene",        TOOL_R_GENE     },
 
     { "VarAlign",       TOOL_V_ALIGN    },
-    { "VarGermline",    TOOL_V_GERMLINE },
+    { "VarWGS",         TOOL_V_WGS      },
     { "VarCancer",      TOOL_V_CANCER   },
     { "VarVReport",     TOOL_V_VREPORT  },
     { "VarSubsample",   TOOL_V_SAMPLE   },
     { "VarTrim",        TOOL_V_TRIM     },
     { "VarFlip",        TOOL_V_FLIP     },
-    { "VarKExpress",    TOOL_V_KEXPRESS },
+    { "VarKAbund",      TOOL_V_KABUND   },
 
     { "MetaFoldChange", TOOL_M_FOLD     },
     { "MetaAlign",      TOOL_M_ALIGN    },
@@ -186,13 +186,13 @@ static std::map<Tool, std::set<Option>> _options =
      * VarQuin Analysis
      */
 
-    { TOOL_V_FLIP,     { OPT_U_BAM  } },
-    { TOOL_V_TRIM,     { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_ALIGN,    { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_SAMPLE,   { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_GERMLINE, { OPT_R_VCF,   OPT_U_SEQS } },
-    { TOOL_V_VREPORT,  { OPT_MIXTURE, OPT_U_SEQS } },
-    { TOOL_V_KEXPRESS, { OPT_U_SEQS } },
+    { TOOL_V_FLIP,    { OPT_U_BAM  } },
+    { TOOL_V_TRIM,    { OPT_R_BED,   OPT_U_SEQS } },
+    { TOOL_V_ALIGN,   { OPT_R_BED,   OPT_U_SEQS } },
+    { TOOL_V_SAMPLE,  { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
+    { TOOL_V_WGS,     { OPT_R_VCF,   OPT_U_SEQS } },
+    { TOOL_V_VREPORT, { OPT_MIXTURE, OPT_U_SEQS } },
+    { TOOL_V_KABUND,  { OPT_U_SEQS } },
 
     /*
      * MetaQuin Analysis
@@ -392,7 +392,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarCancer();
     extern Scripts VarVReport();
-    extern Scripts VarGermline();
+    extern Scripts VarWGS();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
     extern Scripts RnaReport();
@@ -419,7 +419,7 @@ static Scripts manual(Tool tool)
         case TOOL_V_CANCER:    { return VarCancer();      }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SAMPLE:    { return VarSubsample();   }
-        case TOOL_V_GERMLINE:  { return VarGermline();    }
+        case TOOL_V_WGS:  { return VarWGS();    }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SAMPLE:    { return MetaAbund();      }
@@ -1250,14 +1250,14 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_V_GERMLINE:
+        case TOOL_V_WGS:
         case TOOL_V_FLIP:
         case TOOL_V_TRIM:
         case TOOL_V_ALIGN:
         case TOOL_V_CANCER:
         case TOOL_V_SAMPLE:
         case TOOL_V_VREPORT:
-        case TOOL_V_KEXPRESS:
+        case TOOL_V_KABUND:
         {
             if (__showInfo__)
             {
@@ -1287,7 +1287,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_V_GERMLINE:
+                    case TOOL_V_WGS:
                     case TOOL_V_CANCER:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
@@ -1295,7 +1295,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case TOOL_V_KEXPRESS:
+                    case TOOL_V_KABUND:
                     {
                         addLadder(std::bind(&Standard::addVMix, &s, std::placeholders::_1), OPT_AF_MIX);
                         addLadder(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_CNV_MIX);
@@ -1325,7 +1325,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_V_KEXPRESS: { analyze_2<VKExpress>(OPT_U_SEQS, OPT_U_BAM); break; }
+                case TOOL_V_KABUND: { analyze_2<VKExpress>(OPT_U_SEQS, OPT_U_BAM); break; }
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 
@@ -1353,7 +1353,7 @@ void parse(int argc, char ** argv)
                 }
 
                 case TOOL_V_CANCER:   { analyze_1<VCancer>(OPT_U_SEQS);   break; }
-                case TOOL_V_GERMLINE: { analyze_1<VGermline>(OPT_U_SEQS); break; }
+                case TOOL_V_WGS: { analyze_1<VWGS>(OPT_U_SEQS); break; }
 
                 case TOOL_V_SAMPLE:
                 {

@@ -21,12 +21,12 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaSubsample.txt',
           'data/manuals/RnaKReport.txt',
 
+          'data/manuals/VarWGS.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarFlip.txt',
           'data/manuals/VarTrim.txt',          
           'data/manuals/VarCancer.txt',
           'data/manuals/VarVReport.txt',
-          'data/manuals/VarGermline.txt',
           'data/manuals/VarSubsample.txt',
 
           'data/manuals/MetaAlign.txt',

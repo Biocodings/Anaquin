@@ -30,7 +30,7 @@ namespace Anaquin
         SequinID rReg;
     };
 
-    struct VGermline
+    struct VWGS
     {
         typedef AnalyzerOptions Options;
         

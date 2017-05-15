@@ -50,9 +50,9 @@ static Scripts generateSummary(const FileName &src, const VKExpress::Stats &stat
     const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
-    const auto format = "-------VarKExpress Output\n\n"
+    const auto format = "-------VarKAbund Output\n\n"
                         "       Summary for input: %1%\n\n"
-                        "-------Reference VarKExpress Annotations\n\n"
+                        "-------Reference VarKAbund Annotations\n\n"
                         "       Synthetic: %2%\n"
                         "       Mixture file: %3%\n\n"
                         "-------Sequin Counts\n\n"
@@ -207,7 +207,7 @@ static void writeCNVR(const FileName &file, const VKExpress::Stats &stats, const
     o.writer->write((boost::format(PlotCNV()) % date()
                                               % __full_command__
                                               % o.work
-                                              % "VarKExpress_CNV.csv").str());
+                                              % "VarKAbund_CNV.csv").str());
     o.writer->close();
 }
 
@@ -220,7 +220,7 @@ static void writeCancerR(const FileName &file, const VKExpress::Stats &stats, co
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKExpress_cancer.csv").str());
+                                                  % "VarKAbund_cancer.csv").str());
     o.writer->close();
 }
 
@@ -228,7 +228,7 @@ static void writeConjointR(const FileName &file, const VKExpress::Stats &stats, 
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarKExpress_conjoint.csv",
+    o.writer->write(RWriter::createRLinear("VarKAbund_conjoint.csv",
                                            o.work,
                                            "Expected Concentration vs Observed Abundance",
                                            "Expected Concentration (log2)",
@@ -249,44 +249,44 @@ void VKExpress::report(const FileName &file, const FileName &file2, const Option
      * Generating VKExpress_summary.stats
      */
     
-    o.generate("VarKExpress_summary.stats");
-    o.writer->open("VarKExpress_summary.stats");
+    o.generate("VarKAbund_summary.stats");
+    o.writer->open("VarKAbund_summary.stats");
     o.writer->write(generateSummary(file, stats, o));
     o.writer->close();
 
     /*
-     * Generating VarKExpress_CNV.csv
+     * Generating VarKAbund_CNV.csv
      */
     
-    writeCNV("VarKExpress_CNV.csv", stats, o);
+    writeCNV("VarKAbund_CNV.csv", stats, o);
     
     /*
-     * Generating VarKExpress_CNV.R
+     * Generating VarKAbund_CNV.R
      */
     
-    writeCNVR("VarKExpress_CNV.R", stats, o);
+    writeCNVR("VarKAbund_CNV.R", stats, o);
     
     /*
-     * Generating VarKExpress_cancer.csv
+     * Generating VarKAbund_cancer.csv
      */
     
-    writeCancer("VarKExpress_cancer.csv", stats, o);
+    writeCancer("VarKAbund_cancer.csv", stats, o);
 
     /*
-     * Generating VarKExpress_conjoint.csv
+     * Generating VarKAbund_conjoint.csv
      */
     
-    writeConjoint("VarKExpress_conjoint.csv", stats, o);
+    writeConjoint("VarKAbund_conjoint.csv", stats, o);
     
     /*
-     * Generating VarKExpress_cancer.R
+     * Generating VarKAbund_cancer.R
      */
     
-    writeCancerR("VarKExpress_cancer.R", stats, o);
+    writeCancerR("VarKAbund_cancer.R", stats, o);
     
     /*
-     * Generating VarKExpress_conjoint.R
+     * Generating VarKAbund_conjoint.R
      */
     
-    writeConjointR("VarKExpress_conjoint.R", stats, o);
+    writeConjointR("VarKAbund_conjoint.R", stats, o);
 }
