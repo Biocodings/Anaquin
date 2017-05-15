@@ -88,15 +88,20 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
 
 void Standard::addCNV(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV.");
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV ladder.");
     readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_CNV");
 }
 
-void Standard::addVMix(const Reader &r)
+void Standard::addCon(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    
-    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2);
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file for conjoint ladder.");
+    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_CON");
+}
+
+void Standard::addAll(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file for allele frequnecy ladder.");
+    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_All");
 }
 
 void Standard::addMDMix(const Reader &r)
