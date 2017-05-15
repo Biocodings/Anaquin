@@ -49,6 +49,8 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
 
 static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats, const VKAbund::Options &o)
 {
+    extern FileName MixRef();
+    
     const auto &r = Standard::instance().r_var;
     const auto ls = stats.linear();
     
@@ -74,7 +76,7 @@ static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats,
     
     return (boost::format(format) % src           // 1
                                   % r.countSeqs() // 2
-                                  % o.mix         // 3
+                                  % MixRef()      // 3
                                   % stats.size()  // 4
                                   % limit.abund   // 5
                                   % limit.id      // 6
@@ -278,30 +280,27 @@ void VKAbund::report(const FileName &file, const Options &o)
     o.writer->write(generateSummary(file, stats, o));
     o.writer->close();
 
-    /*
-     * Generating for CNV ladder
-     */
-    
-    if (writeCNV("VarKAbund_CNV.csv", stats, o))
+    switch (o.mode)
     {
-        writeCNVR("VarKAbund_CNV.R", stats, o);
-    }
-    
-    /*
-     * Generating for allele frequency ladder
-     */
-    
-    if (writeAllele("VarKAbund_allele.csv", stats, o))
-    {
-        writeAlleleR("VarKAbund_allele.R", stats, o);
-    }
+        case Mode::CNVLad:
+        {
+            writeCNV("VarKAbund_CNV.csv", stats, o);
+            writeCNVR("VarKAbund_CNV.R",  stats, o);
+            break;
+        }
 
-    /*
-     * Generating for conjoint ladder
-     */
-    
-    if (writeConjoint("VarKAbund_conjoint.csv", stats, o))
-    {
-        writeConjointR("VarKAbund_conjoint.R", stats, o);
+        case Mode::ConLad:
+        {
+            writeConjoint("VarKAbund_conjoint.csv", stats, o);
+            writeConjointR("VarKAbund_conjoint.R",  stats, o);
+            break;
+        }
+
+        case Mode::AFLad:
+        {
+            writeAllele("VarKAbund_allele.csv", stats, o);
+            writeAlleleR("VarKAbund_allele.R",  stats, o);
+            break;
+        }
     }
 }

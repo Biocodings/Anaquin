@@ -12,10 +12,17 @@ namespace Anaquin
             Salmon
         };
 
+        enum class Mode
+        {
+            CNVLad,
+            AFLad,
+            ConLad,
+        };
+        
         struct Options : public AnalyzerOptions
         {
+            Mode mode;
             Software soft = Software::Salmon;
-            std::string mix;
         };
         
         struct Stats : public LimitStats, public SequinStats

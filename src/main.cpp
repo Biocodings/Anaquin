@@ -253,7 +253,20 @@ FileName GTFRef()
 
 FileName MixRef()
 {
-    return _p.opts.at(OPT_MIXTURE);
+    if (_p.opts.count(OPT_MIXTURE))
+    {
+        return _p.opts.at(OPT_MIXTURE);
+    }
+    else if (_p.opts.count(OPT_CNV_LAD))
+    {
+        return _p.opts.at(OPT_CNV_LAD);
+    }
+    else if (_p.opts.count(OPT_CON_LAD))
+    {
+        return _p.opts.at(OPT_CON_LAD);
+    }
+    
+    return _p.opts.at(OPT_AF_LAD);
 }
 
 FileName VCFRef()
@@ -1333,18 +1346,19 @@ void parse(int argc, char ** argv)
                 {
                     VKAbund::Options o;
                     
-                    auto f = [&](Option key)
+                    if (_p.opts.count(OPT_CNV_LAD))
                     {
-                        if (_p.opts.count(key))
-                        {
-                            o.mix += (o.mix.empty() ? _p.opts[key] : (", " + _p.opts[key]));
-                        }
-                    };
-                    
-                    f(OPT_AF_LAD);
-                    f(OPT_CNV_LAD);
-                    f(OPT_CON_LAD);
-                    
+                        o.mode = VKAbund::Mode::CNVLad;
+                    }
+                    else if (_p.opts.count(OPT_CON_LAD))
+                    {
+                        o.mode = VKAbund::Mode::ConLad;
+                    }
+                    else
+                    {
+                        o.mode = VKAbund::Mode::AFLad;
+                    }
+
                     analyze_1<VKAbund>(OPT_U_SEQS, o);
                     break;
                 }
