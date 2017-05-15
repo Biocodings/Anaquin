@@ -22,21 +22,47 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
         {
             ParserSalmon::parse(Reader(file), [&](const ParserSalmon::Data &x, const ParserProgress &)
             {
-                auto n = noLast(x.name, "_");
+                auto found = false;
                 
-                if (r.match(n + "_CNV"))
+                switch (o.mode)
                 {
-                    stats.add(n + "_CNV", r.match(n + "_CNV")->concent(), x.abund);
+                    case Mode::CNVLad:
+                    {
+                        auto n = noLast(x.name, "_");
+
+                        if (r.match(n + "_CNV"))
+                        {
+                            stats.add(n + "_CNV", r.match(n + "_CNV")->concent(), x.abund);
+                        }
+                        
+                        break;
+                    }
+
+                    case Mode::ConLad:
+                    {
+                        if (r.match(x.name + "_CON"))
+                        {
+                            stats.add(x.name + "_CON", r.match(x.name + "_CON")->concent(), x.abund);
+                        }
+
+                        break;
+                    }
+                        
+                    case Mode::AFLad:
+                    {
+                        auto n = noLast(x.name, "_");
+                     
+                        if (r.match(n + "_AF"))
+                        {
+                            found = true;
+                            stats.add(n + "_AF", r.match(n + "_AF")->concent(), x.abund);
+                        }
+                        
+                        break;
+                    }
                 }
-                else if (r.match(n + "_CON"))
-                {
-                    stats.add(n + "_CON", r.match(n + "_CON")->concent(), x.abund);
-                }
-                else if (r.match(n + "_AF"))
-                {
-                    stats.add(n + "_AF", r.match(n + "_AF")->concent(), x.abund);
-                }
-                else
+
+                if (!found)
                 {
                     o.logInfo("Unknown: " + x.name);
                 }
@@ -56,12 +82,11 @@ static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats,
     
     const auto format = "-------VarKAbund Output\n\n"
                         "       Summary for input: %1%\n\n"
-                        "-------Reference VarKAbund Annotations\n\n"
+                        "-------Reference Annotations\n\n"
                         "       Synthetic: %2%\n"
                         "       Mixture file: %3%\n\n"
-                        "-------Sequin Counts\n\n"
+                        "-------Detected sequins\n\n"
                         "       Synthetic: %4%\n"
-                        "       Detection Sensitivity: %5% (attomol/ul) (%6%)\n\n"
                         "-------Linear regression (log2 scale)\n\n"
                         "       Slope:       %7%\n"
                         "       Correlation: %8%\n"
@@ -281,21 +306,21 @@ void VKAbund::report(const FileName &file, const Options &o)
         case Mode::CNVLad:
         {
             writeCNV("VarKAbund_sequins.csv", stats, o);
-            writeCNVR("VarKAbund_linear.R",  stats, o);
+            writeCNVR("VarKAbund_linear.R",   stats, o);
             break;
         }
 
         case Mode::ConLad:
         {
             writeConjoint("VarKAbund_sequins.csv", stats, o);
-            writeConjointR("VarKAbund_linear.R",  stats, o);
+            writeConjointR("VarKAbund_linear.R",   stats, o);
             break;
         }
 
         case Mode::AFLad:
         {
             writeAllele("VarKAbund_sequins.csv", stats, o);
-            writeAlleleR("VarKAbund_linear.R",  stats, o);
+            writeAlleleR("VarKAbund_linear.R",   stats, o);
             break;
         }
     }

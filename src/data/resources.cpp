@@ -10,6 +10,7 @@
 #include "resources/VarFlip.txt"
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
+#include "resources/VarKAbund.txt"
 #include "resources/VarCancer.txt"
 #include "resources/VarVReport.txt"
 #include "resources/VarSubsample.txt"
@@ -112,6 +113,11 @@ Scripts RnaFoldChange()
 Scripts VarAlign()
 {
     return ToString(data_manuals_VarAlign_txt);
+}
+
+Scripts VarKAbund()
+{
+    return ToString(data_manuals_VarKAbund_txt);
 }
 
 Scripts VarTrim()

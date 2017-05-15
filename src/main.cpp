@@ -186,7 +186,7 @@ static std::map<Tool, std::set<Option>> _options =
      * VarQuin Analysis
      */
 
-    { TOOL_V_FLIP,    { OPT_U_BAM  } },
+    { TOOL_V_FLIP,    { OPT_U_SEQS  } },
     { TOOL_V_TRIM,    { OPT_R_BED,   OPT_U_SEQS } },
     { TOOL_V_ALIGN,   { OPT_R_BED,   OPT_U_SEQS } },
     { TOOL_V_SAMPLE,  { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
@@ -400,12 +400,13 @@ static void printUsage()
 
 static Scripts manual(Tool tool)
 {
+    extern Scripts VarWGS();
     extern Scripts VarFlip();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
     extern Scripts VarCancer();
     extern Scripts VarVReport();
-    extern Scripts VarWGS();
+    extern Scripts VarKAbund();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
     extern Scripts RnaReport();
@@ -432,7 +433,8 @@ static Scripts manual(Tool tool)
         case TOOL_V_CANCER:    { return VarCancer();      }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SAMPLE:    { return VarSubsample();   }
-        case TOOL_V_WGS:  { return VarWGS();    }
+        case TOOL_V_KABUND:    { return VarKAbund();      }
+        case TOOL_V_WGS:       { return VarWGS();         }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SAMPLE:    { return MetaAbund();      }
