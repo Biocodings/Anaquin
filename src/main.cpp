@@ -104,7 +104,6 @@ typedef std::set<Value> Range;
 #define OPT_R_IND   812
 #define OPT_U_HG    813
 #define OPT_U_SEQS  814
-#define OPT_U_BAM   815
 #define OPT_U_FILES 816
 #define OPT_EDGE    817
 #define OPT_U_BASE  818
@@ -358,7 +357,6 @@ static const struct option long_options[] =
     { "method",  required_argument, 0, OPT_METHOD  },
     { "trim",    required_argument, 0, OPT_TRIM    },
 
-    { "ubam",    required_argument, 0, OPT_U_BAM  },
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
@@ -919,7 +917,6 @@ void parse(int argc, char ** argv)
             case OPT_CON_LAD: { _p.opts[opt] = val; break; }
 
             case OPT_U_HG:
-            case OPT_U_BAM:
             case OPT_R_IND:
             case OPT_R_VCF:
             case OPT_R_BED:
@@ -1365,7 +1362,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
+                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 
                 case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS); break; }
 

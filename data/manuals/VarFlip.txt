@@ -21,7 +21,7 @@
      VarFlip supports the standard SAM/BAM file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarFlip –ubam aligned.bam
+     anaquin VarFlip –useqs aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
