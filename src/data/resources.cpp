@@ -37,7 +37,7 @@
 #include "resources/plotAllele.R"
 #include "resources/plotLinear.R"
 #include "resources/plotKAllele.R"
-#include "resources/plotKLadder.R"
+#include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
 
 /*
@@ -70,7 +70,7 @@ Scripts PlotFold()
 
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }
 Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
-Scripts PlotKLadder()  { return ToString(src_r_plotKLadder_R);  }
+Scripts PlotConjoint() { return ToString(src_r_plotConjoint_R); }
 Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
 Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }

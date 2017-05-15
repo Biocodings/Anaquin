@@ -1,11 +1,11 @@
-#ifndef V_KEXPRESS_HPP
-#define V_KEXPRESS_HPP
+#ifndef V_KABUND_HPP
+#define V_KABUND_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VKExpress
+    struct VKAbund
     {
         enum class Software
         {
@@ -14,7 +14,8 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
-            Software soft;
+            Software soft = Software::Salmon;
+            std::string mix;
         };
         
         struct Stats : public LimitStats, public SequinStats
@@ -22,9 +23,9 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        static Stats analyze(const FileName &, const FileName &, const Options &o);
+        static Stats analyze(const FileName &, const Options &o);
 
-        static void report(const FileName &, const FileName &, const Options &o = Options());
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 

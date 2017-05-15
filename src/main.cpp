@@ -19,10 +19,10 @@
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_align.hpp"
+#include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_cancer.hpp"
-#include "VarQuin/v_kexpress.hpp"
 
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
@@ -96,9 +96,9 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   804
 #define OPT_TRIM    805
 #define OPT_MIXTURE 806
-#define OPT_AF_MIX  807
-#define OPT_CON_MIX 808
-#define OPT_CNV_MIX 809
+#define OPT_AF_LAD  807
+#define OPT_CON_LAD 808
+#define OPT_CNV_LAD 809
 #define OPT_FUZZY   810
 #define OPT_REPORT  811
 #define OPT_R_IND   812
@@ -336,9 +336,9 @@ static const struct option long_options[] =
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
-    { "af",      required_argument, 0, OPT_AF_MIX  }, // Ladder for allele frequency
-    { "cnv",     required_argument, 0, OPT_CNV_MIX }, // Ladder for copy number variation
-    { "con",     required_argument, 0, OPT_CON_MIX }, // Ladder for conjoint k-mers
+    { "af",      required_argument, 0, OPT_AF_LAD  }, // Ladder for allele frequency
+    { "cnv",     required_argument, 0, OPT_CNV_LAD }, // Ladder for copy number variation
+    { "con",     required_argument, 0, OPT_CON_LAD }, // Ladder for conjoint k-mers
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -486,8 +486,11 @@ template <typename Mixture> void applyMix(Mixture mix)
 
 template <typename F> void addLadder(F f, Option key)
 {
-    std::cout << "[INFO]: Ladder: " << _p.opts[key] << std::endl;
-    f(Reader(_p.opts[key]));
+    if (_p.opts.count(key))
+    {
+        std::cout << "[INFO]: Ladder: " << _p.opts[key] << std::endl;
+        f(Reader(_p.opts[key]));
+    }
 }
 
 template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
@@ -896,9 +899,9 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_TRIM:
-            case OPT_AF_MIX:
-            case OPT_CNV_MIX:
-            case OPT_CON_MIX: { _p.opts[opt] = val; break; }
+            case OPT_AF_LAD:
+            case OPT_CNV_LAD:
+            case OPT_CON_LAD: { _p.opts[opt] = val; break; }
 
             case OPT_U_HG:
             case OPT_U_BAM:
@@ -1297,8 +1300,9 @@ void parse(int argc, char ** argv)
                         
                     case TOOL_V_KABUND:
                     {
-                        addLadder(std::bind(&Standard::addVMix, &s, std::placeholders::_1), OPT_AF_MIX);
-                        addLadder(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_CNV_MIX);
+                        addLadder(std::bind(&Standard::addAll, &s, std::placeholders::_1), OPT_AF_LAD);
+                        addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
+                        addLadder(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_CON_LAD);
                         break;
                     }
 
@@ -1325,7 +1329,25 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_V_KABUND: { analyze_2<VKExpress>(OPT_U_SEQS, OPT_U_BAM); break; }
+                case TOOL_V_KABUND:
+                {
+                    VKAbund::Options o;
+                    
+                    auto f = [&](Option key)
+                    {
+                        if (_p.opts.count(key))
+                        {
+                            o.mix += (o.mix.empty() ? _p.opts[key] : (", " + _p.opts[key]));
+                        }
+                    };
+                    
+                    f(OPT_AF_LAD);
+                    f(OPT_CNV_LAD);
+                    f(OPT_CON_LAD);
+                    
+                    analyze_1<VKAbund>(OPT_U_SEQS, o);
+                    break;
+                }
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_BAM); break; }
                 

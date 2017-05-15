@@ -13,4 +13,4 @@ data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 input <- data$Expected
 measured <- log2(data$Observed)
 
-plotLinear(row.names(data), input, measured, title='CNV Ladder', xlab='Expected CNV', ylab='Observed Abundance (log2)', showLOQ=TRUE, showLinear=FALSE)
+plotLinear(row.names(data), input, measured, title='CNV Ladder', xlab='Expected copy number', ylab='Observed Abundance (log2)', showLOQ=FALSE, showLinear=TRUE)

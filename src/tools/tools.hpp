@@ -31,6 +31,13 @@ namespace Anaquin
         return boost::algorithm::join(x, d);
     }
     
+    inline bool isStarted(const Tok &x, const Tok &y)
+    {
+        return std::equal(x.begin(),
+                          x.begin() + std::min(x.size(), y.size()),
+                          y.begin() );
+    }
+    
     // Eg: "C_12_D" to "C_12"
     inline Tok first(const Tok &x, const Tok &d)
     {

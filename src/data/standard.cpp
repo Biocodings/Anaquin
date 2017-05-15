@@ -22,8 +22,9 @@ std::set<ChrID> Standard::genoIDs;
 
 enum MixtureFormat
 {
-    ID_Length_Mix, // Eg: MG_33  10  60.23529412
-    ID_Mix,        // Eg: MG_33  60.23529412
+    Name_Len_Mix, // Eg: MG_33  10  60.23529412
+    Name_Mix,     // Eg: MG_33  60.23529412
+    Name_Len_M1_Mix1
 };
 
 static unsigned countColumns(const Reader &r)
@@ -61,18 +62,14 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
             const auto seq = d[0];
             const auto con = stof(d[column]);
             
+            n++;
             switch (format)
             {
-                case ID_Length_Mix:
+                case Name_Mix:     { ref.add(seq + post, 0.0, con, m);        break; }
+                case Name_Len_Mix: { ref.add(seq + post, stoi(d[1]), con, m); break; }
+                case Name_Len_M1_Mix1:
                 {
-                    n++;
-                    ref.add(seq + post, stoi(d[1]), con, m); break;
-                }
-                    
-                case ID_Mix:
-                {
-                    n++;
-                    ref.add(seq + post, 0.0, con, m); break;
+                    ref.add(seq + post, stoi(d[2]) * stoi(d[3]), con, m); break;
                 }
             }
         }, delim);
@@ -89,47 +86,45 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
 void Standard::addCNV(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV ladder.");
-    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_CNV");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2, "_CNV");
 }
 
 void Standard::addCon(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file for conjoint ladder.");
-    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_CON");
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_M1_Mix1, 2, "_CON");
 }
 
 void Standard::addAll(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for allele frequnecy ladder.");
-    readLadder(Reader(r), r_var, Mix_1, ID_Length_Mix, 2, "_All");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2, "_AF");
 }
 
 void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readLadder(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
-    readLadder(Reader(r), r_meta, Mix_2, ID_Length_Mix, 3);
+    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix, 2);
+    readLadder(Reader(r), r_meta, Mix_2, Name_Len_Mix, 3);
 }
 
 void Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    
-    readLadder(Reader(r), r_meta, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix, 2);
 }
 
 void Standard::addRMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-
-    readLadder(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
+    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix, 2);
 }
 
 void Standard::addRDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readLadder(Reader(r), r_rna, Mix_1, ID_Length_Mix, 2);
-    readLadder(Reader(r), r_rna, Mix_2, ID_Length_Mix, 3);
+    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix, 2);
+    readLadder(Reader(r), r_rna, Mix_2, Name_Len_Mix, 3);
 }
