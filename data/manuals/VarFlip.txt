@@ -10,7 +10,7 @@
 
     This tool also generates ambiguous reads. A paired-read is ambiguous if:
     
-        - Either or both mate mapped to the forward human genome (e.g. not "chrev1" but "chr1")
+        - Either or both mate mapped to the forward human genome (e.g. "chr1")
         - Both mates are unmapped
 
     Hanging reads are reads that one of the mates is missing in the input alignment file.
