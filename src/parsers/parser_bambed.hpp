@@ -61,15 +61,15 @@ namespace Anaquin
                     if (r != Response::SKIP_MATCH && matched)
                     {
                         matched->map(x.l);
-                    }
-
-                    if (x.cID != "*")
-                    {
-                        stats.nMap++;
-                    }
-                    else
-                    {
-                        stats.nNA++;
+                        
+                        if (x.cID != "*")
+                        {
+                            stats.nMap++;
+                        }
+                        else
+                        {
+                            stats.nNA++;
+                        }
                     }
                 }
             });
