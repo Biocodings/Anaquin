@@ -233,7 +233,7 @@ static void writeCNVR(const FileName &file, const VKAbund::Stats &stats, const V
     o.writer->write((boost::format(PlotCNV()) % date()
                                               % __full_command__
                                               % o.work
-                                              % "VarKAbund_CNV.csv").str());
+                                              % "VarKAbund_sequins.csv").str());
     o.writer->close();
 }
 
@@ -246,7 +246,7 @@ static void writeAlleleR(const FileName &file, const VKAbund::Stats &stats, cons
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKAbund_cancer.csv").str());
+                                                  % "VarKAbund_sequins.csv").str());
     o.writer->close();
 }
 
@@ -254,7 +254,7 @@ static void writeConjointR(const FileName &file, const VKAbund::Stats &stats, co
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarKAbund_conjoint.csv",
+    o.writer->write(RWriter::createRLinear("VarKAbund_sequins.csv",
                                            o.work,
                                            "Expected Concentration vs Observed Abundance",
                                            "Expected Concentration (log2)",
@@ -271,10 +271,6 @@ void VKAbund::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
     
-    /*
-     * Generating VKAbund_summary.stats
-     */
-    
     o.generate("VarKAbund_summary.stats");
     o.writer->open("VarKAbund_summary.stats");
     o.writer->write(generateSummary(file, stats, o));
@@ -284,22 +280,22 @@ void VKAbund::report(const FileName &file, const Options &o)
     {
         case Mode::CNVLad:
         {
-            writeCNV("VarKAbund_CNV.csv", stats, o);
-            writeCNVR("VarKAbund_CNV.R",  stats, o);
+            writeCNV("VarKAbund_sequins.csv", stats, o);
+            writeCNVR("VarKAbund_linear.R",  stats, o);
             break;
         }
 
         case Mode::ConLad:
         {
-            writeConjoint("VarKAbund_conjoint.csv", stats, o);
-            writeConjointR("VarKAbund_conjoint.R",  stats, o);
+            writeConjoint("VarKAbund_sequins.csv", stats, o);
+            writeConjointR("VarKAbund_linear.R",  stats, o);
             break;
         }
 
         case Mode::AFLad:
         {
-            writeAllele("VarKAbund_allele.csv", stats, o);
-            writeAlleleR("VarKAbund_allele.R",  stats, o);
+            writeAllele("VarKAbund_sequins.csv", stats, o);
+            writeAlleleR("VarKAbund_linear.R",  stats, o);
             break;
         }
     }
