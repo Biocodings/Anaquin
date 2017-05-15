@@ -356,7 +356,7 @@ static void writeDetected(const FileName &file, const VCancer::Stats &stats, con
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                                           % "ChrID"
+                                           % "Chrom"
                                            % "Position"
                                            % "Label"
                                            % "ReadR"

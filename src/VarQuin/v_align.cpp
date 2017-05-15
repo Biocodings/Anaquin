@@ -474,7 +474,7 @@ void VAlign::writeBQuins(const FileName &file,
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ChrID" % "Position" % "Label").str());
+    o.writer->write((boost::format(format) % "Chrom" % "Position" % "Label").str());
     
     // For each chromosome...
     for (const auto &i : stats.data)
