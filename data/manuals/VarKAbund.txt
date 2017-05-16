@@ -11,7 +11,7 @@
      This tool works on the conjoint ladder, allele frequency ladder and copy number ladder.
 
 <b>SUPPORT SOFTWARE</b>
-     Salmon (https://combine-lab.github.io/salmon)
+     Kallisto (https://pachterlab.github.io/kallisto)
      
 <b>USAGE EXAMPLE</b>
      Quantify for the conjoint ladder:

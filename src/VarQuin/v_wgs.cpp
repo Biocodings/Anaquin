@@ -85,7 +85,7 @@ VWGS::EStats VWGS::analyzeE(const FileName &file, const Options &o)
     {
         stats.found = NAN;
     }
-    
+
     return stats;
 }
 
@@ -610,9 +610,9 @@ static void writeSummary(const FileName &file,
                                                 % CSN(Context::LongTrinRep)            // 60
                                                 % CSN(Context::ShortQuadRep)           // 61
                                                 % CSN(Context::ShortTrinRep)           // 62
-                                                % endo                                 // 63
-                                                % (isnan(es.found) ? "-" : toString(es.found))
-                                                % (c_nSNP + c_nDel + c_nIns)           // 64
+                                                % (endo.empty() ? "-" : endo)          // 63
+                                                % (endo.empty() ? "-" : toString(es.found))
+                                                % (c_nSNP + c_nDel + c_nIns)           // 65
                          ).str());
     };
     
