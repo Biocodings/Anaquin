@@ -25,17 +25,17 @@ VCopy::Stats VCopy::analyze(const FileName &file, const Options &o)
     }
     
     /*
-     * Use the filtered sequins for calculating normalization factor
+     * Check calibration statistics for all sequins
      */
  
     
     /*
-     * Adjust all other sequins relative to the calculated sequins
+     * Adjust non-reference sequins relative to the references
      */
     
     
     /*
-     * Perform normalization for all sequins together
+     * Perform normalization for all sequins
      */
     
     
