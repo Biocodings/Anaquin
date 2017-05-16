@@ -507,10 +507,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VCance
     o.writer->close();
 }
 
-void VCancer::report(const FileName &seqs, const Options &o)
+void VCancer::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
+    const auto es = !endo.empty() ? analyze(seqs, o) : VCancer::Stats();
     const auto ss = analyze(seqs, o);
-    
+
     o.info("TP: " + std::to_string(ss.oc.tp()));
     o.info("FP: " + std::to_string(ss.oc.fp()));
     o.info("FN: " + std::to_string(ss.oc.fn()));

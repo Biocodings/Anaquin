@@ -84,12 +84,7 @@ namespace Anaquin
         };
 
         static Stats analyze(const FileName &, const Options &o);
-
-        // Report for both endogenous and sequins
-        static void report(const FileName &, const FileName &, const Options &o = Options());
-        
-        // Report for only sequins
-        static void report(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

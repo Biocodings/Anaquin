@@ -115,7 +115,8 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
         case VSample::Method::Median: { return stats.p50;  }
 
         /*
-         * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure to report coverage.
+         * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure
+         * to report coverage.
          */
 
         case VSample::Method::Prop:

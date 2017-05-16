@@ -64,11 +64,36 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
+VWGS::EStats VWGS::analyzeE(const FileName &file, const Options &o)
+{
+    const auto regs = Standard::instance().r_var.regions(false);
+    
+    VWGS::EStats stats;
+    
+    if (!file.empty())
+    {
+        readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
+        {
+            // Only interested whether the variant falls in the reference regions
+            if (regs.count(x.cID) && regs.at(x.cID).contains(x.l))
+            {
+                stats.found++;
+            }
+        });
+    }
+    else
+    {
+        stats.found = NAN;
+    }
+    
+    return stats;
+}
+
+VWGS::SStats VWGS::analyzeS(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VWGS::Stats stats;
+    VWGS::SStats stats;
     
     typedef SeqVariant::Context Context;
     
@@ -264,7 +289,7 @@ VWGS::Stats VWGS::analyze(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VWGS::Stats &stats,
+                       const VWGS::SStats &ss,
                        const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -288,7 +313,7 @@ static void writeQuins(const FileName &file,
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
-        const auto isTP = stats.findTP(i.name);
+        const auto isTP = ss.findTP(i.name);
 
         // This shouldn't fail...
         const auto &sv = r.findSeqVar(i.key());
@@ -335,7 +360,9 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeDetected(const FileName &file, const VWGS::Stats &stats, const VWGS::Options &o)
+static void writeDetected(const FileName &file,
+                          const VWGS::SStats &ss,
+                          const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -379,13 +406,18 @@ static void writeDetected(const FileName &file, const VWGS::Stats &stats, const 
         }
     };
     
-    f(stats.tps, "TP");
-    f(stats.fps, "FP");
+    f(ss.tps, "TP");
+    f(ss.fps, "FP");
 
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VWGS::Stats &stats, const VWGS::Options &o)
+static void writeSummary(const FileName &file,
+                         const FileName &endo,
+                         const FileName &seqs,
+                         const VWGS::EStats &es,
+                         const VWGS::SStats &ss,
+                         const VWGS::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -397,27 +429,30 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
     {
         const auto summary = "-------VarWGS Output Results\n\n"
                              "-------VarWGS Output\n\n"
-                             "       Reference variant annotations:    %1%\n"
-                             "       Reference coordinate annotations: %2%\n"
-                             "       User identified variants:         %3%\n\n"
+                             "       Reference variant annotations:      %1%\n"
+                             "       Reference coordinate annotations:   %2%\n\n"
+                             "       User identified variants (human):   %3%\n"
+                             "       User identified variants (sequins): %63%\n\n"
+                             "       Number of variants in reference regions (human):   %64%\n"
+                             "       Number of variants in reference regions (sequins): %65%\n\n"
                              "-------Reference variants by mutation\n\n"
                              "       SNPs:   %4%\n"
                              "       Indels: %5%\n"
                              "       Total:  %6%\n\n"
                              "-------Reference variants by context\n\n"
-                             "       Generic:                     %31%\n"
-                             "       Very Low GC:                 %32%\n"
-                             "       Low GC:                      %33%\n"
-                             "       High GC:                     %34%\n"
-                             "       Very High GC:                %35%\n"
-                             "       Short Dinucleotide Repeat:   %36%\n"
-                             "       Long Dinucleotide Repeat:    %37%\n"
-                             "       Short Homopolymer:           %38%\n"
-                             "       Long Homopolymer:            %39%\n"
+                             "       Generic:                      %31%\n"
+                             "       Very Low GC:                  %32%\n"
+                             "       Low GC:                       %33%\n"
+                             "       High GC:                      %34%\n"
+                             "       Very High GC:                 %35%\n"
+                             "       Short Dinucleotide Repeat:    %36%\n"
+                             "       Long Dinucleotide Repeat:     %37%\n"
+                             "       Short Homopolymer:            %38%\n"
+                             "       Long Homopolymer:             %39%\n"
                              "       Short Quad Nucleotide Repeat: %40%\n"
                              "       Long Quad Nucleotide Repeat:  %41%\n"
-                             "       Short Trinucleotide Repeat:  %42%\n"
-                             "       Long Trinucleotide Repeat:   %43%\n\n"
+                             "       Short Trinucleotide Repeat:   %42%\n"
+                             "       Long Trinucleotide Repeat:    %43%\n\n"
                              "-------Reference variants by zygosity\n\n"
                              "       Homozygosity:   %44% \n"
                              "       Heterozygosity: %45%\n\n"
@@ -485,7 +520,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
 
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
-        const auto &m2c = stats.m2c;
+        const auto &m2c = ss.m2c;
         const auto &snp = m2c.at(Variation::SNP);
         const auto &del = m2c.at(Variation::Deletion);
         const auto &ins = m2c.at(Variation::Insertion);
@@ -509,13 +544,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
         auto ind = del;
         ind += ins;
 
-        #define CSN(x) D(stats.g2c.at(x).sn())
+        #define CSN(x) D(ss.g2c.at(x).sn())
 
         o.generate(file);
         o.writer->open("VarWGS_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
-                                                % src                           // 3
+                                                % seqs                          // 3
                                                 % r.countSNP()                  // 4
                                                 % r.countInd()                  // 5
                                                 % (r.countSNP() + r.countInd()) // 6
@@ -531,10 +566,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
                                                 % fn_SNP                        // 16
                                                 % (fn_Del + fn_Ins)             // 17
                                                 % (fn_SNP + fn_Del + fn_Ins)    // 18
-                                                % D(stats.oc.sn())              // 19
-                                                % D(stats.oc.pc())              // 20
-                                                % D(stats.oc.F1())              // 21
-                                                % D(1-stats.oc.pc())            // 22
+                                                % D(ss.oc.sn())                 // 19
+                                                % D(ss.oc.pc())                 // 20
+                                                % D(ss.oc.F1())                 // 21
+                                                % D(1-ss.oc.pc())               // 22
                                                 % D(snp.sn())                   // 23
                                                 % D(snp.pc())                   // 24
                                                 % D(snp.F1())                   // 25
@@ -575,6 +610,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
                                                 % CSN(Context::LongTrinRep)            // 60
                                                 % CSN(Context::ShortQuadRep)           // 61
                                                 % CSN(Context::ShortTrinRep)           // 62
+                                                % endo                                 // 63
+                                                % (isnan(es.found) ? "-" : toString(es.found))
+                                                % (c_nSNP + c_nDel + c_nIns)           // 64
                          ).str());
     };
     
@@ -582,10 +620,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VWGS::
     o.writer->close();
 }
 
-void VWGS::report(const FileName &seqs, const Options &o)
+void VWGS::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
-    const auto ss = analyze(seqs, o);
-    
+    const auto es = analyzeE(endo, o);
+    const auto ss = analyzeS(seqs, o);
+
     o.info("TP: " + std::to_string(ss.oc.tp()));
     o.info("FP: " + std::to_string(ss.oc.fp()));
     o.info("FN: " + std::to_string(ss.oc.fn()));
@@ -602,7 +641,7 @@ void VWGS::report(const FileName &seqs, const Options &o)
      * Generating VarWGS_summary.stats
      */
     
-    writeSummary("VarWGS_summary.stats", seqs, ss, o);
+    writeSummary("VarWGS_summary.stats", endo, seqs, es, ss, o);
     
     /*
      * Generating VarWGS_detected.csv

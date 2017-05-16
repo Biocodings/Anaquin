@@ -653,7 +653,7 @@ template <typename Analyzer> void analyze_2(Option x1, Option x2, typename Analy
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        #define D(x) _p.opts.count(x) ? _p.opts[x] : ""        
+        #define D(x) _p.opts.count(x) ? _p.opts[x] : ""
         Analyzer::report(D(x1), D(x2), o);
     }, o);
 }
@@ -1387,8 +1387,8 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_CANCER:   { analyze_1<VCancer>(OPT_U_SEQS);   break; }
-                case TOOL_V_WGS: { analyze_1<VWGS>(OPT_U_SEQS); break; }
+                case TOOL_V_WGS:    { analyze_2<VWGS>(OPT_U_HG, OPT_U_SEQS);    break; }
+                case TOOL_V_CANCER: { analyze_2<VCancer>(OPT_U_HG, OPT_U_SEQS); break; }
 
                 case TOOL_V_SAMPLE:
                 {

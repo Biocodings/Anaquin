@@ -34,7 +34,12 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
         
-        struct Stats
+        struct EStats
+        {
+            unsigned found = 0;
+        };
+        
+        struct SStats
         {
             // True positives
             std::vector<VariantMatch> tps;
@@ -81,13 +86,11 @@ namespace Anaquin
             }
         };
 
-        static Stats analyze(const FileName &, const Options &o);
+        static EStats analyzeE(const FileName &, const Options &o);
+        static SStats analyzeS(const FileName &, const Options &o);
 
         // Report for both endogenous and sequins
         static void report(const FileName &, const FileName &, const Options &o = Options());
-        
-        // Report for only sequins
-        static void report(const FileName &, const Options &o = Options());
     };
 }
 
