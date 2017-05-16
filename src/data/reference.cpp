@@ -661,11 +661,6 @@ Proportion VarRef::findAFreq(const SequinID &id) const
     return _mixes.at(Mix_1).at(id + "_V")->abund;
 }
 
-bool VarRef::hasAFreq(const SequinID &id) const
-{
-    return _mixes.at(Mix_1).count(id + "_R");
-}
-
 Counts VarRef::countInd() const
 {
     return _impl->vData.countInd();

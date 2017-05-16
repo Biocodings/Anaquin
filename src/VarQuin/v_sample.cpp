@@ -2,13 +2,10 @@
 #include "tools/random.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "writers/writer_sam.hpp"
-#include "parsers/parser_bambed.hpp"
 
 extern Anaquin::FileName BedRef();
 
 using namespace Anaquin;
-
-typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
 static ParserBAMBED::Stats sample(const FileName &file,
                                   const NormFactors &norms,
@@ -124,28 +121,19 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
     }
 }
 
-VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
+VSample::CheckStats abcd(const FileName &endo,
+          const FileName &seqs,
+          const C2Intervals &tRegs,
+          const C2Intervals &regs,
+                         const VSample::Options &o)
 {
-    o.analyze(gen);
-    o.analyze(seq);
-
-    o.logInfo("Edge: " + std::to_string(o.edge));
-    
-    const auto &r = Standard::instance().r_var;
-    
-    VSample::Stats stats;
-    
-    // Regions to subsample after trimming
-    const auto tRegs = r.regions(true);
-
-    // Regions without trimming
-    const auto regs = r.regions(false);
-    
     A_ASSERT(!tRegs.empty());
     A_ASSERT(tRegs.size() == regs.size());
+ 
+    VSample::CheckStats stats;
     
     // Checking endogenous alignments before sampling
-    const auto eStats = ParserBAMBED::parse(gen, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -154,14 +142,14 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.nEndo++;
+            stats.nEndo++;
         }
         
         return ParserBAMBED::Response::OK;
     });
-
+    
     // Checking sequin alignments before sampling
-    const auto sStats = ParserBAMBED::parse(seq, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    stats.ss = ParserBAMBED::parse(seqs, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -170,7 +158,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
         
         if (x.mapped)
         {
-            stats.totBefore.nSeqs++;
+            stats.nSeqs++;
         }
         
         return ParserBAMBED::Response::OK;
@@ -178,29 +166,22 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     
     // Normalization for each region
     NormFactors norms;
-
-    // Required for summary statistics
-    std::vector<double> allNorms;
-
-    std::vector<double> allAfterSeqsC;
-    std::vector<double> allBeforeEndoC;
-    std::vector<double> allBeforeSeqsC;
     
     // For each chromosome...
     for (auto &i : tRegs)
     {
         const auto cID = i.first;
-
+        
         // For each region...
         for (auto &j : i.second.data())
         {
             const auto &l = j.second.l();
             
             // Endogenous statistics for the region
-            const auto gs = eStats.inters.at(cID).find(l.key())->stats();
+            const auto gs = stats.es.inters.at(cID).find(l.key())->stats();
             
             // Sequins statistics for the region
-            const auto ss = sStats.inters.at(cID).find(l.key())->stats();
+            const auto ss = stats.ss.inters.at(cID).find(l.key())->stats();
             
             o.info("Calculating coverage for " + j.first);
             
@@ -211,9 +192,9 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
             
             const auto endoC = stats2cov(o.meth, gs);
             const auto seqsC = stats2cov(o.meth, ss);
-
+            
             Proportion norm;
-
+            
             switch (o.meth)
             {
                 case VSample::Method::Mean:
@@ -224,27 +205,27 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                     norm = o.p;
                     break;
                 }
-
+                    
                 case VSample::Method::Reads:
                 {
                     A_ASSERT(!isnan(o.reads));
-
+                    
                     const auto gAligns = gs.aligns;
                     const auto sAligns = ss.aligns;
-
+                    
                     /*
                      * Nothing to subsample if no sequin alignments. Subsample everything if the
                      * genomic region has higher coverage.
                      */
-
+                    
                     norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
-
+                    
                     break;
                 }
             }
-
-            allBeforeEndoC.push_back(endoC);
-            allBeforeSeqsC.push_back(seqsC);
+            
+            stats.allBeforeEndoC.push_back(endoC);
+            stats.allBeforeSeqsC.push_back(seqsC);
             
             if (isnan(norm))
             {
@@ -271,20 +252,50 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
                                                                                        % j.first).str());
             }
             
-            if (!endoC) { stats.noGAlign++; }
-            if (!seqsC) { stats.noSAlign++; }
-            
             stats.c2v[cID][l].rID    = j.first;
             stats.c2v[cID][l].endo   = endoC;
             stats.c2v[cID][l].before = seqsC;
             stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
             
-            allNorms.push_back(norm);
+            stats.allNorms.push_back(norm);
         }
     }
     
+    return stats;
+}
+
+VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
+{
+    o.analyze(gen);
+    o.analyze(seq);
+
+    o.logInfo("Edge: " + std::to_string(o.edge));
+    
+    const auto &r = Standard::instance().r_var;
+    
+    VSample::Stats stats;
+    
+    // Regions to subsample after trimming
+    const auto tRegs = r.regions(true);
+    
+    // Regions without trimming
+    const auto regs = r.regions(false);
+    
+    const auto &before = abcd(gen, seq, tRegs, regs, o);
+    
+    const auto norms = before.norms;
+    stats.c2v = before.c2v;
+    
+    const auto allBeforeEndoC = before.allBeforeEndoC;
+    const auto allBeforeSeqsC = before.allBeforeSeqsC;
+    
+    stats.totBefore.nEndo = before.nEndo;
+    stats.totBefore.nSeqs = before.nSeqs;
+    
     // We have the normalization factors so we can proceed with subsampling.
     const auto after = sample(seq, norms, stats, regs, tRegs, o);
+    
+    std::vector<double> allAfterSeqsC;
     
     /*
      * Assume our subsampling is working, let's check the coverage for every region.
@@ -313,16 +324,16 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     stats.afterEndo  = stats.beforeEndo;
     stats.afterSeqs  = SS::mean(allAfterSeqsC);
     
-    stats.normSD   = SS::getSD(allNorms);
-    stats.normAver = SS::mean(allNorms);
+    stats.normSD   = SS::getSD(before.allNorms);
+    stats.normAver = SS::mean(before.allNorms);
     
     stats.totAfter.nEndo = stats.totBefore.nEndo;
     
-    stats.sampAfter.nEndo  = eStats.nMap;
-    stats.sampBefore.nEndo = eStats.nMap;
+    stats.sampAfter.nEndo  = before.es.nMap;
+    stats.sampBefore.nEndo = before.es.nMap;
     
     // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.nSeqs = sStats.nMap;
+    stats.sampBefore.nSeqs = before.ss.nMap;
 
     // Remember, the synthetic reads have been mapped to the forward genome
     stats.sampAfter.nSeqs = after.nMap;

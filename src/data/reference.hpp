@@ -86,19 +86,6 @@ namespace Anaquin
                 return _data.count(id) ? &_data.at(id) : nullptr;
             }
 
-            inline const Data *match(const Locus &l, MatchRule m) const
-            {
-                for (const auto &i : _data)
-                {
-                    if ((m == Overlap && i.second.l.overlap(l)) || (m == Contains && i.second.l.contains(l)))
-                    {
-                        return &i.second;
-                    }
-                }
-
-                return nullptr;
-            }
-        
             /*
              * Histogram for distribution
              */
@@ -324,9 +311,6 @@ namespace Anaquin
 
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;
-
-            // Allele frequency found? This function can also be used for checking the reference VCF.
-            bool hasAFreq(const SequinID &) const;
 
         protected:
 

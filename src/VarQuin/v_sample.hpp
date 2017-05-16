@@ -2,9 +2,12 @@
 #define V_SAMPLE_HPP
 
 #include "stats/analyzer.hpp"
+#include "parsers/parser_bambed.hpp"
 
 namespace Anaquin
 {
+    typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
+    
     struct VSample
     {
         enum class Method
@@ -32,6 +35,24 @@ namespace Anaquin
             Proportion norm;
         };
         
+        struct CheckStats
+        {
+            Counts nEndo = 0;
+            Counts nSeqs = 0;
+         
+            ParserBAMBED::Stats es;
+            ParserBAMBED::Stats ss;
+            
+            std::vector<double> allBeforeEndoC;
+            std::vector<double> allBeforeSeqsC;
+            
+            // Required for summary statistics
+            std::vector<double> allNorms;
+
+            NormFactors norms;
+            std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
+        };
+
         struct GenomeSequins
         {
             Counts nEndo = 0;
@@ -42,12 +63,6 @@ namespace Anaquin
         {
             // Total number of subsampling regions
             Counts count = 0;
-            
-            // Number of regions without alignment (genomic)
-            Counts noGAlign = 0;
-            
-            // Number of regions without alignment (synthetic)
-            Counts noSAlign = 0;
             
             Coverage afterEndo,  afterSeqs;
             Coverage beforeEndo, beforeSeqs;

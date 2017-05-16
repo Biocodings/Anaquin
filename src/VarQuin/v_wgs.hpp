@@ -1,5 +1,5 @@
-#ifndef V_GERMLINE_HPP
-#define V_GERMLINE_HPP
+#ifndef V_WGS_HPP
+#define V_WGS_HPP
 
 #include "data/vData.hpp"
 #include "stats/analyzer.hpp"

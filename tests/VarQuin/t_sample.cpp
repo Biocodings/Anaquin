@@ -19,8 +19,6 @@ TEST_CASE("VSubsample_Read_10")
     auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
     REQUIRE(r.count    == 4);
-    REQUIRE(r.noGAlign == 2);
-    REQUIRE(r.noSAlign == 0);
     
     REQUIRE(r.beforeEndo == Approx(7.30675));
     REQUIRE(r.afterEndo  == Approx(7.30675));
@@ -72,10 +70,7 @@ TEST_CASE("VSubsample_ZeroProp")
     
     auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
-    REQUIRE(r.count    == 4);
-    REQUIRE(r.noGAlign == 2);
-    REQUIRE(r.noSAlign == 0);
-    
+    REQUIRE(r.count      == 4);
     REQUIRE(r.afterEndo  == Approx(7.30675));
     REQUIRE(r.afterSeqs  == 0.0);
     REQUIRE(r.beforeEndo == Approx(7.30675));
@@ -124,10 +119,7 @@ TEST_CASE("VSubsample_Median")
     
     auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
-    REQUIRE(r.count    == 4);
-    REQUIRE(r.noGAlign == 2);
-    REQUIRE(r.noSAlign == 0);
-    
+    REQUIRE(r.count      == 4);
     REQUIRE(r.afterEndo  == Approx(7.0));
     REQUIRE(r.beforeEndo == Approx(7.0));
     REQUIRE(r.beforeSeqs == Approx(27.5));
@@ -176,10 +168,7 @@ TEST_CASE("VSubsample_Mean")
     
     auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
     
-    REQUIRE(r.count    == 4);
-    REQUIRE(r.noGAlign == 2);
-    REQUIRE(r.noSAlign == 0);
-    
+    REQUIRE(r.count      == 4);
     REQUIRE(r.afterEndo  == Approx(7.30675));
     REQUIRE(r.beforeEndo == Approx(7.30675));
     REQUIRE(r.beforeSeqs == Approx(27.599));
