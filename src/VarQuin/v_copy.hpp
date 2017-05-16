@@ -11,7 +11,9 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
-            CopyNumber copy = 2;            
+            Options() : copy(2) {}
+            
+            CopyNumber copy;
         };
         
         struct Stats
