@@ -121,16 +121,16 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
     }
 }
 
-VSample::CheckStats abcd(const FileName &endo,
-          const FileName &seqs,
-          const C2Intervals &tRegs,
-          const C2Intervals &regs,
-                         const VSample::Options &o)
+VSample::CalibrateStats VSample::check(const FileName &endo,
+                                       const FileName &seqs,
+                                       const C2Intervals &tRegs,
+                                       const C2Intervals &regs,
+                                       const VSample::Options &o)
 {
     A_ASSERT(!tRegs.empty());
     A_ASSERT(tRegs.size() == regs.size());
  
-    VSample::CheckStats stats;
+    VSample::CalibrateStats stats;
     
     // Checking endogenous alignments before sampling
     stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
@@ -281,7 +281,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     // Regions without trimming
     const auto regs = r.regions(false);
     
-    const auto &before = abcd(gen, seq, tRegs, regs, o);
+    const auto &before = check(gen, seq, tRegs, regs, o);
     
     const auto norms = before.norms;
     stats.c2v = before.c2v;

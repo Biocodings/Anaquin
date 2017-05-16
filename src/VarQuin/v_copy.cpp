@@ -10,7 +10,7 @@ VCopy::Stats VCopy::analyze(const FileName &file, const Options &o)
     VCopy::Stats stats;
     
     /*
-     * Filter all sequins with CNV equal to the option
+     * Filter all sequins with CNV equal to the input option
      */
     
     for (auto &i : r.data())
@@ -25,7 +25,7 @@ VCopy::Stats VCopy::analyze(const FileName &file, const Options &o)
     }
     
     /*
-     * Use the sequins from last section for calculating normalization factor
+     * Use the filtered sequins for calculating normalization factor
      */
  
     

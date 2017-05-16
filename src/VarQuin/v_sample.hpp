@@ -35,7 +35,7 @@ namespace Anaquin
             Proportion norm;
         };
         
-        struct CheckStats
+        struct CalibrateStats
         {
             Counts nEndo = 0;
             Counts nSeqs = 0;
@@ -49,7 +49,9 @@ namespace Anaquin
             // Required for summary statistics
             std::vector<double> allNorms;
 
+            // Normalization for each sequin region
             NormFactors norms;
+
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
         };
 
@@ -91,6 +93,12 @@ namespace Anaquin
             Counts reads = NAN;
         };
         
+        static CalibrateStats check(const FileName &,
+                                    const FileName &,
+                                    const C2Intervals &,
+                                    const C2Intervals &,
+                                    const VSample::Options &);
+
         static Stats analyze(const FileName &, const FileName &, const Options &);
         static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
