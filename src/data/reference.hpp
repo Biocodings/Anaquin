@@ -11,6 +11,33 @@
 
 namespace Anaquin
 {
+    enum class Tool
+    {
+        Test,
+        Help,
+        
+        RnaAlign,
+        RnaAssembly,
+        RnaExpress,
+        RnaFoldChange,
+        RnaSubsample,
+        
+        VarCopy,
+        VarAlign,
+        VarDetect,
+        VarCancer,
+        VarSubsample,
+        VarTrim,
+        VarFlip,
+        VarKAbund,
+        
+        MetaAlign,
+        MetaFoldChange,
+        MetaAbund,
+        MetaAssembly,
+        MetaSubsample
+    };
+    
     struct DefaultStats
     {
         // Empty Implementation
@@ -83,9 +110,9 @@ namespace Anaquin
                 return _data.count(id) ? &_data.at(id) : nullptr;
             }
 
-            inline void finalize()
+            inline void finalize(Tool x)
             {
-                validate();
+                validate(x);
                 
                 for (auto &i : _data)
                 {
@@ -98,7 +125,7 @@ namespace Anaquin
 
         protected:
 
-            virtual void validate() = 0;
+            virtual void validate(Tool) = 0;
 
             struct MixtureData
             {
@@ -238,7 +265,7 @@ namespace Anaquin
 
         protected:
         
-            void validate() override;
+            void validate(Tool) override;
         
         private:
 
@@ -292,7 +319,7 @@ namespace Anaquin
 
         protected:
 
-            void validate() override;
+            void validate(Tool) override;
 
         private:
 
@@ -369,7 +396,7 @@ namespace Anaquin
 
         protected:
         
-            void validate() override;
+            void validate(Tool) override;
 
             void merge(const std::set<SequinID> &, const std::set<SequinID> &);
         

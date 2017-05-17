@@ -11,7 +11,6 @@
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_sample.hpp"
-#include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
@@ -22,14 +21,12 @@
 #include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_report.hpp"
 #include "VarQuin/v_cancer.hpp"
 
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_sample.hpp"
-#include "MetaQuin/m_report.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_gtf.hpp"
@@ -51,36 +48,10 @@
 #include <catch.hpp>
 #endif
 
-typedef int Tool;
 typedef int Option;
 
 typedef std::string Value;
 typedef std::set<Value> Range;
-
-#define TOOL_TEST       264
-#define TOOL_HELP       265
-#define TOOL_R_ALIGN    266
-#define TOOL_R_ASSEMBLY 267
-#define TOOL_R_EXPRESS  268
-#define TOOL_R_FOLD     269
-#define TOOL_R_GENE     270
-#define TOOL_R_REPORT   271
-#define TOOL_R_SAMPLE   272
-#define TOOL_V_COPY     273
-#define TOOL_V_KABUND   274
-#define TOOL_V_VREPORT  275
-#define TOOL_V_ALIGN    276
-#define TOOL_V_FLIP     277
-#define TOOL_V_DETECT   278
-#define TOOL_V_CANCER   279
-#define TOOL_V_TRIM     280
-#define TOOL_V_SAMPLE   281
-#define TOOL_M_ALIGN    282
-#define TOOL_M_ABUND    283
-#define TOOL_M_FOLD     284
-#define TOOL_M_SAMPLE   285
-#define TOOL_M_ASSEMBLY 286
-#define TOOL_M_REPORT   287
 
 /*
  * Options specified in the command line
@@ -142,33 +113,29 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "Test",           TOOL_TEST       },
-    { "Help",           TOOL_HELP       },
+    { "Test",           Tool::Test           },
+    { "Help",           Tool::Help           },
 
-    { "RnaAlign",       TOOL_R_ALIGN    },
-    { "RnaAssembly",    TOOL_R_ASSEMBLY },
-    { "RnaExpress",     TOOL_R_EXPRESS  },
-    { "RnaExpression",  TOOL_R_EXPRESS  },
-    { "RnaReport",      TOOL_R_REPORT   },
-    { "RnaFoldChange",  TOOL_R_FOLD     },
-    { "RnaSubsample",   TOOL_R_SAMPLE   },
-    { "RnaGene",        TOOL_R_GENE     },
+    { "RnaAlign",       Tool::RnaAlign       },
+    { "RnaAssembly",    Tool::RnaAssembly    },
+    { "RnaExpress",     Tool::RnaExpress     },
+    { "RnaFoldChange",  Tool::RnaFoldChange  },
+    { "RnaSubsample",   Tool::RnaSubsample   },
 
-    { "VarCopy",        TOOL_V_COPY     },
-    { "VarAlign",       TOOL_V_ALIGN    },
-    { "VarDetect",      TOOL_V_DETECT   },
-    { "VarCancer",      TOOL_V_CANCER   },
-    { "VarVReport",     TOOL_V_VREPORT  },
-    { "VarSubsample",   TOOL_V_SAMPLE   },
-    { "VarTrim",        TOOL_V_TRIM     },
-    { "VarFlip",        TOOL_V_FLIP     },
-    { "VarKAbund",      TOOL_V_KABUND   },
+    { "VarCopy",        Tool::VarCopy        },
+    { "VarAlign",       Tool::VarAlign       },
+    { "VarDetect",      Tool::VarDetect      },
+    { "VarCancer",      Tool::VarCancer      },
+    { "VarSubsample",   Tool::VarSubsample   },
+    { "VarTrim",        Tool::VarTrim        },
+    { "VarFlip",        Tool::VarFlip        },
+    { "VarKAbund",      Tool::VarKAbund      },
 
-    { "MetaFoldChange", TOOL_M_FOLD     },
-    { "MetaAlign",      TOOL_M_ALIGN    },
-    { "MetaAbund",      TOOL_M_ABUND    },
-    { "MetaAssembly",   TOOL_M_ASSEMBLY },
-    { "MetaSubsample",  TOOL_M_SAMPLE   },
+    { "MetaFoldChange", Tool::MetaFoldChange },
+    { "MetaAlign",      Tool::MetaAlign      },
+    { "MetaAbund",      Tool::MetaAbund      },
+    { "MetaAssembly",   Tool::MetaAssembly   },
+    { "MetaSubsample",  Tool::MetaSubsample  },
 };
 
 static std::map<Tool, std::set<Option>> _options =
@@ -177,34 +144,32 @@ static std::map<Tool, std::set<Option>> _options =
      * RnaQuin Analysis
      */
     
-    { TOOL_R_SAMPLE,   { OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_FOLD,     { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { TOOL_R_REPORT,   { OPT_MIXTURE, OPT_R_IND, OPT_U_FILES  } },
-    { TOOL_R_ALIGN,    { OPT_R_GTF, OPT_U_FILES } },
+    { Tool::RnaSubsample,  { OPT_U_FILES, OPT_METHOD } },
+    { Tool::RnaAssembly,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { Tool::RnaFoldChange, { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
+    { Tool::RnaExpress,    { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
+    { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_FILES } },
 
     /*
      * VarQuin Analysis
      */
 
-    { TOOL_V_FLIP,    { OPT_U_SEQS  } },
-    { TOOL_V_TRIM,    { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_ALIGN,   { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_COPY,    { OPT_R_BED,   OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_SAMPLE,  { OPT_R_BED,   OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_DETECT,  { OPT_R_VCF,   OPT_U_SEQS } },
-    { TOOL_V_VREPORT, { OPT_MIXTURE, OPT_U_SEQS } },
-    { TOOL_V_KABUND,  { OPT_U_SEQS } },
+    { Tool::VarFlip,      { OPT_U_SEQS } },
+    { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarCopy,      { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarSubsample, { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarDetect,    { OPT_R_VCF, OPT_U_SEQS } },
+    { Tool::VarKAbund,    { OPT_U_SEQS } },
 
     /*
      * MetaQuin Analysis
      */
 
-    { TOOL_M_FOLD,     { OPT_U_FILES } },
-    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_U_FILES } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_U_FILES } },
-    { TOOL_M_SAMPLE,   { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
+    { Tool::MetaFoldChange, { OPT_U_FILES } },
+    { Tool::MetaAlign,      { OPT_R_BED, OPT_U_FILES } },
+    { Tool::MetaAssembly,   { OPT_R_BED, OPT_U_FILES } },
+    { Tool::MetaSubsample,  { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
 };
 
 /*
@@ -236,7 +201,7 @@ struct Parsing
     
     Proportion sampled = NAN;
     
-    Tool tool = 0;
+    Tool tool;
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -408,11 +373,9 @@ static Scripts manual(Tool tool)
     extern Scripts VarTrim();
     extern Scripts VarAlign();
     extern Scripts VarCancer();
-    extern Scripts VarVReport();
     extern Scripts VarKAbund();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
-    extern Scripts RnaReport();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
@@ -425,26 +388,24 @@ static Scripts manual(Tool tool)
     
     switch (tool)
     {
-        case TOOL_R_ALIGN:     { return RnaAlign();       }
-        case TOOL_R_ASSEMBLY:  { return RnaAssembly();    }
-        case TOOL_R_EXPRESS:   { return RnaExpression();  }
-        case TOOL_R_REPORT:    { return RnaReport();      }
-        case TOOL_R_FOLD:      { return RnaFoldChange();  }
-        case TOOL_R_SAMPLE:    { return RnaSubsample();   }
-        case TOOL_V_COPY:      { return VarCopy();        }
-        case TOOL_V_FLIP:      { return VarFlip();        }
-        case TOOL_V_TRIM:      { return VarTrim();        }
-        case TOOL_V_CANCER:    { return VarCancer();      }
-        case TOOL_V_ALIGN:     { return VarAlign();       }
-        case TOOL_V_SAMPLE:    { return VarSubsample();   }
-        case TOOL_V_KABUND:    { return VarKAbund();      }
-        case TOOL_V_DETECT:    { return VarDetect();         }
-        case TOOL_V_VREPORT:   { return VarVReport();     }
-        case TOOL_M_ALIGN:     { return MetaAlign();      }
-        case TOOL_M_SAMPLE:    { return MetaAbund();      }
-        case TOOL_M_ASSEMBLY:  { return MetaAssembly();   }
-        case TOOL_M_ABUND:     { return MetaSubsample();  }
-        case TOOL_M_FOLD:      { return MetaFoldChange(); }
+        case Tool::RnaAlign:       { return RnaAlign();       }
+        case Tool::RnaAssembly:    { return RnaAssembly();    }
+        case Tool::RnaExpress:     { return RnaExpression();  }
+        case Tool::RnaFoldChange:  { return RnaFoldChange();  }
+        case Tool::RnaSubsample:   { return RnaSubsample();   }
+        case Tool::VarCopy:        { return VarCopy();        }
+        case Tool::VarFlip:        { return VarFlip();        }
+        case Tool::VarTrim:        { return VarTrim();        }
+        case Tool::VarCancer:      { return VarCancer();      }
+        case Tool::VarAlign:       { return VarAlign();       }
+        case Tool::VarSubsample:   { return VarSubsample();   }
+        case Tool::VarKAbund:      { return VarKAbund();      }
+        case Tool::VarDetect:      { return VarDetect();      }
+        case Tool::MetaAlign:      { return MetaAlign();      }
+        case Tool::MetaSubsample:  { return MetaAbund();      }
+        case Tool::MetaAssembly:   { return MetaAssembly();   }
+        case Tool::MetaAbund:      { return MetaSubsample();  }
+        case Tool::MetaFoldChange: { return MetaFoldChange(); }
     }
 
     throw std::runtime_error("Manual not found");
@@ -805,7 +766,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == TOOL_V_SAMPLE || _p.tool == TOOL_R_SAMPLE || _p.tool == TOOL_V_TRIM || _p.tool == TOOL_V_COPY)
+    if (_p.tool == Tool::VarSubsample || _p.tool == Tool::RnaSubsample || _p.tool == Tool::VarTrim || _p.tool == Tool::VarCopy)
     {
         __showInfo__ = false;
     }
@@ -823,8 +784,6 @@ void parse(int argc, char ** argv)
         return;
     }
     
-    A_ASSERT(_p.tool);
-
     unsigned n = 2;
 
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
@@ -877,13 +836,13 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_R_FOLD:
-                    case TOOL_V_COPY:
-                    case TOOL_R_EXPRESS:
-                    case TOOL_V_SAMPLE: { _p.opts[opt] = val; break; }
+                    case Tool::RnaFoldChange:
+                    case Tool::VarCopy:
+                    case Tool::RnaExpress:
+                    case Tool::VarSubsample: { _p.opts[opt] = val; break; }
 
-                    case TOOL_M_SAMPLE:
-                    case TOOL_R_SAMPLE:
+                    case Tool::MetaSubsample:
+                    case Tool::RnaSubsample:
                     {
                         parseDouble(_p.opts[opt] = val, _p.sampled);
                         
@@ -898,6 +857,8 @@ void parse(int argc, char ** argv)
                         
                         break;
                     }
+                        
+                    default : { break; }
                 }
                 
                 break;
@@ -987,7 +948,7 @@ void parse(int argc, char ** argv)
     
     switch (_p.tool)
     {
-        case TOOL_TEST:
+        case Tool::Test:
         {
 #ifdef UNIT_TEST
             Catch::Session().run(1, argv);
@@ -997,59 +958,37 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_R_FOLD:
-        case TOOL_R_GENE:
-        case TOOL_R_ALIGN:
-        case TOOL_R_REPORT:
-        case TOOL_R_EXPRESS:
-        case TOOL_R_ASSEMBLY:
-        case TOOL_R_SAMPLE:
+        case Tool::RnaFoldChange:
+        case Tool::RnaAlign:
+        case Tool::RnaExpress:
+        case Tool::RnaAssembly:
+        case Tool::RnaSubsample:
         {
             if (__showInfo__)
             {
                 std::cout << "[INFO]: RNA-Seq Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_R_SAMPLE)
+            if (_p.tool != Tool::RnaSubsample)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_R_GENE:
-                    {
-                        try
-                        {
-                            applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
-                        }
-                        catch (...)
-                        {
-                            applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
-                        }
-
-                        break;
-                    }
-
-                    case TOOL_R_ALIGN:
+                    case Tool::RnaAlign:
                     {
                         addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
                         break;
                     }
 
-                    case TOOL_R_FOLD:
+                    case Tool::RnaFoldChange:
                     {
                         applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
-                    case TOOL_R_EXPRESS:
-                    case TOOL_R_ASSEMBLY:
+                    case Tool::RnaExpress:
+                    case Tool::RnaAssembly:
                     {
                         applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
-                        break;
-                    }
-
-                    case TOOL_R_REPORT:
-                    {
-                        applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
@@ -1061,23 +1000,15 @@ void parse(int argc, char ** argv)
                     }
                 }
 
-                s.r_rna.finalize();
+                s.r_rna.finalize(_p.tool);
             }
 
             switch (_p.tool)
             {
-                case TOOL_R_GENE:     { analyze_0<RGene>();                         break; }
-                case TOOL_R_ALIGN:    { analyze_1<RAlign>(OPT_U_FILES);             break; }
-                case TOOL_R_ASSEMBLY: { analyze_1<RAssembly>(OPT_U_FILES);          break; }
-                case TOOL_R_REPORT:
-                {
-                    RReport::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    analyze_1<RReport>(OPT_U_FILES, o);
-                    break;
-                }
+                case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_FILES);    break; }
+                case Tool::RnaAssembly: { analyze_1<RAssembly>(OPT_U_FILES); break; }
 
-                case TOOL_R_SAMPLE:
+                case Tool::RnaSubsample:
                 {
                     RSample::Options o;
                     o.p = _p.sampled;
@@ -1085,7 +1016,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_R_EXPRESS:
+                case Tool::RnaExpress:
                 {
                     RExpress::Options o;
                     
@@ -1122,7 +1053,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_R_FOLD:
+                case Tool::RnaFoldChange:
                 {
                     RFold::Options o;
 
@@ -1168,25 +1099,27 @@ void parse(int argc, char ** argv)
                     analyze_1<RFold>(OPT_U_FILES, o);
                     break;
                 }
+
+                default : { break; }
             }
 
             break;
         }
 
-        case TOOL_M_FOLD:
-        case TOOL_M_ABUND:
-        case TOOL_M_ALIGN:
-        case TOOL_M_ASSEMBLY:
-        case TOOL_M_SAMPLE:
+        case Tool::MetaFoldChange:
+        case Tool::MetaAbund:
+        case Tool::MetaAlign:
+        case Tool::MetaAssembly:
+        case Tool::MetaSubsample:
         {
             switch (_p.tool)
             {
-                case TOOL_M_FOLD:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
-                case TOOL_M_ABUND:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-                case TOOL_M_ALIGN:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-                case TOOL_M_SAMPLE: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
+                case Tool::MetaAbund:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
+                case Tool::MetaAlign:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+                case Tool::MetaSubsample: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
 
-                case TOOL_M_ASSEMBLY:
+                case Tool::MetaAssembly:
                 {
                     applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
@@ -1196,11 +1129,11 @@ void parse(int argc, char ** argv)
                 default: { break; }
             }
             
-            Standard::instance().r_meta.finalize();
+            Standard::instance().r_meta.finalize(_p.tool);
             
             switch (_p.tool)
             {
-                case TOOL_M_FOLD:
+                case Tool::MetaFoldChange:
                 {
 //                    MDiff::Options o;
 //                    
@@ -1223,7 +1156,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_M_ABUND:
+                case Tool::MetaAbund:
                 {
 //                    MAbund::Options o;
 //                    
@@ -1244,7 +1177,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_M_SAMPLE:
+                case Tool::MetaSubsample:
                 {
                     MSample::Options o;
                     o.p = _p.sampled;
@@ -1252,7 +1185,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_M_ASSEMBLY:
+                case Tool::MetaAssembly:
                 {
                     MAssembly::Options o;
 
@@ -1263,7 +1196,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_M_ALIGN: { analyze_n<MAlign>(); break; }
+                case Tool::MetaAlign: { analyze_n<MAlign>(); break; }
 
                 default: { break; }
             }
@@ -1271,32 +1204,31 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_V_COPY:
-        case TOOL_V_DETECT:
-        case TOOL_V_FLIP:
-        case TOOL_V_TRIM:
-        case TOOL_V_ALIGN:
-        case TOOL_V_CANCER:
-        case TOOL_V_SAMPLE:
-        case TOOL_V_VREPORT:
-        case TOOL_V_KABUND:
+        case Tool::VarCopy:
+        case Tool::VarDetect:
+        case Tool::VarFlip:
+        case Tool::VarTrim:
+        case Tool::VarAlign:
+        case Tool::VarCancer:
+        case Tool::VarSubsample:
+        case Tool::VarKAbund:
         {
             if (__showInfo__)
             {
                 std::cout << "[INFO]: Variant Analysis" << std::endl;
             }
 
-            if (_p.tool != TOOL_V_FLIP)
+            if (_p.tool != Tool::VarFlip)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_V_ALIGN:
+                    case Tool::VarAlign:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         break;
                     }
 
-                    case TOOL_V_COPY:
+                    case Tool::VarCopy:
                     {
                         addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
@@ -1304,28 +1236,28 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case TOOL_V_SAMPLE:
+                    case Tool::VarSubsample:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
                                             _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
                         break;
                     }
 
-                    case TOOL_V_TRIM:
+                    case Tool::VarTrim:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         break;
                     }
 
-                    case TOOL_V_DETECT:
-                    case TOOL_V_CANCER:
+                    case Tool::VarDetect:
+                    case Tool::VarCancer:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
                         
-                    case TOOL_V_KABUND:
+                    case Tool::VarKAbund:
                     {
                         addLadder(std::bind(&Standard::addAll, &s, std::placeholders::_1), OPT_AF_LAD);
                         addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
@@ -1336,27 +1268,12 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
 
-                if (_p.tool != TOOL_V_VREPORT)
-                {
-                    Standard::instance().r_var.finalize();
-                }
+                Standard::instance().r_var.finalize(_p.tool);
             }
 
             switch (_p.tool)
             {
-                case TOOL_V_VREPORT:
-                {
-                    VVReport::Options o;
-                    
-                    o.rMix = mixture();
-                    o.rBED = _p.opts.at(OPT_R_BED);
-                    o.rVCF = _p.opts.at(OPT_R_VCF);
-                    
-                    analyze_3<VVReport>(o);
-                    break;
-                }
-                    
-                case TOOL_V_KABUND:
+                case Tool::VarKAbund:
                 {
                     VKAbund::Options o;
                     
@@ -1377,11 +1294,11 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_SEQS); break; }
+                case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 
-                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarAlign: { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
-                case TOOL_V_TRIM:
+                case Tool::VarTrim:
                 {
                     VTrim::Options o;
                     
@@ -1402,10 +1319,10 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_DETECT:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                case TOOL_V_CANCER: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarDetect:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
+                case Tool::VarCancer: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
-                case TOOL_V_COPY:
+                case Tool::VarCopy:
                 {
                     VCopy::Options o;
                     
@@ -1460,7 +1377,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_SAMPLE:
+                case Tool::VarSubsample:
                 {
                     VSample::Options o;
                     
@@ -1514,10 +1431,14 @@ void parse(int argc, char ** argv)
                     analyze_2<VSample>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }
+
+                default : { break; }
             }
 
             break;
         }
+
+        default : { break; }
     }
 }
 

@@ -296,7 +296,7 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     std::vector<double> allAfterSeqsC;
     
     /*
-     * Assume our subsampling is working, let's check the coverage for every region.
+     * Assume our subsampling is working, let's check coverage for the regions.
      */
     
     // For each chromosome...

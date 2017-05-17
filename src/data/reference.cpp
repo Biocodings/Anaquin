@@ -340,7 +340,7 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
     assert(!_data.empty());
 }
 
-void RnaRef::validate()
+void RnaRef::validate(Tool)
 {
     auto iIDs = std::set<SequinID>();
     
@@ -445,7 +445,7 @@ Base MetaRef::nBaseGen() const { return 0; /*return _impl->bData.countBaseGen(is
 Counts MetaRef::nMicroSyn() const { return _impl->bData.nGeneSyn(isMetaQuin); }
 Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
 
-void MetaRef::validate()
+void MetaRef::validate(Tool)
 {
     auto bed2ID = [](const BedData &data)
     {
@@ -674,58 +674,68 @@ Counts VarRef::countSNP() const
 Counts VarRef::nRegs() const { return _impl->bData.count();  }
 Counts VarRef::lRegs() const { return _impl->bData.length(); }
 
-void VarRef::validate()
+void VarRef::validate(Tool x)
 {
-    const auto hasVCF = !_impl->vIDs.empty();
-    const auto hasBED = !_impl->bIDs.empty();
-    const auto hasLad = !_rawMIDs.empty();
-    
-    if (hasLad && hasBED)
+    switch (x)
     {
-        const auto d = merge(_impl->bIDs, _rawMIDs);
-        
-        for (const auto &i : _impl->bData)
+        case Tool::VarCopy:
         {
-            for (const auto &j : i.second.r2d)
+            const auto d = merge(_impl->bIDs, _rawMIDs);
+            
+            for (const auto &i : _impl->bData)
             {
-                if (_data.count(j.second.name ))
+                for (const auto &j : i.second.r2d)
                 {
-                    _data.at(j.second.name).l = j.second.l;
+                    if (_data.count(j.second.name ))
+                    {
+                        _data.at(j.second.name).l = j.second.l;
+                    }
                 }
             }
-        }
-        
-        for (const auto &i : d)
-        {
-            for (auto &j : _impl->bData)
+            
+            for (const auto &i : d)
             {
-                if (j.second.r2d.count(i))
+                for (auto &j : _impl->bData)
                 {
-                    j.second.r2d.erase(i);
+                    if (j.second.r2d.count(i))
+                    {
+                        j.second.r2d.erase(i);
+                    }
+                }
+                
+                for (auto &j : _impl->tData)
+                {
+                    if (j.second.r2d.count(i))
+                    {
+                        j.second.r2d.erase(i);
+                    }
                 }
             }
 
-            for (auto &j : _impl->tData)
-            {
-                if (j.second.r2d.count(i))
-                {
-                    j.second.r2d.erase(i);
-                }
-            }
+            break;
         }
-    }
-    else if (hasVCF && hasBED)
-    {
-        merge(_impl->vIDs);
-    }
-    else if (hasBED)
-    {
-        merge(_impl->bIDs);
-    }
-    else
-    {
-        // Try mixture if we don't have anything else
-        merge(_rawMIDs, _rawMIDs);
+
+        default:
+        {
+            const auto hasVCF = !_impl->vIDs.empty();
+            const auto hasBED = !_impl->bIDs.empty();
+            
+            if (hasVCF && hasBED)
+            {
+                merge(_impl->vIDs);
+            }
+            else if (hasBED)
+            {
+                merge(_impl->bIDs);
+            }
+            else
+            {
+                // Try mixture if we don't have anything else
+                merge(_rawMIDs, _rawMIDs);
+            }
+
+            break;
+        }
     }
 }
 

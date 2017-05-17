@@ -135,7 +135,7 @@ static RAssembly::Stats init(const RAssembly::Options &o)
 
 RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_rna;
+//    const auto &r = Standard::instance().r_rna;
 
     auto stats = init(o);
     __Stats__ = &stats;

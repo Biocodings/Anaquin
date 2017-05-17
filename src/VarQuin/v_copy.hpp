@@ -19,6 +19,8 @@ namespace Anaquin
         
         struct Stats
         {
+            VSample::CalibrateStats before;
+            ParserBAMBED::Stats after;
         };
 
         static Stats analyze(const FileName &, const FileName &, const Options &o);

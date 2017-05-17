@@ -54,16 +54,6 @@ inline std::string ctx2Str(Context x)
     }
 }
 
-static Scripts createVGROC(const FileName &file, const std::string &score, const std::string &refRat)
-{
-    return (boost::format(PlotVGROC()) % date()
-                                       % __full_command__
-                                       % __output__
-                                       % file
-                                       % score
-                                       % refRat).str();
-}
-
 static Scripts createVCROC(const FileName &file, const std::string &score, const std::string &refRat)
 {
     return (boost::format(PlotVCROC()) % date()

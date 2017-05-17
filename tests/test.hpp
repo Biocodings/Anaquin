@@ -40,7 +40,7 @@ namespace Anaquin
         clrTest();
         Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
         Standard::instance().addRMix(Reader(RnaDataMixA(), DataMode::String));
-        Standard::instance().r_rna.finalize();
+        Standard::instance().r_rna.finalize(Tool::RnaAssembly);
     }
 
     inline void RnaQuin_AB()
@@ -48,14 +48,14 @@ namespace Anaquin
         clrTest();
         Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
         Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
-        Standard::instance().r_rna.finalize();
+        Standard::instance().r_rna.finalize(Tool::RnaAssembly);
     }
 
     inline void RnaFoldChange()
     {
         clrTest();
         Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
-        Standard::instance().r_rna.finalize();        
+        Standard::instance().r_rna.finalize(Tool::RnaAssembly);        
     }
     
     inline Test runTest(const std::string &cmd)

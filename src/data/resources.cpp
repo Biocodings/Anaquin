@@ -13,11 +13,9 @@
 #include "resources/VarAlign.txt"
 #include "resources/VarKAbund.txt"
 #include "resources/VarCancer.txt"
-#include "resources/VarVReport.txt"
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
-#include "resources/RnaKReport.txt"
 #include "resources/RnaAssembly.txt"
 #include "resources/RnaSubsample.txt"
 #include "resources/RnaExpression.txt"
@@ -96,11 +94,6 @@ Scripts RnaAssembly()
     return ToString(data_manuals_RnaAssembly_txt);
 }
 
-Scripts RnaReport()
-{
-    return ToString(data_manuals_RnaKReport_txt);
-}
-
 Scripts RnaExpression()
 {
     return ToString(data_manuals_RnaExpression_txt);
@@ -149,11 +142,6 @@ Scripts VarDetect()
 Scripts VarCancer()
 {
     return ToString(data_manuals_VarCancer_txt);
-}
-
-Scripts VarVReport()
-{
-    return ToString(data_manuals_VarVReport_txt);
 }
 
 Scripts MetaAlign()

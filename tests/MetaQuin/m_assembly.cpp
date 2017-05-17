@@ -11,7 +11,7 @@ TEST_CASE("MetaAssembly_1")
 
     Standard::instance().addMMix(Reader("tests/data/M.R.10.csv"));
     Standard::instance().addMBed(Reader("tests/data/A.R.15.bed"));
-    Standard::instance().r_meta.finalize();
+    Standard::instance().r_meta.finalize(Tool::MetaAssembly);
 
     MAssembly::Options o;
     
