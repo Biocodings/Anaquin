@@ -507,7 +507,6 @@ template <typename F> void addLadder(F f, Option key)
 {
     if (_p.opts.count(key))
     {
-        std::cout << "[INFO]: Ladder: " << _p.opts[key] << std::endl;
         f(Reader(_p.opts[key]));
     }
 }
@@ -1299,6 +1298,7 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_COPY:
                     {
+                        addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
                                            _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
                         break;

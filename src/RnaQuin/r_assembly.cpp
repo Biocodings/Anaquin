@@ -200,20 +200,20 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
              * thus we'll need to generate a GTF file for each sequin.
              */
 
-            const auto hist = r.hist();
-            
-            for (const auto &i : hist)
-            {
-                // Generate a new reference GTF solely for the sequins
-                const auto tmp = grepGTF(ref, i.first);
-                
-                o.analyze(i.first);
-                
-                // Compare only the sequin against the reference
-                CUFFCOMPARE(tmp, qry);
-                
-                stats.tSPs[i.first] = __cmp__.b_sn;
-            }
+//            const auto hist = r.hist();   TODO: Fix this because hist() removed. Get from r3682.
+//            
+//            for (const auto &i : hist)
+//            {
+//                // Generate a new reference GTF solely for the sequins
+//                const auto tmp = grepGTF(ref, i.first);
+//                
+//                o.analyze(i.first);
+//                
+//                // Compare only the sequin against the reference
+//                CUFFCOMPARE(tmp, qry);
+//                
+//                stats.tSPs[i.first] = __cmp__.b_sn;
+//            }
         }
 
         // Compare everything about the chromosome against the reference

@@ -20,7 +20,7 @@ namespace Anaquin
      * Generic template for a sequin. Specalized definitions expected to derive from this class.
      */
     
-    struct SequinData : public Matched
+    struct SequinData
     {
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
@@ -31,17 +31,12 @@ namespace Anaquin
             return mixes.at(m) / (norm ? l.length() : 1);
         }
         
-        // Expected differential fold-change (only defined for two mixtures)
+        // Expected fold-change (only valid for two mixtures)
         inline Fold fold() const
         {
             return concent(Mixture::Mix_2) / concent(Mixture::Mix_1);
         }
 
-        inline SequinID name() const override
-        {
-            return id;
-        }
-        
         SequinID id;
 
         Locus l;
@@ -60,6 +55,8 @@ namespace Anaquin
         Overlap,
         Contains,
     };
+    
+    class BedData;
     
     template <typename Data = SequinData, typename Stats = DefaultStats> class Reference
     {
@@ -85,24 +82,6 @@ namespace Anaquin
             {
                 return _data.count(id) ? &_data.at(id) : nullptr;
             }
-
-            /*
-             * Histogram for distribution
-             */
-
-            template <typename T> Hist hist(const T &data) const
-            {
-                Hist hist;
-            
-                for (const auto &i : data)
-                {
-                    hist[i.first] = 0;
-                }
-
-                return hist;
-            }
-
-            inline SequinHist hist() const { return hist(_data); }
 
             inline void finalize()
             {
@@ -141,13 +120,7 @@ namespace Anaquin
                 Concent abund;
             };
 
-            /*
-             * Provide a common framework for validation. Typically, the sequins can be validated
-             * by two set of IDs, for example, mixtute and annotation. This function can also be
-             * validated a single set of sequins, simply call merge(x, x).
-             */
-        
-            template <typename T> void merge(const std::set<T> &t1, const std::set<T> &t2)
+            template <typename T> std::vector<SequinID> merge(const std::set<T> &t1, const std::set<T> &t2)
             {
                 std::set<SequinID> x, y;
                 
@@ -216,9 +189,11 @@ namespace Anaquin
                 }
             
                 A_ASSERT(!_data.empty());
+                
+                return diffs;
             }
         
-            template <typename T> void merge(const std::set<T> &x)
+            template <typename T> std::vector<SequinID> merge(const std::set<T> &x)
             {
                 return merge(x, x);
             }
@@ -228,13 +203,16 @@ namespace Anaquin
                 return _mixes.at(mix).count(id) ? _mixes.at(mix).at(id).get() : nullptr;
             }
 
-            // Validated sequins
-            std::map<SequinID, Data> _data;
-
             // Set of IDs defined in the mixture
             std::set<SequinID> _rawMIDs;
 
-            // Data for mixture (if defined)
+            // Validated sequins
+            std::map<SequinID, Data> _data;
+
+            // Validated regions
+            std::shared_ptr<BedData> _bData;
+
+            // Validated ladder
             std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
     };
 

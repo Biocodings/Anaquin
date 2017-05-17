@@ -50,25 +50,12 @@ namespace Anaquin
             return b;
         }
 
-        template <typename F> Counts countBaseSyn(F f) const
-        {
-            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
-            {
-                return f(cID) ? countBase(cID) : 0;
-            });
-        }
-
         inline Counts length() const
         {
             return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
             {
                 return countBase(cID);
             });
-        }
-        
-        template <typename F> Counts countBaseGen(F f) const
-        {
-            return length() - countBaseSyn(f);
         }
         
         inline Counts nGene() const
@@ -141,22 +128,6 @@ namespace Anaquin
             return r;
         }
         
-        // Synthetic regions mapped by chromosomes
-        template <typename F> ID2Intervals intersSyn(F f) const
-        {
-            ID2Intervals r;
-            
-            for (const auto &i : *this)
-            {
-                if (f(i.first))
-                {
-                    r[i.first] = inters(i.first);
-                }
-            }
-            
-            return r;
-        }
-
         inline MergedIntervals<> minters(const ChrID &cID) const
         {
             MergedIntervals<> r;
@@ -198,21 +169,6 @@ namespace Anaquin
             for (const auto &i : *this)
             {
                 r[i.first] = minters(i.first);
-            }
-            
-            return r;
-        }
-        
-        template <typename F> std::map<ChrID, MergedIntervals<>> mintersSyn(F f) const
-        {
-            std::map<ChrID, MergedIntervals<>> r;
-            
-            for (const auto &i : *this)
-            {
-                if (f(i.first))
-                {
-                    r[i.first] = minters(i.first);
-                }
             }
             
             return r;

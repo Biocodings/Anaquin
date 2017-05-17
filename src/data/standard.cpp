@@ -44,7 +44,7 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-template <typename Reference> void readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2, const std::string &post = "")
+template <typename Reference> void readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
 {
     auto f = [&](const std::string &delim)
     {
@@ -65,11 +65,11 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
             n++;
             switch (format)
             {
-                case Name_Mix:     { ref.add(seq + post, 0.0, con, m);        break; }
-                case Name_Len_Mix: { ref.add(seq + post, stoi(d[1]), con, m); break; }
+                case Name_Mix:     { ref.add(seq, 0.0, con, m);        break; }
+                case Name_Len_Mix: { ref.add(seq, stoi(d[1]), con, m); break; }
                 case Name_Len_M1_Mix1:
                 {
-                    ref.add(seq + post, stoi(d[2]) * stoi(d[3]), con, m); break;
+                    ref.add(seq, stoi(d[2]) * stoi(d[3]), con, m); break;
                 }
             }
         }, delim);
@@ -86,19 +86,19 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
 void Standard::addCNV(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2, "_CNV");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2);
 }
 
 void Standard::addCon(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_M1_Mix1, 2, "_CON");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_M1_Mix1, 2);
 }
 
 void Standard::addAll(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for allele frequnecy ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2, "_AF");
+    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2);
 }
 
 void Standard::addMDMix(const Reader &r)

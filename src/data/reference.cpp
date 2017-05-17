@@ -439,8 +439,8 @@ MC2Intervals MetaRef::mInters() const
     return _impl->bData.minters();
 }
 
-Base MetaRef::nBaseSyn() const { return _impl->bData.countBaseSyn(isMetaQuin); }
-Base MetaRef::nBaseGen() const { return _impl->bData.countBaseGen(isMetaQuin); }
+Base MetaRef::nBaseSyn() const { return 0; /*return _impl->bData.countBaseSyn(isMetaQuin);*/ }
+Base MetaRef::nBaseGen() const { return 0; /*return _impl->bData.countBaseGen(isMetaQuin);*/ }
 
 Counts MetaRef::nMicroSyn() const { return _impl->bData.nGeneSyn(isMetaQuin); }
 Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
@@ -678,8 +678,43 @@ void VarRef::validate()
 {
     const auto hasVCF = !_impl->vIDs.empty();
     const auto hasBED = !_impl->bIDs.empty();
+    const auto hasLad = !_rawMIDs.empty();
     
-    if (hasVCF && hasBED)
+    if (hasLad && hasBED)
+    {
+        const auto d = merge(_impl->bIDs, _rawMIDs);
+        
+        for (const auto &i : _impl->bData)
+        {
+            for (const auto &j : i.second.r2d)
+            {
+                if (_data.count(j.second.name ))
+                {
+                    _data.at(j.second.name).l = j.second.l;
+                }
+            }
+        }
+        
+        for (const auto &i : d)
+        {
+            for (auto &j : _impl->bData)
+            {
+                if (j.second.r2d.count(i))
+                {
+                    j.second.r2d.erase(i);
+                }
+            }
+
+            for (auto &j : _impl->tData)
+            {
+                if (j.second.r2d.count(i))
+                {
+                    j.second.r2d.erase(i);
+                }
+            }
+        }
+    }
+    else if (hasVCF && hasBED)
     {
         merge(_impl->vIDs);
     }
