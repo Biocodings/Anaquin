@@ -164,9 +164,6 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
         return ParserBAMBED::Response::OK;
     });
     
-    // Normalization for each region
-    NormFactors norms;
-    
     // For each chromosome...
     for (auto &i : tRegs)
     {
@@ -255,7 +252,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
             stats.c2v[cID][l].rID    = j.first;
             stats.c2v[cID][l].endo   = endoC;
             stats.c2v[cID][l].before = seqsC;
-            stats.c2v[cID][l].norm   = norms[i.first][l] = norm;
+            stats.c2v[cID][l].norm   = stats.norms[i.first][l] = norm;
             
             stats.allNorms.push_back(norm);
         }
