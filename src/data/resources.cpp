@@ -5,7 +5,8 @@
  * Manuals
  */
 
-#include "resources/VarWGS.txt"
+#include "resources/VarCopy.txt"
+#include "resources/VarDetect.txt"
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
 #include "resources/VarTrim.txt"
@@ -135,9 +136,14 @@ Scripts VarSubsample()
     return ToString(data_manuals_VarSubsample_txt);
 }
 
-Scripts VarWGS()
+Scripts VarCopy()
 {
-    return ToString(data_manuals_VarWGS_txt);
+    return ToString(data_manuals_VarCopy_txt);
+}
+
+Scripts VarDetect()
+{
+    return ToString(data_manuals_VarDetect_txt);
 }
 
 Scripts VarCancer()

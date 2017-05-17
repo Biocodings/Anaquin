@@ -7,12 +7,12 @@ extern Anaquin::FileName BedRef();
 
 using namespace Anaquin;
 
-static ParserBAMBED::Stats sample(const FileName &file,
-                                  const NormFactors &norms,
-                                  VSample::Stats &stats,
-                                  const C2Intervals &sampled,
-                                  const C2Intervals &trimmed,
-                                  const VSample::Options &o)
+ParserBAMBED::Stats VSample::sample(const FileName    &file,
+                                    const NormFactors &norms,
+                                    VSample::Stats    &stats,
+                                    const C2Intervals &sampled,
+                                    const C2Intervals &trimmed,
+                                    const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
     
@@ -261,10 +261,10 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
     return stats;
 }
 
-VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const Options &o)
+VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, const Options &o)
 {
-    o.analyze(gen);
-    o.analyze(seq);
+    o.analyze(endo);
+    o.analyze(seqs);
 
     o.logInfo("Edge: " + std::to_string(o.edge));
     
@@ -278,7 +278,8 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     // Regions without trimming
     const auto regs = r.regions(false);
     
-    const auto &before = check(gen, seq, tRegs, regs, o);
+    // Check calibration statistics
+    const auto &before = check(endo, seqs, tRegs, regs, o);
     
     const auto norms = before.norms;
     stats.c2v = before.c2v;
@@ -290,7 +291,7 @@ VSample::Stats VSample::analyze(const FileName &gen, const FileName &seq, const 
     stats.totBefore.nSeqs = before.nSeqs;
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seq, norms, stats, regs, tRegs, o);
+    const auto after = sample(seqs, norms, stats, regs, tRegs, o);
     
     std::vector<double> allAfterSeqsC;
     

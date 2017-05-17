@@ -99,7 +99,7 @@ namespace Anaquin
                         }
                         else
                         {
-                            x.cID = Geno;
+                            x.cID = "geno";
                         }
                     }
 

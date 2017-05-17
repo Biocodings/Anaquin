@@ -1,5 +1,5 @@
 #include "tools/tools.hpp"
-#include "VarQuin/v_wgs.hpp"
+#include "VarQuin/v_detect.hpp"
 
 using namespace Anaquin;
 
@@ -64,11 +64,11 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
                                        % refRat).str();
 }
 
-VWGS::EStats VWGS::analyzeE(const FileName &file, const Options &o)
+VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
 {
     const auto regs = Standard::instance().r_var.regions(false);
     
-    VWGS::EStats stats;
+    VDetect::EStats stats;
     
     if (!file.empty())
     {
@@ -89,11 +89,11 @@ VWGS::EStats VWGS::analyzeE(const FileName &file, const Options &o)
     return stats;
 }
 
-VWGS::SStats VWGS::analyzeS(const FileName &file, const Options &o)
+VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VWGS::SStats stats;
+    VDetect::SStats stats;
     
     typedef SeqVariant::Context Context;
     
@@ -289,8 +289,8 @@ VWGS::SStats VWGS::analyzeS(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VWGS::SStats &ss,
-                       const VWGS::Options &o)
+                       const VDetect::SStats &ss,
+                       const VDetect::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -361,8 +361,8 @@ static void writeQuins(const FileName &file,
 }
 
 static void writeDetected(const FileName &file,
-                          const VWGS::SStats &ss,
-                          const VWGS::Options &o)
+                          const VDetect::SStats &ss,
+                          const VDetect::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -415,9 +415,9 @@ static void writeDetected(const FileName &file,
 static void writeSummary(const FileName &file,
                          const FileName &endo,
                          const FileName &seqs,
-                         const VWGS::EStats &es,
-                         const VWGS::SStats &ss,
-                         const VWGS::Options &o)
+                         const VDetect::EStats &es,
+                         const VDetect::SStats &ss,
+                         const VDetect::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -427,8 +427,8 @@ static void writeSummary(const FileName &file,
 
     auto germline = [&]()
     {
-        const auto summary = "-------VarWGS Output Results\n\n"
-                             "-------VarWGS Output\n\n"
+        const auto summary = "-------VarDetect Output Results\n\n"
+                             "-------VarDetect Output\n\n"
                              "       Reference variant annotations:      %1%\n"
                              "       Reference coordinate annotations:   %2%\n\n"
                              "       User identified variants (human):   %3%\n"
@@ -547,7 +547,7 @@ static void writeSummary(const FileName &file,
         #define CSN(x) D(ss.g2c.at(x).sn())
 
         o.generate(file);
-        o.writer->open("VarWGS_summary.stats");
+        o.writer->open("VarDetect_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % seqs                          // 3
@@ -620,7 +620,7 @@ static void writeSummary(const FileName &file,
     o.writer->close();
 }
 
-void VWGS::report(const FileName &endo, const FileName &seqs, const Options &o)
+void VDetect::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
     const auto es = analyzeE(endo, o);
     const auto ss = analyzeS(seqs, o);
@@ -632,30 +632,30 @@ void VWGS::report(const FileName &endo, const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarWGS_sequins.csv
+     * Generating VarDetect_sequins.csv
      */
     
-    writeQuins("VarWGS_sequins.csv", ss, o);
+    writeQuins("VarDetect_sequins.csv", ss, o);
 
     /*
-     * Generating VarWGS_summary.stats
+     * Generating VarDetect_summary.stats
      */
     
-    writeSummary("VarWGS_summary.stats", endo, seqs, es, ss, o);
+    writeSummary("VarDetect_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarWGS_detected.csv
+     * Generating VarDetect_detected.csv
      */
     
-    writeDetected("VarWGS_detected.csv", ss, o);
+    writeDetected("VarDetect_detected.csv", ss, o);
     
     /*
-     * Generating VarWGS_ROC.R
+     * Generating VarDetect_ROC.R
      */
     
-    o.generate("VarWGS_ROC.R");
-    o.writer->open("VarWGS_ROC.R");
+    o.generate("VarDetect_ROC.R");
+    o.writer->open("VarDetect_ROC.R");
     
-    o.writer->write(createVGROC("VarWGS_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createVGROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
 }

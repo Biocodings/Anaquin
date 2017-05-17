@@ -70,18 +70,12 @@ namespace Anaquin
                 {
                     t.gID = toks[Field::Name];
                     
-                    if (t.gID == "R2_33")
-                    {
-                        t.gID = t.gID;
-                    }
-                    
-                    
                     /*
                      * DESeq2 wouldn't give the chromosomes, only the gene names.
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : Geno;
+                    t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : "geno";
                     
                     /*
                      * Eg: ENSG00000000003.14,0,NA,NA,NA,NA,NA

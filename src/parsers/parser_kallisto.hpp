@@ -86,7 +86,7 @@ namespace Anaquin
                     else
                     {
                         // We don't know exactly where it is...
-                        d.cID = Geno;
+                        d.cID = "geno";
                     }
 
                     d.abund = s2d(toks[TPM]);

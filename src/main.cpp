@@ -15,10 +15,11 @@
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
-#include "VarQuin/v_wgs.hpp"
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
+#include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_align.hpp"
+#include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_report.hpp"
@@ -65,20 +66,21 @@ typedef std::set<Value> Range;
 #define TOOL_R_GENE     270
 #define TOOL_R_REPORT   271
 #define TOOL_R_SAMPLE   272
-#define TOOL_V_KABUND   273
-#define TOOL_V_VREPORT  274
-#define TOOL_V_ALIGN    275
-#define TOOL_V_FLIP     276
-#define TOOL_V_WGS      277
-#define TOOL_V_CANCER   278
-#define TOOL_V_TRIM     279
-#define TOOL_V_SAMPLE   280
-#define TOOL_M_ALIGN    281
-#define TOOL_M_ABUND    282
-#define TOOL_M_FOLD     283
-#define TOOL_M_SAMPLE   284
-#define TOOL_M_ASSEMBLY 285
-#define TOOL_M_REPORT   286
+#define TOOL_V_COPY     273
+#define TOOL_V_KABUND   274
+#define TOOL_V_VREPORT  275
+#define TOOL_V_ALIGN    276
+#define TOOL_V_FLIP     277
+#define TOOL_V_DETECT   278
+#define TOOL_V_CANCER   279
+#define TOOL_V_TRIM     280
+#define TOOL_V_SAMPLE   281
+#define TOOL_M_ALIGN    282
+#define TOOL_M_ABUND    283
+#define TOOL_M_FOLD     284
+#define TOOL_M_SAMPLE   285
+#define TOOL_M_ASSEMBLY 286
+#define TOOL_M_REPORT   287
 
 /*
  * Options specified in the command line
@@ -102,7 +104,7 @@ typedef std::set<Value> Range;
 #define OPT_FUZZY   810
 #define OPT_REPORT  811
 #define OPT_R_IND   812
-#define OPT_U_HG    813
+#define OPT_U_SAMPLE    813
 #define OPT_U_SEQS  814
 #define OPT_U_FILES 816
 #define OPT_EDGE    817
@@ -152,8 +154,9 @@ static std::map<Value, Tool> _tools =
     { "RnaSubsample",   TOOL_R_SAMPLE   },
     { "RnaGene",        TOOL_R_GENE     },
 
+    { "VarCopy",        TOOL_V_COPY     },
     { "VarAlign",       TOOL_V_ALIGN    },
-    { "VarWGS",         TOOL_V_WGS      },
+    { "VarDetect",      TOOL_V_DETECT   },
     { "VarCancer",      TOOL_V_CANCER   },
     { "VarVReport",     TOOL_V_VREPORT  },
     { "VarSubsample",   TOOL_V_SAMPLE   },
@@ -188,8 +191,9 @@ static std::map<Tool, std::set<Option>> _options =
     { TOOL_V_FLIP,    { OPT_U_SEQS  } },
     { TOOL_V_TRIM,    { OPT_R_BED,   OPT_U_SEQS } },
     { TOOL_V_ALIGN,   { OPT_R_BED,   OPT_U_SEQS } },
-    { TOOL_V_SAMPLE,  { OPT_R_BED,   OPT_U_HG,   OPT_U_SEQS, OPT_METHOD } },
-    { TOOL_V_WGS,     { OPT_R_VCF,   OPT_U_SEQS } },
+    { TOOL_V_COPY,    { OPT_R_BED,   OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { TOOL_V_SAMPLE,  { OPT_R_BED,   OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { TOOL_V_DETECT,  { OPT_R_VCF,   OPT_U_SEQS } },
     { TOOL_V_VREPORT, { OPT_MIXTURE, OPT_U_SEQS } },
     { TOOL_V_KABUND,  { OPT_U_SEQS } },
 
@@ -344,7 +348,7 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
-    { "uhuman",  required_argument, 0, OPT_U_HG    },
+    { "usamp",   required_argument, 0, OPT_U_SAMPLE },
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
@@ -398,7 +402,8 @@ static void printUsage()
 
 static Scripts manual(Tool tool)
 {
-    extern Scripts VarWGS();
+    extern Scripts VarCopy();
+    extern Scripts VarDetect();
     extern Scripts VarFlip();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
@@ -426,13 +431,14 @@ static Scripts manual(Tool tool)
         case TOOL_R_REPORT:    { return RnaReport();      }
         case TOOL_R_FOLD:      { return RnaFoldChange();  }
         case TOOL_R_SAMPLE:    { return RnaSubsample();   }
+        case TOOL_V_COPY:      { return VarCopy();        }
         case TOOL_V_FLIP:      { return VarFlip();        }
         case TOOL_V_TRIM:      { return VarTrim();        }
         case TOOL_V_CANCER:    { return VarCancer();      }
         case TOOL_V_ALIGN:     { return VarAlign();       }
         case TOOL_V_SAMPLE:    { return VarSubsample();   }
         case TOOL_V_KABUND:    { return VarKAbund();      }
-        case TOOL_V_WGS:       { return VarWGS();         }
+        case TOOL_V_DETECT:    { return VarDetect();         }
         case TOOL_V_VREPORT:   { return VarVReport();     }
         case TOOL_M_ALIGN:     { return MetaAlign();      }
         case TOOL_M_SAMPLE:    { return MetaAbund();      }
@@ -800,7 +806,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == TOOL_V_SAMPLE || _p.tool == TOOL_R_SAMPLE || _p.tool == TOOL_V_TRIM)
+    if (_p.tool == TOOL_V_SAMPLE || _p.tool == TOOL_R_SAMPLE || _p.tool == TOOL_V_TRIM || _p.tool == TOOL_V_COPY)
     {
         __showInfo__ = false;
     }
@@ -873,6 +879,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_R_FOLD:
+                    case TOOL_V_COPY:
                     case TOOL_R_EXPRESS:
                     case TOOL_V_SAMPLE: { _p.opts[opt] = val; break; }
 
@@ -916,7 +923,7 @@ void parse(int argc, char ** argv)
             case OPT_CNV_LAD:
             case OPT_CON_LAD: { _p.opts[opt] = val; break; }
 
-            case OPT_U_HG:
+            case OPT_U_SAMPLE:
             case OPT_R_IND:
             case OPT_R_VCF:
             case OPT_R_BED:
@@ -1265,7 +1272,8 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_V_WGS:
+        case TOOL_V_COPY:
+        case TOOL_V_DETECT:
         case TOOL_V_FLIP:
         case TOOL_V_TRIM:
         case TOOL_V_ALIGN:
@@ -1288,6 +1296,13 @@ void parse(int argc, char ** argv)
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
                         break;
                     }
+
+                    case TOOL_V_COPY:
+                    {
+                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
+                                           _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
+                        break;
+                    }
                         
                     case TOOL_V_SAMPLE:
                     {
@@ -1302,7 +1317,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case TOOL_V_WGS:
+                    case TOOL_V_DETECT:
                     case TOOL_V_CANCER:
                     {
                         applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
@@ -1364,7 +1379,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_FLIP: { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 
-                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_HG, OPT_U_SEQS); break; }
+                case TOOL_V_ALIGN: { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case TOOL_V_TRIM:
                 {
@@ -1387,8 +1402,63 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_WGS:    { analyze_2<VWGS>(OPT_U_HG, OPT_U_SEQS);    break; }
-                case TOOL_V_CANCER: { analyze_2<VCancer>(OPT_U_HG, OPT_U_SEQS); break; }
+                case TOOL_V_DETECT:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
+                case TOOL_V_CANCER: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+
+                case TOOL_V_COPY:
+                {
+                    VCopy::Options o;
+                    
+                    // Eg: "mean", "median", "reads", "0.75"
+                    const auto meth = _p.opts[OPT_METHOD];
+                    
+                    auto isFloat = [&]()
+                    {
+                        std::istringstream iss(meth);
+                        float f;
+                        iss >> std::noskipws >> f;
+                        return iss.eof() && !iss.fail();
+                    };
+                    
+                    if (meth == "mean")
+                    {
+                        o.meth = VSample::Method::Mean;
+                    }
+                    else if (meth == "median")
+                    {
+                        o.meth = VSample::Method::Median;
+                    }
+                    else if (meth == "reads")
+                    {
+                        o.meth = VSample::Method::Reads;
+                    }
+                    else if (isFloat())
+                    {
+                        o.p = stod(meth);
+                        o.meth = VSample::Method::Prop;
+                        
+                        if (o.p <= 0.0)
+                        {
+                            throw std::runtime_error("Normalization factor must be greater than zero");
+                        }
+                        else if (o.p >= 1.0)
+                        {
+                            throw std::runtime_error("Normalization factor must be less than one");
+                        }
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Unknown method: " + meth);
+                    }
+                    
+                    if (_p.opts.count(OPT_EDGE))
+                    {
+                        o.edge = stoi(_p.opts[OPT_EDGE]);
+                    }
+                    
+                    analyze_2<VCopy>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
 
                 case TOOL_V_SAMPLE:
                 {
@@ -1441,7 +1511,7 @@ void parse(int argc, char ** argv)
                         o.edge = stoi(_p.opts[OPT_EDGE]);
                     }
 
-                    analyze_2<VSample>(OPT_U_HG, OPT_U_SEQS, o);
+                    analyze_2<VSample>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }
             }

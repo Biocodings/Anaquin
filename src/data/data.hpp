@@ -58,8 +58,6 @@ namespace Anaquin
     typedef long long Counts;
     typedef long long Quality;
     
-    const ChrID Geno  = "geno";
-    
     typedef std::map<SequinID, Counts> Hist;
 
     enum Mixture

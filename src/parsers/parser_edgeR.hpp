@@ -69,7 +69,7 @@ namespace Anaquin
                     }
                     else
                     {
-                        t.cID = Geno;
+                        t.cID = "geno";
                     }
                     
                     if (toks[Field::PValue] == "NA" || toks[Field::LogFC] == "NA")

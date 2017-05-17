@@ -49,7 +49,7 @@ namespace Anaquin
             // Required for summary statistics
             std::vector<double> allNorms;
 
-            // Normalization for each sequin region
+            // Normalization for each region
             NormFactors norms;
 
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
@@ -92,6 +92,13 @@ namespace Anaquin
             // Defined only if meth==Reads
             Counts reads = NAN;
         };
+        
+        static ParserBAMBED::Stats sample(const FileName    &,
+                                          const NormFactors &,
+                                          VSample::Stats    &,
+                                          const C2Intervals &,
+                                          const C2Intervals &,
+                                          const VSample::Options &);
         
         static CalibrateStats check(const FileName &,
                                     const FileName &,

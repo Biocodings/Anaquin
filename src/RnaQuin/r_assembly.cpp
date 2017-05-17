@@ -269,8 +269,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     if ((__hasGen__ = !System::isEmpty(__QForGen__)))
     {
         o.analyze("Genome");
-        compareGTF(Geno, __RForGen__, __QForGen__);
-        copyStats(Geno);
+        compareGTF("geno", __RForGen__, __QForGen__);
+        copyStats("geno");
     }
     
     o.info("Waiting for worker threads to complete");
@@ -313,7 +313,7 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 
     const auto hasGen = __hasGen__;
     const auto sData  = stats.data.at(ChrIS);
-    const auto gData  = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
+    const auto gData  = hasGen ? stats.data.at("geno") : RAssembly::Stats::Data();
 
     #define C(x) (std::to_string(x))
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))

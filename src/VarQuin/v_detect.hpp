@@ -1,5 +1,5 @@
-#ifndef V_WGS_HPP
-#define V_WGS_HPP
+#ifndef V_DETECT_HPP
+#define V_DETECT_HPP
 
 #include "data/vData.hpp"
 #include "stats/analyzer.hpp"
@@ -30,7 +30,7 @@ namespace Anaquin
         SequinID rReg;
     };
 
-    struct VWGS
+    struct VDetect
     {
         typedef AnalyzerOptions Options;
         
