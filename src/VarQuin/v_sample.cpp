@@ -299,7 +299,7 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     return stats;
 }
 
-double VSample::afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> c2v, VSample::Options o)
+double VSample::afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> &c2v, VSample::Options o)
 {
     std::vector<double> allAfterSeqsC;
     

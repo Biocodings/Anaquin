@@ -66,14 +66,13 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     }
     
     /*
-     * We have normalization for each genomic sequin, but how much to normalize
-     * for others? Let's use the average.
+     * We have normalization for the sequins, but how much to normalize for others?
      */
     
-    // Average normalization for all genomic sequins
-    const auto norm = sum / n;
+    // Average normalization for other sequins
+    stats.gNorm = sum / n;
     
-    o.logInfo("Average normalization: " + std::to_string(norm));
+    o.logInfo("Average normalization: " + std::to_string(stats.gNorm));
     
     /*
      * Adjust non-reference sequins relative to the references
@@ -85,8 +84,8 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
         {
             if (l2c.at(j.first) != o.gen)
             {
-                j.second = norm;
-                stats.before.c2v.at(i.first).at(j.first).norm = norm;
+                j.second = stats.gNorm;
+                stats.before.c2v.at(i.first).at(j.first).norm = stats.gNorm;
             }
         }
     }
@@ -174,13 +173,14 @@ static void generateSummary(const FileName &file,
                          "-------Alignments within sampling regions (after subsampling)\n\n"
                          "       Genome:    %12%\n"
                          "       Synthetic: %13%\n\n"
-                         "       Normalization: %14% \u00B1 %15%\n\n"
+                         "       Genomic normalization: %14%\n"
+                         "       Normalization:         %15% \u00B1 %16%\n\n"
                          "-------Before subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %16%\n"
-                         "       Synthetic coverage (average): %17%\n\n"
+                         "       Genome coverage (average):    %17%\n"
+                         "       Synthetic coverage (average): %18%\n\n"
                          "-------After subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %18%\n"
-                         "       Synthetic coverage (average): %19%\n";
+                         "       Genome coverage (average):    %19%\n"
+                         "       Synthetic coverage (average): %20%\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -197,12 +197,13 @@ static void generateSummary(const FileName &file,
                                             % stats.sBefore.nSeqs      // 11
                                             % stats.sAfter.nEndo       // 12
                                             % stats.sAfter.nSeqs       // 13
-                                            % stats.before.normMean()  // 14
-                                            % stats.before.normSD()    // 15
-                                            % stats.before.meanBEndo() // 16
-                                            % stats.before.meanBSeqs() // 17
-                                            % stats.before.meanBEndo() // 18
-                                            % stats.afterSeqs          // 19
+                                            % stats.gNorm              // 14
+                                            % stats.before.normMean()  // 15
+                                            % stats.before.normSD()    // 16
+                                            % stats.before.meanBEndo() // 17
+                                            % stats.before.meanBSeqs() // 18
+                                            % stats.before.meanBEndo() // 19
+                                            % stats.afterSeqs          // 20
                      ).str());
     o.writer->close();
 }

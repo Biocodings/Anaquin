@@ -20,6 +20,9 @@ namespace Anaquin
         
         struct Stats
         {
+            // Estimated genomic normalization
+            Proportion gNorm;
+            
             double afterSeqs;
             
             VSample::GenomeSequins tBefore, tAfter;

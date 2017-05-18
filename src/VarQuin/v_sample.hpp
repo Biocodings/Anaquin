@@ -117,7 +117,7 @@ namespace Anaquin
         static GenomeSequins sBefore(const CalibrateStats &, const ParserBAMBED::Stats &);
         static GenomeSequins sAfter (const CalibrateStats &, const ParserBAMBED::Stats &);
         
-        static double afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> c2v, VSample::Options o);
+        static double afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> &c2v, VSample::Options o);
         
         static ParserBAMBED::Stats sample(const FileName    &,
                                           const NormFactors &,
