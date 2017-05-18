@@ -9,14 +9,13 @@ using namespace Anaquin;
 
 VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
 {
-    o.analyze(file);
-
     const auto &r = Standard::instance().r_var;
     
+    o.analyze(file);
     VTrim::Stats stats;
     
     // Regions without edge effects
-    const auto regs = r.regions(false);
+    const auto regs = r.regs1();
 
     const auto shouldL = o.meth == Method::Left  || o.meth == Method::LeftRight;
     const auto shouldR = o.meth == Method::Right || o.meth == Method::LeftRight;

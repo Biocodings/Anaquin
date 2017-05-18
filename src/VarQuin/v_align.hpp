@@ -25,7 +25,7 @@ namespace Anaquin
                     Confusion m;
                     
                     // Regions to reads (sequins for synthetic)
-                    std::map<RegionID, Coverage> r2r;
+                    std::map<SequinID, Coverage> r2r;
                 };
                 
                 // Base level for a chromosome

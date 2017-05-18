@@ -1,6 +1,7 @@
 #ifndef TOOLS_HPP
 #define TOOLS_HPP
 
+#include <set>
 #include <map>
 #include <cmath>
 #include <string>
@@ -169,6 +170,18 @@ namespace Anaquin
         {
             return c + p.second;
         });
+    }
+
+    template <typename Key, typename Value> std::set<Key> keys(const std::map<Key, Value> &x)
+    {
+        std::set<Key> keys;
+        
+        for (const auto i: x)
+        {
+            keys.insert(i.first);
+        }
+        
+        return keys;
     }
 }
 

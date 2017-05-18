@@ -7,6 +7,8 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
+#include "data/bData.hpp"
+
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_sample.hpp"
@@ -463,11 +465,11 @@ template <typename Mixture> void applyMix(Mixture mix)
     mix(Reader(mixture()));
 }
 
-template <typename F> void addLadder(F f, Option key)
+template <typename F> void readLad(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
-        f(Reader(_p.opts[key]));
+        r.l1 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -515,6 +517,22 @@ template <typename Reference> void addRef(Reference ref)
                 }
             }
         }
+    }
+}
+
+static void readReg1(Option opt, UserReference &r, Base trim = 0)
+{
+    if (!_p.opts[opt].empty())
+    {
+        r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(_p.opts[opt]), trim)));
+    }
+}
+
+static void readReg2(Option opt, UserReference &r, Base trim = 0)
+{
+    if (!_p.opts[opt].empty())
+    {
+        r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(_p.opts[opt]), trim)));
     }
 }
 
@@ -943,6 +961,8 @@ void parse(int argc, char ** argv)
         std::cout << "-----------------------------------------" << std::endl << std::endl;        
     }
 
+    UserReference r;
+    
     auto &s = Standard::instance();
     
     switch (_p.tool)
@@ -999,7 +1019,7 @@ void parse(int argc, char ** argv)
                     }
                 }
 
-                s.r_rna.finalize(_p.tool);
+                s.r_rna.finalize(_p.tool, r);
             }
 
             switch (_p.tool)
@@ -1128,7 +1148,7 @@ void parse(int argc, char ** argv)
                 default: { break; }
             }
             
-            Standard::instance().r_meta.finalize(_p.tool);
+            Standard::instance().r_meta.finalize(_p.tool, r);
             
             switch (_p.tool)
             {
@@ -1223,51 +1243,51 @@ void parse(int argc, char ** argv)
                 {
                     case Tool::VarAlign:
                     {
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
+                        readReg1(OPT_R_BED, r);
                         break;
                     }
 
                     case Tool::VarCopy:
                     {
-                        addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
-                                           _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
+                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD, r);
+                        readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
                     }
-                        
+
                     case Tool::VarSubsample:
                     {
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1,
-                                            _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0), OPT_R_BED);
+                        readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
                     }
 
                     case Tool::VarTrim:
                     {
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
+                        readReg1(OPT_R_BED, r);
                         break;
                     }
 
                     case Tool::VarDetect:
                     case Tool::VarCancer:
                     {
-                        applyRef(std::bind(&Standard::addVRef, &s, std::placeholders::_1, 0), OPT_R_BED);
+                        readReg1(OPT_R_BED, r);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
                         
                     case Tool::VarKAbund:
                     {
-                        addLadder(std::bind(&Standard::addAll, &s, std::placeholders::_1), OPT_AF_LAD);
-                        addLadder(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD);
-                        addLadder(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_CON_LAD);
+                        readLad(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_AF_LAD,  r);
+                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD, r);
+                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_CON_LAD, r);
                         break;
                     }
 
                     default: { break; }
                 }
 
-                Standard::instance().r_var.finalize(_p.tool);
+                Standard::instance().r_var.finalize(_p.tool, r);
             }
 
             switch (_p.tool)

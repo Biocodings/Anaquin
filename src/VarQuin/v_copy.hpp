@@ -14,11 +14,17 @@ namespace Anaquin
         {
             Options() {}
             
-            CopyNumber copy = 2;
+            // Copy number that we want to calibrate to the genome
+            CopyNumber gen = 2;
         };
         
         struct Stats
         {
+            double afterSeqs;
+            
+            VSample::GenomeSequins tBefore, tAfter;
+            VSample::GenomeSequins sBefore, sAfter;
+            
             VSample::CalibrateStats before;
             ParserBAMBED::Stats after;
         };

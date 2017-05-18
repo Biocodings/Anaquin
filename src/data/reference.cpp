@@ -1,5 +1,6 @@
 #include "data/bData.hpp"
 #include "data/vData.hpp"
+#include "tools/tools.hpp"
 #include "data/tokens.hpp"
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
@@ -9,33 +10,46 @@
 
 using namespace Anaquin;
 
-template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key, Value> &m)
+struct IntersectResults
 {
-    std::set<Key> keys;
+    std::set<SequinID> diffs, inters;
+};
 
-    for(auto i: m)
-    {
-        keys.insert(i.first);
-    }
+template <typename T> IntersectResults intersect(const std::set<T> &t1, const std::set<T> &t2)
+{
+    std::set<SequinID> x, y;
     
-    return keys;
+    for (const auto &i : t1) { x.insert(static_cast<SequinID>(i)); }
+    for (const auto &i : t2) { y.insert(static_cast<SequinID>(i)); }
+    
+    A_ASSERT(!x.empty() && !y.empty());
+    
+    IntersectResults c;
+    
+    std::set_intersection(x.begin(),
+                          x.end(),
+                          y.begin(),
+                          y.end(),
+                          std::inserter(c.inters, c.inters.begin()));
+
+    std::set_difference(x.begin(),
+                        x.end(),
+                        y.begin(),
+                        y.end(),
+                        std::inserter(c.diffs, c.diffs.begin()));
+
+    std::set_difference(y.begin(),
+                        y.end(),
+                        x.begin(),
+                        x.end(),
+                        std::inserter(c.diffs, c.diffs.begin()));
+
+    return c;
 }
 
 /*
  * ------------------------- Transcriptome Analysis -------------------------
  */
-
-template <typename Iter> Base countLocus(const Iter &iter)
-{
-    Base n = 0;
-    
-    for (const auto &i : iter)
-    {
-        n += static_cast<Locus>(i).length();
-    }
-    
-    return n;
-}
 
 struct RnaRef::RnaRefImpl
 {
@@ -114,7 +128,7 @@ void RnaRef::readRef(const Reader &r)
     {
         if (!isRnaQuin(i.first))
         {
-            Standard::addGenomic(i.first);
+//            Standard::addGenomic(i.first);
         }
     }
 }
@@ -340,7 +354,7 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
     assert(!_data.empty());
 }
 
-void RnaRef::validate(Tool)
+void RnaRef::validate(Tool, const UserReference &r)
 {
     auto iIDs = std::set<SequinID>();
     
@@ -348,7 +362,7 @@ void RnaRef::validate(Tool)
     {
         if (isRnaQuin(i.first))
         {
-            iIDs = getKeys(_impl->gData.at(i.first).t2d);
+            iIDs = keys(_impl->gData.at(i.first).t2d);
             break;
         }
     }
@@ -429,7 +443,7 @@ void MetaRef::readBed(const Reader &r)
     {
         if (!isMetaQuin(i.first))
         {
-            Standard::addGenomic(i.first);
+//            Standard::addGenomic(i.first);
         }
     }
 }
@@ -445,7 +459,7 @@ Base MetaRef::nBaseGen() const { return 0; /*return _impl->bData.countBaseGen(is
 Counts MetaRef::nMicroSyn() const { return _impl->bData.nGeneSyn(isMetaQuin); }
 Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
 
-void MetaRef::validate(Tool)
+void MetaRef::validate(Tool, const UserReference &r)
 {
     auto bed2ID = [](const BedData &data)
     {
@@ -506,12 +520,6 @@ struct VarRef::VarRefImpl
     
     // Information about sequin variants
     std::map<VarKey, SeqVariant> sVars;
-
-    // Regular regions
-    BedData bData;
-    
-    // Trimmed regions
-    BedData tData;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -553,23 +561,6 @@ std::set<Variant> VarRef::vars() const
 const SeqVariant & VarRef::findSeqVar(long key) const
 {
     return _impl->sVars.at(key);
-}
-
-void VarRef::readGBRef(const Reader &r, Base trim)
-{
-    _impl->bData = readRegions(r, [&](const ParserBed::Data &x, const ParserProgress &)
-    {
-        _impl->bIDs.insert(x.name);
-    });
-    
-    RegionOptions o;
-    o.trim = trim;
-
-    // Read trimmed regions
-    _impl->tData = readRegions(Reader(r), [&](const ParserBed::Data &x, const ParserProgress &) {}, o);
-
-    A_CHECK(!_impl->bData.empty(), "No sampling regions for sampling");
-    A_CHECK(!_impl->tData.empty(), "No sampling regions for sampling");
 }
 
 void VarRef::readVRef(const Reader &r)
@@ -639,21 +630,9 @@ void VarRef::readVRef(const Reader &r)
 
         _impl->sVars[x.key()] = s;
         
-        add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
-        add(x.name + "_R", _impl->bData.lengthReg(x.name), 1-af, Mix_1);
+//        add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
+//        add(x.name + "_R", _impl->bData.lengthReg(x.name), 1-af, Mix_1);
     });
-}
-
-C2Intervals VarRef::regions(bool trimmed) const
-{
-    return trimmed ? _impl->tData.inters() : _impl->bData.inters();
-}
-
-MC2Intervals VarRef::mInters() const { return _impl->bData.minters(); }
-
-MergedIntervals<> VarRef::mInters(const ChrID &cID) const
-{
-    return _impl->bData.minters(cID);
 }
 
 Proportion VarRef::findAFreq(const SequinID &id) const
@@ -671,47 +650,43 @@ Counts VarRef::countSNP() const
     return _impl->vData.countSNP();
 }
 
-Counts VarRef::nRegs() const { return _impl->bData.count();  }
-Counts VarRef::lRegs() const { return _impl->bData.length(); }
+static void filter(std::shared_ptr<BedData> x, const std::set<SequinID> &ids)
+{
+    for (const auto &i : ids)
+    {
+        for (auto &j : *x)
+        {
+            if (j.second.r2d.count(i))
+            {
+                j.second.r2d.erase(i);
+            }
+        }
+    }
+}
 
-void VarRef::validate(Tool x)
+static void filter(std::shared_ptr<Ladder> x, const std::set<SequinID> &ids)
+{
+    for (const auto &id : ids)
+    {
+        x->remove(id);
+    }
+}
+
+void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
         case Tool::VarCopy:
         {
-            const auto d = merge(_impl->bIDs, _rawMIDs);
-            
-            for (const auto &i : _impl->bData)
-            {
-                for (const auto &j : i.second.r2d)
-                {
-                    if (_data.count(j.second.name ))
-                    {
-                        _data.at(j.second.name).l = j.second.l;
-                    }
-                }
-            }
-            
-            for (const auto &i : d)
-            {
-                for (auto &j : _impl->bData)
-                {
-                    if (j.second.r2d.count(i))
-                    {
-                        j.second.r2d.erase(i);
-                    }
-                }
-                
-                for (auto &j : _impl->tData)
-                {
-                    if (j.second.r2d.count(i))
-                    {
-                        j.second.r2d.erase(i);
-                    }
-                }
-            }
+            const auto inter = intersect(r.r1->seqs(), r.l1->seqs);
 
+            merge(inter.inters);
+            
+            filter(r.l1, inter.diffs);
+            filter(r.r1, inter.diffs);
+            filter(r.r2, inter.diffs);
+
+            build(r.l1, r.r1, r.r2);
             break;
         }
 

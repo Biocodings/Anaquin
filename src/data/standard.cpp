@@ -4,6 +4,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include "data/bData.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
 #include "tools/errors.hpp"
@@ -16,9 +17,6 @@
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
-
-// Static definition
-std::set<ChrID> Standard::genoIDs;
 
 enum MixtureFormat
 {
@@ -44,7 +42,14 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
+BedData Standard::readBED(const Reader &r, Base trim)
+{
+    RegionOptions o;
+    o.trim = trim;
+    return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o);
+}
+
+template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format)
 {
     Ladder x;
     
@@ -62,7 +67,8 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
             
             switch (format)
             {
-                case Name_Len_Mix:     { x.add(d[0], m, stof(d[column]));         break; }
+                case Name_Len_Mix:     { x.add(d[0], m, stof(d[2]));              break; }
+                case Name_Len_X_Mix:   { x.add(d[0], m, stof(d[3]));              break; }
                 case Name_Len_Mix_Mix: { x.add(d[0], m, stoi(d[2]) * stoi(d[3])); break; }
             }
         }, delim);
@@ -78,48 +84,48 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
     return x;
 }
 
-void Standard::addCNV(const Reader &r)
+Ladder Standard::addCNV(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2);
+    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix);
 }
 
 Ladder Standard::addCon(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix_Mix, 2);
+    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix_Mix);
 }
 
-void Standard::addAll(const Reader &r)
+Ladder Standard::addAF(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file for allele frequnecy ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2);
+    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix);
 }
 
 void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix, 2);
-    readLadder(Reader(r), r_meta, Mix_2, Name_Len_Mix, 3);
+    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix);
+    readLadder(Reader(r), r_meta, Mix_2, Name_Len_Mix);
 }
 
 void Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix, 2);
+    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix);
 }
 
 void Standard::addRMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix, 2);
+    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix);
 }
 
 void Standard::addRDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix, 2);
-    readLadder(Reader(r), r_rna, Mix_2, Name_Len_Mix, 3);
+    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix);
+    readLadder(Reader(r), r_rna, Mix_2, Name_Len_Mix);
 }

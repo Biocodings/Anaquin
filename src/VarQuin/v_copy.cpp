@@ -3,6 +3,8 @@
 
 using namespace Anaquin;
 
+extern FileName BedRef();
+
 template <typename Stats> Coverage stats2cov(const VSample::Method meth, const Stats &stats)
 {
     switch (meth)
@@ -21,17 +23,14 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     VCopy::Stats stats;
     
     std::map<Locus, CopyNumber> l2c;
-    std::map<CopyNumber, Locus> c2l;
     
     /*
      * Filter all sequins with CNV equal to the input option
      */
     
-    for (auto &i : r.data())
+    for (auto &i : r.seqs())
     {
-        const auto m = r.match(i.first);
-        l2c[m->l] = m->concent();
-        c2l[m->concent()] = m->l;
+        l2c[r.locus(i)] = r.concent1(i);
     }
 
     /*
@@ -39,10 +38,10 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
      */
     
     // Regions to subsample after trimming
-    const auto tRegs = r.regions(true);
+    const auto tRegs = r.regs1();
     
     // Regions without trimming
-    const auto regs = r.regions(false);
+    const auto regs = r.regs2();
 
     // Check calibration statistics
     stats.before = VSample::check(endo, seqs, tRegs, regs, o);
@@ -58,7 +57,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     {
         for (const auto &j : i.second)
         {
-            if (l2c.at(j.first) == o.copy)
+            if (l2c.at(j.first) == o.gen)
             {
                 sum += j.second;
                 n++;
@@ -84,7 +83,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     {
         for (auto &j : i.second)
         {
-            if (l2c.at(j.first) != o.copy)
+            if (l2c.at(j.first) != o.gen)
             {
                 j.second = norm;
                 stats.before.c2v.at(i.first).at(j.first).norm = norm;
@@ -92,35 +91,16 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
         }
     }
     
-    VSample::Stats s_;
-    
     // Perform calibration by subsampling
-    stats.after = VSample::sample(seqs, stats.before.norms, s_, regs, tRegs, o);
-    
-    std::vector<double> allAfterSeqsC;
-    
-    /*
-     * Assume our subsampling is working, let's check coverage for the regions.
-     */
-    
-    // For each chromosome...
-    for (auto &i : tRegs)
-    {
-        // For each region...
-        for (auto &j : i.second.data())
-        {
-            //stats.count++;
-            
-            // Coverage after subsampling
-            const auto cov = stats2cov(o.meth, j.second.stats());
-            
-            stats.before.c2v[i.first].at(j.second.l()).after = cov; // ????
-            
-            // Required for generating summary statistics
-            allAfterSeqsC.push_back(cov);
-        }
-    }
+    stats.after = VSample::sample(seqs, stats.before.norms, regs, tRegs, o);
 
+    stats.tBefore = VSample::tBefore(stats.before, stats.after);
+    stats.tAfter  = VSample::tAfter (stats.before, stats.after);
+    stats.sBefore = VSample::sBefore(stats.before, stats.after);
+    stats.sAfter  = VSample::sAfter (stats.before, stats.after);
+
+    stats.afterSeqs = VSample::afterSeqsC(tRegs, stats.before.c2v, o);
+    
     return stats;
 }
 
@@ -154,7 +134,7 @@ static void generateCSV(const FileName &file, const VCopy::Stats &stats, const V
                                                    % i.first
                                                    % j.first.start
                                                    % j.first.end
-                                                   % r.match(j.second.rID)->concent()
+                                                   % r.concent1(j.second.rID)
                                                    % j.second.endo
                                                    % j.second.before
                                                    % j.second.after
@@ -165,9 +145,77 @@ static void generateCSV(const FileName &file, const VCopy::Stats &stats, const V
     o.writer->close();
 }
 
+static void generateSummary(const FileName &file,
+                            const FileName &endo,
+                            const FileName &seqs,
+                            const VCopy::Stats &stats,
+                            const VCopy::Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+
+    o.generate(file);
+
+    const auto summary = "-------VarCopy Summary Statistics\n\n"
+                         "       Reference annotation file: %1%\n"
+                         "       Alignment file (genome):  %2%\n"
+                         "       Alignment file (sequins): %3%\n\n"
+                         "-------Reference regions\n\n"
+                         "       Sequin regions: %4% regions\n"
+                         "       Method: %5%\n\n"
+                         "-------Total alignments (before subsampling)\n\n"
+                         "       Genome:    %6%\n"
+                         "       Synthetic: %7%\n\n"
+                         "-------Total alignments (after subsampling)\n\n"
+                         "       Genome:    %8%\n"
+                         "       Synthetic: %9%\n\n"
+                         "-------Alignments within sampling regions (before subsampling)\n\n"
+                         "       Genome:    %10%\n"
+                         "       Synthetic: %11%\n\n"
+                         "-------Alignments within sampling regions (after subsampling)\n\n"
+                         "       Genome:    %12%\n"
+                         "       Synthetic: %13%\n\n"
+                         "       Normalization: %14% \u00B1 %15%\n\n"
+                         "-------Before subsampling (within sampling regions)\n\n"
+                         "       Genome coverage (average):    %16%\n"
+                         "       Synthetic coverage (average): %17%\n\n"
+                         "-------After subsampling (within sampling regions)\n\n"
+                         "       Genome coverage (average):    %18%\n"
+                         "       Synthetic coverage (average): %19%\n";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % BedRef()                 // 1
+                                            % endo                     // 2
+                                            % seqs                     // 3
+                                            % r.nRegs()                // 4
+                                            % meth2Str(o.meth)         // 5
+                                            % stats.tBefore.nEndo      // 6
+                                            % stats.tBefore.nSeqs      // 7
+                                            % stats.tAfter.nEndo       // 8
+                                            % stats.tAfter.nSeqs       // 9
+                                            % stats.sBefore.nEndo      // 10
+                                            % stats.sBefore.nSeqs      // 11
+                                            % stats.sAfter.nEndo       // 12
+                                            % stats.sAfter.nSeqs       // 13
+                                            % stats.before.normMean()  // 14
+                                            % stats.before.normSD()    // 15
+                                            % stats.before.meanBEndo() // 16
+                                            % stats.before.meanBSeqs() // 17
+                                            % stats.before.meanBEndo() // 18
+                                            % stats.afterSeqs          // 19
+                     ).str());
+    o.writer->close();
+}
+
 void VCopy::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
     const auto stats = VCopy::analyze(endo, seqs, o);
+
+    /*
+     * Generating VarCopy_summary.stats
+     */
+    
+    generateSummary("VarCopy_summary.stats", endo, seqs, stats, o);
     
     /*
      * Generating VarCopy_sequins.csv

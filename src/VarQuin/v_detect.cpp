@@ -66,7 +66,7 @@ static Scripts createVGROC(const FileName &file, const std::string &score, const
 
 VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
 {
-    const auto regs = Standard::instance().r_var.regions(false);
+    const auto regs = Standard::instance().r_var.regs1();
     
     VDetect::EStats stats;
     

@@ -7,7 +7,7 @@
 namespace Anaquin
 {
     typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
-    
+
     struct VSample
     {
         enum class Method
@@ -20,7 +20,7 @@ namespace Anaquin
         
         struct SampledInfo
         {
-            RegionID rID;
+            SequinID rID;
             
             // Alignment coverage for the endogenous sample
             Coverage endo;
@@ -53,6 +53,30 @@ namespace Anaquin
             NormFactors norms;
 
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
+
+            // Summary statistics for normalization factors
+            inline double normMean() const
+            {
+                return SS::mean(allNorms);
+            }
+
+            // Summary statistics for normalization factors
+            inline double normSD() const
+            {
+                return SS::getSD(allNorms);
+            }
+            
+            // Average sequence coverage for endogenous before normalization
+            inline double meanBEndo() const
+            {
+                return SS::mean(allBeforeEndoC);
+            }
+            
+            // Average sequence coverage for sequins before normalization
+            inline double meanBSeqs() const
+            {
+                return SS::mean(allBeforeSeqsC);
+            }            
         };
 
         struct GenomeSequins
@@ -63,17 +87,12 @@ namespace Anaquin
         
         struct Stats
         {
-            // Total number of subsampling regions
-            Counts count = 0;
+            CalibrateStats cStats;
             
-            Coverage afterEndo,  afterSeqs;
-            Coverage beforeEndo, beforeSeqs;
+            Coverage afterSeqs;
             
-            // Summary statistics for normalization
-            double normAver, normSD;
-            
-            GenomeSequins totBefore,  totAfter;
-            GenomeSequins sampBefore, sampAfter;
+            GenomeSequins tBefore, tAfter;
+            GenomeSequins sBefore, sAfter;
             
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
         };
@@ -92,10 +111,16 @@ namespace Anaquin
             // Defined only if meth==Reads
             Counts reads = NAN;
         };
+
+        static GenomeSequins tBefore(const CalibrateStats &, const ParserBAMBED::Stats &);
+        static GenomeSequins tAfter (const CalibrateStats &, const ParserBAMBED::Stats &);
+        static GenomeSequins sBefore(const CalibrateStats &, const ParserBAMBED::Stats &);
+        static GenomeSequins sAfter (const CalibrateStats &, const ParserBAMBED::Stats &);
+        
+        static double afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> c2v, VSample::Options o);
         
         static ParserBAMBED::Stats sample(const FileName    &,
                                           const NormFactors &,
-                                          VSample::Stats    &,
                                           const C2Intervals &,
                                           const C2Intervals &,
                                           const VSample::Options &);
@@ -108,6 +133,17 @@ namespace Anaquin
 
         static Stats analyze(const FileName &, const FileName &, const Options &);
         static void  report (const FileName &, const FileName &, const Options &o = Options());
+    };
+    
+    inline std::string meth2Str(VSample::Method meth)
+    {
+        switch (meth)
+        {
+            case VSample::Method::Mean:   { return "Mean";       }
+            case VSample::Method::Median: { return "Median";     }
+            case VSample::Method::Reads:  { return "Reads";      }
+            case VSample::Method::Prop:   { return "Proportion"; }
+        }
     };
 }
 

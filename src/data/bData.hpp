@@ -14,17 +14,32 @@ namespace Anaquin
 
     struct BedChrData
     {
-        std::map<RegionID, Data> r2d;
+        std::map<SequinID, Data> r2d;
     };
     
     struct BedData : public std::map<ChrID, BedChrData>
     {
+        inline std::set<SequinID> seqs() const
+        {
+            std::set<SequinID> x;
+            
+            for (const auto &i : *this)
+            {
+                for (const auto &j : i.second.r2d)
+                {
+                    x.insert(j.first);
+                }
+            }
+            
+            return x;
+        }
+
         inline Counts nGene(const ChrID &cID) const
         {
             return at(cID).r2d.size();
         }
 
-        inline Counts lengthReg(const RegionID &rID) const
+        inline Counts lengthReg(const SequinID &rID) const
         {
             for (const auto &i : *this)
             {

@@ -26,21 +26,14 @@ namespace Anaquin
                 return s;
             }
 
-            // Reference genomic chromosomes
-            static std::set<ChrID> genoIDs;
-
+            // Add sequin regions in BED format
+            static BedData readBED(const Reader &r, Base trim = 0);
+        
             // Whether the chromosome is genomic
             static bool isGenomic(const ChrID &cID)
             {
                 A_ASSERT(!cID.empty());
-                return Standard::genoIDs.count(cID);
-            }
-
-            // Add genomic chromosome, which can be checked by isGenomic()
-            static void addGenomic(const ChrID &cID)
-            {
-                A_ASSERT(!cID.empty());
-                Standard::genoIDs.insert(cID);
+                return cID != ChrIS;
             }
 
             /*
@@ -77,12 +70,9 @@ namespace Anaquin
             // Add reference variants in VCF format
             inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 
-            // Add sequin regions in BED format
-            inline void addVRef(const Reader &r, Base trim = 0) { r_var.readGBRef(r, trim); }
-        
+            Ladder addAF(const Reader &);
             Ladder addCon(const Reader &);
-            void addAll(const Reader &);
-            void addCNV(const Reader &);
+            Ladder addCNV(const Reader &);
         
             VarRef r_var;
 

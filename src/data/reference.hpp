@@ -2,6 +2,7 @@
 #define REFERENCE_HPP
 
 #include "data/hist.hpp"
+#include "data/bData.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
 #include "data/minters.hpp"
@@ -78,18 +79,66 @@ namespace Anaquin
         Contains,
     };
     
-    class BedData;
+    class Ladder;
+
+    struct UserReference
+    {
+        // First ladder (most tools use a single ladder)
+        std::shared_ptr<Ladder> l1;
+
+        // First bed regions (not trimmed)
+        std::shared_ptr<BedData> r1;
+        
+        // Second bed regions (trimmed)
+        std::shared_ptr<BedData> r2;
+    };
     
     template <typename Data = SequinData> class Reference
     {
         public:
 
-            // Add a sequin defined in a mixture file
-            inline void add(const SequinID &id, Base length, Concent c, Mixture m)
+            // All sequins in the reference
+            inline std::set<SequinID> seqs() const { return _seqs; }
+
+            // Sequin exist in the reference?
+            inline bool exists(const SequinID &id) { return _seqs.count(id); }
+        
+            // Concentation in the reference ladder
+            inline Concent concent1(const SequinID &id, Mixture m = Mix_1) const
             {
-                _mixes[m][id] = std::shared_ptr<MixtureData>(new MixtureData(id, length, c));
-                _rawMIDs.insert(id);
+                return _l1->concent(id, m);
             }
+
+            // Concentation in the reference ladder
+            inline Concent concent2(const SequinID &id, Mixture m = Mix_1) const
+            {
+                return _l1->concent(id, m);
+            }
+        
+            // Position in the reference annoation
+            inline Locus locus(const SequinID &id) const
+            {
+                for (const auto &i : *(_r1))
+                {
+                    if (i.second.r2d.count(id))
+                    {
+                        return i.second.r2d.at(id).l;
+                    }
+                }
+                
+                throw std::runtime_error("Region not found for " + id);
+            }
+        
+            inline C2Intervals  regs1()  const { return _r1->inters();  }
+            inline C2Intervals  regs2()  const { return _r2->inters();  }
+            inline MC2Intervals mRegs1() const { return _r1->minters(); }
+            inline MC2Intervals mRegs2() const { return _r2->minters(); }
+        
+            inline Counts nRegs() const { return _r1->count();  }
+            inline Counts lRegs() const { return _r1->length(); }
+        
+            inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
+            inline MC2Intervals mInters() const { return _r1->minters(); }
 
             // Number of sequins defined in annotation
             inline Counts countSeqs() const { return _data.size(); }
@@ -102,9 +151,9 @@ namespace Anaquin
                 return _data.count(id) ? &_data.at(id) : nullptr;
             }
 
-            inline void finalize(Tool x)
+            inline void finalize(Tool x, const UserReference &r)
             {
-                validate(x);
+                validate(x, r);
                 
                 for (auto &i : _data)
                 {
@@ -117,7 +166,30 @@ namespace Anaquin
 
         protected:
 
-            virtual void validate(Tool) = 0;
+            inline void build(std::shared_ptr<Ladder> l1)
+            {
+                _l1   = l1;
+                _seqs = l1->seqs;
+            }
+        
+            inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<BedData> r1)
+            {
+                _l1   = l1;
+                _r1   = r1;
+                _seqs = l1->seqs;
+            }
+        
+            inline void build(std::shared_ptr<Ladder>  l1,
+                              std::shared_ptr<BedData> r1,
+                              std::shared_ptr<BedData> r2)
+            {
+                _l1   = l1;
+                _r1   = r1;
+                _r2   = r2;
+                _seqs = l1->seqs;
+            }
+
+            virtual void validate(Tool, const UserReference &) = 0;
 
             struct MixtureData
             {
@@ -222,14 +294,23 @@ namespace Anaquin
                 return _mixes.at(mix).count(id) ? _mixes.at(mix).at(id).get() : nullptr;
             }
 
+            // Sequins
+            std::set<SequinID> _seqs;
+        
+            // Sequin regions
+            std::shared_ptr<BedData> _r1, _r2;
+        
+            // Sequin ladder
+            std::shared_ptr<Ladder> _l1;
+
+        
+        
+        
             // Set of IDs defined in the mixture
-            std::set<SequinID> _rawMIDs;
+            std::set<SequinID> _rawMIDs; // TODO: ????
 
-            // Validated sequins
+            // Sequins
             std::map<SequinID, Data> _data;
-
-            // Validated regions
-            std::shared_ptr<BedData> _bData;
 
             // Validated ladder
             std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
@@ -257,7 +338,7 @@ namespace Anaquin
 
         protected:
         
-            void validate(Tool) override;
+            void validate(Tool, const UserReference &) override;
         
         private:
 
@@ -276,13 +357,7 @@ namespace Anaquin
             VarRef();
 
             void readVRef(const Reader &);
-            void readGBRef(const Reader &, Base trim = 0);
-
-            // Number of reference regions
-            Counts nRegs() const;
-
-            // Total number of bases for all reference regions
-            Base lRegs() const;
+            void readBRef(const Reader &, Base trim = 0);
 
             Counts nCNV(int)  const;
             Counts nGeno(Genotype)  const;
@@ -292,12 +367,6 @@ namespace Anaquin
             Counts countSNP() const;
             Counts countInd() const;
         
-            C2Intervals regions(bool trimmed = false) const;
-
-            MC2Intervals mInters() const;
-        
-            MergedIntervals<> mInters(const ChrID &) const;
-
             // Returns all reference variants
             std::set<Variant> vars() const;
 
@@ -311,7 +380,7 @@ namespace Anaquin
 
         protected:
 
-            void validate(Tool) override;
+            void validate(Tool, const UserReference &) override;
 
         private:
 
@@ -388,7 +457,7 @@ namespace Anaquin
 
         protected:
         
-            void validate(Tool) override;
+            void validate(Tool, const UserReference &) override;
 
             void merge(const std::set<SequinID> &, const std::set<SequinID> &);
         

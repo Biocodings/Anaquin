@@ -9,7 +9,6 @@ using namespace Anaquin;
 
 ParserBAMBED::Stats VSample::sample(const FileName    &file,
                                     const NormFactors &norms,
-                                    VSample::Stats    &stats,
                                     const C2Intervals &sampled,
                                     const C2Intervals &trimmed,
                                     const VSample::Options &o)
@@ -87,7 +86,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
         
         if (shouldSampled)
         {
-            stats.totAfter.nSeqs++;
+            //stats.tAfter.nSeqs
             
             // Write SAM read to console
             writer.write(x);
@@ -273,31 +272,36 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     VSample::Stats stats;
     
     // Regions to subsample after trimming
-    const auto tRegs = r.regions(true);
+    const auto tRegs = r.regs1();
     
     // Regions without trimming
-    const auto regs = r.regions(false);
+    const auto regs = r.regs2();
     
     // Check calibration statistics
-    const auto &before = check(endo, seqs, tRegs, regs, o);
+    stats.cStats = check(endo, seqs, tRegs, regs, o);
     
-    const auto norms = before.norms;
-    stats.c2v = before.c2v;
+    const auto norms = stats.cStats.norms;
+    stats.c2v = stats.cStats.c2v;
     
-    const auto allBeforeEndoC = before.allBeforeEndoC;
-    const auto allBeforeSeqsC = before.allBeforeSeqsC;
-    
-    stats.totBefore.nEndo = before.nEndo;
-    stats.totBefore.nSeqs = before.nSeqs;
+    const auto allBeforeEndoC = stats.cStats.allBeforeEndoC;
+    const auto allBeforeSeqsC = stats.cStats.allBeforeSeqsC;
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seqs, norms, stats, regs, tRegs, o);
+    const auto after = sample(seqs, norms, regs, tRegs, o);
     
+    stats.afterSeqs = VSample::afterSeqsC(tRegs, stats.c2v, o);
+    
+    stats.tBefore = tBefore(stats.cStats, after);
+    stats.tAfter  = tAfter (stats.cStats, after);
+    stats.sBefore = sBefore(stats.cStats, after);
+    stats.sAfter  = sAfter (stats.cStats, after);
+
+    return stats;
+}
+
+double VSample::afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> c2v, VSample::Options o)
+{
     std::vector<double> allAfterSeqsC;
-    
-    /*
-     * Assume our subsampling is working, let's check coverage for the regions.
-     */
     
     // For each chromosome...
     for (auto &i : tRegs)
@@ -305,38 +309,57 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
         // For each region...
         for (auto &j : i.second.data())
         {
-            stats.count++;
-            
             // Coverage after subsampling
             const auto cov = stats2cov(o.meth, j.second.stats());
-
-            stats.c2v[i.first].at(j.second.l()).after = cov;
+            
+            c2v[i.first].at(j.second.l()).after = cov;
             
             // Required for generating summary statistics
             allAfterSeqsC.push_back(cov);
         }
     }
     
-    stats.beforeEndo = SS::mean(allBeforeEndoC);
-    stats.beforeSeqs = SS::mean(allBeforeSeqsC);
-    stats.afterEndo  = stats.beforeEndo;
-    stats.afterSeqs  = SS::mean(allAfterSeqsC);
-    
-    stats.normSD   = SS::getSD(before.allNorms);
-    stats.normAver = SS::mean(before.allNorms);
-    
-    stats.totAfter.nEndo = stats.totBefore.nEndo;
-    
-    stats.sampAfter.nEndo  = before.es.nMap;
-    stats.sampBefore.nEndo = before.es.nMap;
-    
-    // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampBefore.nSeqs = before.ss.nMap;
+    return SS::mean(allAfterSeqsC);
+}
 
-    // Remember, the synthetic reads have been mapped to the forward genome
-    stats.sampAfter.nSeqs = after.nMap;
+VSample::GenomeSequins VSample::tBefore(const CalibrateStats &x, const ParserBAMBED::Stats &y)
+{
+    VSample::GenomeSequins r;
+    
+    r.nEndo = x.nEndo;
+    r.nSeqs = x.nSeqs;
+    
+    return r;
+}
 
-    return stats;
+VSample::GenomeSequins VSample::sAfter(const CalibrateStats &x, const ParserBAMBED::Stats &y)
+{
+    VSample::GenomeSequins r;
+    
+    r.nEndo = x.es.nMap;
+    r.nSeqs = y.nMap;
+    
+    return r;
+}
+
+VSample::GenomeSequins VSample::sBefore(const CalibrateStats &x, const ParserBAMBED::Stats &y)
+{
+    VSample::GenomeSequins r;
+    
+    r.nEndo = x.es.nMap;
+    r.nSeqs = x.ss.nMap;
+
+    return r;
+}
+
+VSample::GenomeSequins VSample::tAfter(const CalibrateStats &x, const ParserBAMBED::Stats &y)
+{
+    VSample::GenomeSequins r;
+    
+    r.nEndo = x.nEndo;
+    r.nSeqs = y.nNA + y.nMap;
+    
+    return r;
 }
 
 static void generateCSV(const FileName &file, const VSample::Stats &stats, const VSample::Options &o)
@@ -377,85 +400,76 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
 }
 
 static void generateSummary(const FileName &file,
-                            const FileName &gen,
-                            const FileName &seq,
+                            const FileName &endo,
+                            const FileName &seqs,
                             const VSample::Stats &stats,
                             const VSample::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     o.generate(file);
     
-    auto meth2Str = [&]()
-    {
-        switch (o.meth)
-        {
-            case VSample::Method::Mean:   { return "Mean";       }
-            case VSample::Method::Median: { return "Median";     }
-            case VSample::Method::Reads:  { return "Reads";      }
-            case VSample::Method::Prop:   { return "Proportion"; }
-        }
-    };
-
     const auto summary = "-------VarSubsample Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (genome):  %2%\n"
                          "       Alignment file (sequins): %3%\n\n"
                          "-------Reference regions\n\n"
-                         "       Variant regions: %4% regions\n"
+                         "       Sequin regions: %4% regions\n"
                          "       Method: %5%\n\n"
                          "-------Total alignments (before subsampling)\n\n"
-                         "       Synthetic: %6%\n"
-                         "       Genome:    %7%\n\n"
+                         "       Genome: %6%\n"
+                         "       Synthetic:    %7%\n\n"
                          "-------Total alignments (after subsampling)\n\n"
-                         "       Synthetic: %8%\n"
-                         "       Genome:    %9%\n\n"
+                         "       Genome: %8%\n"
+                         "       Synthetic:    %9%\n\n"
                          "-------Alignments within sampling regions (before subsampling)\n\n"
-                         "       Synthetic: %10%\n"
-                         "       Genome:    %11%\n\n"
+                         "       Genome: %10%\n"
+                         "       Synthetic:    %11%\n\n"
                          "-------Alignments within sampling regions (after subsampling)\n\n"
-                         "       Synthetic: %12%\n"
-                         "       Genome:    %13%\n\n"
+                         "       Genome: %12%\n"
+                         "       Synthetic:    %13%\n\n"
                          "       Normalization: %14% \u00B1 %15%\n\n"
                          "-------Before subsampling (within sampling regions)\n\n"
-                         "       Synthetic coverage (average): %16%\n"
-                         "       Genome coverage (average):    %17%\n\n"
+                         "       Genome coverage (average): %16%\n"
+                         "       Synthetic coverage (average):    %17%\n\n"
                          "-------After subsampling (within sampling regions)\n\n"
-                         "       Synthetic coverage (average): %18%\n"
-                         "       Genome coverage (average):    %19%\n";
+                         "       Genome coverage (average): %18%\n"
+                         "       Synthetic coverage (average):    %19%\n";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()               // 1
-                                            % gen                    // 2
-                                            % seq                    // 3
-                                            % stats.count            // 4
-                                            % meth2Str()             // 5
-                                            % stats.totBefore.nSeqs  // 6
-                                            % stats.totBefore.nEndo  // 7
-                                            % stats.totAfter.nSeqs   // 8
-                                            % stats.totAfter.nEndo   // 9
-                                            % stats.sampBefore.nSeqs // 10
-                                            % stats.sampBefore.nEndo // 11
-                                            % stats.sampAfter.nSeqs  // 12
-                                            % stats.sampAfter.nEndo  // 13
-                                            % stats.normAver         // 14
-                                            % stats.normSD           // 15
-                                            % stats.beforeSeqs       // 16
-                                            % stats.beforeEndo       // 17
-                                            % stats.afterSeqs        // 18
-                                            % stats.afterEndo        // 19
+    o.writer->write((boost::format(summary) % BedRef()                 // 1
+                                            % endo                     // 2
+                                            % seqs                     // 3
+                                            % r.nRegs()                // 4
+                                            % meth2Str(o.meth)         // 5
+                                            % stats.tBefore.nEndo      // 6
+                                            % stats.tBefore.nSeqs      // 7
+                                            % stats.tAfter.nEndo       // 8
+                                            % stats.tAfter.nSeqs       // 9
+                                            % stats.sBefore.nEndo      // 10
+                                            % stats.sBefore.nSeqs      // 11
+                                            % stats.sAfter.nEndo       // 12
+                                            % stats.sAfter.nSeqs       // 13
+                                            % stats.cStats.normMean()  // 14
+                                            % stats.cStats.normSD()    // 15
+                                            % stats.cStats.meanBEndo() // 16
+                                            % stats.cStats.meanBSeqs() // 17
+                                            % stats.cStats.meanBEndo() // 18
+                                            % stats.afterSeqs          // 19
                      ).str());
     o.writer->close();
 }
 
-void VSample::report(const FileName &gen, const FileName &seqs, const Options &o)
+void VSample::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
-    const auto stats = analyze(gen, seqs, o);
+    const auto stats = analyze(endo, seqs, o);
     
     /*
      * Generating VarSubsample_summary.stats
      */
     
-    generateSummary("VarSubsample_summary.stats", gen, seqs, stats, o);
+    generateSummary("VarSubsample_summary.stats", endo, seqs, stats, o);
 
     /*
      * Generating VarSubsample_sequins.csv
