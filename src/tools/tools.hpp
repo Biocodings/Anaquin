@@ -170,11 +170,6 @@ namespace Anaquin
             return c + p.second;
         });
     }
-    
-    /*
-     * 
-     */
-    
 }
 
 #endif

@@ -7,7 +7,6 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
-#include "RnaQuin/r_gene.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_sample.hpp"

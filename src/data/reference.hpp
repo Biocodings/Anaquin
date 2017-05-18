@@ -38,11 +38,6 @@ namespace Anaquin
         MetaSubsample
     };
     
-    struct DefaultStats
-    {
-        // Empty Implementation
-    };
-
     /*
      * Generic template for a sequin. Specalized definitions expected to derive from this class.
      */
@@ -85,7 +80,7 @@ namespace Anaquin
     
     class BedData;
     
-    template <typename Data = SequinData, typename Stats = DefaultStats> class Reference
+    template <typename Data = SequinData> class Reference
     {
         public:
 
@@ -95,9 +90,6 @@ namespace Anaquin
                 _mixes[m][id] = std::shared_ptr<MixtureData>(new MixtureData(id, length, c));
                 _rawMIDs.insert(id);
             }
-
-            // Number of sequins defined in mixture
-            inline Counts countMix() const { return _mixes.size(); }
 
             // Number of sequins defined in annotation
             inline Counts countSeqs() const { return _data.size(); }
@@ -244,10 +236,10 @@ namespace Anaquin
     };
 
     /*
-     * -------------------- Metagenomic Analysis --------------------
+     * -------------------- Metagenomic Reference --------------------
      */
     
-    class MetaRef : public Reference<SequinData, DefaultStats>
+    class MetaRef : public Reference<>
     {
         public:
         
@@ -274,10 +266,10 @@ namespace Anaquin
     };
 
     /*
-     * -------------------- Variant Analysis --------------------
+     * -------------------- Variant Reference --------------------
      */
     
-    class VarRef : public Reference<SequinData, DefaultStats>
+    class VarRef : public Reference<>
     {
         public:
 
@@ -330,13 +322,13 @@ namespace Anaquin
     };
     
     /*
-     * -------------------- Transcriptome Analysis --------------------
+     * -------------------- Transcriptome Referenceb --------------------
      */
     
     struct GeneData;
     struct TransData;
     
-    class RnaRef : public Reference<SequinData, DefaultStats>
+    class RnaRef : public Reference<>
     {
         public:
 

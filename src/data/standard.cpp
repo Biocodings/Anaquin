@@ -22,9 +22,9 @@ std::set<ChrID> Standard::genoIDs;
 
 enum MixtureFormat
 {
-    Name_Len_Mix, // Eg: MG_33  10  60.23529412
-    Name_Mix,     // Eg: MG_33  60.23529412
-    Name_Len_M1_Mix1
+    Name_Len_Mix,
+    Name_Len_X_Mix,
+    Name_Len_Mix_Mix
 };
 
 static unsigned countColumns(const Reader &r)
@@ -44,12 +44,13 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-template <typename Reference> void readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
+template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
 {
-    auto f = [&](const std::string &delim)
+    Ladder x;
+    
+    auto parse = [&](const std::string &delim)
     {
         const auto t = Reader(r);
-        Counts n = 0;
         
         ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
         {
@@ -59,28 +60,22 @@ template <typename Reference> void readLadder(const Reader &r, Reference &ref, M
                 return;
             }
             
-            const auto seq = d[0];
-            const auto con = stof(d[column]);
-            
-            n++;
             switch (format)
             {
-                case Name_Mix:     { ref.add(seq, 0.0, con, m);        break; }
-                case Name_Len_Mix: { ref.add(seq, stoi(d[1]), con, m); break; }
-                case Name_Len_M1_Mix1:
-                {
-                    ref.add(seq, stoi(d[2]) * stoi(d[3]), con, m); break;
-                }
+                case Name_Len_Mix:     { x.add(d[0], m, stof(d[column]));         break; }
+                case Name_Len_Mix_Mix: { x.add(d[0], m, stoi(d[2]) * stoi(d[3])); break; }
             }
         }, delim);
         
-        return n ? true : false;
+        return x.count();
     };
     
-    if (!f("\t") && !f(","))
+    if (!parse("\t") && !parse(","))
     {
-        throw std::runtime_error("No sequin is found in the mixture file. Please check and try again.");
+        throw std::runtime_error("No sequin found in the ladder file. Please check and try again.");
     }
+
+    return x;
 }
 
 void Standard::addCNV(const Reader &r)
@@ -89,10 +84,10 @@ void Standard::addCNV(const Reader &r)
     readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix, 2);
 }
 
-void Standard::addCon(const Reader &r)
+Ladder Standard::addCon(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    readLadder(Reader(r), r_var, Mix_1, Name_Len_M1_Mix1, 2);
+    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix_Mix, 2);
 }
 
 void Standard::addAll(const Reader &r)

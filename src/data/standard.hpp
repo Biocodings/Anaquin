@@ -3,6 +3,7 @@
 
 #include <set>
 #include <memory>
+#include "data/ladder.hpp"
 #include "data/reader.hpp"
 #include "data/reference.hpp"
 
@@ -79,7 +80,7 @@ namespace Anaquin
             // Add sequin regions in BED format
             inline void addVRef(const Reader &r, Base trim = 0) { r_var.readGBRef(r, trim); }
         
-            void addCon(const Reader &);
+            Ladder addCon(const Reader &);
             void addAll(const Reader &);
             void addCNV(const Reader &);
         
