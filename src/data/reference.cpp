@@ -650,6 +650,10 @@ Counts VarRef::countSNP() const
     return _impl->vData.countSNP();
 }
 
+/*
+ * Filter out all reference sequin regions
+ */
+
 static void filter(std::shared_ptr<BedData> x, const std::set<SequinID> &ids)
 {
     for (const auto &i : ids)
@@ -662,7 +666,23 @@ static void filter(std::shared_ptr<BedData> x, const std::set<SequinID> &ids)
             }
         }
     }
+    
+    for (auto i = x->cbegin(); i != x->cend();)
+    {
+        if (i->second.r2d.empty())
+        {
+            i = x->erase(i);
+        }
+        else
+        {
+            ++i;
+        }
+    }
 }
+
+/*
+ * Filter out all reference sequins in ladder
+ */
 
 static void filter(std::shared_ptr<Ladder> x, const std::set<SequinID> &ids)
 {
