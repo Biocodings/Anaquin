@@ -63,24 +63,23 @@ typedef std::set<Value> Range;
 #define OPT_PATH    325
 #define OPT_VERSION 338
 
-#define OPT_R_BASE  800
-#define OPT_R_BED   801
-#define OPT_METHOD  802
-#define OPT_R_GTF   803
-#define OPT_R_VCF   804
-#define OPT_TRIM    805
-#define OPT_MIXTURE 806
-#define OPT_AF_LAD  807
-#define OPT_CON_LAD 808
-#define OPT_CNV_LAD 809
-#define OPT_FUZZY   810
-#define OPT_REPORT  811
-#define OPT_R_IND   812
-#define OPT_U_SAMPLE    813
-#define OPT_U_SEQS  814
-#define OPT_U_FILES 816
-#define OPT_EDGE    817
-#define OPT_U_BASE  818
+#define OPT_R_BASE   800
+#define OPT_R_BED    801
+#define OPT_METHOD   802
+#define OPT_R_GTF    803
+#define OPT_R_VCF    804
+#define OPT_TRIM     805
+#define OPT_MIXTURE  806
+#define OPT_L_AF     807
+#define OPT_L_CON    808
+#define OPT_L_CNV    809
+#define OPT_FUZZY    810
+#define OPT_R_IND    812
+#define OPT_U_SAMPLE 813
+#define OPT_U_SEQS   814
+#define OPT_U_FILES  816
+#define OPT_EDGE     817
+#define OPT_U_BASE   818
 
 using namespace Anaquin;
 
@@ -158,7 +157,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarFlip,      { OPT_U_SEQS } },
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarCopy,      { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSubsample, { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS } },
@@ -197,9 +196,6 @@ struct Parsing
     // How Anaquin is invoked
     std::string command;
 
-    // Generating a report?
-    bool report = false;
-    
     Proportion sampled = NAN;
     
     Tool tool;
@@ -226,16 +222,16 @@ FileName MixRef()
     {
         return _p.opts.at(OPT_MIXTURE);
     }
-    else if (_p.opts.count(OPT_CNV_LAD))
+    else if (_p.opts.count(OPT_L_CNV))
     {
-        return _p.opts.at(OPT_CNV_LAD);
+        return _p.opts.at(OPT_L_CNV);
     }
-    else if (_p.opts.count(OPT_CON_LAD))
+    else if (_p.opts.count(OPT_L_CON))
     {
-        return _p.opts.at(OPT_CON_LAD);
+        return _p.opts.at(OPT_L_CON);
     }
     
-    return _p.opts.at(OPT_AF_LAD);
+    return _p.opts.at(OPT_L_AF);
 }
 
 FileName VCFRef()
@@ -318,9 +314,9 @@ static const struct option long_options[] =
     { "useqs",   required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
-    { "af",      required_argument, 0, OPT_AF_LAD  }, // Ladder for allele frequency
-    { "cnv",     required_argument, 0, OPT_CNV_LAD }, // Ladder for copy number variation
-    { "con",     required_argument, 0, OPT_CON_LAD }, // Ladder for conjoint k-mers
+    { "af",      required_argument, 0, OPT_L_AF  }, // Ladder for allele frequency
+    { "cnv",     required_argument, 0, OPT_L_CNV }, // Ladder for copy number variation
+    { "con",     required_argument, 0, OPT_L_CON }, // Ladder for conjoint k-mers
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -334,7 +330,6 @@ static const struct option long_options[] =
 
     { "edge",    required_argument, 0, OPT_EDGE   },
     { "fuzzy",   required_argument, 0, OPT_FUZZY  },
-    { "report",  required_argument, 0, OPT_REPORT },
     
     { "o",       required_argument, 0, OPT_PATH },
 
@@ -831,8 +826,6 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
-            case OPT_REPORT: { _p.report = true; break; }
-
             case OPT_EDGE:
             case OPT_FUZZY:
             {
@@ -896,9 +889,9 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_TRIM:
-            case OPT_AF_LAD:
-            case OPT_CNV_LAD:
-            case OPT_CON_LAD: { _p.opts[opt] = val; break; }
+            case OPT_L_AF:
+            case OPT_L_CNV:
+            case OPT_L_CON: { _p.opts[opt] = val; break; }
 
             case OPT_U_SAMPLE:
             case OPT_R_IND:
@@ -1249,7 +1242,7 @@ void parse(int argc, char ** argv)
 
                     case Tool::VarCopy:
                     {
-                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD, r);
+                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
@@ -1278,9 +1271,9 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_AF_LAD,  r);
-                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_CNV_LAD, r);
-                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_CON_LAD, r);
+                        readLad(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_L_AF,  r);
+                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
+                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
                     }
 
@@ -1296,11 +1289,11 @@ void parse(int argc, char ** argv)
                 {
                     VKAbund::Options o;
                     
-                    if (_p.opts.count(OPT_CNV_LAD))
+                    if (_p.opts.count(OPT_L_CNV))
                     {
                         o.mode = VKAbund::Mode::CNVLad;
                     }
-                    else if (_p.opts.count(OPT_CON_LAD))
+                    else if (_p.opts.count(OPT_L_CON))
                     {
                         o.mode = VKAbund::Mode::ConLad;
                     }
