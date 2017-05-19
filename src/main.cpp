@@ -125,7 +125,7 @@ static std::map<Value, Tool> _tools =
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
-    { "VarCancer",      Tool::VarCancer      },
+    { "VarSomatic",     Tool::VarSomatic     },
     { "VarSubsample",   Tool::VarSubsample   },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
@@ -368,7 +368,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarFlip();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
-    extern Scripts VarCancer();
+    extern Scripts VarSomatic();
     extern Scripts VarKAbund();
     extern Scripts VarSubsample();
     extern Scripts RnaAlign();
@@ -392,7 +392,7 @@ static Scripts manual(Tool tool)
         case Tool::VarCopy:        { return VarCopy();        }
         case Tool::VarFlip:        { return VarFlip();        }
         case Tool::VarTrim:        { return VarTrim();        }
-        case Tool::VarCancer:      { return VarCancer();      }
+        case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarSubsample:   { return VarSubsample();   }
         case Tool::VarKAbund:      { return VarKAbund();      }
@@ -1221,7 +1221,7 @@ void parse(int argc, char ** argv)
         case Tool::VarFlip:
         case Tool::VarTrim:
         case Tool::VarAlign:
-        case Tool::VarCancer:
+        case Tool::VarSomatic:
         case Tool::VarSubsample:
         case Tool::VarKAbund:
         {
@@ -1262,7 +1262,7 @@ void parse(int argc, char ** argv)
                     }
 
                     case Tool::VarDetect:
-                    case Tool::VarCancer:
+                    case Tool::VarSomatic:
                     {
                         readReg1(OPT_R_BED, r);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
@@ -1332,7 +1332,7 @@ void parse(int argc, char ** argv)
                 }
 
                 case Tool::VarDetect:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                case Tool::VarCancer: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarSomatic: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case Tool::VarCopy:
                 {

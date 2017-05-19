@@ -14,7 +14,7 @@ namespace Anaquin
     {
         enum class Context
         {
-            Generic,
+            Common,
             VeryLowGC,
             LowGC,
             HighGC,

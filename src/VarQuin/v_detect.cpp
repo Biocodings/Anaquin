@@ -40,7 +40,7 @@ inline std::string ctx2Str(Context x)
         case Context::Cancer:        { return "Cancer";                    }
         case Context::LowGC:         { return "LowGC";                     }
         case Context::HighGC:        { return "HighGC";                    }
-        case Context::Generic:       { return "Generic";                   }
+        case Context::Common:        { return "Common";                    }
         case Context::VeryLowGC:     { return "VeryLowGC";                 }
         case Context::VeryHighGC:    { return "VeryHighGC";                }
         case Context::LongHompo:     { return "LongHomopolymer";           }
@@ -109,7 +109,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         Context::LowGC,
         Context::HighGC,
         Context::Cancer,
-        Context::Generic,
+        Context::Common,
         Context::LongHompo,
         Context::VeryLowGC,
         Context::VeryHighGC,
@@ -432,15 +432,15 @@ static void writeSummary(const FileName &file,
                              "       Reference variant annotations:      %1%\n"
                              "       Reference coordinate annotations:   %2%\n\n"
                              "       User identified variants (human):   %3%\n"
-                             "       User identified variants (sequins): %63%\n\n"
-                             "       Number of variants in reference regions (human):   %64%\n"
-                             "       Number of variants in reference regions (sequins): %65%\n\n"
+                             "       User identified variants (sequins): 59%\n\n"
+                             "       Number of variants in reference regions (human):   %60%\n"
+                             "       Number of variants in reference regions (sequins): %61%\n\n"
                              "-------Reference variants by mutation\n\n"
                              "       SNPs:   %4%\n"
                              "       Indels: %5%\n"
                              "       Total:  %6%\n\n"
                              "-------Reference variants by context\n\n"
-                             "       Generic:                      %31%\n"
+                             "       Common:                       %31%\n"
                              "       Very Low GC:                  %32%\n"
                              "       Low GC:                       %33%\n"
                              "       High GC:                      %34%\n"
@@ -456,11 +456,6 @@ static void writeSummary(const FileName &file,
                              "-------Reference variants by zygosity\n\n"
                              "       Homozygosity:   %44% \n"
                              "       Heterozygosity: %45%\n\n"
-                             "-------Reference variants by copy number\n\n"
-                             "       CNV 1-fold: %46%\n"
-                             "       CNV 2-fold: %47%\n"
-                             "       CNV 3-fold: %48%\n"
-                             "       CNV 4-fold: %49%\n\n"
                              "-------Called variants by mutation\n\n"
                              "       %7% SNPs\n"
                              "       %8% indels\n"
@@ -492,31 +487,31 @@ static void writeSummary(const FileName &file,
                              "       FDR Rate:    %30$.4f\n\n"
                              "-------Diagnostic performance by context\n\n"
                              "       *Low GC\n"
-                             "       Sensitivity: %50$.4f\n\n"
+                             "       Sensitivity: %46$.4f\n\n"
                              "       *High GC\n"
-                             "       Sensitivity: %51$.4f\n\n"
-                             "       *Generic\n"
-                             "       Sensitivity: %52$.4f\n\n"
+                             "       Sensitivity: %47$.4f\n\n"
+                             "       *Common\n"
+                             "       Sensitivity: %48$.4f\n\n"
                              "       *Long Homopolymer\n"
-                             "       Sensitivity: %53$.4f\n\n"
+                             "       Sensitivity: %49$.4f\n\n"
                              "       *Very Low GC\n"
-                             "       Sensitivity: %54$.4f\n\n"
+                             "       Sensitivity: %50$.4f\n\n"
                              "       *Very High GC\n"
-                             "       Sensitivity: %55$.4f\n\n"
+                             "       Sensitivity: %51$.4f\n\n"
                              "       *Short Dinucleotide Repeat\n"
-                             "       Sensitivity: %56$.4f\n\n"
+                             "       Sensitivity: %52$.4f\n\n"
                              "       *Long Dinucleotide Repeat\n"
-                             "       Sensitivity: %57$.4f\n\n"
+                             "       Sensitivity: %53$.4f\n\n"
                              "       *Short Homopolymer\n"
-                             "       Sensitivity: %58$.4f\n\n"
+                             "       Sensitivity: %54$.4f\n\n"
                              "       *Long Quad Nucleotide Repeat\n"
-                             "       Sensitivity: %59$.4f\n\n"
+                             "       Sensitivity: %55$.4f\n\n"
                              "       *Long Trinucleotide Repeat\n"
-                             "       Sensitivity: %60$.4f\n\n"
+                             "       Sensitivity: %56$.4f\n\n"
                              "       *Short Quad Nucleotide Repeat\n"
-                             "       Sensitivity: %61$.4f\n\n"
+                             "       Sensitivity: %57$.4f\n\n"
                              "       *Short Trinucleotide Repeat\n"
-                             "       Sensitivity: %62$.4f";
+                             "       Sensitivity: %58$.4f";
 
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
@@ -578,7 +573,7 @@ static void writeSummary(const FileName &file,
                                                 % D(ind.pc())                   // 28
                                                 % D(ind.F1())                   // 29
                                                 % D(1-ind.pc())                 // 30
-                                                % D(r.nContext(Context::Generic))      // 31
+                                                % D(r.nContext(Context::Common))       // 31
                                                 % D(r.nContext(Context::VeryLowGC))    // 32
                                                 % D(r.nContext(Context::LowGC))        // 33
                                                 % D(r.nContext(Context::HighGC))       // 34
@@ -593,26 +588,22 @@ static void writeSummary(const FileName &file,
                                                 % D(r.nContext(Context::LongTrinRep))  // 43
                                                 % D(r.nGeno(Genotype::Homozygous))     // 44
                                                 % D(r.nGeno(Genotype::Heterzygous))    // 45
-                                                % D(r.nCNV(1))                         // 46
-                                                % D(r.nCNV(2))                         // 47
-                                                % D(r.nCNV(3))                         // 48
-                                                % D(r.nCNV(4))                         // 49
-                                                % CSN(Context::LowGC)                  // 50
-                                                % CSN(Context::HighGC)                 // 51
-                                                % CSN(Context::Generic)                // 52
-                                                % CSN(Context::LongHompo)              // 53
-                                                % CSN(Context::VeryLowGC)              // 54
-                                                % CSN(Context::VeryHighGC)             // 55
-                                                % CSN(Context::ShortDinRep)            // 56
-                                                % CSN(Context::LongDinRep)             // 57
-                                                % CSN(Context::ShortHompo)             // 58
-                                                % CSN(Context::LongQuadRep)            // 59
-                                                % CSN(Context::LongTrinRep)            // 60
-                                                % CSN(Context::ShortQuadRep)           // 61
-                                                % CSN(Context::ShortTrinRep)           // 62
-                                                % (endo.empty() ? "-" : endo)          // 63
-                                                % (endo.empty() ? "-" : toString(es.found))
-                                                % (c_nSNP + c_nDel + c_nIns)           // 65
+                                                % CSN(Context::LowGC)                  // 46
+                                                % CSN(Context::HighGC)                 // 47
+                                                % CSN(Context::Common)                 // 48
+                                                % CSN(Context::LongHompo)              // 49
+                                                % CSN(Context::VeryLowGC)              // 50
+                                                % CSN(Context::VeryHighGC)             // 51
+                                                % CSN(Context::ShortDinRep)            // 52
+                                                % CSN(Context::LongDinRep)             // 53
+                                                % CSN(Context::ShortHompo)             // 54
+                                                % CSN(Context::LongQuadRep)            // 55
+                                                % CSN(Context::LongTrinRep)            // 56
+                                                % CSN(Context::ShortQuadRep)           // 57
+                                                % CSN(Context::ShortTrinRep)           // 58
+                                                % (endo.empty() ? "-" : endo)          // 59
+                                                % (endo.empty() ? "-" : toString(es.found)) // 60
+                                                % (c_nSNP + c_nDel + c_nIns)           // 61
                          ).str());
     };
     

@@ -579,7 +579,7 @@ void VarRef::readVRef(const Reader &r)
         const auto m1 = std::map<std::string, SeqVariant::Context>
         {
             { "cancer",     Context::Cancer       },
-            { "generic",    Context::Generic      },
+            { "common",     Context::Common       },
             { "high_gc",    Context::HighGC       },
             { "long_di",    Context::LongDinRep   },
             { "long_homo",  Context::LongHompo    },

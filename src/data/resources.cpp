@@ -12,7 +12,7 @@
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
 #include "resources/VarKAbund.txt"
-#include "resources/VarCancer.txt"
+#include "resources/VarSomatic.txt"
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
@@ -139,9 +139,9 @@ Scripts VarDetect()
     return ToString(data_manuals_VarDetect_txt);
 }
 
-Scripts VarCancer()
+Scripts VarSomatic()
 {
-    return ToString(data_manuals_VarCancer_txt);
+    return ToString(data_manuals_VarSomatic_txt);
 }
 
 Scripts MetaAlign()

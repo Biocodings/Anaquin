@@ -26,7 +26,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarDetect.txt',
           'data/manuals/VarKAbund.txt',
-          'data/manuals/VarCancer.txt',
+          'data/manuals/VarSomatic.txt',
           'data/manuals/VarSubsample.txt',
 
           'data/manuals/MetaAlign.txt',

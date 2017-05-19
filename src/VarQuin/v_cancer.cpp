@@ -40,7 +40,7 @@ inline std::string ctx2Str(Context x)
         case Context::Cancer:        { return "Cancer";                    }
         case Context::LowGC:         { return "LowGC";                     }
         case Context::HighGC:        { return "HighGC";                    }
-        case Context::Generic:       { return "Generic";                   }
+        case Context::Common:        { return "Common";                    }
         case Context::VeryLowGC:     { return "VeryLowGC";                 }
         case Context::VeryHighGC:    { return "VeryHighGC";                }
         case Context::LongHompo:     { return "LongHomopolymer";           }
@@ -84,7 +84,7 @@ VCancer::Stats VCancer::analyze(const FileName &file, const Options &o)
         Context::LowGC,
         Context::HighGC,
         Context::Cancer,
-        Context::Generic,
+        Context::Common,
         Context::LongHompo,
         Context::VeryLowGC,
         Context::VeryHighGC,
@@ -402,8 +402,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VCance
     {
         const auto lm = ss.oa.linear();
 
-        const auto summary = "-------VarCancer Output Results\n\n"
-                             "-------VarCancer Output\n\n"
+        const auto summary = "-------VarSomatic Output Results\n\n"
+                             "-------VarSomatic Output\n\n"
                              "       Reference variant annotations:    %1%\n"
                              "       Reference coordinate annotations: %2%\n"
                              "       User identified variants:         %3%\n\n"
@@ -449,7 +449,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VCance
                              "      SSE:         %37%, DF: %38%\n"
                              "      SST:         %39%, DF: %40%\n";
         o.generate(file);
-        o.writer->open("VarCancer_summary.stats");
+        o.writer->open("VarSomatic_summary.stats");
         o.writer->write((boost::format(summary) % VCFRef()                   // 1
                                                 % BedRef()                   // 2
                                                 % src                        // 3
@@ -509,39 +509,39 @@ void VCancer::report(const FileName &endo, const FileName &seqs, const Options &
     o.info("Generating statistics");
 
     /*
-     * Generating VarCancer_sequins.csv
+     * Generating VarSomatic_sequins.csv
      */
     
-    writeQuins("VarCancer_sequins.csv", ss, o);
+    writeQuins("VarSomatic_sequins.csv", ss, o);
 
     /*
-     * Generating VarCancer_summary.stats
+     * Generating VarSomatic_summary.stats
      */
     
-    writeSummary("VarCancer_summary.stats", seqs, ss, o);
+    writeSummary("VarSomatic_summary.stats", seqs, ss, o);
     
     /*
-     * Generating VarCancer_detected.csv
+     * Generating VarSomatic_detected.csv
      */
     
-    writeDetected("VarCancer_detected.csv", ss, o);
+    writeDetected("VarSomatic_detected.csv", ss, o);
     
     /*
-     * Generating VarCancer_ROC.R
+     * Generating VarSomatic_ROC.R
      */
     
-    o.generate("VarCancer_ROC.R");
-    o.writer->open("VarCancer_ROC.R");
-    o.writer->write(createVCROC("VarCancer_detected.csv", "data$ObsFreq", "'FP'"));
+    o.generate("VarSomatic_ROC.R");
+    o.writer->open("VarSomatic_ROC.R");
+    o.writer->write(createVCROC("VarSomatic_detected.csv", "data$ObsFreq", "'FP'"));
     o.writer->close();
     
     /*
-     * Generating VarCancer_allele.R
+     * Generating VarSomatic_allele.R
      */
     
-    o.generate("VarCancer_allele.R");
-    o.writer->open("VarCancer_allele.R");
-    o.writer->write(RWriter::createRLinear("VarCancer_sequins.csv",
+    o.generate("VarSomatic_allele.R");
+    o.writer->open("VarSomatic_allele.R");
+    o.writer->write(RWriter::createRLinear("VarSomatic_sequins.csv",
                                            o.work,
                                            "Allele Frequency",
                                            "Expected Allele Frequency (log2)",
@@ -554,11 +554,11 @@ void VCancer::report(const FileName &endo, const FileName &seqs, const Options &
     o.writer->close();
     
     /*
-     * Generating VarCancer_LODR.R
+     * Generating VarSomatic_LODR.R
      */
     
-    o.generate("VarCancer_LODR.R");
-    o.writer->open("VarCancer_LODR.R");
-    o.writer->write(RWriter::createScript("VarCancer_detected.csv", PlotVLODR()));
+    o.generate("VarSomatic_LODR.R");
+    o.writer->open("VarSomatic_LODR.R");
+    o.writer->write(RWriter::createScript("VarSomatic_detected.csv", PlotVLODR()));
     o.writer->close();
 }

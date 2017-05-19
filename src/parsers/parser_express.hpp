@@ -22,7 +22,7 @@ namespace Anaquin
             ::Anaquin::ChrID cID;
 
             // Eg: R1_1 or R1_1
-            GenericID id;
+            SequinID id;
             
             // Eg: FPKM, counts
             double abund;

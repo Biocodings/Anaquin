@@ -54,7 +54,7 @@ namespace Anaquin
             SequinStats isos, genes;
 
             // Data for the genome
-            std::map<GenoID, GenData> gData;
+            std::map<ChrID, GenData> gData;
         };
 
         static Stats analyze(const FileName &, const Options &o);
