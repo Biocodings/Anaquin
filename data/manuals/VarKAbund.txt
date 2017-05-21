@@ -16,20 +16,20 @@
 <b>USAGE EXAMPLE</b>
      Quantify for the conjoint ladder:
 
-         anaquin VKAbund –ucon reference.csv -useqs quant.sf
+         anaquin VKAbund –ucon reference.csv -usequin quant.sf
 
      Quantify for the copy number ladder:
      
-         anaquin VKAbund –ucnv reference.csv -useqs quant.sf
+         anaquin VKAbund –ucnv reference.csv -usequin quant.sf
      
      Quantify for the allele frequency ladder:
      
-         anaquin VKAbund –uaf reference.csv -useqs quant.sf
+         anaquin VKAbund –uaf reference.csv -usequin quant.sf
 
 <b>TOOL OPTIONS</b>
      Required:
         -ucon or -ucnv or -uaf  Reference mixture for one of the ladders; conjoint, copy number or allele frequency.
-        -useqs                  Generated Salmon quantification file
+        -usequin                Generated Salmon quantification file
 
      Optional:
         -o = output             Directory in which output files are written to

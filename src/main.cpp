@@ -310,8 +310,8 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
-    { "usamp",   required_argument, 0, OPT_U_SAMPLE },
-    { "useqs",   required_argument, 0, OPT_U_SEQS  },
+    { "usample", required_argument, 0, OPT_U_SAMPLE },
+    { "usequin", required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
     { "af",      required_argument, 0, OPT_L_AF  }, // Ladder for allele frequency

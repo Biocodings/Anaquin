@@ -21,11 +21,11 @@
      VarFlip supports the standard SAM/BAM file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarFlip –useqs aligned.bam
+     anaquin VarFlip –usequin aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -useqs       Generated forward/reverse alignment file in SAM/BAM format
+        -usequin     Generated forward/reverse alignment file in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to

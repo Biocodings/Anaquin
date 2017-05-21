@@ -14,15 +14,15 @@
      Short-read aligner (such as BWA or BowTie) that generates a SAM/BAM alignment file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarAlign –rbed reference.bed –uhuman humans.bam -useqs sequins.bam
+     anaquin VarAlign –rbed reference.bed –usample humans.bam -usequin sequins.bam
 
 <b>TOOL OPTIONS</b>
      Required:
         -rbed        Reference annotation file for sequin regions in BED format
-        -useqs       Generated alignment file for <i>in silico</i> genome in SAM/BAM format
+        -usequin     User generated sequin-derived alignment file in SAM/BAM format
 
      Optional:
-        -uhuman      Generated alignment file for human genome in SAM/BAM format
+        -usample     User generated sample-derived alignment file in SAM/BAM format
         -o = output  Directory in which output files are written to
 
 <b>OUTPUTS</b>
