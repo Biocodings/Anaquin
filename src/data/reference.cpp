@@ -711,10 +711,16 @@ void VarRef::validate(Tool x, const UserReference &r)
         }
 
         case Tool::VarTrim:
-        case Tool::VarSubsample:
         {
             merge(r.r1->seqs());
             build(r.r1);
+            break;
+        }
+
+        case Tool::VarSubsample:
+        {
+            merge(r.r1->seqs());
+            build(r.r1, r.r2);
             break;
         }
 
