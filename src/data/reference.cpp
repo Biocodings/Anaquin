@@ -710,6 +710,13 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
+        case Tool::VarTrim:
+        {
+            merge(r.r1->seqs());
+            build(r.r1);
+            break;
+        }
+
         default:
         {
             const auto hasVCF = !_impl->vIDs.empty();

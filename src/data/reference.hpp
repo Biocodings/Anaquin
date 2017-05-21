@@ -166,6 +166,11 @@ namespace Anaquin
 
         protected:
 
+            inline void build(std::shared_ptr<BedData> r1)
+            {
+                _r1 = r1;
+            }
+
             inline void build(std::shared_ptr<Ladder> l1)
             {
                 _l1   = l1;
