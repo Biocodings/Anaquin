@@ -356,74 +356,74 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
 
 void RnaRef::validate(Tool, const UserReference &r)
 {
-    auto iIDs = std::set<SequinID>();
-    
-    for (const auto &i : _impl->gData)
-    {
-        if (isRnaQuin(i.first))
-        {
-            iIDs = keys(_impl->gData.at(i.first).t2d);
-            break;
-        }
-    }
-    
-    /*
-     * Building rules:
-     *
-     *   1: Only annoation
-     *   2: Only mixture
-     *   3: Annotation and mixture
-     */
-    
-    if (_rawMIDs.empty())
-    {
-        merge(iIDs, iIDs);         // Rule 1
-    }
-    else if (!iIDs.empty())
-    {
-        merge(_rawMIDs, iIDs);     // Rule 3
-    }
-    else
-    {
-        merge(_rawMIDs, _rawMIDs); // Rule 2
-    }
-    
-    /*
-     * Always prefer reference annotation be given. However, if this is not provided, we'll need to
-     * work out the RNA structure ourself. Coordinates are not required.
-     */
-    
-    if (_impl->gData.empty())
-    {
-        for (const auto &i : _rawMIDs)
-        {
-            TransData t;
-            
-            t.cID = ChrIS;
-            t.tID = i;
-            t.gID = Isoform2Gene(i);
-            
-            GeneData g;
-            
-            g.cID = ChrIS;
-            g.gID = t.gID;
-            
-            const auto mix = findMix(Mix_1, t.tID);
-            assert(mix);
-            
-            g.l = _impl->gData[ChrIS].g2d[t.gID].l;
-            t.l = Locus(1, mix->length);
-
-            // Merge the transcripts...
-            g.l.merge(Locus(1, mix->length));
-            
-            assert(g.l.length() > 1);
-            
-            _impl->gData[ChrIS].g2d[t.gID] = g;
-            _impl->gData[ChrIS].t2d[t.tID] = t;
-            _impl->gData[ChrIS].t2g[t.tID] = t.gID;
-        }
-    }
+//    auto iIDs = std::set<SequinID>();
+//    
+//    for (const auto &i : _impl->gData)
+//    {
+//        if (isRnaQuin(i.first))
+//        {
+//            iIDs = keys(_impl->gData.at(i.first).t2d);
+//            break;
+//        }
+//    }
+//    
+//    /*
+//     * Building rules:
+//     *
+//     *   1: Only annoation
+//     *   2: Only mixture
+//     *   3: Annotation and mixture
+//     */
+//    
+//    if (_rawMIDs.empty())
+//    {
+//        merge(iIDs, iIDs);         // Rule 1
+//    }
+//    else if (!iIDs.empty())
+//    {
+//        merge(_rawMIDs, iIDs);     // Rule 3
+//    }
+//    else
+//    {
+//        merge(_rawMIDs, _rawMIDs); // Rule 2
+//    }
+//    
+//    /*
+//     * Always prefer reference annotation be given. However, if this is not provided, we'll need to
+//     * work out the RNA structure ourself. Coordinates are not required.
+//     */
+//    
+//    if (_impl->gData.empty())
+//    {
+//        for (const auto &i : _rawMIDs)
+//        {
+//            TransData t;
+//            
+//            t.cID = ChrIS;
+//            t.tID = i;
+//            t.gID = Isoform2Gene(i);
+//            
+//            GeneData g;
+//            
+//            g.cID = ChrIS;
+//            g.gID = t.gID;
+//            
+//            const auto mix = findMix(Mix_1, t.tID);
+//            assert(mix);
+//            
+//            g.l = _impl->gData[ChrIS].g2d[t.gID].l;
+//            t.l = Locus(1, mix->length);
+//
+//            // Merge the transcripts...
+//            g.l.merge(Locus(1, mix->length));
+//            
+//            assert(g.l.length() > 1);
+//            
+//            _impl->gData[ChrIS].g2d[t.gID] = g;
+//            _impl->gData[ChrIS].t2d[t.tID] = t;
+//            _impl->gData[ChrIS].t2g[t.tID] = t.gID;
+//        }
+//    }
 }
 
 /*
@@ -461,50 +461,50 @@ Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
 
 void MetaRef::validate(Tool, const UserReference &r)
 {
-    auto bed2ID = [](const BedData &data)
-    {
-        std::set<SequinID> ids;
-        
-        std::for_each(data.begin(), data.end(), [&](const std::pair<ChrID, BedChrData> & p)
-        {
-            if (isMetaQuin(p.first))
-            {
-                ids.insert(p.first);
-            }
-        });
-        
-        A_CHECK(!ids.empty(), "No sequin found in the reference");
-        
-        return ids;
-    };
-
-    if (!_impl->bData.length())
-    {
-        merge(_rawMIDs, _rawMIDs);
-    }
-    else if (_rawMIDs.empty())
-    {
-        merge(bed2ID(_impl->bData));
-    }
-    else
-    {
-        merge(_rawMIDs, bed2ID(_impl->bData));
-        
-        /*
-         * Build length for each synthetic genome
-         */
-        
-        for (const auto &i : _impl->bData)
-        {
-            for (const auto &j : i.second.r2d)
-            {
-                if (_data.count(i.first))
-                {
-                    _data.at(i.first).l = j.second.l;
-                }
-            }
-        }
-    }
+//    auto bed2ID = [](const BedData &data)
+//    {
+//        std::set<SequinID> ids;
+//        
+//        std::for_each(data.begin(), data.end(), [&](const std::pair<ChrID, BedChrData> & p)
+//        {
+//            if (isMetaQuin(p.first))
+//            {
+//                ids.insert(p.first);
+//            }
+//        });
+//        
+//        A_CHECK(!ids.empty(), "No sequin found in the reference");
+//        
+//        return ids;
+//    };
+//
+//    if (!_impl->bData.length())
+//    {
+//        merge(_rawMIDs, _rawMIDs);
+//    }
+//    else if (_rawMIDs.empty())
+//    {
+//        merge(bed2ID(_impl->bData));
+//    }
+//    else
+//    {
+//        merge(_rawMIDs, bed2ID(_impl->bData));
+//        
+//        /*
+//         * Build length for each synthetic genome
+//         */
+//        
+//        for (const auto &i : _impl->bData)
+//        {
+//            for (const auto &j : i.second.r2d)
+//            {
+//                if (_data.count(i.first))
+//                {
+//                    _data.at(i.first).l = j.second.l;
+//                }
+//            }
+//        }
+//    }
 }
 
 /*

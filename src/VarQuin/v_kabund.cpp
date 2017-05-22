@@ -77,7 +77,7 @@ static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats,
 {
     extern FileName MixRef();
     
-    const auto &r = Standard::instance().r_var;
+//    const auto &r = Standard::instance().r_var;
     const auto ls = stats.linear();
     
     const auto format = "-------VarKAbund Output\n\n"
@@ -100,7 +100,7 @@ static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats,
     const auto limit = stats.limitQuant();
     
     return (boost::format(format) % src           // 1
-                                  % r.countSeqs() // 2
+                                  % "????" //r.countSeqs() // 2
                                   % MixRef()      // 3
                                   % stats.size()  // 4
                                   % limit.abund   // 5

@@ -258,7 +258,7 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
     // Defined in resources.cpp
     extern FileName MixRef();
 
-    const auto &r = Standard::instance().r_meta;
+//    const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
     const auto format = "-------MetaAbund Output\n\n"
@@ -282,7 +282,7 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
     const auto limit = stats.limitQuant();
     
     return (boost::format(format) % src           // 1
-                                  % r.countSeqs() // 2
+                                  % "????" //r.countSeqs() // 2
                                   % MixRef()      // 3
                                   % stats.size()  // 4
                                   % limit.abund   // 5

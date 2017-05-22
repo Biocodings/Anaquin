@@ -354,48 +354,50 @@ Scripts RFold::generateSummary(const FileName &src,
     const auto &r = Standard::instance().r_rna;
     const auto lm = stats.linear(false);
     
-    // No reference coordinate annotation given here
-    const auto nSyn = o.metrs == Metrics::Gene ? r.nGeneSeqs() : r.countSeqs();
+    throw "Fix Later"; // r.countSeqs removed
     
-    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
-    
-    const auto summary = "-------RnaFoldChange Output\n\n"
-                         "       Summary for input: %1%\n\n"
-                         "-------Reference Annotations\n\n"
-                         "       Synthetic: %2% %3%\n"
-                         "       Mixture file: %4%\n\n"
-                         "-------%5%\n\n"
-                         "       Synthetic: %6% %3%\n"
-                         "       Genome:    %7% %3%\n\n"
-                         "-------Linear regression (log2 scale)\n\n"
-                         "       Slope:       %8%\n"
-                         "       Correlation: %9%\n"
-                         "       R2:          %10%\n"
-                         "       F-statistic: %11%\n"
-                         "       P-value:     %12%\n"
-                         "       SSM:         %13%, DF: %14%\n"
-                         "       SSE:         %15%, DF: %16%\n"
-                         "       SST:         %17%, DF: %18%\n";
-
-    return (boost::format(summary) % src         // 1
-                                   % nSyn        // 2
-                                   % units       // 3
-                                   % MixRef()    // 4
-                                   % title       // 5
-                                   % stats.nSeqs // 6
-                                   % stats.nEndo // 7
-                                   % lm.m        // 8
-                                   % lm.r        // 9
-                                   % lm.R2       // 10
-                                   % lm.F        // 11
-                                   % lm.p        // 12
-                                   % lm.SSM      // 13
-                                   % lm.SSM_D    // 14
-                                   % lm.SSE      // 15
-                                   % lm.SSE_D    // 16
-                                   % lm.SST      // 17
-                                   % lm.SST_D    // 18
-                     ).str();
+//    // No reference coordinate annotation given here
+//    const auto nSyn = o.metrs == Metrics::Gene ? r.nGeneSeqs() : r.countSeqs();
+//    
+//    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+//    
+//    const auto summary = "-------RnaFoldChange Output\n\n"
+//                         "       Summary for input: %1%\n\n"
+//                         "-------Reference Annotations\n\n"
+//                         "       Synthetic: %2% %3%\n"
+//                         "       Mixture file: %4%\n\n"
+//                         "-------%5%\n\n"
+//                         "       Synthetic: %6% %3%\n"
+//                         "       Genome:    %7% %3%\n\n"
+//                         "-------Linear regression (log2 scale)\n\n"
+//                         "       Slope:       %8%\n"
+//                         "       Correlation: %9%\n"
+//                         "       R2:          %10%\n"
+//                         "       F-statistic: %11%\n"
+//                         "       P-value:     %12%\n"
+//                         "       SSM:         %13%, DF: %14%\n"
+//                         "       SSE:         %15%, DF: %16%\n"
+//                         "       SST:         %17%, DF: %18%\n";
+//
+//    return (boost::format(summary) % src         // 1
+//                                   % nSyn        // 2
+//                                   % units       // 3
+//                                   % MixRef()    // 4
+//                                   % title       // 5
+//                                   % stats.nSeqs // 6
+//                                   % stats.nEndo // 7
+//                                   % lm.m        // 8
+//                                   % lm.r        // 9
+//                                   % lm.R2       // 10
+//                                   % lm.F        // 11
+//                                   % lm.p        // 12
+//                                   % lm.SSM      // 13
+//                                   % lm.SSM_D    // 14
+//                                   % lm.SSE      // 15
+//                                   % lm.SSE_D    // 16
+//                                   % lm.SST      // 17
+//                                   % lm.SST_D    // 18
+//                     ).str();
 }
 
 Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, const RFold::Options &o)

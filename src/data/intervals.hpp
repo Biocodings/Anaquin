@@ -361,6 +361,21 @@ namespace Anaquin
 
     typedef std::map<ChrID, Intervals<>> C2Intervals;
 
+    template <typename T> std::map<SequinID, Counts> countForID(const T& x)
+    {
+        std::map<SequinID, Counts> r;
+        
+        for (auto &i : x)
+        {
+            for (auto &j : i.second.data())
+            {
+                r[j.first] = j.second.stats().aligns;
+            }
+        }
+        
+        return r;
+    }
+
     struct ID2Intervals : std::map<Interval::IntervalID, Intervals<>>
     {
         inline void add(const Interval::IntervalID &id, const Intervals<> &i)

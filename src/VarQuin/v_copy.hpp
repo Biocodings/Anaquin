@@ -17,8 +17,8 @@ namespace Anaquin
             // Copy number that we want to calibrate to the genome
             CopyNumber gen = 2;
         };
-        
-        struct Stats
+
+        struct Stats : public SequinStats, public LimitStats
         {
             // Estimated genomic normalization
             Proportion gNorm;

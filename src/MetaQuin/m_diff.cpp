@@ -152,7 +152,7 @@ static Scripts generateSummary(const FileName &f1, const FileName &f2, const MDi
     
     return (boost::format(format) % f1            // 1
                                   % f2            // 2
-                                  % r.countSeqs() // 3
+                                  % "????" //r.countSeqs() // 3
                                   % MixRef()      // 4
                                   % stats.size()  // 5
                                   % ls.m          // 6

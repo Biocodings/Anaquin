@@ -4,6 +4,7 @@
 using namespace Anaquin;
 
 extern FileName BedRef();
+extern Scripts PlotCNV();
 
 template <typename Stats> Coverage stats2cov(const VSample::Method meth, const Stats &stats)
 {
@@ -33,18 +34,11 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
         l2c[r.locus(i)] = r.concent1(i);
     }
 
-    /*
-     * Check calibration statistics for all sequins
-     */
-    
-    // Regions to subsample after trimming
-    const auto tRegs = r.regs1();
-    
-    // Regions without trimming
-    const auto regs = r.regs2();
+    const auto r1 = r.regs1();
+    const auto r2 = r.regs2();
 
     // Check calibration statistics
-    stats.before = VSample::check(endo, seqs, tRegs, regs, o);
+    stats.before = VSample::check(endo, seqs, r2, r1, o);
 
     /*
      * Average coverage on those genomic sequins (ignore others)
@@ -91,25 +85,36 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     }
     
     // Perform calibration by subsampling
-    stats.after = VSample::sample(seqs, stats.before.norms, regs, tRegs, o);
-
+    stats.after = VSample::sample(seqs, stats.before.norms, r1, r2, o);
+    
     stats.tBefore = VSample::tBefore(stats.before, stats.after);
     stats.tAfter  = VSample::tAfter (stats.before, stats.after);
     stats.sBefore = VSample::sBefore(stats.before, stats.after);
     stats.sAfter  = VSample::sAfter (stats.before, stats.after);
 
-    stats.afterSeqs = VSample::afterSeqsC(tRegs, stats.before.c2v, o);
+    stats.afterSeqs = VSample::afterSeqsC(r1, stats.before.c2v, o);
+    auto b = countForID(r1);
+    /*
+     * Quantifying the CNV ladder
+     */
+    
+    for (const auto &i : countForID(r1))
+    {
+        const auto exp = r.concent1(i.first);
+        const auto obs = i.second;
+        stats.add(i.first, exp, obs);
+    }
     
     return stats;
 }
 
-static void generateCSV(const FileName &file, const VCopy::Stats &stats, const VSample::Options &o)
+static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSample::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     o.generate(file);
     
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%");
     
     o.generate(file);
     o.writer->open(file);
@@ -121,6 +126,8 @@ static void generateCSV(const FileName &file, const VCopy::Stats &stats, const V
                                            % "Genome"
                                            % "Before"
                                            % "After"
+                                           % "CNV"
+                                           % "Observed"
                                            % "Norm").str());
     
     // For each chromosome...
@@ -137,6 +144,8 @@ static void generateCSV(const FileName &file, const VCopy::Stats &stats, const V
                                                    % j.second.endo
                                                    % j.second.before
                                                    % j.second.after
+                                                   % stats.at(j.second.rID).x
+                                                   % stats.at(j.second.rID).y
                                                    % j.second.norm).str());
         }
     }
@@ -144,11 +153,11 @@ static void generateCSV(const FileName &file, const VCopy::Stats &stats, const V
     o.writer->close();
 }
 
-static void generateSummary(const FileName &file,
-                            const FileName &endo,
-                            const FileName &seqs,
-                            const VCopy::Stats &stats,
-                            const VCopy::Options &o)
+static void writeSummary(const FileName &file,
+                         const FileName &endo,
+                         const FileName &seqs,
+                         const VCopy::Stats &stats,
+                         const VCopy::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -216,11 +225,20 @@ void VCopy::report(const FileName &endo, const FileName &seqs, const Options &o)
      * Generating VarCopy_summary.stats
      */
     
-    generateSummary("VarCopy_summary.stats", endo, seqs, stats, o);
+    writeSummary("VarCopy_summary.stats", endo, seqs, stats, o);
     
     /*
      * Generating VarCopy_sequins.csv
      */
     
-    generateCSV("VarCopy_sequins.csv", stats, o);
+    writeCSV("VarCopy_sequins.csv", stats, o);
+
+    /*
+     * Generating VarCopy_linear.R
+     */
+
+    o.generate("VarCopy_linear.R");
+    o.writer->open("VarCopy_linear.R");
+    o.writer->write(RWriter::createScript("VarCopy_sequins.csv", PlotCNV()));
+    o.writer->close();
 }

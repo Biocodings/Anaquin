@@ -140,9 +140,6 @@ namespace Anaquin
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
             inline MC2Intervals mInters() const { return _r1->minters(); }
 
-            // Number of sequins defined in annotation
-            inline Counts countSeqs() const { return _data.size(); }
-
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -300,9 +297,9 @@ namespace Anaquin
                 return merge(x, x);
             }
 
-            inline const MixtureData * findMix(Mixture mix, const SequinID &id) const
+            inline const MixtureData * findMix(const SequinID &x, Mixture mix = Mix_1) const
             {
-                return _mixes.at(mix).count(id) ? _mixes.at(mix).at(id).get() : nullptr;
+                return _mixes.at(mix).count(x) ? _mixes.at(mix).at(x).get() : nullptr;
             }
 
             // Sequins
@@ -317,14 +314,15 @@ namespace Anaquin
         
         
         
-            // Set of IDs defined in the mixture
-            std::set<SequinID> _rawMIDs; // TODO: ????
+        
+        
+        
+        
+            // Validated ladder
+            std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
 
             // Sequins
             std::map<SequinID, Data> _data;
-
-            // Validated ladder
-            std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
     };
 
     /*

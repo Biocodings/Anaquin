@@ -433,50 +433,52 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
     const auto ms = multiStats(files, mStats, lStats);
+
+    throw "Fix Later";
     
-    // No reference coordinate annotation given here
-    const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.nGeneSeqs() : r.countSeqs();
-    
-    const auto format = "-------RnaExpression Output\n\n"
-                        "       Summary for input: %1%\n\n"
-                        "-------Reference Transcript Annotations\n\n"
-                        "       Synthetic: %2% %3%\n"
-                        "       Mixture file: %4%\n\n"
-                        "-------%5%\n\n"
-                        "       Synthetic: %6%\n"
-                        "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                        "       Genome: %9%\n\n"
-                        "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %10%\n"
-                        "       Correlation: %11%\n"
-                        "       R2:          %12%\n"
-                        "       F-statistic: %13%\n"
-                        "       P-value:     %14%\n"
-                        "       SSM:         %15%, DF: %16%\n"
-                        "       SSE:         %17%, DF: %18%\n"
-                        "       SST:         %19%, DF: %20%\n";
-    
-    return (boost::format(format) % STRING(ms.files)       // 1
-                                  % rSyn                   // 2
-                                  % units                  // 3
-                                  % MixRef()               // 4
-                                  % title                  // 5
-                                  % STRING(ms.nSeqs)       // 6
-                                  % limit.abund            // 7
-                                  % limit.id               // 8
-                                  % STRING(ms.nEndo)       // 9
-                                  % STRING(ms.stats.sl)    // 10
-                                  % STRING(ms.stats.r)     // 11
-                                  % STRING(ms.stats.R2)    // 12
-                                  % STRING(ms.stats.F)     // 13
-                                  % STRING(ms.stats.p)     // 14
-                                  % STRING(ms.stats.SSM)   // 15
-                                  % STRING(ms.stats.SSM_D) // 16
-                                  % STRING(ms.stats.SSE)   // 17
-                                  % STRING(ms.stats.SSE_D) // 18
-                                  % STRING(ms.stats.SST)   // 19
-                                  % STRING(ms.stats.SST_D) // 20
-                     ).str();
+//    // No reference coordinate annotation given here
+//    const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.nGeneSeqs() : r.countSeqs();
+//    
+//    const auto format = "-------RnaExpression Output\n\n"
+//                        "       Summary for input: %1%\n\n"
+//                        "-------Reference Transcript Annotations\n\n"
+//                        "       Synthetic: %2% %3%\n"
+//                        "       Mixture file: %4%\n\n"
+//                        "-------%5%\n\n"
+//                        "       Synthetic: %6%\n"
+//                        "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+//                        "       Genome: %9%\n\n"
+//                        "-------Linear regression (log2 scale)\n\n"
+//                        "       Slope:       %10%\n"
+//                        "       Correlation: %11%\n"
+//                        "       R2:          %12%\n"
+//                        "       F-statistic: %13%\n"
+//                        "       P-value:     %14%\n"
+//                        "       SSM:         %15%, DF: %16%\n"
+//                        "       SSE:         %17%, DF: %18%\n"
+//                        "       SST:         %19%, DF: %20%\n";
+//    
+//    return (boost::format(format) % STRING(ms.files)       // 1
+//                                  % rSyn                   // 2
+//                                  % units                  // 3
+//                                  % MixRef()               // 4
+//                                  % title                  // 5
+//                                  % STRING(ms.nSeqs)       // 6
+//                                  % limit.abund            // 7
+//                                  % limit.id               // 8
+//                                  % STRING(ms.nEndo)       // 9
+//                                  % STRING(ms.stats.sl)    // 10
+//                                  % STRING(ms.stats.r)     // 11
+//                                  % STRING(ms.stats.R2)    // 12
+//                                  % STRING(ms.stats.F)     // 13
+//                                  % STRING(ms.stats.p)     // 14
+//                                  % STRING(ms.stats.SSM)   // 15
+//                                  % STRING(ms.stats.SSM_D) // 16
+//                                  % STRING(ms.stats.SSE)   // 17
+//                                  % STRING(ms.stats.SSE_D) // 18
+//                                  % STRING(ms.stats.SST)   // 19
+//                                  % STRING(ms.stats.SST_D) // 20
+//                     ).str();
 }
 
 void RExpress::writeSummary(const FileName &file,

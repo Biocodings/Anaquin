@@ -288,7 +288,7 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     const auto allBeforeSeqsC = stats.cStats.allBeforeSeqsC;
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = sample(seqs, norms, regs, tRegs, o);
+    const auto after = VSample::sample(seqs, norms, regs, tRegs, o);
     
     stats.afterSeqs = VSample::afterSeqsC(tRegs, stats.c2v, o);
     
