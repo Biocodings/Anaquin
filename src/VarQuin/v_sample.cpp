@@ -423,7 +423,7 @@ static void generateSummary(const FileName &file,
     const auto summary = "-------VarSubsample Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (sample):   %2%\n"
-                         "       Alignment file (sequin):  %3%\n\n"
+                         "       Alignment file (sequin):   %3%\n\n"
                          "       Method: %5%\n\n"
                          "-------Reference regions\n\n"
                          "       Regions: %4% regions\n\n"
