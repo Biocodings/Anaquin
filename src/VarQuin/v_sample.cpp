@@ -379,12 +379,12 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
                                            % "Chrom"
                                            % "Start"
                                            % "End"
-                                           % "NGenome"
-                                           % "NBefore"
-                                           % "NAfter"
-                                           % "Genome"
-                                           % "Before"
-                                           % "After"
+                                           % "GenomeReads"
+                                           % "BeforeReads"
+                                           % "AfterReads"
+                                           % "GenomeCov"
+                                           % "BeforeCov"
+                                           % "AfterCov"
                                            % "Norm").str());
 
     // For each chromosome...
@@ -420,7 +420,7 @@ static void generateSummary(const FileName &file,
 
     o.generate(file);
     
-    const auto summary = "-------VarSample Summary Statistics\n\n"
+    const auto summary = "-------VarSubsample Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (genome):   %2%\n"
                          "       Alignment file (sequins):  %3%\n\n"
