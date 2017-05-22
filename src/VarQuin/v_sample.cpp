@@ -87,7 +87,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
         if (shouldSampled)
         {
             // Write SAM read to console
-            //writer.write(x);
+            writer.write(x);
             
             if (trimmed.count(x.cID) && trimmed.at(x.cID).overlap(x.l))
             {
