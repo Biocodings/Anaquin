@@ -87,9 +87,10 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void generateSummary(const FileName &file,
-                            const VTrim::Stats &stats,
-                            const VTrim::Options &o)
+static void writeSummary(const FileName &file,
+                         const FileName &src,
+                         const VTrim::Stats &stats,
+                         const VTrim::Options &o)
 {
     o.generate(file);
     
@@ -105,17 +106,17 @@ static void generateSummary(const FileName &file,
 
     const auto summary = "-------VarTrim Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       Alignment file:  %2%\n\n"
+                         "       Input alignment file: %2%\n\n"
                          "-------Reference regions\n\n"
                          "       Regions: %3% regions\n"
                          "       Method:  %4%\n\n"
                          "-------Trimming\n\n"
-                         "       Left:  %5%\n"
-                         "       Right: %6%\n\n"
+                         "       Left:  %5% reads\n"
+                         "       Right: %6% reads\n\n"
                          "-------Before trimming\n\n"
-                         "       Alignments: %7%\n\n"
+                         "       Number of alignments: %7%\n\n"
                          "-------After trimming\n\n"
-                         "       Alignments: %8%\n";
+                         "       Number of alignments: %8%\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -133,5 +134,9 @@ static void generateSummary(const FileName &file,
 
 void VTrim::report(const FileName &file, const Options &o)
 {
-    generateSummary("VarTrim_summary.stats", analyze(file, o), o);
+    /*
+     * Generating VarTrim_summary.stats
+     */
+    
+    writeSummary("VarTrim_summary.stats", file, analyze(file, o), o);
 }
