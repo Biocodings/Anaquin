@@ -71,6 +71,10 @@ namespace Anaquin
                             stats.nNA++;
                         }
                     }
+                    else
+                    {
+                        stats.nNA++;
+                    }
                 }
             });
             
