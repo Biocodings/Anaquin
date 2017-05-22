@@ -246,6 +246,9 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
                                                                                        % j.first).str());
             }
             
+            stats.c2v[cID][l].nEndo   = gs.aligns;
+            stats.c2v[cID][l].nBefore = ss.aligns;
+
             stats.c2v[cID][l].rID    = j.first;
             stats.c2v[cID][l].endo   = endoC;
             stats.c2v[cID][l].before = seqsC;
@@ -310,8 +313,12 @@ double VSample::afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Lo
             // Coverage after subsampling
             const auto cov = stats2cov(o.meth, j.second.stats());
             
-            c2v[i.first].at(j.second.l()).after = cov;
+            // Alignments after subsampling
+            const auto aligns = j.second.stats().aligns;
             
+            c2v[i.first].at(j.second.l()).after  = cov;
+            c2v[i.first].at(j.second.l()).nAfter = aligns;
+
             // Required for generating summary statistics
             allAfterSeqsC.push_back(cov);
         }
@@ -364,7 +371,7 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
 {
     o.generate(file);
 
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%");
     
     o.generate(file);
     o.writer->open(file);
@@ -372,6 +379,9 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
                                            % "Chrom"
                                            % "Start"
                                            % "End"
+                                           % "NGenome"
+                                           % "NBefore"
+                                           % "NAfter"
                                            % "Genome"
                                            % "Before"
                                            % "After"
@@ -387,6 +397,9 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
                                                    % i.first
                                                    % j.first.start
                                                    % j.first.end
+                                                   % j.second.nEndo
+                                                   % j.second.nBefore
+                                                   % j.second.nAfter
                                                    % j.second.endo
                                                    % j.second.before
                                                    % j.second.after
@@ -464,14 +477,14 @@ void VSample::report(const FileName &endo, const FileName &seqs, const Options &
     const auto stats = analyze(endo, seqs, o);
     
     /*
-     * Generating VarSample_summary.stats
+     * Generating VarSubsample_summary.stats
      */
     
-    generateSummary("VarSample_summary.stats", endo, seqs, stats, o);
+    generateSummary("VarSubsample_summary.stats", endo, seqs, stats, o);
 
     /*
-     * Generating VarSample_sequins.csv
+     * Generating VarSubsample_sequins.csv
      */
 
-    generateCSV("VarSample_sequins.csv", stats, o);
+    generateCSV("VarSubsample_sequins.csv", stats, o);
 }

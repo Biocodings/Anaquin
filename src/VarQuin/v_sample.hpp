@@ -31,6 +31,9 @@ namespace Anaquin
             // Alignment coverage after subsampling
             Coverage after;
             
+            // Number of alignments before and after
+            Counts nEndo, nBefore, nAfter;
+            
             // Normalization factor
             Proportion norm;
         };
