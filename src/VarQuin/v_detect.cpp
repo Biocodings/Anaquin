@@ -365,7 +365,7 @@ static void writeDetected(const FileName &file,
                           const VDetect::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
     
     o.generate(file);
     o.writer->open(file);
@@ -378,7 +378,6 @@ static void writeDetected(const FileName &file,
                                            % "Depth"
                                            % "ExpFreq"
                                            % "ObsFreq"
-                                           % "Pval"
                                            % "Qual"
                                            % "Context"
                                            % "Mutation").str());
@@ -399,7 +398,6 @@ static void writeDetected(const FileName &file,
                                                    % i.query.depth
                                                    % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
                                                    % i.query.allF
-                                                   % ld2ss(i.query.p)
                                                    % toString(i.query.qual)
                                                    % ctx
                                                    % var2str(i.query.type())).str());
@@ -429,12 +427,12 @@ static void writeSummary(const FileName &file,
     {
         const auto summary = "-------VarDetect Output Results\n\n"
                              "-------VarDetect Output\n\n"
-                             "       Reference variant annotations:      %1%\n"
-                             "       Reference coordinate annotations:   %2%\n\n"
-                             "       User identified variants (sample):   %3%\n"
+                             "       Reference variant annotation:      %1%\n"
+                             "       Reference coordinate annotation:   %2%\n\n"
+                             "       User identified variants (sample): %3%\n"
                              "       User identified variants (sequin): %59%\n\n"
-                             "       Number of variants in reference regions (sample):   %60%\n"
-                             "       Number of variants in reference regions (sequin): %61%\n\n"
+                             "       Number of sample variants (sequin regions): %60%\n"
+                             "       Number of sequin variants (sequin regions): %61%\n\n"
                              "-------Reference variants by mutation\n\n"
                              "       SNPs:   %4%\n"
                              "       Indels: %5%\n"
