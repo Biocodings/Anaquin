@@ -42,7 +42,3 @@ Due to their ability to model real genetic features, sequins can act as internal
 By combining sequins at different concentrations to from a mixture, we can also establish quantitative ladders sequins by which to measure all types of quantitative events in genome biology. For example by varying the concentration of RNA sequins we can emulate changes in gene expression or alternative splicing, or by varying relative DNA sequin abundance we can emulate heterozygous genotypes by modulating variant sequins.
 
 Finally, to aid in the analysis of sequins, we have also developed a software toolkit we call <b>Anaquin</b>. This contains a wide range of tools for some of the most common analysis or problems that use sequins. This includes quality control and troubleshooting steps in your NGS pipeline, providing quantitative measurements of sequence libraries, or assess third-party bioinformatic software. However, this toolkit is simply a starting point to a huge range of statistical analysis made possible by sequins.
-
-## Compile
-
-The source code requires a C++11 compiler to build. Instructions on how to compile the source code is <a href='https://s3.amazonaws.com/sequins/software/Anaquin_CompileFromSource_v1.pdf'>here</a>.
