@@ -15,8 +15,6 @@
 
     Hanging reads are reads that one of the mates is missing in the input alignment file.
 
-    Please note single-ended reads is not supported.
-
 <b>SUPPORT SOFTWARE</b>
      VarFlip supports the standard SAM/BAM file.
      
@@ -33,7 +31,7 @@
 <b>OUTPUTS</b>
      VarFlip_summary.stats  - provides the summary statistics
      VarFlip_flipped_1.fq   - is the first paired-end sequence file for flipped reads
-     VarFlip_flipped_2.fq   - is the second paired-end for VarFlip_flipped_1.fq.
+     VarFlip_flipped_2.fq   - is the second paired-end for VarFlip_flipped_1.fq
      VarFlip_ambiguous_1.fq - is the first paired-end sequence file for ambigious reads
      VarFlip_ambiguous_2.fq - is the second paired-end for VarFlip_ambig_1.fq
      VarFlip_hanging.fq     - is the sequence file for hanging reads    

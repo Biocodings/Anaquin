@@ -130,7 +130,7 @@ static Scripts generateSummary(const FileName &f1, const FileName &f2, const MDi
     // Defined in resources.cpp
     extern FileName MixRef();
     
-    const auto &r = Standard::instance().r_meta;
+//    const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
     const auto format = "-------MetaFoldChange Output\n\n"

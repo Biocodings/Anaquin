@@ -6,17 +6,6 @@ using namespace Anaquin;
 extern FileName BedRef();
 extern Scripts PlotCNV();
 
-template <typename Stats> Coverage stats2cov(const VSample::Method meth, const Stats &stats)
-{
-    switch (meth)
-    {
-        case VSample::Method::Mean:   { return stats.mean; }
-        case VSample::Method::Median: { return stats.p50;  }
-        case VSample::Method::Prop:
-        case VSample::Method::Reads: { return stats.mean; }
-    }
-}
-
 VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -92,17 +81,17 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     stats.sBefore = VSample::sBefore(stats.before, stats.after);
     stats.sAfter  = VSample::sAfter (stats.before, stats.after);
 
-    stats.afterSeqs = VSample::afterSeqsC(r1, stats.before.c2v, o);
-    auto b = countForID(r1);
+    stats.afterSeqs = VSample::afterSeqsC(r2, stats.before.c2v, o);
+
     /*
      * Quantifying the CNV ladder
      */
     
-    for (const auto &i : countForID(r1))
+    for (const auto &i : countForID(r2))
     {
         const auto exp = r.concent1(i.first);
         const auto obs = i.second;
-        stats.add(i.first, exp, obs);
+        stats.add(i.first, exp, log2(obs));
     }
     
     return stats;
@@ -163,6 +152,7 @@ static void writeSummary(const FileName &file,
 
     o.generate(file);
 
+    const auto lm = stats.linear(false);
     const auto summary = "-------VarCopy Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (genome):  %2%\n"
@@ -189,7 +179,16 @@ static void writeSummary(const FileName &file,
                          "       Synthetic coverage (average): %18%\n\n"
                          "-------After subsampling (within sampling regions)\n\n"
                          "       Genome coverage (average):    %19%\n"
-                         "       Synthetic coverage (average): %20%\n";
+                         "       Synthetic coverage (average): %20%\n\n"
+                         "-------Overall linear regression (log2 scale)\n\n"
+                         "      Slope:       %21%\n"
+                         "      Correlation: %22%\n"
+                         "      R2:          %23%\n"
+                         "      F-statistic: %24%\n"
+                         "      P-value:     %25%\n"
+                         "      SSM:         %26%, DF: %27%\n"
+                         "      SSE:         %28%, DF: %29%\n"
+                         "      SST:         %30%, DF: %31%\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -213,6 +212,17 @@ static void writeSummary(const FileName &file,
                                             % stats.before.meanBSeqs() // 18
                                             % stats.before.meanBEndo() // 19
                                             % stats.afterSeqs          // 20
+                                            % lm.m                     // 21
+                                            % lm.r                     // 22
+                                            % lm.R2                    // 23
+                                            % lm.F                     // 24
+                                            % lm.p                     // 25
+                                            % lm.SSM                   // 26
+                                            % lm.SSM_D                 // 27
+                                            % lm.SSE                   // 28
+                                            % lm.SSE_D                 // 29
+                                            % lm.SST                   // 30
+                                            % lm.SST_D                 // 31
                      ).str());
     o.writer->close();
 }

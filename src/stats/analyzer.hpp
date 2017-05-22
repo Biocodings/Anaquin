@@ -37,12 +37,6 @@ namespace Anaquin
         Limit limit;
     };
 
-    struct SingleMappingStats
-    {
-        Counts nNA  = 0;
-        Counts nMap = 0;
-    };
-    
     struct MappingStats
     {
         inline Counts total() const
@@ -50,17 +44,17 @@ namespace Anaquin
             return nSeqs + nEndo + nNA;
         }
 
-        inline Proportion propNA() const
+        inline Proportion pNA() const
         {
             return total() ? static_cast<Proportion>(100.0 * nNA) / total() : NAN;
         }
         
-        inline Proportion propGen() const
+        inline Proportion pEndo() const
         {
             return total() ? static_cast<Proportion>(100.0 * nEndo) / total() : NAN;
         }
 
-        inline Proportion propSyn() const
+        inline Proportion pSyn() const
         {
             return total() ? static_cast<Proportion>(100.0 * nSeqs) / total() : NAN;
         }

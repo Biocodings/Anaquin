@@ -12,9 +12,12 @@ namespace Anaquin
 
     struct ParserBAMBED
     {
-        struct Stats : public SingleMappingStats
+        struct Stats
         {
             ID2Intervals inters;
+            
+            Counts nNA  = 0;
+            Counts nMap = 0;
         };
 
         enum class Response

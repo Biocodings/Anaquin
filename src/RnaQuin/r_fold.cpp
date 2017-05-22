@@ -351,8 +351,8 @@ Scripts RFold::generateSummary(const FileName &src,
                                const RFold::Options &o,
                                const Units &units)
 {
-    const auto &r = Standard::instance().r_rna;
-    const auto lm = stats.linear(false);
+//    const auto &r = Standard::instance().r_rna;
+//    const auto lm = stats.linear(false);
     
     throw "Fix Later"; // r.countSeqs removed
     

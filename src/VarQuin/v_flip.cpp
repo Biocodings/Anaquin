@@ -168,12 +168,11 @@ static void writeSummary(const FileName &file,
                          "-------Alignments\n\n"
                          "       Unmapped: %2% (%3$.2f%%)\n"
                          "       Forward:  %4% (%5$.2f%%)\n"
-                         "       Reverse:  %6% (%7$.2f%%)\n"
-                         "       Dilution: %8$.2f\n\n"
+                         "       Reverse:  %6% (%7$.2f%%)\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Flipped reads:   %9% (%10$.2f%%)\n"
-                         "       Ambiguous reads: %11% (%12$.2f%%)\n"
-                         "       Hanging reads:   %13% (%14$.2f%%)\n";
+                         "       Flipped reads:   %8% (%9$.2f%%)\n"
+                         "       Ambiguous reads: %10% (%11$.2f%%)\n"
+                         "       Hanging reads:   %12% (%13$.2f%%)\n";
 
     #define C(x) stats.counts.at(x)
 
@@ -188,20 +187,19 @@ static void writeSummary(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % align            // 1
-                                            % stats.nNA        // 2
-                                            % stats.propNA()   // 3
-                                            % stats.nEndo      // 4
-                                            % stats.propGen()  // 5
-                                            % stats.nSeqs      // 6
-                                            % stats.propSyn()  // 7
-                                            % stats.dilution() // 8
-                                            % cf               // 9
-                                            % pf               // 10
-                                            % ca               // 11
-                                            % pa               // 12
-                                            % ch               // 13
-                                            % ph               // 14
+    o.writer->write((boost::format(summary) % align         // 1
+                                            % stats.nNA     // 2
+                                            % stats.pNA()   // 3
+                                            % stats.nEndo   // 4
+                                            % stats.pEndo() // 5
+                                            % stats.nSeqs   // 6
+                                            % stats.pSyn()  // 7
+                                            % cf            // 8
+                                            % pf            // 9
+                                            % ca            // 10
+                                            % pa            // 11
+                                            % ch            // 12
+                                            % ph            // 13
                      ).str());
 }
     

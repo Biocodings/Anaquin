@@ -402,7 +402,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   const Units &units)
 {
     const auto files = path2file(tmp);
-    const auto &r = Standard::instance().r_rna;
+//    const auto &r = Standard::instance().r_rna;
     
     std::vector<SequinHist>   hists;
     std::vector<SequinStats>  lStats;
