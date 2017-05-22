@@ -514,7 +514,7 @@ void MetaRef::validate(Tool, const UserReference &r)
 struct VarRef::VarRefImpl
 {
     // Optimization (no need to use the whole data-structure)
-    std::set<SequinID> vIDs, bIDs;
+    std::set<SequinID> vIDs;
     
     VData vData;
     
@@ -629,15 +629,13 @@ void VarRef::readVRef(const Reader &r)
         }
 
         _impl->sVars[x.key()] = s;
-        
-//        add(x.name + "_V", _impl->bData.lengthReg(x.name), af, Mix_1);
-//        add(x.name + "_R", _impl->bData.lengthReg(x.name), 1-af, Mix_1);
+        _mixes[Mix_1][x.name] = std::shared_ptr<MixtureData>(new MixtureData(x.name, 1000, af));
     });
 }
 
-Proportion VarRef::findAFreq(const SequinID &id) const
+Proportion VarRef::findAFreq(const SequinID &x) const
 {
-    return _mixes.at(Mix_1).at(id + "_V")->abund;
+    return _mixes.at(Mix_1).at(x)->abund;
 }
 
 Counts VarRef::countInd() const
@@ -722,6 +720,13 @@ void VarRef::validate(Tool x, const UserReference &r)
         {
             merge(r.r1->seqs());
             build(r.r1, r.r2);
+            break;
+        }
+            
+        case Tool::VarDetect:
+        {
+            merge(_impl->vIDs);
+            build(r.r1);
             break;
         }
 
