@@ -155,74 +155,43 @@ static void writeSummary(const FileName &file,
     const auto lm = stats.linear(false);
     const auto summary = "-------VarCopy Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       Alignment file (genome):  %2%\n"
-                         "       Alignment file (sequins): %3%\n\n"
+                         "       Alignment file (sample):   %2%\n"
+                         "       Alignment file (sequin):   %3%\n\n"
                          "-------Reference regions\n\n"
                          "       Sequin regions: %4% regions\n"
                          "       Method: %5%\n\n"
-                         "-------Total alignments (before subsampling)\n\n"
-                         "       Genome:    %6%\n"
-                         "       Synthetic: %7%\n\n"
-                         "-------Total alignments (after subsampling)\n\n"
-                         "       Genome:    %8%\n"
-                         "       Synthetic: %9%\n\n"
-                         "-------Alignments within sampling regions (before subsampling)\n\n"
-                         "       Genome:    %10%\n"
-                         "       Synthetic: %11%\n\n"
-                         "-------Alignments within sampling regions (after subsampling)\n\n"
-                         "       Genome:    %12%\n"
-                         "       Synthetic: %13%\n\n"
-                         "       Genomic normalization: %14%\n"
-                         "       Normalization:         %15% \u00B1 %16%\n\n"
-                         "-------Before subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %17%\n"
-                         "       Synthetic coverage (average): %18%\n\n"
-                         "-------After subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %19%\n"
-                         "       Synthetic coverage (average): %20%\n\n"
-                         "-------Overall linear regression (log2 scale)\n\n"
-                         "      Slope:       %21%\n"
-                         "      Correlation: %22%\n"
-                         "      R2:          %23%\n"
-                         "      F-statistic: %24%\n"
-                         "      P-value:     %25%\n"
-                         "      SSM:         %26%, DF: %27%\n"
-                         "      SSE:         %28%, DF: %29%\n"
-                         "      SST:         %30%, DF: %31%\n";
+                         "-------CNV Normalization\n\n"
+                         "       Genomic CNV: 2x\n"
+                         "       Genomic normalization: %6%\n\n"
+                         "-------Overall linear regression\n\n"
+                         "       Slope:       %7%\n"
+                         "       Correlation: %8%\n"
+                         "       R2:          %9%\n"
+                         "       F-statistic: %10%\n"
+                         "       P-value:     %11%\n"
+                         "       SSM:         %12%, DF: %13%\n"
+                         "       SSE:         %14%, DF: %15%\n"
+                         "       SST:         %16%, DF: %17%\n";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()                 // 1
-                                            % endo                     // 2
-                                            % seqs                     // 3
-                                            % r.nRegs()                // 4
-                                            % meth2Str(o.meth)         // 5
-                                            % stats.tBefore.nEndo      // 6
-                                            % stats.tBefore.nSeqs      // 7
-                                            % stats.tAfter.nEndo       // 8
-                                            % stats.tAfter.nSeqs       // 9
-                                            % stats.sBefore.nEndo      // 10
-                                            % stats.sBefore.nSeqs      // 11
-                                            % stats.sAfter.nEndo       // 12
-                                            % stats.sAfter.nSeqs       // 13
-                                            % stats.gNorm              // 14
-                                            % stats.before.normMean()  // 15
-                                            % stats.before.normSD()    // 16
-                                            % stats.before.meanBEndo() // 17
-                                            % stats.before.meanBSeqs() // 18
-                                            % stats.before.meanBEndo() // 19
-                                            % stats.afterSeqs          // 20
-                                            % lm.m                     // 21
-                                            % lm.r                     // 22
-                                            % lm.R2                    // 23
-                                            % lm.F                     // 24
-                                            % lm.p                     // 25
-                                            % lm.SSM                   // 26
-                                            % lm.SSM_D                 // 27
-                                            % lm.SSE                   // 28
-                                            % lm.SSE_D                 // 29
-                                            % lm.SST                   // 30
-                                            % lm.SST_D                 // 31
+    o.writer->write((boost::format(summary) % BedRef()         // 1
+                                            % endo             // 2
+                                            % seqs             // 3
+                                            % r.nRegs()        // 4
+                                            % meth2Str(o.meth) // 5
+                                            % stats.gNorm      // 6
+                                            % lm.m             // 7
+                                            % lm.r             // 8
+                                            % lm.R2            // 9
+                                            % lm.F             // 10
+                                            % lm.p             // 11
+                                            % lm.SSM           // 12
+                                            % lm.SSM_D         // 13
+                                            % lm.SSE           // 14
+                                            % lm.SSE_D         // 15
+                                            % lm.SST           // 16
+                                            % lm.SST_D         // 17
                      ).str());
     o.writer->close();
 }
