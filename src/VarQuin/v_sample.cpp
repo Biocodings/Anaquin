@@ -428,11 +428,11 @@ static void generateSummary(const FileName &file,
                          "       Synthetic: %13%\n\n"
                          "       Normalization: %14% \u00B1 %15%\n\n"
                          "-------Before subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %16%\n"
-                         "       Synthetic coverage (average): %17%\n\n"
+                         "       Genome coverage (average):    %16$.2f\n"
+                         "       Synthetic coverage (average): %17$.2f\n\n"
                          "-------After subsampling (within sampling regions)\n\n"
-                         "       Genome coverage (average):    %18%\n"
-                         "       Synthetic coverage (average): %19%\n";
+                         "       Genome coverage (average):    %18$.2f\n"
+                         "       Synthetic coverage (average): %19$.2f\n";
     
     o.generate(file);
     o.writer->open(file);
