@@ -86,8 +86,6 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
         
         if (shouldSampled)
         {
-            //stats.tAfter.nSeqs
-            
             // Write SAM read to console
             writer.write(x);
             
@@ -272,10 +270,10 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     VSample::Stats stats;
     
     // Regions to subsample after trimming
-    const auto tRegs = r.regs1();
+    const auto tRegs = r.regs2();
     
     // Regions without trimming
-    const auto regs = r.regs2();
+    const auto regs = r.regs1();
     
     // Check calibration statistics
     stats.cStats = check(endo, seqs, tRegs, regs, o);
@@ -409,7 +407,7 @@ static void generateSummary(const FileName &file,
 
     o.generate(file);
     
-    const auto summary = "-------VarSubsample Summary Statistics\n\n"
+    const auto summary = "-------VarSample Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (genome):  %2%\n"
                          "       Alignment file (sequins): %3%\n\n"
@@ -466,14 +464,14 @@ void VSample::report(const FileName &endo, const FileName &seqs, const Options &
     const auto stats = analyze(endo, seqs, o);
     
     /*
-     * Generating VarSubsample_summary.stats
+     * Generating VarSample_summary.stats
      */
     
-    generateSummary("VarSubsample_summary.stats", endo, seqs, stats, o);
+    generateSummary("VarSample_summary.stats", endo, seqs, stats, o);
 
     /*
-     * Generating VarSubsample_sequins.csv
+     * Generating VarSample_sequins.csv
      */
 
-    generateCSV("VarSubsample_sequins.csv", stats, o);
+    generateCSV("VarSample_sequins.csv", stats, o);
 }

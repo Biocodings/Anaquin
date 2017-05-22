@@ -126,7 +126,7 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
     { "VarSomatic",     Tool::VarSomatic     },
-    { "VarSubsample",   Tool::VarSubsample   },
+    { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
     { "VarKAbund",      Tool::VarKAbund      },
@@ -158,7 +158,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarSubsample, { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarSample, { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS } },
 
@@ -370,7 +370,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarSomatic();
     extern Scripts VarKAbund();
-    extern Scripts VarSubsample();
+    extern Scripts VarSample();
     extern Scripts RnaAlign();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
@@ -394,7 +394,7 @@ static Scripts manual(Tool tool)
         case Tool::VarTrim:        { return VarTrim();        }
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
-        case Tool::VarSubsample:   { return VarSubsample();   }
+        case Tool::VarSample:   { return VarSample();   }
         case Tool::VarKAbund:      { return VarKAbund();      }
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::MetaAlign:      { return MetaAlign();      }
@@ -778,7 +778,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == Tool::VarSubsample || _p.tool == Tool::RnaSubsample || _p.tool == Tool::VarTrim || _p.tool == Tool::VarCopy)
+    if (_p.tool == Tool::VarSample || _p.tool == Tool::RnaSubsample || _p.tool == Tool::VarTrim || _p.tool == Tool::VarCopy)
     {
         __showInfo__ = false;
     }
@@ -846,10 +846,10 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case Tool::RnaFoldChange:
                     case Tool::VarCopy:
                     case Tool::RnaExpress:
-                    case Tool::VarSubsample: { _p.opts[opt] = val; break; }
+                    case Tool::VarSample:
+                    case Tool::RnaFoldChange: { _p.opts[opt] = val; break; }
 
                     case Tool::MetaSubsample:
                     case Tool::RnaSubsample:
@@ -1222,7 +1222,7 @@ void parse(int argc, char ** argv)
         case Tool::VarTrim:
         case Tool::VarAlign:
         case Tool::VarSomatic:
-        case Tool::VarSubsample:
+        case Tool::VarSample:
         case Tool::VarKAbund:
         {
             if (__showInfo__)
@@ -1248,7 +1248,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::VarSubsample:
+                    case Tool::VarSample:
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
@@ -1389,7 +1389,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarSubsample:
+                case Tool::VarSample:
                 {
                     VSample::Options o;
                     

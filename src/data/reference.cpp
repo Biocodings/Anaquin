@@ -711,40 +711,21 @@ void VarRef::validate(Tool x, const UserReference &r)
         }
 
         case Tool::VarTrim:
+        case Tool::VarAlign:
         {
             merge(r.r1->seqs());
             build(r.r1);
             break;
         }
 
-        case Tool::VarSubsample:
+        case Tool::VarSample:
         {
             merge(r.r1->seqs());
             build(r.r1, r.r2);
             break;
         }
 
-        default:
-        {
-            const auto hasVCF = !_impl->vIDs.empty();
-            const auto hasBED = !_impl->bIDs.empty();
-            
-            if (hasVCF && hasBED)
-            {
-                merge(_impl->vIDs);
-            }
-            else if (hasBED)
-            {
-                merge(_impl->bIDs);
-            }
-            else
-            {
-                // Try mixture if we don't have anything else
-                merge(_rawMIDs, _rawMIDs);
-            }
-
-            break;
-        }
+        default : { break; }
     }
 }
 

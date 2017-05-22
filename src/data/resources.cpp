@@ -124,7 +124,7 @@ Scripts VarFlip()
     return ToString(data_manuals_VarFlip_txt);
 }
 
-Scripts VarSubsample()
+Scripts VarSample()
 {
     return ToString(data_manuals_VarSubsample_txt);
 }
