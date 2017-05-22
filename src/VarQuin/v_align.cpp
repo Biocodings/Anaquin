@@ -222,8 +222,6 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     __bWriter__.close();
 #endif
 
-    o.info("Alignments analyzed. Generating statistics...");
-    
     /*
      * -------------------- Calculating statistics --------------------
      */
@@ -365,22 +363,22 @@ void VAlign::writeSummary(const FileName &file,
 
     const auto summary1 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
-                          "       Genome alignment file: %2%\n"
-                          "       Synthetic alignment file: %3%\n\n"
+                          "       Sample alignment file: %2%\n"
+                          "       Sequin alignment file: %3%\n\n"
                           "-------Alignments\n\n"
-                          "       Genome:    %4% (%5%%%)\n"
-                          "       Synthetic: %6% (%7%%%)\n"
+                          "       Sample: %4% (%5%%%)\n"
+                          "       Sequin: %6% (%7%%%)\n"
                           "       Dilution:  %8$.4f%%\n\n"
                           "-------Reference regions\n\n"
                           "       Regions: %9% regions\n"
                           "       Regions: %10% bases\n\n"
-                          "-------Comparison of alignments to annotation (Genome)\n\n"
+                          "-------Comparison of alignments to annotation (Sample)\n\n"
                           "       *Nucleotide level\n"
                           "       Covered:     %20%\n"
                           "       Uncovered:   %21%\n"
                           "       Total:       %22%\n\n"
                           "       Sensitivity: %23$.4f\n\n"
-                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                          "-------Comparison of alignments to annotation (Sequin)\n\n"
                           "       *Alignment level\n"
                           "       Inside regions:  %11%\n"
                           "       Outside regions: %12%\n\n"
@@ -395,13 +393,13 @@ void VAlign::writeSummary(const FileName &file,
 
     const auto summary2 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
-                          "       Synthetic alignment file: %2%\n\n"
+                          "       Sequin alignment file: %2%\n\n"
                           "-------Alignments\n\n"
                           "       Synthetic: %3% \n\n"
                           "-------Reference regions\n\n"
                           "       Regions: %4% regions\n"
                           "       Regions: %5% bases\n\n"
-                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                          "-------Comparison of alignments to annotation (Sequin)\n\n"
                           "       *Alignment level\n"
                           "       Inside regions:  %6%\n"
                           "       Outside regions: %7%\n\n"

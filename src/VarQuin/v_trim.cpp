@@ -121,7 +121,7 @@ static void writeSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()     // 1
-                                            % file         // 2
+                                            % src         // 2
                                             % stats.nRegs  // 3
                                             % meth2Str()   // 4
                                             % stats.left   // 5
