@@ -208,7 +208,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
                     const auto sAligns = ss.aligns;
                     
                     /*
-                     * Nothing to subsample if no sequin alignments. Subsample everything if the
+                     * Nothing to sample if no sequin alignments. Subsample everything if the
                      * genomic region has higher coverage.
                      */
                     
