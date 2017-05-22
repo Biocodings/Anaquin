@@ -371,7 +371,7 @@ static void generateCSV(const FileName &file, const VSample::Stats &stats, const
 {
     o.generate(file);
 
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8$.2f\t%9$.2f\t%10$.2f\t%11$.2f");
     
     o.generate(file);
     o.writer->open(file);
