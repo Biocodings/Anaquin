@@ -171,9 +171,9 @@ static void writeSummary(const FileName &file,
                          "       Reverse:  %6% (%7$.2f%%)\n"
                          "       Dilution: %8$.2f\n\n"
                          "-------VarFlip Outputs\n\n"
-                         "       Flipped reads:   %9% (%10%%%)\n"
-                         "       Ambiguous reads: %11% (%12%%%)\n"
-                         "       Hanging reads:   %13% (%14%%%)\n";
+                         "       Flipped reads:   %9% (%10$.2f%%)\n"
+                         "       Ambiguous reads: %11% (%12$.2f%%)\n"
+                         "       Hanging reads:   %13% (%14$.2f%%)\n";
 
     #define C(x) stats.counts.at(x)
 
