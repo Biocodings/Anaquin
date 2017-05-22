@@ -1,19 +1,13 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-    VarFlip - Extracts forward paired-end reads from alignments to the <i>in silico</i> genome.
+    VarFlip - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation.
 
 <b>DESCRIPTION</b>
-    VarFlip extracts alignments to the <i>in silico</i> genome, determines their reverse sequence
-    and generates a new set of paired-end library files (.FASTQ). This new set of reads constitute
-    sequin-derived reads that have been mirrored to the orientation of the human genome.
-
-    This tool also generates ambiguous reads. A paired-read is ambiguous if:
-    
-        - Either or both mate mapped to the forward human genome (e.g. "chr1")
-        - Both mates are unmapped
-
-    Hanging reads are reads that one of the mates is missing in the input alignment file.
+    VarFlip will reverse the sequence (and quality scores) of sequin-derived reads. This generates a
+    generates a new set of paired-end library files (.FASTQ) that are orientated in the same direction as
+    the human genome. This tool will also omit any alignments that are ambiguous (eg. if either mate pair
+    does not align, or aligns to the reference genome). Please note single-ended reads is not supported.
 
 <b>SUPPORT SOFTWARE</b>
      VarFlip supports the standard SAM/BAM file.
@@ -32,6 +26,6 @@
      VarFlip_summary.stats  - provides the summary statistics
      VarFlip_flipped_1.fq   - is the first paired-end sequence file for flipped reads
      VarFlip_flipped_2.fq   - is the second paired-end for VarFlip_flipped_1.fq
-     VarFlip_ambiguous_1.fq - is the first paired-end sequence file for ambigious reads
+     VarFlip_ambiguous_1.fq - is the first paired-end sequence file for ambiguous reads
      VarFlip_ambiguous_2.fq - is the second paired-end for VarFlip_ambig_1.fq
      VarFlip_hanging.fq     - is the sequence file for hanging reads    

@@ -1,20 +1,20 @@
 <b>Anaquin Manual</b>
 
 <b>NAME</b>
-    VarAlign - Measures the read alignments from sequins to the <i>in silico</i> genome.
+    VarAlign - Assess the alignment of sample- and sequin derived reads to sequin regions.
 
 <b>DESCRIPTION</b>
     VarAlign calculates several useful statistics from an alignment file.
 
-    <b>Dilution</b> - the fraction of reads the align to the <i>in silico</i> genome relative to the accompanying reference genome.
-    <b>Sensitivity</b> - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would have a sensitivity of 0.5. 
-    <b>Precision</b> - the fraction of annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments. For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+    <b>Dilution</b> - fraction of reads that align to the chiral genome relative to the accompanying reference genome (eg. Hg38). 
+    <b>Sensitivity</b> - fraction of regions covered by sample- and sequin-alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would have a sensitivity of 0.5. 
+    <b>Precision</b> - fraction of regions that are covered by alignments relative to total regions of alignments. This indicates the accuracy of alignments. For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a precision of 0.5.
 
 <b>SUPPORT SOFTWARE</b>
      Short-read aligner (such as BWA or BowTie) that generates a SAM/BAM alignment file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarAlign –rbed reference.bed –usample humans.bam -usequin sequins.bam
+     anaquin VarAlign –rbed reference.bed –usample sample.bam -usequin sequins.bam
 
 <b>TOOL OPTIONS</b>
      Required:
