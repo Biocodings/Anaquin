@@ -15,13 +15,13 @@
 <b>TOOL OPTIONS</b>
      Required:
         -rbed           Annotation file (BED format) of sequin regions used for subsampling
-        -method = mean  Algorithm used to calculate sequence coverage. Possible values include mean, median, reads,
-                        x (where x is the fraction of reads aligned to <i>in silico</i> to subsample. For example, 0.01 is 1%, 0.10
-                        is 10% etc.)
         -usample        Generated alignment file for sample-derived reads in SAM/BAM format
         -usequin        Generated alignment file for sequin-derived reads in SAM/BAM format 
 
      Optional:
+        -method = mean  Algorithm used to calculate sequence coverage. Possible values include mean, median, reads,
+                        x (where x is the fraction of reads aligned to <i>in silico</i> to subsample. For example, 0.01 is 1%, 0.10
+                        is 10% etc.)
         -o = output     Directory in which the output files are written to
         -edge = 0       Egde effects width in nucleotide bases
 
