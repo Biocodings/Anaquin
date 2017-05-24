@@ -106,7 +106,7 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
 
     o.generate(file);
     
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%");
     
     o.generate(file);
     o.writer->open(file);
@@ -118,7 +118,6 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
                                            % "Genome"
                                            % "Before"
                                            % "After"
-                                           % "CNV"
                                            % "Norm").str());
     
     // For each chromosome...
@@ -135,7 +134,6 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
                                                    % j.second.endo
                                                    % j.second.before
                                                    % j.second.after
-                                                   % stats.at(j.second.rID).x
                                                    % j.second.norm).str());
         }
     }

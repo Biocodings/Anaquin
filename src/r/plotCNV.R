@@ -11,7 +11,7 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Expected copy number on the x-axis
-CNV <- data$CNV
+CNV <- data$Copy
 
 # Measured abundance on the y-axis
 measured <- data$After
