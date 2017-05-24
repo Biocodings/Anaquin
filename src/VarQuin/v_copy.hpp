@@ -20,8 +20,11 @@ namespace Anaquin
 
         struct Stats : public SequinStats, public LimitStats
         {
-            // Estimated genomic normalization
+            // Estimated normalization (genome)
             Proportion gNorm;
+            
+            // Estimated coverage (genome)
+            Coverage gCov;
             
             double afterSeqs;
             

@@ -86,14 +86,17 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     /*
      * Quantifying the CNV ladder
      */
-    
-    for (const auto &i : countForID(r2))
+
+    for (const auto &i : stats.before.c2v)
     {
-        const auto exp = r.concent1(i.first);
-        const auto obs = i.second;
-        stats.add(i.first, exp, log2(obs));
+        for (const auto &j : i.second)
+        {
+            const auto exp = r.concent1(j.second.rID);
+            const auto obs = i.second;
+            stats.add(j.second.rID, exp, j.second.after);
+        }
     }
-    
+
     return stats;
 }
 
@@ -103,7 +106,7 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
 
     o.generate(file);
     
-    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%");
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%");
     
     o.generate(file);
     o.writer->open(file);
@@ -116,7 +119,6 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
                                            % "Before"
                                            % "After"
                                            % "CNV"
-                                           % "Observed"
                                            % "Norm").str());
     
     // For each chromosome...
@@ -134,7 +136,6 @@ static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSam
                                                    % j.second.before
                                                    % j.second.after
                                                    % stats.at(j.second.rID).x
-                                                   % stats.at(j.second.rID).y
                                                    % j.second.norm).str());
         }
     }
