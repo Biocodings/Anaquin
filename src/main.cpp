@@ -7,8 +7,6 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
-#include "data/bData.hpp"
-
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_sample.hpp"
@@ -23,6 +21,7 @@
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_cancer.hpp"
+#include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
@@ -30,7 +29,6 @@
 #include "MetaQuin/m_sample.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
-#include "parsers/parser_gtf.hpp"
 #include "parsers/parser_blat.hpp"
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_cdiff.hpp"
@@ -122,6 +120,8 @@ static std::map<Value, Tool> _tools =
     { "RnaFoldChange",  Tool::RnaFoldChange  },
     { "RnaSubsample",   Tool::RnaSubsample   },
 
+    { "VarStructure",   Tool::VarStructure   },
+    { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
@@ -371,6 +371,9 @@ static Scripts manual(Tool tool)
     extern Scripts VarSomatic();
     extern Scripts VarKAbund();
     extern Scripts VarSample();
+    extern Scripts VarConjoint();
+    extern Scripts VarStructure();
+    
     extern Scripts RnaAlign();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
@@ -394,9 +397,11 @@ static Scripts manual(Tool tool)
         case Tool::VarTrim:        { return VarTrim();        }
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
-        case Tool::VarSample:   { return VarSample();   }
+        case Tool::VarSample:      { return VarSample();      }
         case Tool::VarKAbund:      { return VarKAbund();      }
         case Tool::VarDetect:      { return VarDetect();      }
+        case Tool::VarConjoint:    { return VarConjoint();    }
+        case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAlign:      { return MetaAlign();      }
         case Tool::MetaSubsample:  { return MetaAbund();      }
         case Tool::MetaAssembly:   { return MetaAssembly();   }

@@ -13,6 +13,8 @@
 #include "resources/VarAlign.txt"
 #include "resources/VarKAbund.txt"
 #include "resources/VarSomatic.txt"
+#include "resources/VarConjoint.txt"
+#include "resources/VarStructure.txt"
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
@@ -104,45 +106,16 @@ Scripts RnaFoldChange()
     return ToString(data_manuals_RnaFoldChange_txt);
 }
 
-Scripts VarAlign()
-{
-    return ToString(data_manuals_VarAlign_txt);
-}
-
-Scripts VarKAbund()
-{
-    return ToString(data_manuals_VarKAbund_txt);
-}
-
-Scripts VarTrim()
-{
-    return ToString(data_manuals_VarTrim_txt);
-}
-
-Scripts VarFlip()
-{
-    return ToString(data_manuals_VarFlip_txt);
-}
-
-Scripts VarSample()
-{
-    return ToString(data_manuals_VarSubsample_txt);
-}
-
-Scripts VarCopy()
-{
-    return ToString(data_manuals_VarCopy_txt);
-}
-
-Scripts VarDetect()
-{
-    return ToString(data_manuals_VarDetect_txt);
-}
-
-Scripts VarSomatic()
-{
-    return ToString(data_manuals_VarSomatic_txt);
-}
+Scripts VarTrim()      { return ToString(data_manuals_VarTrim_txt);      }
+Scripts VarFlip()      { return ToString(data_manuals_VarFlip_txt);      }
+Scripts VarCopy()      { return ToString(data_manuals_VarCopy_txt);      }
+Scripts VarAlign()     { return ToString(data_manuals_VarAlign_txt);     }
+Scripts VarKAbund()    { return ToString(data_manuals_VarKAbund_txt);    }
+Scripts VarSample()    { return ToString(data_manuals_VarSubsample_txt); }
+Scripts VarDetect()    { return ToString(data_manuals_VarDetect_txt);    }
+Scripts VarSomatic()   { return ToString(data_manuals_VarSomatic_txt);   }
+Scripts VarConjoint()  { return ToString(data_manuals_VarConjoint_txt);  }
+Scripts VarStructure() { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaAlign()
 {

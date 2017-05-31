@@ -31,6 +31,8 @@ namespace Anaquin
         VarTrim,
         VarFlip,
         VarKAbund,
+        VarStructure,
+        VarConjoint,
         
         MetaAlign,
         MetaFoldChange,
