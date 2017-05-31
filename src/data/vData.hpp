@@ -222,6 +222,8 @@ namespace Anaquin
                     c2d[x.cID].i2d[x.l.start] = x;
                     break;
                 }
+                    
+                default: { break; }
             }
 
             c2d[x.cID].m2v[x.type()].insert(x);

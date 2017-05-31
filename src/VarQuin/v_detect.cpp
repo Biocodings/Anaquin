@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-typedef SeqVariant::Context Context;
+typedef SequinVariant::Context Context;
 
 extern Scripts PlotVLODR();
 extern Scripts PlotVGROC();
@@ -30,6 +30,7 @@ inline std::string var2str(Variation x)
         case Variation::SNP:       { return "SNP";       }
         case Variation::Deletion:  { return "Deletion";  }
         case Variation::Insertion: { return "Insertion"; }
+        default:                   { return ""; }
     }
 }
 
@@ -95,7 +96,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 
     VDetect::SStats stats;
     
-    typedef SeqVariant::Context Context;
+    typedef SequinVariant::Context Context;
     
     auto muts = std::set<Variation>
     {
@@ -104,7 +105,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         Variation::Insertion,
     };
     
-    auto grps = std::set<Context>
+    auto ctx = std::set<Context>
     {
         Context::LowGC,
         Context::HighGC,
@@ -122,7 +123,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         Context::ShortTrinRep,
     };
 
-    for (auto &i : grps) { stats.g2c[i]; }
+    for (auto &i : ctx)  { stats.g2c[i]; }
     for (auto &i : muts) { stats.m2c[i]; }
     
     o.analyze(file);
@@ -276,11 +277,11 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
     
-    for (auto &grp : grps)
+    for (auto &i : ctx)
     {
-        stats.g2c[grp].nr() = r.nContext(grp);
-        stats.g2c[grp].nq() = stats.g2c[grp].tp() + stats.g2c[grp].fp();
-        stats.g2c[grp].fn() = stats.g2c[grp].nr() - stats.g2c[grp].tp();
+        stats.g2c[i].nr() = r.nContext(i);
+        stats.g2c[i].nq() = stats.g2c[i].tp() + stats.g2c[i].fp();
+        stats.g2c[i].fn() = stats.g2c[i].nr() - stats.g2c[i].tp();
     }
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());

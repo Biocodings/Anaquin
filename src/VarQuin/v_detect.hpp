@@ -52,7 +52,7 @@ namespace Anaquin
              */
             
             // Performance by context (only sequins)
-            std::map<SeqVariant::Context, Confusion> g2c;
+            std::map<SequinVariant::Context, Confusion> g2c;
 
             // Performance by variation
             std::map<Variation, Confusion> m2c;

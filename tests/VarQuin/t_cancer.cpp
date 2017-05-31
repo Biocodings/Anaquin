@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("VarSomatic_1")
+TEST_CASE("VarCancer_1")
 {
-    REQUIRE_NOTHROW(runTest("VarSomatic -rbed tests/A.V.7.bed -rvcf tests/A.V.8.vcf -useqs tests/sample2.vcf"));
+    REQUIRE_NOTHROW(runTest("VarCancer -rbed tests/A.V.7.bed -rvcf tests/A.V.8.vcf -useqs tests/sample2.vcf"));
 }

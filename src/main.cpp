@@ -126,7 +126,7 @@ static std::map<Value, Tool> _tools =
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
-    { "VarSomatic",     Tool::VarSomatic     },
+    { "VarCancer",     Tool::VarCancer     },
     { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
@@ -397,7 +397,7 @@ static Scripts manual(Tool tool)
         case Tool::VarCopy:        { return VarCopy();        }
         case Tool::VarFlip:        { return VarFlip();        }
         case Tool::VarTrim:        { return VarTrim();        }
-        case Tool::VarSomatic:     { return VarSomatic();     }
+        case Tool::VarCancer:      { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarSample:      { return VarSample();      }
         case Tool::VarKAbund:      { return VarKAbund();      }
@@ -410,13 +410,6 @@ static Scripts manual(Tool tool)
         case Tool::MetaAbund:      { return MetaSubsample();  }
         case Tool::MetaFoldChange: { return MetaFoldChange(); }
     }
-
-    throw std::runtime_error("Manual not found");
-}
-
-FileName mixture()
-{
-    return _p.opts[OPT_MIXTURE];
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
@@ -430,13 +423,13 @@ static void printError(const std::string &msg)
 
 template <typename Mixture> void applyMix(Mixture mix)
 {
-    if (mixture().empty())
-    {
-        return;
-    }
-    
-    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
-    mix(Reader(mixture()));
+//    if (mixture().empty())
+//    {
+//        return;
+//    }
+//    
+//    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
+//    mix(Reader(mixture()));
 }
 
 template <typename F> void readLad(F f, Option key, UserReference &r)
@@ -521,24 +514,6 @@ template <typename Reference> void applyRef(Reference ref, Option opt)
     if (!_p.opts[opt].empty())
     {
         ref(Reader(_p.opts[opt]));
-    }
-}
-
-/*
- * Apply reference resource assuming there is only a single reference source
- */
-
-template <typename Reference> void applyRef(Reference ref)
-{
-    for (const auto &i : _p.opts)
-    {
-        const auto opt = i.first;
-        
-        if (CHECK_REF(opt))
-        {
-            applyRef(ref, opt);
-            break;
-        }
     }
 }
 
@@ -1075,15 +1050,15 @@ void parse(int argc, char ** argv)
             {
                 case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
                 case Tool::MetaAbund:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-                case Tool::MetaAlign:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-                case Tool::MetaSubsample: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-
-                case Tool::MetaAssembly:
-                {
-                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
-                    break;
-                }
+//                case Tool::MetaAlign:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+//                case Tool::MetaSubsample: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
+//
+//                case Tool::MetaAssembly:
+//                {
+//                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
+//                    applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
+//                    break;
+//                }
 
                 default: { break; }
             }
@@ -1168,7 +1143,7 @@ void parse(int argc, char ** argv)
         case Tool::VarFlip:
         case Tool::VarTrim:
         case Tool::VarAlign:
-        case Tool::VarSomatic:
+        case Tool::VarCancer:
         case Tool::VarSample:
         case Tool::VarKAbund:
         case Tool::VarConjoint:
@@ -1224,7 +1199,7 @@ void parse(int argc, char ** argv)
                     }
 
                     case Tool::VarDetect:
-                    case Tool::VarSomatic:
+                    case Tool::VarCancer:
                     {
                         readReg1(OPT_R_BED, r);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
@@ -1296,7 +1271,7 @@ void parse(int argc, char ** argv)
                 }
 
                 case Tool::VarDetect:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                case Tool::VarSomatic:   { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
+                //case Tool::VarCancer:   { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
                 case Tool::VarStructure: { analyze_2<VStructure>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case Tool::VarCopy:

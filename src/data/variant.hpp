@@ -18,25 +18,34 @@ namespace Anaquin
         return std::hash<std::string>{}(str);
     }
 
-    /*
-     * Representation for a VCF variant
-     */
-    
     struct Variant
     {
         operator const Locus &() const { return l; }
         
         inline bool operator<(const Locus &x) const { return l < x; }
 
+        inline bool isSV() const
+        {
+            return alt == "<DUP>" || alt == "<INV>" || alt == "<INS>" || alt == "<DEL>";
+        }
+        
         inline Variation type() const
         {
-            if (alt[0] == '-')
+            if (alt == "<DUP>" || alt[0] == '=')
             {
-                return Variation::Deletion;
+                return Variation::Duplication;
             }
-            else if (alt[0] == '+')
+            else if (alt == "<INV>" || alt[0] == '^')
+            {
+                return Variation::Inversion;
+            }
+            else if (alt == "<INS>" || alt[0] == '+')
             {
                 return Variation::Insertion;
+            }
+            else if (alt == "<DEL>" || alt[0] == '-')
+            {
+                return Variation::Deletion;
             }
             else if (ref.size() == alt.size())
             {
@@ -52,12 +61,6 @@ namespace Anaquin
             }
         }
 
-        // Proportion of reads for the variant
-        inline Proportion propV() const
-        {
-            return static_cast<Proportion>(readV) / (readR + readV);
-        }
-        
         inline long key() const
         {
             return var2hash(name, type(), l);
@@ -71,6 +74,7 @@ namespace Anaquin
         // The reference position, with the 1st base having position 1
         Locus l;
         
+        // Reference and alternative allele
         Sequence ref, alt;
         
         // Allelle frequency

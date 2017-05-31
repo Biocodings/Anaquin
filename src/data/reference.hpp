@@ -26,7 +26,7 @@ namespace Anaquin
         VarCopy,
         VarAlign,
         VarDetect,
-        VarSomatic,
+        VarCancer,
         VarSample,
         VarTrim,
         VarFlip,
@@ -373,7 +373,7 @@ namespace Anaquin
             Counts nCNV(int)  const;
             Counts nGeno(Genotype)  const;
             Counts nType(Variation) const;
-            Counts nContext(SeqVariant::Context) const;
+            Counts nContext(SequinVariant::Context) const;
 
             Counts countSNP() const;
             Counts countInd() const;
@@ -381,7 +381,7 @@ namespace Anaquin
             // Returns all reference variants
             std::set<Variant> vars() const;
 
-            const SeqVariant &findSeqVar(long) const;
+            const SequinVariant &findSeqVar(long) const;
         
             const Variant *findVar(const ChrID &, long) const;
             const Variant *findVar(const ChrID &, const Locus &) const;

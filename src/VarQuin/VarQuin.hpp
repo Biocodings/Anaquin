@@ -6,11 +6,7 @@
 
 namespace Anaquin
 {
-    /*
-     * Information specific to sequin variants.
-     */
-    
-    struct SeqVariant
+    struct SequinVariant
     {
         enum class Context
         {
@@ -28,7 +24,6 @@ namespace Anaquin
             ShortTrinRep, // Trinucleotide repeats
             LongTrinRep,  // Trinucleotide repeats
             Cancer,
-            Structure
         } ctx;
         
         Genotype gt;

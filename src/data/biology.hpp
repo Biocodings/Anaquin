@@ -25,7 +25,9 @@ namespace Anaquin
     {
         SNP,
         Insertion,
-        Deletion
+        Deletion,
+        Inversion,
+        Duplication,
     };
 
     enum class Genotype

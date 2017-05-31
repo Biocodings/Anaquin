@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-typedef SeqVariant::Context Context;
+typedef SequinVariant::Context Context;
 
 extern Scripts PlotVLODR();
 extern Scripts PlotVGROC();
@@ -12,57 +12,6 @@ extern Scripts PlotAllele();
 
 extern Path __output__;
 extern std::string __full_command__;
-
-inline std::string gt2str(Genotype x)
-{
-    switch (x)
-    {
-        case Genotype::Somatic:     { return "Somatic";     }
-        case Genotype::Homozygous:  { return "Homozygous";  }
-        case Genotype::Heterzygous: { return "Heterzygous"; }
-    }
-}
-
-inline std::string var2str(Variation x)
-{
-    switch (x)
-    {
-        case Variation::SNP:       { return "SNP";       }
-        case Variation::Deletion:  { return "Deletion";  }
-        case Variation::Insertion: { return "Insertion"; }
-    }
-}
-
-inline std::string ctx2Str(Context x)
-{
-    switch (x)
-    {
-        case Context::Cancer:        { return "Cancer";                    }
-        case Context::LowGC:         { return "LowGC";                     }
-        case Context::HighGC:        { return "HighGC";                    }
-        case Context::Common:        { return "Common";                    }
-        case Context::VeryLowGC:     { return "VeryLowGC";                 }
-        case Context::VeryHighGC:    { return "VeryHighGC";                }
-        case Context::LongHompo:     { return "LongHomopolymer";           }
-        case Context::ShortHompo:    { return "ShortHomopolymer";          }
-        case Context::ShortDinRep:   { return "ShortDinucleotideRepeat";   }
-        case Context::LongDinRep:    { return "LongDinucleotideRepeat";    }
-        case Context::ShortQuadRep:  { return "ShortQuadNucleotideRepeat"; }
-        case Context::LongQuadRep:   { return "LongQuadNucleotideRepeat";  }
-        case Context::ShortTrinRep:  { return "ShortTrinucleotideRepeat";  }
-        case Context::LongTrinRep:   { return "LongTrinucleotideRepeat";   }
-    }
-}
-
-static Scripts createVGROC(const FileName &file, const std::string &score, const std::string &refRat)
-{
-    return (boost::format(PlotVGROC()) % date()
-                                       % __full_command__
-                                       % __output__
-                                       % file
-                                       % score
-                                       % refRat).str();
-}
 
 VConjoint::EStats VConjoint::analyzeE(const FileName &file, const Options &o)
 {
@@ -91,34 +40,34 @@ VConjoint::EStats VConjoint::analyzeE(const FileName &file, const Options &o)
 
 VConjoint::SStats VConjoint::analyzeS(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_var;
+//    const auto &r = Standard::instance().r_var;
 
     VConjoint::SStats stats;
     
     return stats;
 }
 
-static void writeQuins(const FileName &file,
-                       const VConjoint::SStats &ss,
-                       const VConjoint::Options &o)
-{
-
-}
-
-static void writeDetected(const FileName &file,
-                          const VConjoint::SStats &ss,
-                          const VConjoint::Options &o)
-{
-}
-
-static void writeSummary(const FileName &file,
-                         const FileName &endo,
-                         const FileName &seqs,
-                         const VConjoint::EStats &es,
-                         const VConjoint::SStats &ss,
-                         const VConjoint::Options &o)
-{
-}
+//static void writeQuins(const FileName &file,
+//                       const VConjoint::SStats &ss,
+//                       const VConjoint::Options &o)
+//{
+//
+//}
+//
+//static void writeDetected(const FileName &file,
+//                          const VConjoint::SStats &ss,
+//                          const VConjoint::Options &o)
+//{
+//}
+//
+//static void writeSummary(const FileName &file,
+//                         const FileName &endo,
+//                         const FileName &seqs,
+//                         const VConjoint::EStats &es,
+//                         const VConjoint::SStats &ss,
+//                         const VConjoint::Options &o)
+//{
+//}
 
 void VConjoint::report(const FileName &endo, const Options &o)
 {

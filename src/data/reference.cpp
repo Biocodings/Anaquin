@@ -2,6 +2,7 @@
 #include "data/vData.hpp"
 #include "tools/tools.hpp"
 #include "data/tokens.hpp"
+#include "parsers/parser_vcf2.hpp"
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
@@ -519,14 +520,14 @@ struct VarRef::VarRefImpl
     VData vData;
     
     // Information about sequin variants
-    std::map<VarKey, SeqVariant> sVars;
+    std::map<VarKey, SequinVariant> sVars;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
 Counts VarRef::nCNV(int c) const
 {
-    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    return countMap(_impl->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.copy == c ? 1 : 0;
     });
@@ -534,7 +535,7 @@ Counts VarRef::nCNV(int c) const
 
 Counts VarRef::nGeno(Genotype g) const
 {
-    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    return countMap(_impl->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.gt == g ? 1 : 0;
     });
@@ -545,9 +546,9 @@ Counts VarRef::nType(Variation x) const
     return _impl->vData.count_(x);
 }
 
-Counts VarRef::nContext(SeqVariant::Context c) const
+Counts VarRef::nContext(SequinVariant::Context c) const
 {
-    return countMap(_impl->sVars, [&](VarKey, const SeqVariant &x)
+    return countMap(_impl->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.ctx == c ? 1 : 0;
     });
@@ -558,78 +559,94 @@ std::set<Variant> VarRef::vars() const
     return _impl->vData.vars();
 }
 
-const SeqVariant & VarRef::findSeqVar(long key) const
+const SequinVariant & VarRef::findSeqVar(long key) const
 {
     return _impl->sVars.at(key);
 }
 
 void VarRef::readVRef(const Reader &r)
 {
+    typedef SequinVariant::Context Context;
+    
     auto throwInvalidRef = [&](const std::string &x)
     {
         throw std::runtime_error(r.src() + " doesn't seem to be a valid VCF reference file. Reason: " + x);
     };
     
-    _impl->vData = readVFile(r, [&](const ParserVCF::Data &x, const ParserProgress &)
+    _impl->vData = parseVCF(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
         A_ASSERT(x.key());
-        
-        typedef SeqVariant::Context Context;
-        
-        const auto m1 = std::map<std::string, SeqVariant::Context>
+
+        auto longVar = [&]()
         {
-            { "cancer",     Context::Cancer       },
-            { "common",     Context::Common       },
-            { "high_gc",    Context::HighGC       },
-            { "long_di",    Context::LongDinRep   },
-            { "long_homo",  Context::LongHompo    },
-            { "low_gc",     Context::LowGC        },
-            { "long_quad",  Context::LongQuadRep  },
-            { "long_tri",   Context::LongTrinRep  },
-            { "short_di",   Context::ShortDinRep  },
-            { "short_homo", Context::ShortHompo   },
-            { "short_quad", Context::ShortQuadRep },
-            { "v_high_gc",  Context::VeryHighGC   },
-            { "v_low_gc",   Context::VeryLowGC    },
-            { "short_tri",  Context::ShortTrinRep }
+            SequinVariant s;
+            
+            s.gt = Genotype::Heterzygous;
+
+            _impl->vIDs.insert(x.name);
+            _impl->sVars[x.key()] = s;
         };
         
-        const auto m2 = std::map<std::string, Genotype>
+        auto shortVar = [&]()
         {
-            { "SOM",     Genotype::Somatic     },
-            { "HOM",     Genotype::Homozygous  },
-            { "HOM_CNV", Genotype::Homozygous  },
-            { "HET",     Genotype::Heterzygous },
+            const auto m1 = std::map<std::string, SequinVariant::Context>
+            {
+                { "cancer",     Context::Cancer       },
+                { "common",     Context::Common       },
+                { "high_gc",    Context::HighGC       },
+                { "long_di",    Context::LongDinRep   },
+                { "long_homo",  Context::LongHompo    },
+                { "low_gc",     Context::LowGC        },
+                { "long_quad",  Context::LongQuadRep  },
+                { "long_tri",   Context::LongTrinRep  },
+                { "short_di",   Context::ShortDinRep  },
+                { "short_homo", Context::ShortHompo   },
+                { "short_quad", Context::ShortQuadRep },
+                { "v_high_gc",  Context::VeryHighGC   },
+                { "v_low_gc",   Context::VeryLowGC    },
+                { "short_tri",  Context::ShortTrinRep }
+            };
+            
+            const auto m2 = std::map<std::string, Genotype>
+            {
+                { "SOM",     Genotype::Somatic     },
+                { "HOM",     Genotype::Homozygous  },
+                { "HOM_CNV", Genotype::Homozygous  },
+                { "HET",     Genotype::Heterzygous },
+            };
+            
+            if (!x.opts.count("CX") || !m1.count(x.opts.at("CX")))
+            {
+                throwInvalidRef("The CX field is not found or invalid");
+            }
+            else if (!x.opts.count("GT") || !m2.count(x.opts.at("GT")))
+            {
+                throwInvalidRef("The GT field is not found or invalid");
+            }
+            
+            SequinVariant s;
+            
+            s.gt   = m2.at(x.opts.at("GT"));
+            s.ctx  = m1.at(x.opts.at("CX"));
+            s.copy = stoi(x.opts.at("CP"));
+            
+            _impl->vIDs.insert(x.name);
+            
+            Concent af;
+            
+            switch (s.gt)
+            {
+                case Genotype::Somatic:     { af = x.allF; break; }
+                case Genotype::Homozygous:  { af = 1,0;    break; }
+                case Genotype::Heterzygous: { af = 0.5;    break; }
+            }
+            
+            _impl->sVars[x.key()] = s;
+            _mixes[Mix_1][x.name] = std::shared_ptr<MixtureData>(new MixtureData(x.name, 1000, af));
         };
         
-        if (!x.opts.count("CX") || !m1.count(x.opts.at("CX")))
-        {
-            throwInvalidRef("The CX field is not found or invalid");
-        }
-        else if (!x.opts.count("GT") || !m2.count(x.opts.at("GT")))
-        {
-            throwInvalidRef("The GT field is not found or invalid");
-        }
-        
-        SeqVariant s;
-
-        s.gt   = m2.at(x.opts.at("GT"));
-        s.ctx  = m1.at(x.opts.at("CX"));
-        s.copy = stoi(x.opts.at("CP"));
-        
-        _impl->vIDs.insert(x.name);
-
-        Concent af;
-        
-        switch (s.gt)
-        {
-            case Genotype::Somatic:     { af = x.allF; break; }
-            case Genotype::Homozygous:  { af = 1,0;    break; }
-            case Genotype::Heterzygous: { af = 0.5;    break; }
-        }
-
-        _impl->sVars[x.key()] = s;
-        _mixes[Mix_1][x.name] = std::shared_ptr<MixtureData>(new MixtureData(x.name, 1000, af));
+        if (x.isSV()) { longVar();  }
+        else          { shortVar(); }
     });
 }
 
@@ -722,8 +739,9 @@ void VarRef::validate(Tool x, const UserReference &r)
             build(r.r1, r.r2);
             break;
         }
-            
+
         case Tool::VarDetect:
+        case Tool::VarStructure:
         {
             merge(_impl->vIDs);
             build(r.r1);
