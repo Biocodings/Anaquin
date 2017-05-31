@@ -23,17 +23,6 @@ inline std::string gt2str(Genotype x)
     }
 }
 
-inline std::string var2str(Variation x)
-{
-    switch (x)
-    {
-        case Variation::SNP:       { return "SNP";       }
-        case Variation::Deletion:  { return "Deletion";  }
-        case Variation::Insertion: { return "Insertion"; }
-        default:                   { return ""; }
-    }
-}
-
 inline std::string ctx2Str(Context x)
 {
     switch (x)
@@ -541,7 +530,7 @@ static void writeSummary(const FileName &file,
         #define CSN(x) D(ss.g2c.at(x).sn())
 
         o.generate(file);
-        o.writer->open("VarDetect_summary.stats");
+        o.writer->open(file);
         o.writer->write((boost::format(summary) % VCFRef()                      // 1
                                                 % BedRef()                      // 2
                                                 % seqs                          // 3

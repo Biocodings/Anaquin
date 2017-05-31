@@ -21,7 +21,7 @@
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_cancer.hpp"
-#include "VarQuin/v_conjoint.hpp"
+#include "VarQuin/v_conjoin.hpp"
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_diff.hpp"
@@ -122,11 +122,11 @@ static std::map<Value, Tool> _tools =
     { "RnaSubsample",   Tool::RnaSubsample   },
 
     { "VarStructure",   Tool::VarStructure   },
-    { "VarConjoint",    Tool::VarConjoint    },
+    { "VarConjoin",     Tool::VarConjoin     },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
-    { "VarCancer",     Tool::VarCancer     },
+    { "VarCancer",      Tool::VarCancer      },
     { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
@@ -163,7 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarConjoint,  { OPT_L_CON } },
+    { Tool::VarConjoin,   { OPT_L_CON } },
 
     /*
      * MetaQuin Analysis
@@ -374,7 +374,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarSomatic();
     extern Scripts VarKAbund();
     extern Scripts VarSample();
-    extern Scripts VarConjoint();
+    extern Scripts VarConjoin();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
     extern Scripts RnaAssembly();
@@ -402,7 +402,7 @@ static Scripts manual(Tool tool)
         case Tool::VarSample:      { return VarSample();      }
         case Tool::VarKAbund:      { return VarKAbund();      }
         case Tool::VarDetect:      { return VarDetect();      }
-        case Tool::VarConjoint:    { return VarConjoint();    }
+        case Tool::VarConjoin:     { return VarConjoin();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAlign:      { return MetaAlign();      }
         case Tool::MetaSubsample:  { return MetaAbund();      }
@@ -1146,7 +1146,7 @@ void parse(int argc, char ** argv)
         case Tool::VarCancer:
         case Tool::VarSample:
         case Tool::VarKAbund:
-        case Tool::VarConjoint:
+        case Tool::VarConjoin:
         case Tool::VarStructure:
         {
             if (__showInfo__)
@@ -1171,7 +1171,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::VarConjoint:
+                    case Tool::VarConjoin:
                     {
                         readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
@@ -1222,7 +1222,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
+                case Tool::VarConjoin: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
 
                 case Tool::VarKAbund:
                 {

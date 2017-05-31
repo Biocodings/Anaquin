@@ -32,6 +32,18 @@ namespace Anaquin
         unsigned copy = 1;
     };
     
+    inline std::string var2str(Variation x)
+    {
+        switch (x)
+        {
+            case Variation::SNP:         { return "SNP";         }
+            case Variation::Deletion:    { return "Deletion";    }
+            case Variation::Insertion:   { return "Insertion";   }
+            case Variation::Duplication: { return "Duplication"; }
+            case Variation::Inversion:   { return "Inversion";   }
+        }
+    }
+    
     // Eg: chrev1, chrev10 etc...
     inline bool isReverseChr(const ChrID &x)
     {

@@ -27,6 +27,19 @@ namespace Anaquin
         
         struct SStats
         {
+            inline const Match * findTP(const SequinID &id) const
+            {
+                for (auto &i : tps)
+                {
+                    if (i.var->name == id)
+                    {
+                        return &i;
+                    }
+                }
+                
+                return nullptr;
+            }
+           
             // Overall performance
             Confusion oc;
             

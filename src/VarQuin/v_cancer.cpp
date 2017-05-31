@@ -23,16 +23,6 @@
 //    }
 //}
 //
-//inline std::string var2str(Variation x)
-//{
-//    switch (x)
-//    {
-//        case Variation::SNP:       { return "SNP";       }
-//        case Variation::Deletion:  { return "Deletion";  }
-//        case Variation::Insertion: { return "Insertion"; }
-//    }
-//}
-//
 //inline std::string ctx2Str(Context x)
 //{
 //    switch (x)

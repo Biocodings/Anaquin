@@ -35,14 +35,12 @@ namespace Anaquin
             
             for (const auto &i : *this)
             {
-                for (const auto &j : i.second.s2d)
+                for (const auto &j : i.second.m2v)
                 {
-                    x.insert(j.second);
-                }
-                
-                for (const auto &j : i.second.i2d)
-                {
-                    x.insert(j.second);
+                    for (const auto &k : j.second)
+                    {
+                        x.insert(k);
+                    }
                 }
             }
             

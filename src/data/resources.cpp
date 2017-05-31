@@ -77,34 +77,11 @@ Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
 Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
-/*
- * Manuals
- */
-
-Scripts RnaSubsample()
-{
-    return ToString(data_manuals_RnaSubsample_txt);
-}
-
-Scripts RnaAlign()
-{
-    return ToString(data_manuals_RnaAlign_txt);
-}
-
-Scripts RnaAssembly()
-{
-    return ToString(data_manuals_RnaAssembly_txt);
-}
-
-Scripts RnaExpression()
-{
-    return ToString(data_manuals_RnaExpression_txt);
-}
-
-Scripts RnaFoldChange()
-{
-    return ToString(data_manuals_RnaFoldChange_txt);
-}
+Scripts RnaAlign()      { return ToString(data_manuals_RnaAlign_txt);      }
+Scripts RnaSubsample()  { return ToString(data_manuals_RnaSubsample_txt);  }
+Scripts RnaAssembly()   { return ToString(data_manuals_RnaAssembly_txt);   }
+Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
+Scripts RnaFoldChange() { return ToString(data_manuals_RnaFoldChange_txt); }
 
 Scripts VarTrim()      { return ToString(data_manuals_VarTrim_txt);      }
 Scripts VarFlip()      { return ToString(data_manuals_VarFlip_txt);      }
@@ -114,33 +91,14 @@ Scripts VarKAbund()    { return ToString(data_manuals_VarKAbund_txt);    }
 Scripts VarSample()    { return ToString(data_manuals_VarSubsample_txt); }
 Scripts VarDetect()    { return ToString(data_manuals_VarDetect_txt);    }
 Scripts VarSomatic()   { return ToString(data_manuals_VarSomatic_txt);   }
-Scripts VarConjoint()  { return ToString(data_manuals_VarConjoint_txt);  }
+Scripts VarConjoin()   { return ToString(data_manuals_VarConjoint_txt);  }
 Scripts VarStructure() { return ToString(data_manuals_VarStructure_txt); }
 
-Scripts MetaAlign()
-{
-    return ToString(data_manuals_MetaAlign_txt);
-}
-
-Scripts MetaSubsample()
-{
-    return ToString(data_manuals_MetaSubsample_txt);
-}
-
-Scripts MetaAssembly()
-{
-    return ToString(data_manuals_MetaAssembly_txt);
-}
-
-Scripts MetaAbund()
-{
-    return ToString(data_manuals_MetaAbund_txt);
-}
-
-Scripts MetaFoldChange()
-{
-    return ToString(data_manuals_MetaFoldChange_txt);
-}
+Scripts MetaAbund()      { return ToString(data_manuals_MetaAbund_txt);      }
+Scripts MetaAlign()      { return ToString(data_manuals_MetaAlign_txt);      }
+Scripts MetaSubsample()  { return ToString(data_manuals_MetaSubsample_txt);  }
+Scripts MetaAssembly()   { return ToString(data_manuals_MetaAssembly_txt);   }
+Scripts MetaFoldChange() { return ToString(data_manuals_MetaFoldChange_txt); }
 
 /*
  * RnaSeq Resources
