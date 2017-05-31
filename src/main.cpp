@@ -21,6 +21,7 @@
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_cancer.hpp"
+#include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_diff.hpp"
@@ -157,10 +158,12 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarFlip,      { OPT_U_SEQS } },
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarSample, { OPT_R_BED, OPT_U_SAMPLE,   OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarDetect,    { OPT_R_VCF, OPT_U_SEQS } },
+    { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS } },
+    { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarConjoint,  { OPT_L_CON } },
 
     /*
      * MetaQuin Analysis
@@ -373,7 +376,6 @@ static Scripts manual(Tool tool)
     extern Scripts VarSample();
     extern Scripts VarConjoint();
     extern Scripts VarStructure();
-    
     extern Scripts RnaAlign();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
@@ -410,34 +412,6 @@ static Scripts manual(Tool tool)
     }
 
     throw std::runtime_error("Manual not found");
-}
-
-// Print a file of mixture A and B
-static void print(Reader &r)
-{
-    /*
-     * Format: <ID, Mix A, Mix B>
-     */
-
-    std::string l;
-    
-    // Skip the first line
-    r.nextLine(l);
-
-    std::cout << "ID\tMix A\tMix B" << std::endl;
-
-    while (r.nextLine(l))
-    {
-        if (l == "\r" || l == "\n" || l == "\r\n")
-        {
-            continue;
-        }
-
-        std::vector<std::string> toks;
-        Tokens::split(l, "\t", toks);
-
-        std::cout << toks[0] << "\t" << toks[2] << "\t" << toks[3] << std::endl;
-    }
 }
 
 FileName mixture()
@@ -619,14 +593,6 @@ template <typename Analyzer, typename Files> void analyze(const Files &files, ty
     }, o);
 }
 
-template <typename Analyzer> void analyze_0(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        Analyzer::report(o);
-    }, o);
-}
-
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyze<Analyzer>(_p.opts.at(x), o);
@@ -638,15 +604,6 @@ template <typename Analyzer> void analyze_2(Option x1, Option x2, typename Analy
     {
         #define D(x) _p.opts.count(x) ? _p.opts[x] : ""
         Analyzer::report(D(x1), D(x2), o);
-    }, o);
-}
-
-template <typename Analyzer> void analyze_3(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        A_ASSERT(_p.inputs.size() == 3);
-        Analyzer::report(_p.inputs[0], _p.inputs[1], _p.inputs[2], o);
     }, o);
 }
 
@@ -732,21 +689,6 @@ void parse(int argc, char ** argv)
         }
     };
 
-    // Attempt to parse and store an integer from string
-    auto parseInt = [&](const std::string &str, unsigned &r)
-    {
-        A_ASSERT(next);
-        
-        try
-        {
-            r = stoi(str);
-        }
-        catch (...)
-        {
-            throw std::runtime_error(str + " is not a valid integer. Please check and try again.");
-        }
-    };
-    
     auto checkPath = [&](const Path &path)
     {
         if (path[0] == '/')
@@ -898,13 +840,13 @@ void parse(int argc, char ** argv)
             case OPT_L_CNV:
             case OPT_L_CON: { _p.opts[opt] = val; break; }
 
-            case OPT_U_SAMPLE:
             case OPT_R_IND:
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
             case OPT_U_SEQS:
             case OPT_MIXTURE:
+            case OPT_U_SAMPLE:
             {
                 checkFile(_p.opts[opt] = val); break;
             }
@@ -1229,6 +1171,8 @@ void parse(int argc, char ** argv)
         case Tool::VarSomatic:
         case Tool::VarSample:
         case Tool::VarKAbund:
+        case Tool::VarConjoint:
+        case Tool::VarStructure:
         {
             if (__showInfo__)
             {
@@ -1242,6 +1186,19 @@ void parse(int argc, char ** argv)
                     case Tool::VarAlign:
                     {
                         readReg1(OPT_R_BED, r);
+                        break;
+                    }
+
+                    case Tool::VarStructure:
+                    {
+                        readReg1(OPT_R_BED, r);
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        break;
+                    }
+
+                    case Tool::VarConjoint:
+                    {
+                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
                     }
 
@@ -1290,6 +1247,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
+
                 case Tool::VarKAbund:
                 {
                     VKAbund::Options o;
@@ -1337,7 +1296,8 @@ void parse(int argc, char ** argv)
                 }
 
                 case Tool::VarDetect:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                case Tool::VarSomatic: { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarSomatic:   { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
+                case Tool::VarStructure: { analyze_2<VStructure>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case Tool::VarCopy:
                 {
