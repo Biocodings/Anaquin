@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 
@@ -7,7 +7,7 @@ TEST_CASE("Test_Insert")
 {
     std::map<std::size_t, std::vector<Locus>> r;
     
-    ParserSAM::parse("tests/data/insert.sam", [&](ParserSAM::Data &x, const ParserSAM::Info &)
+    ParserBAM::parse("tests/data/insert.sam", [&](ParserBAM::Data &x, const ParserBAM::Info &)
     {
         Locus l;
         bool spliced;
@@ -34,11 +34,11 @@ TEST_CASE("Test_Insert")
 
 TEST_CASE("Test_Deletion")
 {
-    std::vector<ParserSAM::Data> r1;
-    std::vector<ParserSAM::Info> r2;
+    std::vector<ParserBAM::Data> r1;
+    std::vector<ParserBAM::Info> r2;
     std::map<std::size_t, std::vector<Locus>> r3;
 
-    ParserSAM::parse("tests/data/deletion.sam", [&](ParserSAM::Data &x, const ParserSAM::Info &i)
+    ParserBAM::parse("tests/data/deletion.sam", [&](ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         Locus l;
         bool spliced;
@@ -70,10 +70,10 @@ TEST_CASE("Test_Deletion")
 
 TEST_CASE("Test_SoftClip")
 {
-    std::vector<ParserSAM::Data> r1;
-    std::vector<ParserSAM::Info> r2;
+    std::vector<ParserBAM::Data> r1;
+    std::vector<ParserBAM::Info> r2;
     
-    ParserSAM::parse("tests/data/clip.sam", [&](const ParserSAM::Data &x, const ParserSAM::Info &i)
+    ParserBAM::parse("tests/data/clip.sam", [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         r1.push_back(x);
         r2.push_back(i);
@@ -108,7 +108,7 @@ TEST_CASE("Test_SoftClip")
 //     * Cigar: 388598 - 29M58378N64M33114N8M
 //     */
 //
-//    ParserSAM::parse("tests/data/RnaQuin/introns.sam", [&](const Alignment &align, const ParserProgress &)
+//    ParserBAM::parse("tests/data/RnaQuin/introns.sam", [&](const Alignment &align, const ParserProgress &)
 //    {
 //        aligns.push_back(align);
 //    });

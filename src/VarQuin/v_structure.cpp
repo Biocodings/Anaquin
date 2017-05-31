@@ -5,186 +5,23 @@
 
 using namespace Anaquin;
 
-extern Scripts PlotVLODR();
-extern Scripts PlotVGROC();
-extern Scripts PlotVCROC();
-extern Scripts PlotAllele();
-
-extern Path __output__;
-extern std::string __full_command__;
-
-//static void writeQuins(const FileName &file,
-//                       const VStructure::SStats &ss,
-//                       const VStructure::Options &o)
-//{
-//}
-//
-static void writeDetected(const FileName &file,
-                          const VStructure::SStats &ss,
-                          const VStructure::Options &o)
-{
-  
-}
-
-static void writeSummary(const FileName &file,
-                         const FileName &endo,
-                         const FileName &seqs,
-                         const VStructure::EStats &es,
-                         const VStructure::SStats &ss,
-                         const VStructure::Options &o)
-{
-    const auto &r = Standard::instance().r_var;
-    
-    extern FileName VCFRef();
-    extern FileName BedRef();
-    
-    const auto summary = "-------VarStructure Output Results\n\n"
-                         "-------VarStructure Output\n\n"
-                         "       Reference variant annotation:      %1%\n"
-                         "       Reference coordinate annotation:   %2%\n\n"
-                         "       User identified variants (sample): %3%\n"
-                         "       User identified variants (sequin): %4%\n\n"
-                         "       Number of sample variants (sequin regions): %5%\n"
-                         "       Number of sequin variants (sequin regions): %6%\n\n"
-                         "-------Sample-derived variants by mutation\n\n"
-                         "       Insertions:   %7%\n"
-                         "       Deletions:    %8%\n"
-                         "       Inversions:   %9%\n"
-                         "       Duplications: %10%\n"
-                         "       Total:        %11%\n\n"
-                         "-------Sequin-derived variants by mutation\n\n"
-                         "       Insertions:   %12%\n"
-                         "       Deletions:    %13%\n"
-                         "       Inversions:   %14%\n"
-                         "       Duplications: %15%\n"
-                         "       Total:        %16%\n\n"
-                         "-------Diagnostic performance by mutation\n\n"
-                         "       True Positive:  %17% insertions\n"
-                         "       True Positive:  %18% deletions\n"
-                         "       True Positive:  %19% inversions\n"
-                         "       True Positive:  %20% duplications\n\n"
-                         "       False Positive: %21% insertions\n"
-                         "       False Positive: %22% deletions\n"
-                         "       False Positive: %23% inversions\n"
-                         "       False Positive: %24% duplications\n\n"
-                         "       False Negative: %25% insertions\n"
-                         "       False Negative: %26% deletions\n"
-                         "       False Negative: %27% inversions\n"
-                         "       False Negative: %28% duplications\n\n"
-                         "       *Variants\n"
-                         "       Sensitivity: %29$.4f\n"
-                         "       Precision:   %30$.4f\n"
-                         "       F1 Score:    %31$.4f\n"
-                         "       FDR Rate:    %32$.4f\n\n"
-                         "       *Insertion\n"
-                         "       Sensitivity: %33$.4f\n"
-                         "       Precision:   %34$.4f\n"
-                         "       F1 Score:    %35$.4f\n"
-                         "       FDR Rate:    %36$.4f\n\n"
-                         "       *Deletions\n"
-                         "       Sensitivity: %37$.4f\n"
-                         "       Precision:   %38$.4f\n"
-                         "       F1 Score:    %39$.4f\n"
-                         "       FDR Rate:    %40$.4f\n\n"
-                         "       *Inversions\n"
-                         "       Sensitivity: %41$.4f\n"
-                         "       Precision:   %42$.4f\n"
-                         "       F1 Score:    %43$.4f\n"
-                         "       FDR Rate:    %44$.4f\n\n"
-                         "       *Duplications\n"
-                         "       Sensitivity: %45$.4f\n"
-                         "       Precision:   %46$.4f\n"
-                         "       F1 Score:    %47$.4f\n"
-                         "       FDR Rate:    %48$.4f\n";
-    
-        #define D(x) (isnan(x) ? "-" : std::to_string(x))
-        
-        const auto &ins = ss.v2c.at(Variation::Insertion);
-        const auto &del = ss.v2c.at(Variation::Deletion);
-        const auto &inv = ss.v2c.at(Variation::Inversion);
-        const auto &dup = ss.v2c.at(Variation::Duplication);
-    
-        const auto nIns = ins.nq();
-        const auto nDel = del.nq();
-        const auto nInv = inv.nq();
-        const auto nDup = dup.nq();
-
-//        const auto tp_SNP = snp.tp();
-//        const auto tp_Del = del.tp();
-//        const auto tp_Ins = ins.tp();
-//        
-//        const auto fp_SNP = snp.fp();
-//        const auto fp_Del = del.fp();
-//        const auto fp_Ins = ins.fp();
-//        
-//        const auto fn_SNP = snp.fn();
-//        const auto fn_Del = del.fn();
-//        const auto fn_Ins = ins.fn();
-//        
-//        auto ind = del;
-//        ind += ins;
-    
-        #define CSN(x) D(ss.g2c.at(x).sn())
-        
-        o.generate(file);
-        o.writer->open(file);
-        o.writer->write((boost::format(summary) % VCFRef()                      // 1
-                                                % BedRef()                      // 2
-                                                % (endo.empty() ? "-" : endo)                          // 3
-                                                % seqs //r.countSNP()                  // 4
-                                                % "????" //(endo.empty() ? "-" : toString(es.found)) // 5
-                                                % (nIns + nDel + nInv + nDup)           // 6
-                                                % "????" //c_nSNP                        // 7
-                                                % "????" //(c_nDel + c_nIns)             // 8
-                                                % "????" //(c_nSNP + c_nDel + c_nIns)    // 9
-                                                % "????" //tp_SNP                        // 10
-                                                % "????" //(tp_Del + tp_Ins)             // 11
-                                                % "????" //(tp_SNP + tp_Del + tp_Ins)    // 12
-                                                % "????" //fp_SNP                        // 13
-                                                % "????" //(fp_Del + fp_Ins)             // 14
-                                                % "????" //(fp_SNP + fp_Del + fp_Ins)    // 15
-                                                % "????" //fn_SNP                        // 16
-                                                % "????" //(fn_Del + fn_Ins)             // 17
-                                                % "????" //(fn_SNP + fn_Del + fn_Ins)    // 18
-                                                % "????" //D(ss.oc.sn())                 // 19
-                                                % "????" //D(ss.oc.pc())                 // 20
-                                                % "????" //D(ss.oc.F1())                 // 21
-                                                % "????" //D(1-ss.oc.pc())               // 22
-                                                % "????" //D(snp.sn())                   // 23
-                                                % "????" //D(snp.pc())                   // 24
-                                                % "????" //D(snp.F1())                   // 25
-                                                % "????" //D(1-snp.pc())                 // 26
-                                                % "????" //D(ind.sn())                   // 27
-                                                % "????" //D(ind.pc())                   // 28
-                                                % "????" //D(ind.F1())                   // 29
-                                                % "????" //D(1-ind.pc())                 // 30
-                                                % "????" //D(r.nContext(Context::Common))       // 31
-                                                % "????" //D(r.nContext(Context::VeryLowGC))    // 32
-                                                % "????" //D(r.nContext(Context::LowGC))        // 33
-                                                % "????" //D(r.nContext(Context::HighGC))       // 34
-                                                % "????" //D(r.nContext(Context::VeryHighGC))   // 35
-                                                % "????" //D(r.nContext(Context::ShortDinRep))  // 36
-                                                % "????" //D(r.nContext(Context::LongDinRep))   // 37
-                                                % "????" //D(r.nContext(Context::ShortHompo))   // 38
-                                                % "????" //D(r.nContext(Context::LongHompo))    // 39
-                                                % "????" //D(r.nContext(Context::ShortQuadRep)) // 40
-                                                % "????" //D(r.nContext(Context::LongQuadRep))  // 41
-                                                % "????" //D(r.nContext(Context::ShortTrinRep)) // 42
-                                                % "????" //D(r.nContext(Context::LongTrinRep))  // 43
-                                                % "????" //D(r.nGeno(Genotype::Homozygous))     // 44
-                                                % "????" //D(r.nGeno(Genotype::Heterzygous))    // 45
-                                                % "????" //CSN(Context::LowGC)                  // 46
-                                                % "????" //CSN(Context::HighGC)                 // 47
-                                                % "????" //CSN(Context::Common)                 // 48
-                         ).str());
-    o.writer->close();
-}
-
-VStructure::EStats VStructure::analyzeE(const FileName &, const Options &o)
+VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &)
 {
     VStructure::EStats stats;
     
+    stats.v2c[Variation::Insertion];
+    stats.v2c[Variation::Deletion];
+    stats.v2c[Variation::Inversion];
+    stats.v2c[Variation::Duplication];
     
+    if (!file.empty())
+    {
+        ParserVCF2::parse(file, [&](const Variant &x)
+        {
+            stats.v2c[x.type()]++;
+        });
+    }
+
     return stats;
 }
 
@@ -205,60 +42,60 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     for (auto &i : vars) { stats.v2c[i]; }
     
     o.analyze(file);
-
+    
     ParserVCF2::parse(file, [&](const Variant &x)
-    {
-        const auto &r = Standard::instance().r_var;
-        
-        auto findMatch = [&](const Variant &qry)
-        {
-            Match m;
-            
-            m.qry = qry;
-            m.var = nullptr;
-            
-            // Can we match by position?
-            if ((m.var = r.findVar(qry.cID, qry.l)))
-            {
-                m.rID = m.var->name;
-            }
-            else
-            {
-                MergedIntervals<> inters;
-                
-                try
-                {
-                    // We should to search where the FPs are
-                    inters = r.mInters(x.cID);
-                    
-                    A_ASSERT(inters.size());
-                    
-                    const auto m2 = inters.contains(x.l);
-                    
-                    // Can we find the corresponding region for the FP?
-                    if (m2)
-                    {
-                        m.rID = m2->id();
-                        A_ASSERT(!m.rID.empty());
-                    }
-                }
-                catch (...) {}
-            }
-            
-            return m;
-        };
-        
-        const auto m = findMatch(x);
-        
-        if (m.var)
-        {
-            stats.tps.push_back(m);
-        }
-        else
-        {
-            stats.fps.push_back(m);
-        }
-    });
+                      {
+                          const auto &r = Standard::instance().r_var;
+                          
+                          auto findMatch = [&](const Variant &qry)
+                          {
+                              Match m;
+                              
+                              m.qry = qry;
+                              m.var = nullptr;
+                              
+                              // Can we match by position?
+                              if ((m.var = r.findVar(qry.cID, qry.l)))
+                              {
+                                  m.rID = m.var->name;
+                              }
+                              else
+                              {
+                                  MergedIntervals<> inters;
+                                  
+                                  try
+                                  {
+                                      // We should to search where the FPs are
+                                      inters = r.mInters(x.cID);
+                                      
+                                      A_ASSERT(inters.size());
+                                      
+                                      const auto m2 = inters.contains(x.l);
+                                      
+                                      // Can we find the corresponding region for the FP?
+                                      if (m2)
+                                      {
+                                          m.rID = m2->id();
+                                          A_ASSERT(!m.rID.empty());
+                                      }
+                                  }
+                                  catch (...) {}
+                              }
+                              
+                              return m;
+                          };
+                          
+                          const auto m = findMatch(x);
+                          
+                          if (m.var)
+                          {
+                              stats.tps.push_back(m);
+                          }
+                          else
+                          {
+                              stats.fps.push_back(m);
+                          }
+                      });
     
     /*
      * Determining the classification performance
@@ -298,12 +135,213 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
         stats.v2c[var].fn() = stats.v2c[var].nr() - stats.v2c[var].tp();
         stats.oc.nr() += r.nType(var);
     }
-
+    
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
     
     return stats;
+}
+
+static void writeDetected(const FileName &file,
+                          const VStructure::SStats &ss,
+                          const VStructure::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Chrom"
+                                           % "Position"
+                                           % "Label"
+                                           % "Mutation").str());
+    
+    auto f = [&](const std::vector<VStructure::Match> &x, const std::string &label)
+    {
+        for (const auto &i : x)
+        {
+            o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
+                                                   % i.qry.cID
+                                                   % i.qry.l.start
+                                                   % label
+                                                   % var2str(i.qry.type())).str());
+        }
+    };
+    
+    f(ss.tps, "TP");
+    f(ss.fps, "FP");
+    
+    o.writer->close();
+}
+
+static void writeSummary(const FileName &file,
+                         const FileName &endo,
+                         const FileName &seqs,
+                         const VStructure::EStats &es,
+                         const VStructure::SStats &ss,
+                         const VStructure::Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+    
+    extern FileName VCFRef();
+    extern FileName BedRef();
+    
+    const auto summary = "-------VarStructure Output Results\n\n"
+                         "-------VarStructure Output\n\n"
+                         "       Reference variant annotation:      %1%\n"
+                         "       Reference coordinate annotation:   %2%\n\n"
+                         "       User identified variants (sample): %3%\n"
+                         "       User identified variants (sequin): %4%\n\n"
+                         "       Number of sample variants (sequin regions): %5%\n"
+                         "       Number of sequin variants (sequin regions): %6%\n\n"
+                         "-------Reference variants by mutation\n\n"
+                         "       Insertion:   %7%\n"
+                         "       Deletion:    %8%\n"
+                         "       Inversion:   %9%\n"
+                         "       Duplication: %10%\n"
+                         "       Total:       %11%\n\n"
+                         "-------Sample-derived variants by mutation\n\n"
+                         "       Insertion:   %12%\n"
+                         "       Deletion:    %13%\n"
+                         "       Inversion:   %14%\n"
+                         "       Duplication: %15%\n"
+                         "       Total:       %16%\n\n"
+                         "-------Sequin-derived variants by mutation\n\n"
+                         "       Insertion:   %17%\n"
+                         "       Deletion:    %18%\n"
+                         "       Inversion:   %19%\n"
+                         "       Duplication: %20%\n"
+                         "       Total:       %21%\n\n"
+                         "-------Diagnostic performance by mutation\n\n"
+                         "       True Positive:  %22% insertions\n"
+                         "       True Positive:  %23% deletions\n"
+                         "       True Positive:  %24% inversions\n"
+                         "       True Positive:  %25% duplications\n\n"
+                         "       False Positive: %26% insertions\n"
+                         "       False Positive: %27% deletions\n"
+                         "       False Positive: %28% inversions\n"
+                         "       False Positive: %29% duplications\n\n"
+                         "       False Negative: %30% insertions\n"
+                         "       False Negative: %31% deletions\n"
+                         "       False Negative: %32% inversions\n"
+                         "       False Negative: %33% duplications\n\n"
+                         "       *Variants\n"
+                         "       Sensitivity: %34$.4f\n"
+                         "       Precision:   %35$.4f\n"
+                         "       F1 Score:    %36$.4f\n"
+                         "       FDR Rate:    %37$.4f\n\n"
+                         "       *Insertion\n"
+                         "       Sensitivity: %38$.4f\n"
+                         "       Precision:   %39$.4f\n"
+                         "       F1 Score:    %40$.4f\n"
+                         "       FDR Rate:    %41$.4f\n\n"
+                         "       *Deletions\n"
+                         "       Sensitivity: %42$.4f\n"
+                         "       Precision:   %43$.4f\n"
+                         "       F1 Score:    %44$.4f\n"
+                         "       FDR Rate:    %45$.4f\n\n"
+                         "       *Inversions\n"
+                         "       Sensitivity: %46$.4f\n"
+                         "       Precision:   %47$.4f\n"
+                         "       F1 Score:    %48$.4f\n"
+                         "       FDR Rate:    %49$.4f\n\n"
+                         "       *Duplications\n"
+                         "       Sensitivity: %50$.4f\n"
+                         "       Precision:   %51$.4f\n"
+                         "       F1 Score:    %52$.4f\n"
+                         "       FDR Rate:    %53$.4f\n";
+    
+        #define D(x) (isnan(x) ? "-" : std::to_string(x))
+        
+        const auto &ins = ss.v2c.at(Variation::Insertion);
+        const auto &del = ss.v2c.at(Variation::Deletion);
+        const auto &inv = ss.v2c.at(Variation::Inversion);
+        const auto &dup = ss.v2c.at(Variation::Duplication);
+    
+        const auto nIns = ins.nq();
+        const auto nDel = del.nq();
+        const auto nInv = inv.nq();
+        const auto nDup = dup.nq();
+
+        const auto tp_Ins = ins.tp();
+        const auto tp_Del = del.tp();
+        const auto tp_Inv = inv.tp();
+        const auto tp_Dup = dup.tp();
+    
+        const auto fp_Ins = ins.fp();
+        const auto fp_Del = del.fp();
+        const auto fp_Inv = inv.fp();
+        const auto fp_Dup = dup.fp();
+    
+        const auto fn_Ins = ins.fn();
+        const auto fn_Del = del.fn();
+        const auto fn_Inv = inv.fn();
+        const auto fn_Dup = dup.fn();
+    
+        #define E(x) (endo.empty() ? "-" : std::to_string(es.v2c.at(x)))
+        #define T()  (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion) + es.v2c.at(Variation::Inversion) + es.v2c.at(Variation::Duplication)))
+
+        o.generate(file);
+        o.writer->open(file);
+        o.writer->write((boost::format(summary) % VCFRef()                         // 1
+                                                % BedRef()                         // 2
+                                                % (endo.empty() ? "-" : endo)      // 3
+                                                % seqs                             // 4
+                                                % (endo.empty() ? "-" : endo)      // 5
+                                                % (nIns + nDel + nInv + nDup)      // 6
+                                                % r.nType(Variation::Insertion)    // 7
+                                                % r.nType(Variation::Deletion)     // 8
+                                                % r.nType(Variation::Inversion)    // 9
+                                                % r.nType(Variation::Duplication)  // 10
+                                                % (r.nType(Variation::Insertion) +
+                                                   r.nType(Variation::Deletion)  +
+                                                   r.nType(Variation::Inversion) +
+                                                   r.nType(Variation::Duplication))
+                                                % E(Variation::Insertion)           // 12
+                                                % E(Variation::Deletion)            // 13
+                                                % E(Variation::Inversion)           // 14
+                                                % E(Variation::Duplication)         // 15
+                                                % T()                               // 16
+                                                % nIns                              // 17
+                                                % nDel                              // 18
+                                                % nInv                              // 19
+                                                % nDup                              // 20
+                                                % (nIns + nDel + nInv + nDup)       // 21
+                                                % tp_Ins                            // 22
+                                                % tp_Del                            // 23
+                                                % tp_Inv                            // 24
+                                                % tp_Dup                            // 25
+                                                % fp_Ins                            // 26
+                                                % fp_Del                            // 27
+                                                % fp_Inv                            // 28
+                                                % fp_Dup                            // 29
+                                                % fn_Ins                            // 30
+                                                % fn_Del                            // 31
+                                                % fn_Inv                            // 32
+                                                % fn_Dup                            // 33
+                                                % D(ss.oc.sn())                     // 34
+                                                % D(ss.oc.pc())                     // 35
+                                                % D(ss.oc.F1())                     // 36
+                                                % D(1-ss.oc.pc())                   // 37
+                                                % D(ins.sn())                       // 38
+                                                % D(ins.pc())                       // 39
+                                                % D(ins.F1())                       // 40
+                                                % D(1-ins.pc())                     // 41
+                                                % D(del.sn())                       // 42
+                                                % D(del.pc())                       // 43
+                                                % D(del.F1())                       // 44
+                                                % D(1-del.pc())                     // 45
+                                                % D(inv.sn())                       // 46
+                                                % D(inv.pc())                       // 47
+                                                % D(inv.F1())                       // 48
+                                                % D(1-inv.pc())                     // 49
+                                                % D(dup.sn())                       // 50
+                                                % D(dup.pc())                       // 51
+                                                % D(dup.F1())                       // 52
+                                                % D(1-dup.pc())                     // 53
+                         ).str());
+    o.writer->close();
 }
 
 template <typename Stats, typename Options> void writeQuins(const FileName &file, const Stats &stats, const Options &o)

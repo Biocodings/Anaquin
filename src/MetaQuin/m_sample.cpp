@@ -15,7 +15,7 @@ MSample::Stats MSample::analyze(const FileName &file, const Options &o)
     o.info(file);
     o.info("Sampling proportion: " + std::to_string(o.p));
 
-    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

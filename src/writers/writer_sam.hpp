@@ -52,7 +52,7 @@ namespace Anaquin
                 throw std::runtime_error("Not implemented");
             }
 
-            inline void write(const ParserSAM::Data &x)
+            inline void write(const ParserBAM::Data &x)
             {
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());

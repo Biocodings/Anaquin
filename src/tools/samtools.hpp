@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <htslib/sam.h>
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 namespace Anaquin
 {
@@ -30,7 +30,7 @@ namespace Anaquin
         { BAM_CDIFF,      'X', },
     };
 
-    inline void bam2print(const ParserSAM::Data &x)
+    inline void bam2print(const ParserBAM::Data &x)
     {
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
         const auto str = (boost::format(format) % x.name
@@ -132,7 +132,7 @@ namespace Anaquin
     }
     
 #ifdef REVERSE_ALIGNMENT
-    inline Base reversePos(const Locus &l, ParserSAM::Data &x, const ParserSAM::Info &i)
+    inline Base reversePos(const Locus &l, ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         // Length of the chromosome
         const auto clen = i.length;
@@ -164,7 +164,7 @@ namespace Anaquin
 #ifdef REVERSE_ALIGNMENT
     
     // Reverse an alignment
-    inline void reverse(ParserSAM::Data &x, const ParserSAM::Info &i)
+    inline void reverse(ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         /*
          * The following needs to be reversed:

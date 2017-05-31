@@ -23,6 +23,7 @@ namespace Anaquin
         
         struct EStats
         {
+            std::map<Variation, Counts> v2c;
         };
         
         struct SStats

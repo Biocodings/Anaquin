@@ -17,7 +17,7 @@ TEST_CASE("VFlip_1")
             return true;
         }
         
-        void process(const ParserSAM::Data &x, const ParserSAM::Data &y, Status status)
+        void process(const ParserBAM::Data &x, const ParserBAM::Data &y, Status status)
         {
             switch (status)
             {
@@ -68,9 +68,9 @@ TEST_CASE("VFlip_1")
             }
         }
 
-        std::map<ReadName, ParserSAM::Data> hangs;
-        std::map<ReadName, ParserSAM::Data> rever1;
-        std::map<ReadName, ParserSAM::Data> rever2;
+        std::map<ReadName, ParserBAM::Data> hangs;
+        std::map<ReadName, ParserBAM::Data> rever1;
+        std::map<ReadName, ParserBAM::Data> rever2;
     };
 
     Impl impl;

@@ -136,12 +136,12 @@ namespace Anaquin
             inline bool operator!=(const Locus &l) const { return !operator==(l); }
             inline bool operator==(const Locus &l) const { return start == l.start && end == l.end; }
 
-            inline Locus operator+(const Locus &l)  const
+            inline Locus operator+(const Locus &l) const
             {
                 return Locus(std::min(start, l.start), std::max(end, l.end));
             }
 
-            inline bool operator<(const Locus &l)  const
+            inline bool operator<(const Locus &l) const
             {
                 return start < l.start || (start == l.start && end < l.end);
             }

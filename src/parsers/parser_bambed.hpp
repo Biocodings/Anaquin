@@ -2,7 +2,7 @@
 #define PARSER_BAMBED_HPP
 
 #include "data/intervals.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 namespace Anaquin
 {
@@ -48,7 +48,7 @@ namespace Anaquin
                 stats.inters[i.first].build();
             }
 
-            ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+            ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
             {
                 Interval *matched = nullptr;
                 

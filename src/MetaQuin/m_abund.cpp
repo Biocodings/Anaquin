@@ -1,7 +1,7 @@
 #include "tools/tools.hpp"
 #include "data/standard.hpp"
 #include "MetaQuin/m_abund.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 
@@ -16,7 +16,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
 //    {
 //        case Format::BAM:
 //        {
-//            ParserSAM::parse(files[0], [&](const Alignment &align, const ParserSAM::Info &info)
+//            ParserBAM::parse(files[0], [&](const Alignment &align, const ParserBAM::Info &info)
 //            {
 //                if (info.p.i && !(info.p.i % 1000000))
 //                {

@@ -5,7 +5,7 @@
 #include "tools/tools.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 namespace Anaquin
 {
@@ -33,7 +33,7 @@ namespace Anaquin
         struct Impl
         {
             virtual bool isReverse(const ChrID &) = 0;
-            virtual void process(const ParserSAM::Data &, const ParserSAM::Data &, Status) = 0;
+            virtual void process(const ParserBAM::Data &, const ParserBAM::Data &, Status) = 0;
         };
 
         static Stats analyze(const FileName &, const Options &, Impl &);

@@ -1,7 +1,7 @@
 #include "tools/tools.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/MetaQuin.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -31,7 +31,7 @@ static MAlign::Stats init()
     return stats;
 }
 
-static void classifyAlign(MAlign::Stats &stats, ParserSAM::Data &align)
+static void classifyAlign(MAlign::Stats &stats, ParserBAM::Data &align)
 {
     if (!stats.data.count(align.cID))
     {
@@ -137,7 +137,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 {
     auto stats = init();
     
-    auto classify = [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    auto classify = [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -178,7 +178,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     
     o.analyze(file);
     
-    ParserSAM::parse(file, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &align, const ParserBAM::Info &info)
     {
         classify(align, info);
     });

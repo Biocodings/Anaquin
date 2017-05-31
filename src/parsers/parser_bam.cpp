@@ -1,11 +1,11 @@
 #include <htslib/sam.h>
 #include "tools/samtools.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace Anaquin;
 
-bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
+bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
 {
     assert(_h && _b);
     
@@ -104,7 +104,7 @@ bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
     return false;
 }
 
-void ParserSAM::parse(const FileName &file, Functor x, bool details)
+void ParserBAM::parse(const FileName &file, Functor x, bool details)
 {
     auto f = sam_open(file.c_str(), "r");
     

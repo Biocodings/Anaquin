@@ -2,7 +2,7 @@
 #include "tools/gtf_data.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/RnaQuin.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 
@@ -202,7 +202,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     return stats;
 }
 
-static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::Data &align)
+static void match(RAlign::Stats &stats, const ParserBAM::Info &info, ParserBAM::Data &align)
 {
     static Locus l;
     static bool spliced;
@@ -331,7 +331,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](RAlign::Stats &stats)
     {
-        ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+        ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
         {
             if (info.p.i && !(info.p.i % 1000000))
             {

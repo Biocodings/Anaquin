@@ -375,9 +375,6 @@ namespace Anaquin
             Counts nType(Variation) const;
             Counts nContext(SequinVariant::Context) const;
 
-            Counts countSNP() const;
-            Counts countInd() const;
-        
             // Returns all reference variants
             std::set<Variant> vars() const;
 

@@ -22,7 +22,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
 
     o.info("Calculating the coverage before subsampling");
     
-    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

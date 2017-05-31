@@ -655,16 +655,6 @@ Proportion VarRef::findAFreq(const SequinID &x) const
     return _mixes.at(Mix_1).at(x)->abund;
 }
 
-Counts VarRef::countInd() const
-{
-    return _impl->vData.countInd();
-}
-
-Counts VarRef::countSNP() const
-{
-    return _impl->vData.countSNP();
-}
-
 /*
  * Filter out all reference sequin regions
  */

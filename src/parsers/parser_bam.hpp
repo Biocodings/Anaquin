@@ -1,5 +1,5 @@
-#ifndef PARSER_SAM_HPP
-#define PARSER_SAM_HPP
+#ifndef PARSER_BAM_HPP
+#define PARSER_BAM_HPP
 
 #include "data/alignment.hpp"
 #include "stats/analyzer.hpp"
@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    struct ParserSAM
+    struct ParserBAM
     {
         struct Info
         {
@@ -37,7 +37,7 @@ namespace Anaquin
 
         class Data : public Alignment
         {
-            friend class ParserSAM;
+            friend class ParserBAM;
             
             public:
             

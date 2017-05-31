@@ -1071,8 +1071,8 @@ void parse(int argc, char ** argv)
                 {
 //                    MDiff::Options o;
 //                    
-//                    if (_p.inputs.size() == 2 && ParserSAM::isBAM(Reader(_p.inputs[0]))
-//                                              && ParserSAM::isBAM(Reader(_p.inputs[1])))
+//                    if (_p.inputs.size() == 2 && ParserBAM::isBAM(Reader(_p.inputs[0]))
+//                                              && ParserBAM::isBAM(Reader(_p.inputs[1])))
 //                    {
 //                        o.format = MDiff::Format::BAM;
 //                    }
@@ -1094,7 +1094,7 @@ void parse(int argc, char ** argv)
                 {
 //                    MAbund::Options o;
 //                    
-//                    if (_p.inputs.size() == 1 && ParserSAM::isBAM(Reader(_p.inputs[0])))
+//                    if (_p.inputs.size() == 1 && ParserBAM::isBAM(Reader(_p.inputs[0])))
 //                    {
 //                        o.format = MAbund::Format::BAM;
 //                    }

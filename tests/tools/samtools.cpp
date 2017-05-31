@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "tools/samtools.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 

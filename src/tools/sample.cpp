@@ -1,5 +1,5 @@
 #include "tools/sample.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 #include "writers/writer_sam.hpp"
 
 using namespace Anaquin;
@@ -14,7 +14,7 @@ Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const Analyze
     WriterSAM w;
     w.openTerm();
     
-    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

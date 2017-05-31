@@ -531,36 +531,39 @@ static void writeSummary(const FileName &file,
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % VCFRef()                      // 1
-                                                % BedRef()                      // 2
-                                                % seqs                          // 3
-                                                % r.countSNP()                  // 4
-                                                % r.countInd()                  // 5
-                                                % (r.countSNP() + r.countInd()) // 6
-                                                % c_nSNP                        // 7
-                                                % (c_nDel + c_nIns)             // 8
-                                                % (c_nSNP + c_nDel + c_nIns)    // 9
-                                                % tp_SNP                        // 10
-                                                % (tp_Del + tp_Ins)             // 11
-                                                % (tp_SNP + tp_Del + tp_Ins)    // 12
-                                                % fp_SNP                        // 13
-                                                % (fp_Del + fp_Ins)             // 14
-                                                % (fp_SNP + fp_Del + fp_Ins)    // 15
-                                                % fn_SNP                        // 16
-                                                % (fn_Del + fn_Ins)             // 17
-                                                % (fn_SNP + fn_Del + fn_Ins)    // 18
-                                                % D(ss.oc.sn())                 // 19
-                                                % D(ss.oc.pc())                 // 20
-                                                % D(ss.oc.F1())                 // 21
-                                                % D(1-ss.oc.pc())               // 22
-                                                % D(snp.sn())                   // 23
-                                                % D(snp.pc())                   // 24
-                                                % D(snp.F1())                   // 25
-                                                % D(1-snp.pc())                 // 26
-                                                % D(ind.sn())                   // 27
-                                                % D(ind.pc())                   // 28
-                                                % D(ind.F1())                   // 29
-                                                % D(1-ind.pc())                 // 30
+        o.writer->write((boost::format(summary) % VCFRef()                       // 1
+                                                % BedRef()                       // 2
+                                                % seqs                           // 3
+                                                % r.nType(Variation::SNP)        // 4
+                                                % (r.nType(Variation::Insertion) +
+                                                   r.nType(Variation::Deletion)) // 5
+                                                % (r.nType(Variation::SNP) +
+                                                   r.nType(Variation::Insertion) +
+                                                   r.nType(Variation::Deletion)) // 6
+                                                % c_nSNP                         // 7
+                                                % (c_nDel + c_nIns)              // 8
+                                                % (c_nSNP + c_nDel + c_nIns)     // 9
+                                                % tp_SNP                         // 10
+                                                % (tp_Del + tp_Ins)              // 11
+                                                % (tp_SNP + tp_Del + tp_Ins)     // 12
+                                                % fp_SNP                         // 13
+                                                % (fp_Del + fp_Ins)              // 14
+                                                % (fp_SNP + fp_Del + fp_Ins)     // 15
+                                                % fn_SNP                         // 16
+                                                % (fn_Del + fn_Ins)              // 17
+                                                % (fn_SNP + fn_Del + fn_Ins)     // 18
+                                                % D(ss.oc.sn())                  // 19
+                                                % D(ss.oc.pc())                  // 20
+                                                % D(ss.oc.F1())                  // 21
+                                                % D(1-ss.oc.pc())                // 22
+                                                % D(snp.sn())                    // 23
+                                                % D(snp.pc())                    // 24
+                                                % D(snp.F1())                    // 25
+                                                % D(1-snp.pc())                  // 26
+                                                % D(ind.sn())                    // 27
+                                                % D(ind.pc())                    // 28
+                                                % D(ind.F1())                    // 29
+                                                % D(1-ind.pc())                  // 30
                                                 % D(r.nContext(Context::Common))       // 31
                                                 % D(r.nContext(Context::VeryLowGC))    // 32
                                                 % D(r.nContext(Context::LowGC))        // 33

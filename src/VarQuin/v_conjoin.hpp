@@ -1,9 +1,8 @@
 #ifndef V_CONJOIN_HPP
 #define V_CONJOIN_HPP
 
-#include "data/vData.hpp"
+#include <map>
 #include "stats/analyzer.hpp"
-#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
@@ -13,7 +12,13 @@ namespace Anaquin
         
         struct Stats
         {
+            struct Data
+            {
+                Counts  measured = 0;
+                Concent expected;
+            };
 
+            std::map<SequinID, Data> data;
         };
 
         static Stats analyze(const FileName &, const Options &o);

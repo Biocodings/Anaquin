@@ -26,9 +26,9 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
     stats.counts[Status::NotMappedNotMapped] = 0;
     
     // Required for pooling paired-end reads
-    std::map<ReadName, ParserSAM::Data> seenMates;
+    std::map<ReadName, ParserBAM::Data> seenMates;
     
-    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -233,7 +233,7 @@ void VFlip::report(const FileName &file, const Options &o)
         
         bool isReverse(const ChrID &cID) { return isReverseChr(cID); }
 
-        void process(const ParserSAM::Data &x, const ParserSAM::Data &y, VFlip::Status status)
+        void process(const ParserBAM::Data &x, const ParserBAM::Data &y, VFlip::Status status)
         {
             auto writePaired = [&](std::shared_ptr<FileWriter> p1, std::shared_ptr<FileWriter> p2)
             {

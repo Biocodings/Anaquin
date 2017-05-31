@@ -23,7 +23,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     std::vector<Interval *> multi;
     
     // Check trimming reads...
-    ParserBAMBED::parse(file, regs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -63,7 +63,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     writer.openTerm();
     
     // Triming away the paired reads ...
-    ParserBAMBED::parse(file, regs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

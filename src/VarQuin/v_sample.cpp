@@ -39,8 +39,8 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
     WriterSAM writer;
     writer.openTerm();
 
-    return ParserBAMBED::parse(file, sampled, [&](const ParserSAM::Data &x,
-                                                  const ParserSAM::Info &info,
+    return ParserBAMBED::parse(file, sampled, [&](const ParserBAM::Data &x,
+                                                  const ParserBAM::Info &info,
                                                   const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -130,7 +130,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
     VSample::CalibrateStats stats;
     
     // Checking endogenous alignments before sampling
-    stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *)
+    stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -146,7 +146,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
     });
     
     // Checking sequin alignments before sampling
-    stats.ss = ParserBAMBED::parse(seqs, tRegs, [&](ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+    stats.ss = ParserBAMBED::parse(seqs, tRegs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

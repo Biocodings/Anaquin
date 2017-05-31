@@ -1,6 +1,6 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_align.hpp"
-#include "parsers/parser_sam.hpp"
+#include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 
@@ -17,7 +17,7 @@ static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 #endif
 }
 
-static void classifyAlign(VAlign::Performance &stats, ParserSAM::Data &align)
+static void classifyAlign(VAlign::Performance &stats, ParserBAM::Data &align)
 {
     if (!stats.data.count(align.cID))
     {
@@ -164,7 +164,7 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
 #endif
 
-    auto classify = [&](ParserSAM::Data &x, const ParserSAM::Info &info, Performance &p)
+    auto classify = [&](ParserBAM::Data &x, const ParserBAM::Info &info, Performance &p)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -201,7 +201,7 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
         
         o.analyze(endo);
         
-        ParserSAM::parse(endo, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+        ParserBAM::parse(endo, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
         {
             classify(x, info, *(stats.endo));
         });
@@ -213,7 +213,7 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     
     o.analyze(seqs);
     
-    ParserSAM::parse(seqs, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserBAM::parse(seqs, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         classify(x, info, *(stats.seqs));
     });

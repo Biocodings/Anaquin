@@ -14,7 +14,7 @@ TEST_CASE("ParserBAMBED_1")
     c2i["chr10"] = chr10;
 
     const auto r = ParserBAMBED::parse("tests/data/sampled.bam", c2i,
-                    [&](const ParserSAM::Data &x, const ParserSAM::Info &info, const Interval *inter)
+                    [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
     {
         return Response::OK;
     }).inters.stats();
