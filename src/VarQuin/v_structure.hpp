@@ -1,9 +1,7 @@
 #ifndef V_STRUCTURE_HPP
 #define V_STRUCTURE_HPP
 
-#include "data/vData.hpp"
 #include "stats/analyzer.hpp"
-#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
@@ -11,19 +9,36 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
         
+        struct Match
+        {
+            // Called variant
+            Variant qry;
+            
+            // Matched sequin
+            const Variant *var = nullptr;
+
+            // Does the variant fall into reference regions?
+            SequinID rID;
+        };
+        
         struct EStats
         {
-            unsigned found = 0;
         };
         
         struct SStats
         {
+            // Overall performance
+            Confusion oc;
+            
+            std::vector<Match> tps, fps;
+            
+            // Performance by variation
+            std::map<Variation, Confusion> v2c;
         };
 
         static EStats analyzeE(const FileName &, const Options &o);
         static SStats analyzeS(const FileName &, const Options &o);
 
-        // Report for both endogenous and sequins
         static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }

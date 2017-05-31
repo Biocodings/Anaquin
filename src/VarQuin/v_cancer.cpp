@@ -218,7 +218,7 @@
 //            // Overall performance
 //            stats.oc.tp()++;
 //            
-//            // Performance for each group
+//            // Performance for each context
 //            stats.g2c[sv.ctx].tp()++;
 //            
 //            // Performance for each mutation

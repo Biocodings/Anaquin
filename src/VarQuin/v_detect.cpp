@@ -244,10 +244,10 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             // Overall performance
             stats.oc.tp()++;
             
-            // Performance for each group
+            // Performance for each context
             stats.g2c[sv.ctx].tp()++;
             
-            // Performance for each mutation
+            // Performance by variation
             stats.m2c[i.query.type()].tp()++;
         }
     };

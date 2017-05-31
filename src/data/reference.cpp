@@ -2,11 +2,11 @@
 #include "data/vData.hpp"
 #include "tools/tools.hpp"
 #include "data/tokens.hpp"
-#include "parsers/parser_vcf2.hpp"
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "MetaQuin/MetaQuin.hpp"
+#include "parsers/parser_vcf2.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -568,12 +568,7 @@ void VarRef::readVRef(const Reader &r)
 {
     typedef SequinVariant::Context Context;
     
-    auto throwInvalidRef = [&](const std::string &x)
-    {
-        throw std::runtime_error(r.src() + " doesn't seem to be a valid VCF reference file. Reason: " + x);
-    };
-    
-    _impl->vData = parseVCF(r, [&](const ParserVCF::Data &x, const ParserProgress &)
+    _impl->vData = parseVCF2(r, [&](const Variant &x)
     {
         A_ASSERT(x.key());
 
@@ -615,6 +610,11 @@ void VarRef::readVRef(const Reader &r)
                 { "HET",     Genotype::Heterzygous },
             };
             
+            auto throwInvalidRef = [&](const std::string &x)
+            {
+                throw std::runtime_error(r.src() + " doesn't seem to be a valid VCF reference file. Reason: " + x);
+            };
+
             if (!x.opts.count("CX") || !m1.count(x.opts.at("CX")))
             {
                 throwInvalidRef("The CX field is not found or invalid");
