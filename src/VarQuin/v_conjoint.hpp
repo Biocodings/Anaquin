@@ -1,5 +1,5 @@
-#ifndef V_CONJOIN_HPP
-#define V_CONJOIN_HPP
+#ifndef V_CONJOINT_HPP
+#define V_CONJOINT_HPP
 
 #include <map>
 #include "stats/analyzer.hpp"
@@ -9,8 +9,8 @@ namespace Anaquin
     struct VConjoint
     {
         typedef AnalyzerOptions Options;
-        
-        struct Stats
+
+        struct Stats : public LimitStats, public SequinStats
         {
             struct Data
             {

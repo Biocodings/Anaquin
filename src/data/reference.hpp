@@ -102,9 +102,6 @@ namespace Anaquin
             // All sequins in the reference
             inline std::set<SequinID> seqs() const { return _seqs; }
 
-            // Sequin exist in the reference?
-            inline bool exists(const SequinID &id) { return _seqs.count(id); }
-        
             // Concentation in the reference ladder
             inline Concent concent1(const SequinID &id, Mixture m = Mix_1) const
             {
@@ -141,9 +138,6 @@ namespace Anaquin
         
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
             inline MC2Intervals mInters() const { return _r1->minters(); }
-
-            // Return all validated sequins
-            inline const std::map<SequinID, Data> &data() const { return _data; }
 
             inline const Data *match(const SequinID &id) const
             {
@@ -297,11 +291,6 @@ namespace Anaquin
             template <typename T> std::vector<SequinID> merge(const std::set<T> &x)
             {
                 return merge(x, x);
-            }
-
-            inline const MixtureData * findMix(const SequinID &x, Mixture mix = Mix_1) const
-            {
-                return _mixes.at(mix).count(x) ? _mixes.at(mix).at(x).get() : nullptr;
             }
 
             // Sequins

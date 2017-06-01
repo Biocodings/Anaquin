@@ -336,21 +336,21 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
      * from mixtures and annotations.
      */
     
-    for (const auto i : _mixes)
-    {
-        // Eg: MixA, MixB etc
-        const auto mix = i.first;
-        
-        // For each of the sequin
-        for (const auto j : i.second)
-        {
-            // Only if it's a validated sequin
-            if (_data.count(j.second->id))
-            {
-                _data.at(j.first).mixes[mix] = j.second->abund;
-            }
-        }
-    }
+//    for (const auto i : _mixes)
+//    {
+//        // Eg: MixA, MixB etc
+//        const auto mix = i.first;
+//        
+//        // For each of the sequin
+//        for (const auto j : i.second)
+//        {
+//            // Only if it's a validated sequin
+//            if (_data.count(j.second->id))
+//            {
+//                _data.at(j.first).mixes[mix] = j.second->abund;
+//            }
+//        }
+//    }
 
     assert(!_data.empty());
 }

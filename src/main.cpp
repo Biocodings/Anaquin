@@ -21,7 +21,7 @@
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_cancer.hpp"
-#include "VarQuin/v_conjoin.hpp"
+#include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_diff.hpp"

@@ -113,29 +113,29 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
      * Calculating the proportion being assembled (not available for MetaQuast)
      */
     
-    for (const auto &seq : r.data())
-    {
-        if (stats.s2c.count(seq.first))
-        {
-            for (const auto &c : stats.s2c.at(seq.first))
-            {
-                switch (o.format)
-                {
-                    case Format::Blat:
-                    {
-                        stats.match += stats.c2a.at(c);
-                        stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
-                        break;
-                    }
-                        
-                    case Format::MetaQuast:
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-    }
+//    for (const auto &seq : r.data())
+//    {
+//        if (stats.s2c.count(seq.first))
+//        {
+//            for (const auto &c : stats.s2c.at(seq.first))
+//            {
+//                switch (o.format)
+//                {
+//                    case Format::Blat:
+//                    {
+//                        stats.match += stats.c2a.at(c);
+//                        stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
+//                        break;
+//                    }
+//                        
+//                    case Format::MetaQuast:
+//                    {
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     return stats;
 }
@@ -178,7 +178,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                                    % dn.nEndo
                                    % (dn.nSeqs + dn.nEndo)
                                    % BedRef()
-                                   % r.data().size()
+                                   % "????" //r.data().size()
                                    % dn.N20
                                    % dn.N50
                                    % dn.N80
@@ -203,48 +203,48 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                                   % "Match"
                                   % "Mismatch")) << std::endl;
     
-    for (const auto &seq : r.data())
-    {
-        if (stats.s2c.count(seq.first))
-        {
-            for (const auto &c : stats.s2c.at(seq.first))
-            {
-                switch (o.format)
-                {
-                    case MAssembly::Format::Blat:
-                    {
-                        const auto total = stats.c2l.at(c);
-                        const auto align = stats.c2a.at(c);
-                        
-                        assert(total >= align);
-                        
-                        ss << ((boost::format(format) % seq.first
-                                                      % seq.second.concent()
-                                                      % c
-                                                      % align
-                                                      % (total - align)).str()) << std::endl;
-                        break;
-                    }
-                        
-                    case MAssembly::Format::MetaQuast:
-                    {
-                        /*
-                         * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned
-                         * to the sequin. Thus, it's not possible to give the information at the contig level.
-                         */
-                        
-                        ss << ((boost::format(format) % seq.first
-                                                      % seq.second.concent()
-                                                      % c
-                                                      % "-"
-                                                      % "-").str()) << std::endl;
-                        break;
-                    }
-                }
-                
-            }
-        }
-    }
+//    for (const auto &seq : r.data())
+//    {
+//        if (stats.s2c.count(seq.first))
+//        {
+//            for (const auto &c : stats.s2c.at(seq.first))
+//            {
+//                switch (o.format)
+//                {
+//                    case MAssembly::Format::Blat:
+//                    {
+//                        const auto total = stats.c2l.at(c);
+//                        const auto align = stats.c2a.at(c);
+//                        
+//                        assert(total >= align);
+//                        
+//                        ss << ((boost::format(format) % seq.first
+//                                                      % seq.second.concent()
+//                                                      % c
+//                                                      % align
+//                                                      % (total - align)).str()) << std::endl;
+//                        break;
+//                    }
+//                        
+//                    case MAssembly::Format::MetaQuast:
+//                    {
+//                        /*
+//                         * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned
+//                         * to the sequin. Thus, it's not possible to give the information at the contig level.
+//                         */
+//                        
+//                        ss << ((boost::format(format) % seq.first
+//                                                      % seq.second.concent()
+//                                                      % c
+//                                                      % "-"
+//                                                      % "-").str()) << std::endl;
+//                        break;
+//                    }
+//                }
+//                
+//            }
+//        }
+//    }
     
     return ss.str();
 }

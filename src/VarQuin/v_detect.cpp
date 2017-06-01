@@ -1,5 +1,7 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_detect.hpp"
+#include "parsers/parser_vcf.hpp"
+#include "parsers/parser_vcf2.hpp"
 
 using namespace Anaquin;
 
@@ -59,21 +61,24 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
     const auto regs = Standard::instance().r_var.regs1();
     
     VDetect::EStats stats;
+
+    stats.v2c[Variation::SNP];
+    stats.v2c[Variation::Deletion];
+    stats.v2c[Variation::Inversion];
+    stats.v2c[Variation::Insertion];
+    stats.v2c[Variation::Duplication];
     
     if (!file.empty())
     {
-        readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
+        ParserVCF2::parse(file, [&](const Variant &x)
         {
-            // Only interested whether the variant falls in the reference regions
-            if (regs.count(x.cID) && regs.at(x.cID).contains(x.l))
+            if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
             {
-                stats.found++;
+                return;
             }
+            
+            stats.v2c[x.type()]++;
         });
-    }
-    else
-    {
-        stats.found = NAN;
     }
 
     return stats;
@@ -113,40 +118,40 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     };
 
     for (auto &i : ctx)  { stats.g2c[i]; }
-    for (auto &i : muts) { stats.m2c[i]; }
+    for (auto &i : muts) { stats.v2c[i]; }
     
     o.analyze(file);
 
-    readVFile(file, [&](const ParserVCF::Data &x, const ParserProgress &p)
+    ParserVCF2::parse(file, [&](const Variant &x)
     {
-        if (p.i && !(p.i % 100000))
+        if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
         {
-            o.wait(std::to_string(p.i));
+            return;
         }
         
         const auto &r = Standard::instance().r_var;
         
-        auto findMatch = [&](const ParserVCF::Data &query)
+        auto findMatch = [&](const Variant &query)
         {
             Match m;
 
-            m.query = query;
-            m.seqByPos = nullptr;
-            
+            m.qry = query;
+            m.var = nullptr;
+
             // Can we match by position?
-            if ((m.seqByPos = r.findVar(query.cID, query.l)))
+            if ((m.var = r.findVar(query.cID, query.l)))
             {
                 // Match by reference allele?
-                m.ref = m.seqByPos->ref == query.ref;
+                m.ref = m.var->ref == query.ref;
                 
                 // Match by alternative allele?
-                m.alt = m.seqByPos->alt == query.alt;
+                m.alt = m.var->alt == query.alt;
             }
             
-            if (m.seqByPos)
+            if (m.var)
             {
-                m.rReg = m.seqByPos->name;
-                A_ASSERT(!m.rReg.empty());
+                m.rID = m.var->name;
+                A_ASSERT(!m.rID.empty());
             }
             else
             {
@@ -164,8 +169,8 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
                     // Can we find the corresponding region for the FP?
                     if (m2)
                     {
-                        m.rReg = m2->id();
-                        A_ASSERT(!m.rReg.empty());
+                        m.rID = m2->id();
+                        A_ASSERT(!m.rID.empty());
                     }
                 }
                 catch (...) {}
@@ -177,16 +182,16 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         const auto m = findMatch(x);
         
         // Matched if the position and alleles agree
-        const auto matched = m.seqByPos && m.ref && m.alt;
+        const auto matched = m.var && m.ref && m.alt;
         
         if (matched)
         {
-            const auto key = m.seqByPos->key();
+            const auto key = m.var->key();
             
             stats.tps.push_back(m);
             
-            const auto exp = r.findAFreq(m.seqByPos->name);
-            const auto obs = m.query.allF;
+            const auto exp = r.findAFreq(m.var->name);
+            const auto obs = m.qry.allF;
             
             A_ASSERT(!isnan(exp) && !isnan(obs));
             
@@ -197,7 +202,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             stats.oa.add(id, exp, obs);
             
             // Add for mutation type
-            stats.m2a[m.query.type()].add(id, exp, obs);
+            stats.m2a[m.qry.type()].add(id, exp, obs);
         }
         else
         {
@@ -228,7 +233,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         for (auto &i : stats.tps)
         {
             // This shouldn't fail...
-            const auto &sv = r.findSeqVar(i.seqByPos->key());
+            const auto &sv = r.findSeqVar(i.var->key());
             
             // Overall performance
             stats.oc.tp()++;
@@ -237,7 +242,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             stats.g2c[sv.ctx].tp()++;
             
             // Performance by variation
-            stats.m2c[i.query.type()].tp()++;
+            stats.v2c[i.qry.type()].tp()++;
         }
     };
     
@@ -249,7 +254,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             stats.oc.fp()++;
             
             // Performance for each mutation
-            stats.m2c[i.query.type()].fp()++;
+            stats.v2c[i.qry.type()].fp()++;
         }
     };
 
@@ -258,9 +263,9 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 
     for (auto &mut : muts)
     {
-        stats.m2c[mut].nr() = r.nType(mut);
-        stats.m2c[mut].nq() = stats.m2c[mut].tp() + stats.m2c[mut].fp();
-        stats.m2c[mut].fn() = stats.m2c[mut].nr() - stats.m2c[mut].tp();
+        stats.v2c[mut].nr() = r.nType(mut);
+        stats.v2c[mut].nq() = stats.v2c[mut].tp() + stats.v2c[mut].fp();
+        stats.v2c[mut].fn() = stats.v2c[mut].nr() - stats.v2c[mut].tp();
         stats.oc.nr() += r.nType(mut);
     }
 
@@ -274,6 +279,20 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     }
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
+ 
+    for (const auto &i : r.vars())
+    {
+        if (!stats.findTP(i.name))
+        {
+            VDetect::Match m;
+            
+            m.var = r.findVar(i.cID, i.l);
+            m.rID = i.name;
+            A_ASSERT(m.var);
+            
+            stats.fns.push_back(m);
+        }
+    }
     
     return stats;
 }
@@ -311,7 +330,7 @@ static void writeQuins(const FileName &file,
         if (isTP)
         {
             // Called variant (if found)
-            const auto &c = isTP->query;
+            const auto &c = isTP->qry;
             
             o.writer->write((boost::format(format) % i.name
                                                    % i.cID
@@ -376,21 +395,21 @@ static void writeDetected(const FileName &file,
     {
         for (const auto &i : x)
         {
-            auto sID = (i.seqByPos && i.alt && i.ref ? i.seqByPos->name : "-");
-            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.seqByPos->key()).ctx) : "-";
+            auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
+            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
 
-            o.writer->write((boost::format(format) % (i.rReg.empty() ? "-" : i.rReg)
-                                                   % i.query.cID
-                                                   % i.query.l.start
+            o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
+                                                   % i.qry.cID
+                                                   % i.qry.l.start
                                                    % label
-                                                   % i.query.readR
-                                                   % i.query.readV
-                                                   % i.query.depth
+                                                   % i.qry.readR
+                                                   % i.qry.readV
+                                                   % i.qry.depth
                                                    % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
-                                                   % i.query.allF
-                                                   % toString(i.query.qual)
+                                                   % i.qry.allF
+                                                   % toString(i.qry.qual)
                                                    % ctx
-                                                   % var2str(i.query.type())).str());
+                                                   % var2str(i.qry.type())).str());
         }
     };
     
@@ -503,7 +522,7 @@ static void writeSummary(const FileName &file,
 
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
-        const auto &m2c = ss.m2c;
+        const auto &m2c = ss.v2c;
         const auto &snp = m2c.at(Variation::SNP);
         const auto &del = m2c.at(Variation::Deletion);
         const auto &ins = m2c.at(Variation::Insertion);
@@ -593,7 +612,7 @@ static void writeSummary(const FileName &file,
                                                 % CSN(Context::ShortQuadRep)           // 57
                                                 % CSN(Context::ShortTrinRep)           // 58
                                                 % (endo.empty() ? "-" : endo)          // 59
-                                                % (endo.empty() ? "-" : toString(es.found)) // 60
+                                                % "????" //(endo.empty() ? "-" : toString(es.found)) // 60
                                                 % (c_nSNP + c_nDel + c_nIns)           // 61
                          ).str());
     };
@@ -602,39 +621,31 @@ static void writeSummary(const FileName &file,
     o.writer->close();
 }
 
-static void writeVCF()
+template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o)
 {
-    const auto head =  "##fileformat=VCFv4.1\
-                        ##reference=https:\\www.sequin.xyz\
-                        ##INFO=<ID=GT,Number=1,Type=String,Description=""Net Genotype across all datasets"">\
-                        ##INFO=<ID=CP,Number=A,Type=Float,Description=""Copy Number for the sequin"">\
-                        ##INFO=<ID=CX,Number=.,Type=String,Description=""Context for the sequin"">\
-                        ##contig=<ID=chr1,length=248956422>\
-                        ##contig=<ID=chr2,length=242193529>\
-                        ##contig=<ID=chr3,length=198295559>\
-                        ##contig=<ID=chr4,length=190214555>\
-                        ##contig=<ID=chr5,length=181538259>\
-                        ##contig=<ID=chr6,length=170805979>\
-                        ##contig=<ID=chr7,length=159345973>\
-                        ##contig=<ID=chr8,length=145138636>\
-                        ##contig=<ID=chr9,length=138394717>\
-                        ##contig=<ID=chr10,length=133797422>\
-                        ##contig=<ID=chr11,length=135086622>\
-                        ##contig=<ID=chr12,length=133275309>\
-                        ##contig=<ID=chr13,length=114364328>\
-                        ##contig=<ID=chr14,length=107043718>\
-                        ##contig=<ID=chr15,length=101991189>\
-                        ##contig=<ID=chr16,length=90338345>\
-                        ##contig=<ID=chr17,length=83257441>\
-                        ##contig=<ID=chr18,length=80373285>\
-                        ##contig=<ID=chr19,length=58617616>\
-                        ##contig=<ID=chr20,length=64444167>\
-                        ##contig=<ID=chr21,length=46709983>\
-                        ##contig=<ID=chr22,length=50818468>\
-                        ##contig=<ID=chrM,length=16569>\
-                        ##contig=<ID=chrX,length=156040895>\
-                        ##contig=<ID=chrY,length=57227415>\
-                        #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
+    const auto head = "##fileformat=VCFv4.1\n"
+                      "##reference=https://www.sequin.xyz\n"
+                      "##INFO=<ID=AF,Number=A,Type=Float,Description=""Allele Frequency"">\n"
+                      "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(head);
+    
+    for (const auto &i : x)
+    {
+        const auto var = i.var ? i.var : &i.qry;
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t.\t.\tAF=%6%";
+        
+        o.writer->write((boost::format(format) % var->cID
+                                               % var->l.start
+                                               % var->name
+                                               % var->ref
+                                               % var->alt
+                                               % var->allF).str());
+    }
+    
+    o.writer->close();
 }
 
 void VDetect::report(const FileName &endo, const FileName &seqs, const Options &o)
@@ -672,7 +683,24 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     
     o.generate("VarDetect_ROC.R");
     o.writer->open("VarDetect_ROC.R");
-    
     o.writer->write(createVGROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
+    
+    /*
+     * Generating VarData_TP.vcf
+     */
+    
+    writeVCF("VarDetect_TP.vcf", ss.tps, o);
+    
+    /*
+     * Generating VarData_FP.vcf
+     */
+    
+    writeVCF("VarData_FP.vcf", ss.fps, o);
+    
+    /*
+     * Generating VarData_FN.vcf
+     */
+    
+    writeVCF("VarData_FN.vcf", ss.fns, o);
 }

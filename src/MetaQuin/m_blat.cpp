@@ -15,11 +15,11 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
     
     SequinAlign m;
     
-    for (const auto &i : r.data())
-    {
-        m[i.second.id] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
-        m[i.second.id]->seq = &i.second;
-    }
+//    for (const auto &i : r.data())
+//    {
+//        m[i.second.id] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
+//        m[i.second.id]->seq = &i.second;
+//    }
     
     MBlat::Stats stats;
     

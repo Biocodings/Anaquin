@@ -9,6 +9,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
 {
     VStructure::EStats stats;
     
+    stats.v2c[Variation::SNP];
     stats.v2c[Variation::Deletion];
     stats.v2c[Variation::Inversion];
     stats.v2c[Variation::Insertion];

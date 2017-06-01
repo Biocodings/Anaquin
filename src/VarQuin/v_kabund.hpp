@@ -21,7 +21,7 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
-	    Options() : mode(Mode::CNVLad), soft(Software::Salmon) {}
+            Options() : mode(Mode::CNVLad), soft(Software::Salmon) {}
             Mode mode;
             Software soft;
         };

@@ -17,10 +17,10 @@ namespace Anaquin
         struct Match
         {
             // The called variant
-            Variant query;
+            Variant qry;
             
             // Sequin matched by position?
-            const Variant *seqByPos = nullptr;
+            const Variant *var = nullptr;
             
             // Matched by variant allele? Only if position is matched.
             bool alt;
@@ -29,7 +29,7 @@ namespace Anaquin
             bool ref;
             
             // Does the variant fall into one of the reference regions?
-            SequinID rReg;
+            SequinID rID;
         };
 
         enum class Method
@@ -46,16 +46,12 @@ namespace Anaquin
 
         struct EStats
         {
-            unsigned found = 0;
+            std::map<Variation, Counts> v2c;
         };
-        
+
         struct SStats
         {
-            // True positives
-            std::vector<Match> tps;
-            
-            // False postivies
-            std::vector<Match> fps;
+            std::vector<Match> tps, fns, fps;
 
             /*
              * Performance statistics
@@ -65,7 +61,7 @@ namespace Anaquin
             std::map<SequinVariant::Context, Confusion> g2c;
 
             // Performance by variation
-            std::map<Variation, Confusion> m2c;
+            std::map<Variation, Confusion> v2c;
 
             // Overall performance
             Confusion oc;
@@ -86,7 +82,7 @@ namespace Anaquin
             {
                 for (auto &i : tps)
                 {
-                    if (i.seqByPos->name == id)
+                    if (i.var->name == id)
                     {
                         return &i;
                     }

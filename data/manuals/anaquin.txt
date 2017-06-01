@@ -3,7 +3,7 @@
 Developed at the Garvan Institute of Medical Research.
 
 Please visit our website www.sequin.xyz for more information. 
-Version: 1.1.1
+Version: 2.0
 
 <b>Usage</b>
        anaquin <tool> [options]
@@ -23,3 +23,12 @@ Version: 1.1.1
             RnaExpression - Quantitative analysis of sequin expression
             RnaFoldChange - Assess fold-changes in gene expression between multiple samples
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
+
+            VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
+            VarFlip       - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation
+            VarTrim       - Trim artificials reads aligned to the sequin boundaries
+            VarSubsample  - Calibrate sequin- and sample-derived alignment coverage
+            VarDetect     - Compare the identification of variants from sequin- and sample-derived alignments
+            VarCopy       - Perform quantitative analysis on copy number variation
+            VarStructure  - Compare the identification of structural variants from sequin- and sample-derived alignments
+            VarConjoint   - Quantitative analysis of conjoint sequins
