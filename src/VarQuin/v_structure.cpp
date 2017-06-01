@@ -22,6 +22,10 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
+            else if (!x.opts.count("SVLEN"))
+            {
+                return;
+            }
             
             stats.v2c[x.type()]++;
         });
@@ -227,58 +231,56 @@ static void writeSummary(const FileName &file,
                          "       Insertion:   %7%\n"
                          "       Deletion:    %8%\n"
                          "       Inversion:   %9%\n"
-                         "       Duplication: %10%\n"
-                         "       Total:       %11%\n\n"
+                         "       Duplication: %10%\n\n"
                          "-------Sample-derived variants by mutation\n\n"
-                         "       Insertion:   %12%\n"
-                         "       Deletion:    %13%\n"
-                         "       Inversion:   %14%\n"
-                         "       Duplication: %15%\n"
-                         "       Total:       %16%\n\n"
+                         "       Insertion:   %11%\n"
+                         "       Deletion:    %12%\n"
+                         "       Inversion:   %13%\n"
+                         "       Duplication: %14%\n\n"
                          "-------Sequin-derived variants by mutation\n\n"
-                         "       Insertion:   %17%\n"
-                         "       Deletion:    %18%\n"
-                         "       Inversion:   %19%\n"
-                         "       Duplication: %20%\n"
-                         "       Total:       %21%\n\n"
+                         "       Insertion:   %15%\n"
+                         "       Deletion:    %16%\n"
+                         "       Inversion:   %17%\n"
+                         "       Duplication: %18%\n"
+                         "       Total:       %19%\n\n"
                          "-------Diagnostic performance by mutation\n\n"
-                         "       True Positive:  %22% insertions\n"
-                         "       True Positive:  %23% deletions\n"
-                         "       True Positive:  %24% inversions\n"
-                         "       True Positive:  %25% duplications\n\n"
-                         "       False Positive: %26% insertions\n"
-                         "       False Positive: %27% deletions\n"
-                         "       False Positive: %28% inversions\n"
-                         "       False Positive: %29% duplications\n\n"
-                         "       False Negative: %30% insertions\n"
-                         "       False Negative: %31% deletions\n"
-                         "       False Negative: %32% inversions\n"
-                         "       False Negative: %33% duplications\n\n"
+                         "       True Positive:  %20% insertions\n"
+                         "       True Positive:  %21% deletions\n"
+                         "       True Positive:  %22% inversions\n"
+                         "       True Positive:  %23% duplications\n\n"
+                         "       False Positive: %24% insertions\n"
+                         "       False Positive: %25% deletions\n"
+                         "       False Positive: %26% inversions\n"
+                         "       False Positive: %27% duplications\n\n"
+                         "       False Negative: %28% insertions\n"
+                         "       False Negative: %29% deletions\n"
+                         "       False Negative: %30% inversions\n"
+                         "       False Negative: %31% duplications\n\n"
                          "       *Variants\n"
-                         "       Sensitivity: %34$.4f\n"
-                         "       Precision:   %35$.4f\n"
-                         "       F1 Score:    %36$.4f\n"
-                         "       FDR Rate:    %37$.4f\n\n"
+                         "       Sensitivity: %32$.4f\n"
+                         "       Precision:   %33$.4f\n"
+                         "       F1 Score:    %34$.4f\n"
+                         "       FDR Rate:    %35$.4f\n\n"
                          "       *Insertion\n"
-                         "       Sensitivity: %38$.4f\n"
-                         "       Precision:   %39$.4f\n"
-                         "       F1 Score:    %40$.4f\n"
-                         "       FDR Rate:    %41$.4f\n\n"
+                         "       Sensitivity: %36$.4f\n"
+                         "       Precision:   %37$.4f\n"
+                         "       F1 Score:    %38$.4f\n"
+                         "       FDR Rate:    %39$.4f\n\n"
                          "       *Deletions\n"
-                         "       Sensitivity: %42$.4f\n"
-                         "       Precision:   %43$.4f\n"
-                         "       F1 Score:    %44$.4f\n"
-                         "       FDR Rate:    %45$.4f\n\n"
+                         "       Sensitivity: %40$.4f\n"
+                         "       Precision:   %41$.4f\n"
+                         "       F1 Score:    %42$.4f\n"
+                         "       FDR Rate:    %43$.4f\n\n"
                          "       *Inversions\n"
-                         "       Sensitivity: %46$.4f\n"
-                         "       Precision:   %47$.4f\n"
-                         "       F1 Score:    %48$.4f\n"
-                         "       FDR Rate:    %49$.4f\n\n"
+                         "       Sensitivity: %44$.4f\n"
+                         "       Precision:   %45$.4f\n"
+                         "       F1 Score:    %46$.4f\n"
+                         "       FDR Rate:    %47$.4f\n\n"
                          "       *Duplications\n"
-                         "       Sensitivity: %50$.4f\n"
-                         "       Precision:   %51$.4f\n"
-                         "       F1 Score:    %52$.4f\n"
-                         "       FDR Rate:    %53$.4f\n";
+                         "       Sensitivity: %48$.4f\n"
+                         "       Precision:   %49$.4f\n"
+                         "       F1 Score:    %50$.4f\n"
+                         "       FDR Rate:    %51$.4f\n";
     
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
@@ -316,58 +318,53 @@ static void writeSummary(const FileName &file,
                                                 % BedRef()                         // 2
                                                 % (endo.empty() ? "-" : endo)      // 3
                                                 % seqs                             // 4
-                                                % (endo.empty() ? "-" : endo)      // 5
+                                                % T()                              // 5
                                                 % (nIns + nDel + nInv + nDup)      // 6
                                                 % r.nType(Variation::Insertion)    // 7
                                                 % r.nType(Variation::Deletion)     // 8
                                                 % r.nType(Variation::Inversion)    // 9
                                                 % r.nType(Variation::Duplication)  // 10
-                                                % (r.nType(Variation::Insertion) +
-                                                   r.nType(Variation::Deletion)  +
-                                                   r.nType(Variation::Inversion) +
-                                                   r.nType(Variation::Duplication))
-                                                % E(Variation::Insertion)           // 12
-                                                % E(Variation::Deletion)            // 13
-                                                % E(Variation::Inversion)           // 14
-                                                % E(Variation::Duplication)         // 15
-                                                % T()                               // 16
-                                                % nIns                              // 17
-                                                % nDel                              // 18
-                                                % nInv                              // 19
-                                                % nDup                              // 20
-                                                % (nIns + nDel + nInv + nDup)       // 21
-                                                % tp_Ins                            // 22
-                                                % tp_Del                            // 23
-                                                % tp_Inv                            // 24
-                                                % tp_Dup                            // 25
-                                                % fp_Ins                            // 26
-                                                % fp_Del                            // 27
-                                                % fp_Inv                            // 28
-                                                % fp_Dup                            // 29
-                                                % fn_Ins                            // 30
-                                                % fn_Del                            // 31
-                                                % fn_Inv                            // 32
-                                                % fn_Dup                            // 33
-                                                % D(ss.oc.sn())                     // 34
-                                                % D(ss.oc.pc())                     // 35
-                                                % D(ss.oc.F1())                     // 36
-                                                % D(1-ss.oc.pc())                   // 37
-                                                % D(ins.sn())                       // 38
-                                                % D(ins.pc())                       // 39
-                                                % D(ins.F1())                       // 40
-                                                % D(1-ins.pc())                     // 41
-                                                % D(del.sn())                       // 42
-                                                % D(del.pc())                       // 43
-                                                % D(del.F1())                       // 44
-                                                % D(1-del.pc())                     // 45
-                                                % D(inv.sn())                       // 46
-                                                % D(inv.pc())                       // 47
-                                                % D(inv.F1())                       // 48
-                                                % D(1-inv.pc())                     // 49
-                                                % D(dup.sn())                       // 50
-                                                % D(dup.pc())                       // 51
-                                                % D(dup.F1())                       // 52
-                                                % D(1-dup.pc())                     // 53
+                                                % E(Variation::Insertion)          // 11
+                                                % E(Variation::Deletion)           // 12
+                                                % E(Variation::Inversion)          // 13
+                                                % E(Variation::Duplication)        // 14
+                                                % nIns                             // 15
+                                                % nDel                             // 16
+                                                % nInv                             // 17
+                                                % nDup                             // 18
+                                                % (nIns + nDel + nInv + nDup)      // 19
+                                                % tp_Ins                           // 20
+                                                % tp_Del                           // 21
+                                                % tp_Inv                           // 22
+                                                % tp_Dup                           // 23
+                                                % fp_Ins                           // 24
+                                                % fp_Del                           // 25
+                                                % fp_Inv                           // 26
+                                                % fp_Dup                           // 27
+                                                % fn_Ins                           // 28
+                                                % fn_Del                           // 29
+                                                % fn_Inv                           // 30
+                                                % fn_Dup                           // 31
+                                                % D(ss.oc.sn())                    // 32
+                                                % D(ss.oc.pc())                    // 33
+                                                % D(ss.oc.F1())                    // 34
+                                                % D(1-ss.oc.pc())                  // 35
+                                                % D(ins.sn())                      // 36
+                                                % D(ins.pc())                      // 37
+                                                % D(ins.F1())                      // 38
+                                                % D(1-ins.pc())                    // 39
+                                                % D(del.sn())                      // 40
+                                                % D(del.pc())                      // 41
+                                                % D(del.F1())                      // 42
+                                                % D(1-del.pc())                    // 43
+                                                % D(inv.sn())                      // 44
+                                                % D(inv.pc())                      // 45
+                                                % D(inv.F1())                      // 46
+                                                % D(1-inv.pc())                    // 47
+                                                % D(dup.sn())                      // 48
+                                                % D(dup.pc())                      // 49
+                                                % D(dup.F1())                      // 50
+                                                % D(1-dup.pc())                    // 51
                          ).str());
     o.writer->close();
 }
