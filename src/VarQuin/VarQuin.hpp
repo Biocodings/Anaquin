@@ -32,6 +32,16 @@ namespace Anaquin
         unsigned copy = 1;
     };
 
+    inline std::string gt2str(Genotype x)
+    {
+        switch (x)
+        {
+            case Genotype::Somatic:     { return "Somatic";     }
+            case Genotype::Homozygous:  { return "Homozygous";  }
+            case Genotype::Heterzygous: { return "Heterzygous"; }
+        }
+    }
+
     inline std::string var2str(Variation x)
     {
         switch (x)

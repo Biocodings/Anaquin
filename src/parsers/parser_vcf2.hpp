@@ -111,7 +111,11 @@ namespace Anaquin
                     // Check all the format data...
                     for (auto j = 0; j < tmp.size(); j++)
                     {
-                        if (formats[j] == "AF")
+                        if (formats[j] == "GT")
+                        {
+                            x.gt = (tmp[j] == "1/1" || tmp[j] == "0/0") ? Genotype::Homozygous : Genotype::Heterzygous;
+                        }
+                        else if (formats[j] == "AF")
                         {
                             x.allF = stof(tmp[j]);
                         }

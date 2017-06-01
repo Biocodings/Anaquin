@@ -1279,9 +1279,9 @@ void parse(int argc, char ** argv)
                     {
                         const auto &x = _p.opts.at(OPT_METHOD);
                         
-                        if (x == "pass")   { o.meth = VDetect::Method::Passed;       }
-                        else if (x == ".") { o.meth = VDetect::Method::NotFiltered;  }
-                        else               { throw InvalidValueException("-method", x); }
+                        if (x == "pass")     { o.meth = VDetect::Method::Passed;       }
+                        else if (x == "all") { o.meth = VDetect::Method::NotFiltered;  }
+                        else                 { throw InvalidValueException("-method", x); }
                     }
                     
                     analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS, o);
@@ -1296,9 +1296,9 @@ void parse(int argc, char ** argv)
                     {
                         const auto &x = _p.opts.at(OPT_METHOD);
                         
-                        if (x == "pass")   { o.meth = VStructure::Method::Passed;       }
-                        else if (x == ".") { o.meth = VStructure::Method::NotFiltered;  }
-                        else               { throw InvalidValueException("-method", x); }
+                        if (x == "pass")     { o.meth = VStructure::Method::Passed;       }
+                        else if (x == "all") { o.meth = VStructure::Method::NotFiltered;  }
+                        else                 { throw InvalidValueException("-method", x); }
                     }
 
                     analyze_2<VStructure>(OPT_U_SAMPLE, OPT_U_SEQS, o);

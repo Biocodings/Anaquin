@@ -27,13 +27,15 @@
 
 <b>TOOL OPTIONS</b>
      Required:
-        -rvcf        Reference annotation file for all variants represented with sequins (.VCF)
-        -rbed        Reference chiral coordinate annotation file (.BED)
-        -usequin     User generated sequin-derived variants (.VCF)
+        -rvcf          Reference annotation file for all variants represented with sequins (.VCF)
+        -rbed          Reference chiral coordinate annotation file (.BED)
+        -usequin       User generated sequin-derived variants (.VCF)
 
      Optional:
-        -usample     User generated sample-derived variants (.VCF)
-        -o = output  Directory in which the output files are written to
+        -usample       User generated sample-derived variants (.VCF)
+        -method = all  Should only the filtered variants ("PASS" in VCF) be considered? Possible values are "pass" and "all".
+        -o = output    Directory in which the output files are written to
+        -edge = 0      Edge effects width in nucleotide bases
 
 <b>OUTPUTS</b>
     VarDetect_summary.stats - gives the summary statistics

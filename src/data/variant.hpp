@@ -80,6 +80,8 @@ namespace Anaquin
         // The reference position, with the 1st base having position 1
         Locus l;
         
+        Genotype gt;
+        
         // Reference and alternative allele
         Sequence ref, alt;
 

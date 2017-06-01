@@ -47,22 +47,22 @@ namespace Anaquin
         struct EStats
         {
             std::map<Variation, Counts> v2c;
+            std::map<Genotype,  Counts> g2c;
         };
 
         struct SStats
         {
             std::vector<Match> tps, fns, fps;
 
-            /*
-             * Performance statistics
-             */
-            
-            // Performance by context (only sequins)
-            std::map<SequinVariant::Context, Confusion> g2c;
+            // Performance by context
+            std::map<SequinVariant::Context, Confusion> c2c;
 
             // Performance by variation
             std::map<Variation, Confusion> v2c;
 
+            // Performance by genotype
+            std::map<Genotype, Confusion> g2c;
+            
             // Overall performance
             Confusion oc;
 
