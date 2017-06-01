@@ -779,20 +779,20 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     o.writer->close();
     
     /*
-     * Generating VarData_TP.vcf
+     * Generating VarDa _TP.vcf
      */
     
     writeVCF("VarDetect_TP.vcf", ss.tps, o);
     
     /*
-     * Generating VarData_FP.vcf
+     * Generating VarDetect_FP.vcf
      */
     
-    writeVCF("VarData_FP.vcf", ss.fps, o);
+    writeVCF("VarDetect_FP.vcf", ss.fps, o);
     
     /*
-     * Generating VarData_FN.vcf
+     * Generating VarDetect_FN.vcf
      */
     
-    writeVCF("VarData_FN.vcf", ss.fns, o);
+    writeVCF("VarDetect_FN.vcf", ss.fns, o);
 }
