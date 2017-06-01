@@ -4,6 +4,8 @@
 
 using namespace Anaquin;
 
+extern Scripts PlotConjoint();
+
 VConjoint::Stats VConjoint::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -58,29 +60,29 @@ void VConjoint::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarConjoin_summary.stats
+     * Generating VarConjoint_summary.stats
      */
     
-    writeSummary("VarConjoin_summary.stats", file, stats, o);
+    writeSummary("VarConjoint_summary.stats", file, stats, o);
 
     /*
-     * Generating VarConjoin_sequins.csv
+     * Generating VarConjoint_sequins.csv
      */
     
-    writeQuins("VarConjoin_sequins.csv", stats, o);
+    writeQuins("VarConjoint_sequins.csv", stats, o);
 
     /*
-     * Generating VarConjoin_detected.csv
+     * Generating VarConjoint_detected.csv
      */
     
-    writeDetected("VarConjoin_detected.csv", stats, o);
+    writeDetected("VarConjoint_detected.csv", stats, o);
     
     /*
-     * Generating VarConjoin_linear.R
+     * Generating VarConjoint_linear.R
      */
     
-    o.generate("VarConjoin_linear.R");
-    o.writer->open("VarConjoin_linear.R");
-    //o.writer->write(createVGROC("VarConjoin_detected.csv", "data$Depth", "'FP'"));
+    o.generate("VarConjoint_linear.R");
+    o.writer->open("VarConjoint_linear.R");
+    //o.writer->write(PlotConjoint("VarConjoint_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
 }

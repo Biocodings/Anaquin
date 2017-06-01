@@ -83,16 +83,16 @@ Scripts RnaAssembly()   { return ToString(data_manuals_RnaAssembly_txt);   }
 Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
 Scripts RnaFoldChange() { return ToString(data_manuals_RnaFoldChange_txt); }
 
-Scripts VarTrim()      { return ToString(data_manuals_VarTrim_txt);      }
-Scripts VarFlip()      { return ToString(data_manuals_VarFlip_txt);      }
-Scripts VarCopy()      { return ToString(data_manuals_VarCopy_txt);      }
-Scripts VarAlign()     { return ToString(data_manuals_VarAlign_txt);     }
-Scripts VarKAbund()    { return ToString(data_manuals_VarKAbund_txt);    }
-Scripts VarSample()    { return ToString(data_manuals_VarSubsample_txt); }
-Scripts VarDetect()    { return ToString(data_manuals_VarDetect_txt);    }
-Scripts VarSomatic()   { return ToString(data_manuals_VarSomatic_txt);   }
-Scripts VarConjoin()   { return ToString(data_manuals_VarConjoint_txt);  }
-Scripts VarStructure() { return ToString(data_manuals_VarStructure_txt); }
+Scripts VarTrim()        { return ToString(data_manuals_VarTrim_txt);      }
+Scripts VarFlip()        { return ToString(data_manuals_VarFlip_txt);      }
+Scripts VarCopy()        { return ToString(data_manuals_VarCopy_txt);      }
+Scripts VarAlign()       { return ToString(data_manuals_VarAlign_txt);     }
+Scripts VarKAbund()      { return ToString(data_manuals_VarKAbund_txt);    }
+Scripts VarSample()      { return ToString(data_manuals_VarSubsample_txt); }
+Scripts VarDetect()      { return ToString(data_manuals_VarDetect_txt);    }
+Scripts VarSomatic()     { return ToString(data_manuals_VarSomatic_txt);   }
+Scripts VarConjoint()    { return ToString(data_manuals_VarConjoint_txt); }
+Scripts VarStructure()   { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaAbund()      { return ToString(data_manuals_MetaAbund_txt);      }
 Scripts MetaAlign()      { return ToString(data_manuals_MetaAlign_txt);      }

@@ -32,7 +32,7 @@ namespace Anaquin
         VarFlip,
         VarKAbund,
         VarStructure,
-        VarConjoin,
+        VarConjoint,
         
         MetaAlign,
         MetaFoldChange,

@@ -18,6 +18,12 @@ namespace Anaquin
         return std::hash<std::string>{}(str);
     }
 
+    enum class Filter
+    {
+        NotFilted,
+        Pass,
+    };
+    
     struct Variant
     {
         operator const Locus &() const { return l; }
@@ -76,6 +82,8 @@ namespace Anaquin
         
         // Reference and alternative allele
         Sequence ref, alt;
+        
+        Filter filter;
         
         // Allelle frequency
         Proportion allF = NAN;

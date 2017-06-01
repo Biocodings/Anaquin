@@ -21,7 +21,7 @@ namespace Anaquin
             Ref    = 3,
             Alt    = 4,
             Qual   = 5,
-            Filter = 6,
+            Filt   = 6,
             Info   = 7,
             Format = 8,
             Sample = 9
@@ -56,6 +56,9 @@ namespace Anaquin
                 
                 // Reference allele
                 x.ref = fields[Field::Ref];
+                
+                // Anything but not filtering is "PASS"
+                x.filter = fields[Field::Filt] == "." ? Filter::NotFilted : Filter::Pass;
                 
                 if (fields[Field::Info] != ".")
                 {
@@ -146,28 +149,7 @@ namespace Anaquin
         
         ParserVCF2::parse(r, [&](const Variant &x)
         {
-            switch (x.type())
-            {
-                case Variation::Inversion:
-                case Variation::Duplication:
-                {
-                    break;
-                }
-
-                case Variation::SNP:
-                {
-                    t[x.cID].s2d[x.l.start] = x;
-                    break;
-                }
-
-                case Variation::Deletion:
-                case Variation::Insertion:
-                {
-                    t[x.cID].i2d[x.l.start] = x;
-                    break;
-                }
-            }
-            
+            t[x.cID].b2v[x.l.start] = x;
             t[x.cID].m2v[x.type()].insert(x);
             f(x);
         });
