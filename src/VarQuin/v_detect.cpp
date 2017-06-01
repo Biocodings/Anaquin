@@ -128,7 +128,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         
         auto findMatch = [&](const ParserVCF::Data &query)
         {
-            VariantMatch m;
+            Match m;
 
             m.query = query;
             m.seqByPos = nullptr;
@@ -372,7 +372,7 @@ static void writeDetected(const FileName &file,
                                            % "Context"
                                            % "Mutation").str());
 
-    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+    auto f = [&](const std::vector<VDetect::Match> &x, const std::string &label)
     {
         for (const auto &i : x)
         {

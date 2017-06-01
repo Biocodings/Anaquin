@@ -12,28 +12,38 @@ namespace Anaquin
     
     typedef std::map<VarHashKey, Counts> VarHashTable;
 
-    struct VariantMatch
-    {
-        // The called variant
-        Variant query;
-        
-        // Sequin matched by position?
-        const Variant *seqByPos = nullptr;
-        
-        // Matched by variant allele? Only if position is matched.
-        bool alt;
-        
-        // Matched by reference allele? Only if position is matched.
-        bool ref;
-        
-        // Does the variant fall into one of the reference regions?
-        SequinID rReg;
-    };
-
     struct VDetect
     {
-        typedef AnalyzerOptions Options;
+        struct Match
+        {
+            // The called variant
+            Variant query;
+            
+            // Sequin matched by position?
+            const Variant *seqByPos = nullptr;
+            
+            // Matched by variant allele? Only if position is matched.
+            bool alt;
+            
+            // Matched by reference allele? Only if position is matched.
+            bool ref;
+            
+            // Does the variant fall into one of the reference regions?
+            SequinID rReg;
+        };
+
+        enum class Method
+        {
+            NotFiltered,
+            Passed,
+        };
         
+        struct Options : public AnalyzerOptions
+        {
+            Options() {}
+            Method meth = Method::NotFiltered;
+        };
+
         struct EStats
         {
             unsigned found = 0;
@@ -42,10 +52,10 @@ namespace Anaquin
         struct SStats
         {
             // True positives
-            std::vector<VariantMatch> tps;
+            std::vector<Match> tps;
             
             // False postivies
-            std::vector<VariantMatch> fps;
+            std::vector<Match> fps;
 
             /*
              * Performance statistics
@@ -72,7 +82,7 @@ namespace Anaquin
             // Overall performance
             AlleleStats oa;
             
-            inline const VariantMatch * findTP(const SequinID &id) const
+            inline const Match * findTP(const SequinID &id) const
             {
                 for (auto &i : tps)
                 {

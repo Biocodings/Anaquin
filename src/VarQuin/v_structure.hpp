@@ -7,8 +7,18 @@ namespace Anaquin
 {
     struct VStructure
     {
-        typedef AnalyzerOptions Options;
+        enum class Method
+        {
+            NotFiltered,
+            Passed,
+        };
         
+        struct Options : public AnalyzerOptions
+        {
+            Options() {}
+            Method meth = Method::NotFiltered;
+        };
+
         struct Match
         {
             // Called variant

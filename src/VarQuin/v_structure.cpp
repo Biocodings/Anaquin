@@ -5,19 +5,24 @@
 
 using namespace Anaquin;
 
-VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &)
+VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
 {
     VStructure::EStats stats;
     
-    stats.v2c[Variation::Insertion];
     stats.v2c[Variation::Deletion];
     stats.v2c[Variation::Inversion];
+    stats.v2c[Variation::Insertion];
     stats.v2c[Variation::Duplication];
     
     if (!file.empty())
     {
         ParserVCF2::parse(file, [&](const Variant &x)
         {
+            if (o.meth == VStructure::Method::Passed && x.filter != Filter::Pass)
+            {
+                return;
+            }
+            
             stats.v2c[x.type()]++;
         });
     }
@@ -44,58 +49,63 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     o.analyze(file);
     
     ParserVCF2::parse(file, [&](const Variant &x)
-                      {
-                          const auto &r = Standard::instance().r_var;
-                          
-                          auto findMatch = [&](const Variant &qry)
-                          {
-                              Match m;
-                              
-                              m.qry = qry;
-                              m.var = nullptr;
-                              
-                              // Can we match by position?
-                              if ((m.var = r.findVar(qry.cID, qry.l)))
-                              {
-                                  m.rID = m.var->name;
-                              }
-                              else
-                              {
-                                  MergedIntervals<> inters;
-                                  
-                                  try
-                                  {
-                                      // We should to search where the FPs are
-                                      inters = r.mInters(x.cID);
-                                      
-                                      A_ASSERT(inters.size());
-                                      
-                                      const auto m2 = inters.contains(x.l);
-                                      
-                                      // Can we find the corresponding region for the FP?
-                                      if (m2)
-                                      {
-                                          m.rID = m2->id();
-                                          A_ASSERT(!m.rID.empty());
-                                      }
-                                  }
-                                  catch (...) {}
-                              }
-                              
-                              return m;
-                          };
-                          
-                          const auto m = findMatch(x);
-                          
-                          if (m.var)
-                          {
-                              stats.tps.push_back(m);
-                          }
-                          else
-                          {
-                              stats.fps.push_back(m);
-                          }
-                      });
+    {
+        if (o.meth == VStructure::Method::Passed && x.filter != Filter::Pass)
+        {
+            return;
+        }
+        
+        const auto &r = Standard::instance().r_var;
+        
+        auto findMatch = [&](const Variant &qry)
+        {
+            Match m;
+            
+            m.qry = qry;
+            m.var = nullptr;
+            
+            // Can we match by position?
+            if ((m.var = r.findVar(qry.cID, qry.l)))
+            {
+                m.rID = m.var->name;
+            }
+            else
+            {
+                MergedIntervals<> inters;
+                
+                try
+                {
+                    // We should to search where the FPs are
+                    inters = r.mInters(x.cID);
+                    
+                    A_ASSERT(inters.size());
+                    
+                    const auto m2 = inters.contains(x.l);
+                    
+                    // Can we find the corresponding region for the FP?
+                    if (m2)
+                    {
+                        m.rID = m2->id();
+                        A_ASSERT(!m.rID.empty());
+                    }
+                }
+                catch (...) {}
+            }
+            
+            return m;
+        };
+        
+        const auto m = findMatch(x);
+        
+        if (m.var)
+        {
+            stats.tps.push_back(m);
+        }
+        else
+        {
+            stats.fps.push_back(m);
+        }
+    });
     
     /*
      * Determining the classification performance

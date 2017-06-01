@@ -1167,6 +1167,7 @@ void parse(int argc, char ** argv)
                     case Tool::VarStructure:
                     {
                         readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
@@ -1199,9 +1200,9 @@ void parse(int argc, char ** argv)
                     }
 
                     case Tool::VarDetect:
-                    case Tool::VarCancer:
                     {
                         readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
@@ -1270,9 +1271,39 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarDetect:    { analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                //case Tool::VarCancer:   { analyze_2<VCancer>(OPT_U_SAMPLE, OPT_U_SEQS);    break; }
-                case Tool::VarStructure: { analyze_2<VStructure>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarDetect:
+                {
+                    VDetect::Options o;
+                    
+                    if (_p.opts.count(OPT_METHOD))
+                    {
+                        const auto &x = _p.opts.at(OPT_METHOD);
+                        
+                        if (x == "pass")   { o.meth = VDetect::Method::Passed;       }
+                        else if (x == ".") { o.meth = VDetect::Method::NotFiltered;  }
+                        else               { throw InvalidValueException("-method", x); }
+                    }
+                    
+                    analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
+                
+                case Tool::VarStructure:
+                {
+                    VStructure::Options o;
+                    
+                    if (_p.opts.count(OPT_METHOD))
+                    {
+                        const auto &x = _p.opts.at(OPT_METHOD);
+                        
+                        if (x == "pass")   { o.meth = VStructure::Method::Passed;       }
+                        else if (x == ".") { o.meth = VStructure::Method::NotFiltered;  }
+                        else               { throw InvalidValueException("-method", x); }
+                    }
+
+                    analyze_2<VStructure>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
 
                 case Tool::VarCopy:
                 {
