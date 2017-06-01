@@ -42,3 +42,6 @@
     VarDetect_sequins.csv   - gives detailed statistics for each sequin
     VarDetect_detected.csv  - gives detailed statistics for detected variants
     VarDetect_ROC.R         – R script that plots a ROC curve and report AUC statistics
+    VarDetect_tp.vcf        – VCF file for true positivies
+    VarDetect_fp.vcf        – VCF file for false positives
+    VarDetect_fn.vcf        – VCF file for false negatives  
