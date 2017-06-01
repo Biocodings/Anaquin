@@ -380,7 +380,6 @@ namespace Anaquin
 
             const SequinVariant &findSeqVar(long) const;
         
-            const Variant *findVar(const ChrID &, long) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
 
             // Returns the expected allele frequency
@@ -466,7 +465,6 @@ namespace Anaquin
         protected:
         
             void validate(Tool, const UserReference &) override;
-
             void merge(const std::set<SequinID> &, const std::set<SequinID> &);
         
         private:

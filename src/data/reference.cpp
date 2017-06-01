@@ -742,12 +742,7 @@ void VarRef::validate(Tool x, const UserReference &r)
     }
 }
 
-const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const
+const Variant * VarRef::findVar(const ChrID &id, const Locus &l) const
 {
-    return _impl->vData.findVar(cID, l);
-}
-
-const Variant * VarRef::findVar(const ChrID &cID, long key) const
-{
-    return _impl->vData.findVar(cID, key);
+    return _impl->vData.findVar(id, l);
 }

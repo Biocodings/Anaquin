@@ -20,8 +20,8 @@ namespace Anaquin
 
     enum class Filter
     {
-        NotFilted,
         Pass,
+        NotFilted,
     };
     
     struct Variant
@@ -82,7 +82,7 @@ namespace Anaquin
         
         // Reference and alternative allele
         Sequence ref, alt;
-        
+
         Filter filter;
         
         // Allelle frequency

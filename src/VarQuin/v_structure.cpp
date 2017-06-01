@@ -54,6 +54,10 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
         {
             return;
         }
+        else if (!x.opts.count("SVLEN"))
+        {
+            return;
+        }
         
         const auto &r = Standard::instance().r_var;
         
@@ -149,6 +153,20 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
+
+    for (const auto &i : r.vars())
+    {
+        if (!stats.findTP(i.name))
+        {
+            Match m;
+            
+            m.var = r.findVar(i.cID, i.l);
+            m.rID = i.name;
+            A_ASSERT(m.var);
+            
+            stats.fns.push_back(m);
+        }
+    }
     
     return stats;
 }
@@ -166,7 +184,7 @@ static void writeDetected(const FileName &file,
                                            % "Position"
                                            % "Label"
                                            % "Mutation").str());
-    
+
     auto f = [&](const std::vector<VStructure::Match> &x, const std::string &label)
     {
         for (const auto &i : x)
@@ -197,7 +215,7 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName BedRef();
     
-    const auto summary = "-------VarStructure Output Results\n\n"
+    const auto summary = "-------VarStructure Output Results\n"
                          "-------VarStructure Output\n\n"
                          "       Reference variant annotation:      %1%\n"
                          "       Reference coordinate annotation:   %2%\n\n"
@@ -354,6 +372,8 @@ static void writeSummary(const FileName &file,
     o.writer->close();
 }
 
+typedef std::vector<Variant> Variants;
+
 template <typename Stats, typename Options> void writeQuins(const FileName &file, const Stats &stats, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -398,37 +418,44 @@ template <typename Stats, typename Options> void writeQuins(const FileName &file
     o.writer->close();
 }
 
-static void writeVCF()
+template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o)
 {
-    const auto head = "##fileformat=VCFv4.1\
-                 ##reference=https://www.sequin.xyz\
-                 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description=""Net Genotype across all datasets"">\
-                 ##INFO=<ID=END,Number=1,Type=Integer,Description=""End position of the variant described in this record"">##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=""Difference in length between REF and ALT alleles"">\
-                 ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=""Difference in length between REF and ALT alleles"">\
-                 ##contig=<ID=chr1,length=248956422>\
-                 ##contig=<ID=chr2,length=242193529>\
-                 ##contig=<ID=chr3,length=198295559>\
-                 ##contig=<ID=chr4,length=190214555>\
-                 ##contig=<ID=chr5,length=181538259>\
-                 ##contig=<ID=chr6,length=170805979>\
-                 ##contig=<ID=chr7,length=159345973>\
-                 ##contig=<ID=chr8,length=145138636>\
-                 ##contig=<ID=chr9,length=138394717>\
-                 ##contig=<ID=chr10,length=133797422>\
-                 ##contig=<ID=chr11,length=135086622>\
-                 ##contig=<ID=chr12,length=133275309>\
-                 ##contig=<ID=chr13,length=114364328>\
-                 ##contig=<ID=chr14,length=107043718>\
-                 ##contig=<ID=chr15,length=101991189>\
-                 ##contig=<ID=chr16,length=90338345>\
-                 ##contig=<ID=chr17,length=83257441>\
-                 ##contig=<ID=chr18,length=80373285>\
-                 ##contig=<ID=chr19,length=58617616>\
-                 ##contig=<ID=chr20,length=64444167>\
-                 ##contig=<ID=chr21,length=46709983>\
-                 ##contig=<ID=chr22,length=50818468>\
-                 ##contig=<ID=chrX,length=156040895>\
-                 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
+    const auto head = "##fileformat=VCFv4.1\n"
+                      "##reference=https://www.sequin.xyz\n"
+                      "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=""Net Genotype across all datasets"">\n"
+                      "##INFO=<ID=END,Number=1,Type=Integer,Description=""End position of the variant described in this record"">\n"
+                      "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=""Difference in length between REF and ALT alleles"">\n"
+                      "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=""Difference in length between REF and ALT alleles"">\n"
+                      "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(head);
+
+    const auto sv2str = std::map<Variation, std::string>
+    {
+        { Variation::SNP,         "SNP" },
+        { Variation::Deletion,    "DEL" },
+        { Variation::Insertion,   "INS" },
+        { Variation::Inversion,   "INV" },
+        { Variation::Duplication, "DUP" },
+    };
+
+    for (const auto &i : x)
+    {
+        const auto var = i.var ? i.var : &i.qry;
+        const auto format = "%1%\t%2%\t%3%\tN\t%4%\t.\t.\tSVTTYPE=%5%;SVLEN=%6%;END=%7%";
+
+        o.writer->write((boost::format(format) % var->cID
+                                               % var->l.start
+                                               % var->name
+                                               % ("<" + sv2str.at(var->type()) + ">")
+                                               % sv2str.at(var->type())
+                                               % var->opts.at("SVLEN")
+                                               % var->l.end).str());
+    }
+    
+    o.writer->close();
 }
 
 void VStructure::report(const FileName &endo, const FileName &seqs, const Options &o)
@@ -457,12 +484,17 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
     /*
      * Generating VarStructure_TP.vcf
      */
+    
+    writeVCF("VarStructure_TP.vcf", ss.tps, o);
 
     /*
      * Generating VarStructure_FP.vcf
      */
     
+    writeVCF("VarStructure_FP.vcf", ss.fps, o);
+    
     /*
      * Generating VarStructure_FN.vcf
-     */    
-}
+     */
+
+    writeVCF("VarStructure_FN.vcf", ss.fns, o);}

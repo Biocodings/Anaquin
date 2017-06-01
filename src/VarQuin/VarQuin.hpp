@@ -31,7 +31,7 @@ namespace Anaquin
         // Copy number
         unsigned copy = 1;
     };
-    
+
     inline std::string var2str(Variation x)
     {
         switch (x)

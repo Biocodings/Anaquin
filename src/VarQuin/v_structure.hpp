@@ -54,8 +54,8 @@ namespace Anaquin
             // Overall performance
             Confusion oc;
             
-            std::vector<Match> tps, fps;
-            
+            std::vector<Match> tps, fns, fps;
+
             // Performance by variation
             std::map<Variation, Confusion> v2c;
         };
