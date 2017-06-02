@@ -16,4 +16,4 @@ input <- %8%
 # Measured expression (y-axis)
 measured <- %9%
 # %11%
-plotConjoint(row.names(data), input, measured, title='%5%', xlab='%6%', ylab='%7%')
+plotConjoint(data$Sequin, row.names(data), input, measured, title='%5%', xlab='%6%', ylab='%7%')
