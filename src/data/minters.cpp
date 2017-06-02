@@ -52,11 +52,11 @@ Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
         _data[l.end] = l;
     };
     
-    if (!isnan(_x) && l.start < _x && l.end < _x)
+    if (!std::isnan(_x) && l.start < _x && l.end < _x)
     {
         added = true;
     }
-    else if (!isnan(_y) && l.start > _y && l.end > _y)
+    else if (!std::isnan(_y) && l.start > _y && l.end > _y)
     {
         added = true;
     }

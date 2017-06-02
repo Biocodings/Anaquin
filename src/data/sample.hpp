@@ -60,7 +60,7 @@ namespace Anaquin
             auto data = SSamples<double>::_data;
             
             // Some samples might not define...
-            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return isnan(x); }), data.end());
+            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return std::isnan(x); }), data.end());
             
             return SS::mean(data);
         }
@@ -70,7 +70,7 @@ namespace Anaquin
             auto data = SSamples<double>::_data;
             
             // Some samples might not define...
-            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return isnan(x); }), data.end());
+            data.erase(std::remove_if(data.begin(), data.end(),[](double x) { return std::isnan(x); }), data.end());
             
             if (data.size() == 0)
             {

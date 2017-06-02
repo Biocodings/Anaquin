@@ -22,7 +22,7 @@ namespace SS
     {
         P(Real p = 0.0) : p(p)
         {
-            if ((p < 0.0 || p > 1.0) && !isnan(p))
+            if ((p < 0.0 || p > 1.0) && !std::isnan(p))
             {
                 throw std::runtime_error("Invalid probability");
             }
