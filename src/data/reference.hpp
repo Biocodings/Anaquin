@@ -85,8 +85,7 @@ namespace Anaquin
 
     struct UserReference
     {
-        // First ladder (most tools use a single ladder)
-        std::shared_ptr<Ladder> l1;
+        std::shared_ptr<Ladder> l1, l2;
 
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;
@@ -102,6 +101,12 @@ namespace Anaquin
             // All sequins in the reference
             inline std::set<SequinID> seqs() const { return _seqs; }
 
+            // Sequins in ladder 1
+            inline std::set<SequinID> l1Seqs() const { return _l1->seqs; }
+        
+            // Sequins in ladder 2
+            inline std::set<SequinID> l2Seqs() const { return _l2->seqs; }
+        
             // Concentation in the reference ladder
             inline Concent concent1(const SequinID &id, Mixture m = Mix_1) const
             {
@@ -111,7 +116,7 @@ namespace Anaquin
             // Concentation in the reference ladder
             inline Concent concent2(const SequinID &id, Mixture m = Mix_1) const
             {
-                return _l1->concent(id, m);
+                return _l2->concent(id, m);
             }
         
             // Position in the reference annoation
@@ -175,7 +180,13 @@ namespace Anaquin
                 _l1   = l1;
                 _seqs = l1->seqs;
             }
-        
+
+            inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<Ladder> l2)
+            {
+                _l1 = l1;
+                _l2 = l2;
+            }
+
             inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<BedData> r1)
             {
                 _l1   = l1;
@@ -300,7 +311,7 @@ namespace Anaquin
             std::shared_ptr<BedData> _r1, _r2;
         
             // Sequin ladder
-            std::shared_ptr<Ladder> _l1;
+            std::shared_ptr<Ladder> _l1, _l2;
 
         
         

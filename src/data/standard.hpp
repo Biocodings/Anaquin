@@ -71,8 +71,9 @@ namespace Anaquin
             inline void addVVar(const Reader &r) { r_var.readVRef(r); }
 
             Ladder addAF(const Reader &);
-            Ladder addCon(const Reader &);
             Ladder addCNV(const Reader &);
+            Ladder addCon1(const Reader &);
+            Ladder addCon2(const Reader &);
         
             VarRef r_var;
 

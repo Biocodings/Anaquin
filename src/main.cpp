@@ -122,7 +122,7 @@ static std::map<Value, Tool> _tools =
     { "RnaSubsample",   Tool::RnaSubsample   },
 
     { "VarStructure",   Tool::VarStructure   },
-    { "VarConjoint",     Tool::VarConjoint     },
+    { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
@@ -163,7 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarConjoint,   { OPT_L_CON } },
+    { Tool::VarConjoint,  { OPT_L_CON } },
 
     /*
      * MetaQuin Analysis
@@ -233,7 +233,7 @@ FileName MixRef()
     {
         return _p.opts.at(OPT_L_CON);
     }
-    
+
     return _p.opts.at(OPT_L_AF);
 }
 
@@ -402,7 +402,7 @@ static Scripts manual(Tool tool)
         case Tool::VarSample:      { return VarSample();      }
         case Tool::VarKAbund:      { return VarKAbund();      }
         case Tool::VarDetect:      { return VarDetect();      }
-        case Tool::VarConjoint:     { return VarConjoint();    }
+        case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAlign:      { return MetaAlign();      }
         case Tool::MetaSubsample:  { return MetaAbund();      }
@@ -432,11 +432,19 @@ template <typename Mixture> void applyMix(Mixture mix)
 //    mix(Reader(mixture()));
 }
 
-template <typename F> void readLad(F f, Option key, UserReference &r)
+template <typename F> void readLad1(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
         r.l1 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
+    }
+}
+
+template <typename F> void readLad2(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.l2 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -1174,13 +1182,14 @@ void parse(int argc, char ** argv)
 
                     case Tool::VarConjoint:
                     {
-                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
                     }
 
                     case Tool::VarCopy:
                     {
-                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
+                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
@@ -1209,9 +1218,9 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_L_AF,  r);
-                        readLad(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
-                        readLad(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad1(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_L_AF,  r);
+                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
+//                      readLad1(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
                     }
 
@@ -1457,7 +1466,7 @@ extern int parse_options(int argc, char ** argv)
     }
     catch (const InvalidToolError &ex)
     {
-        printError("Invalid command. Unknown tool: " + ex.val + ". Please check the user manual and try again.");
+        printError("Invalid command. Unknown tool: " + ex.val + ". Please check your usage and try again.");
     }
     catch (const InvalidOptionException &ex)
     {

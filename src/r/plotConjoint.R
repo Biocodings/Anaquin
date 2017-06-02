@@ -8,7 +8,7 @@
 
 library(Anaquin)
 
-data <- read.csv('%3%/%4%', row.names=1, sep='\t')
+data <- read.csv('%3%/%4%', row.names=2, sep='\t')
 
 # Expected input concentration (x-axis)
 input <- %8%

@@ -8,21 +8,16 @@ extern Scripts PlotConjoint();
 VConjoint::Stats VConjoint::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto regs = r.regs1();
     
     VConjoint::Stats stats;
     
-    for (const auto &i : r.seqs())
+    for (const auto &i : r.l2Seqs())
     {
         stats.data[i];
     }
     
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
-        /*
-         * Chromosome is really conjoint sequin name here
-         */
-        
         if (stats.data.count(x.cID))
         {
             stats.data[x.cID].measured++;
@@ -36,19 +31,21 @@ static void writeQuins(const FileName &file,
                        const VConjoint::Stats &stats,
                        const VConjoint::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    
+
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name" % "Sequin" % "Expected" % "Observed" % "Fold").str());
+    o.writer->write((boost::format(format) % "Sequin" % "Unit" % "Stoichiometry" % "CNV" % "Observed").str());
 
-    for (const auto &i : stats)
+    for (const auto &i : stats.data)
     {
-        o.writer->write((boost::format(format) % i.first
-                                               % noLast(i.first, "_")
-                                               % i.second.x
-                                               % i.second.y
-                                               % last(i.first, "_")).str());
+        const auto seq = noLast(i.first, "_");
+        o.writer->write((boost::format(format) % seq
+                                               % i.first
+                                               % r.concent1(seq)
+                                               % r.concent2(i.first)
+                                               % i.second.measured).str());
     }
 
     o.writer->close();
@@ -75,27 +72,48 @@ static void writeSummary(const FileName &file,
                         "       Correlation: %6%\n"
                         "       R2:          %7%\n"
                         "       F-statistic: %8%\n"
-                        "       P-value:     %9\n"
+                        "       P-value:     %9%\n"
                         "       SSM:         %10%, DF: %11%\n"
                         "       SSE:         %12%, DF: %13%\n"
                         "       SST:         %14%, DF: %15%\n";
     
-    o.writer->write((boost::format(format) % seqs             // 1
-                                           % MixRef()         // 2
-                                           % r.regs1().size() // 3
-                                           % stats.size()     // 4
-                                           % ls.m             // 5
-                                           % ls.r             // 6
-                                           % ls.R2            // 7
-                                           % ls.F             // 8
-                                           % ls.p             // 9
-                                           % ls.SSM           // 10
-                                           % ls.SSM_D         // 11
-                                           % ls.SSE           // 12
-                                           % ls.SSE_D         // 13
-                                           % ls.SST           // 14
-                                           % ls.SST_D         // 15
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % seqs              // 1
+                                           % MixRef()          // 2
+                                           % r.l1Seqs().size() // 3
+                                           % stats.size()      // 4
+                                           % ls.m              // 5
+                                           % ls.r              // 6
+                                           % ls.R2             // 7
+                                           % ls.F              // 8
+                                           % ls.p              // 9
+                                           % ls.SSM            // 10
+                                           % ls.SSM_D          // 11
+                                           % ls.SSE            // 12
+                                           % ls.SSE_D          // 13
+                                           % ls.SST            // 14
+                                           % ls.SST_D          // 15
             ).str());
+
+    o.writer->close();
+}
+
+static void writeConjointR(const FileName &file, const VConjoint::Stats &stats, const VConjoint::Options &o)
+{
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(RWriter::createRLinear("VarConjoint_sequins.csv",
+                                           o.work,
+                                           "Expected CNV vs Observed Abundance",
+                                           "Expected CNV",
+                                           "Observed Abundance (log2)",
+                                           "log2(data$Stoichiometry * data$CNV)",
+                                           "log2(data$Observed)",
+                                           "input",
+                                           true,
+                                           PlotConjoint()));
+    o.writer->close();
 }
 
 void VConjoint::report(const FileName &file, const Options &o)
@@ -115,13 +133,10 @@ void VConjoint::report(const FileName &file, const Options &o)
      */
     
     writeQuins("VarConjoint_sequins.csv", stats, o);
-
+    
     /*
      * Generating VarConjoint_linear.R
      */
-    
-    o.generate("VarConjoint_linear.R");
-    o.writer->open("VarConjoint_linear.R");
-    //o.writer->write(PlotConjoint("VarConjoint_detected.csv", "data$Depth", "'FP'"));
-    o.writer->close();
+
+    writeConjointR("VarConjoint_linear.R", stats, o);
 }

@@ -22,7 +22,8 @@ enum MixtureFormat
 {
     Name_Len_Mix,
     Name_Len_X_Mix,
-    Name_Len_Mix_Mix
+    NUMU,
+    UNUM,
 };
 
 static unsigned countColumns(const Reader &r)
@@ -67,9 +68,10 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
             
             switch (format)
             {
-                case Name_Len_Mix:     { x.add(d[0], m, stof(d[2]));              break; }
-                case Name_Len_X_Mix:   { x.add(d[0], m, stof(d[3]));              break; }
-                case Name_Len_Mix_Mix: { x.add(d[0], m, stoi(d[2]) * stoi(d[3])); break; }
+                case NUMU:           { x.add(d[0], m, stoi(d[2])); break; }
+                case UNUM:           { x.add(d[1], m, stoi(d[3])); break; }
+                case Name_Len_Mix:   { x.add(d[0], m, stof(d[2])); break; }
+                case Name_Len_X_Mix: { x.add(d[0], m, stof(d[3])); break; }
             }
         }, delim);
         
@@ -90,10 +92,16 @@ Ladder Standard::addCNV(const Reader &r)
     return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix);
 }
 
-Ladder Standard::addCon(const Reader &r)
+Ladder Standard::addCon1(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix_Mix);
+    return readLadder(Reader(r), r_var, Mix_1, NUMU);
+}
+
+Ladder Standard::addCon2(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
+    return readLadder(Reader(r), r_var, Mix_1, UNUM);
 }
 
 Ladder Standard::addAF(const Reader &r)

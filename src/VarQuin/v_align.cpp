@@ -505,18 +505,16 @@ void VAlign::writeBQuins(const FileName &file,
 
 void VAlign::writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
+    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
+    
     o.generate(file);
     o.writer->open(file);
-    
-    const auto format = "%1%\t%2%\t%3%\t%4$.4f\t%5$.4f";
     o.writer->write((boost::format(format) % "Name"
                                            % "Length"
                                            % "Reads"
                                            % "Sn"
                                            % "Pc").str());
 
-    o.logInfo("writeQuins: " + std::to_string(stats.seqs->inters.size()));
-    
     // For each chromosome...
     for (const auto &i : stats.seqs->inters)
     {
