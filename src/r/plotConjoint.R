@@ -15,5 +15,5 @@ input <- %8%
 
 # Measured expression (y-axis)
 measured <- %9%
-
-plotLinear(row.names(data), input, measured, title='%5%', xlab='%6%', ylab='%7%', showLOQ=%11%)
+# %11%
+plotConjoint(row.names(data), input, measured, title='%5%', xlab='%6%', ylab='%7%')
