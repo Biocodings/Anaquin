@@ -746,8 +746,6 @@ void VarRef::validate(Tool x, const UserReference &r)
 
         default : { break; }
     }
-    
-    A_ASSERT(!seqs().empty() || !l1Seqs().empty());
 }
 
 const Variant * VarRef::findVar(const ChrID &id, const Locus &l) const
