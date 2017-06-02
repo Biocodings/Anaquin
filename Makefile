@@ -1,11 +1,5 @@
 #
-#    Copyright (C) 2016- Garvan Institute of Medical Research
-#
-#    Author: Ted Wong <t.wong@garvan.org.au>
-#
-
-#
-# https://s3.amazonaws.com/sequins/software/CompileAnaquin.pdf has the instructions
+#  Author: Ted Wong <t.wong@garvan.org.au>
 #
 
 BOOST = /usr/local/Cellar/boost/1.60.0_1/include
