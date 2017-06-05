@@ -6,7 +6,7 @@
 #include "data/reader.hpp"
 #include "data/variant.hpp"
 #include "data/minters.hpp"
-#include "data/intervals.hpp"
+#include "data/dinters.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "VarQuin/VarQuin.hpp"
 
@@ -133,16 +133,16 @@ namespace Anaquin
                 throw std::runtime_error("Region not found for " + id);
             }
         
-            inline C2Intervals  regs1()  const { return _r1->inters();  }
-            inline C2Intervals  regs2()  const { return _r2->inters();  }
-            inline MC2Intervals mRegs1() const { return _r1->minters(); }
-            inline MC2Intervals mRegs2() const { return _r2->minters(); }
+            inline Chr2DInters  regs1()  const { return _r1->inters();  }
+            inline Chr2DInters  regs2()  const { return _r2->inters();  }
+            inline MChr2DInters mRegs1() const { return _r1->minters(); }
+            inline MChr2DInters mRegs2() const { return _r2->minters(); }
         
             inline Counts nRegs() const { return _r1->count();  }
             inline Counts lRegs() const { return _r1->length(); }
         
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
-            inline MC2Intervals mInters() const { return _r1->minters(); }
+            inline MChr2DInters mInters() const { return _r1->minters(); }
 
             inline const Data *match(const SequinID &id) const
             {
@@ -345,7 +345,7 @@ namespace Anaquin
             Base nBaseSyn() const;
             Base nBaseGen() const;
         
-            MC2Intervals mInters() const;
+            MChr2DInters mInters() const;
 
         protected:
         
@@ -415,14 +415,14 @@ namespace Anaquin
             std::map<ChrID, Hist> histGene() const;
             std::map<ChrID, Hist> histIsof() const;
 
-            MC2Intervals meInters(Strand str) const;
-            MC2Intervals ueInters() const;
-            MC2Intervals uiInters() const;
+            MChr2DInters meInters(Strand str) const;
+            MChr2DInters ueInters() const;
+            MChr2DInters uiInters() const;
 
             Base countLenSyn() const;
             Base countLenGen() const;
 
-            MC2Intervals mergedExons() const;
+            MChr2DInters mergedExons() const;
             MergedIntervals<> mergedExons(const ChrID &cID) const;
 
             // Number of sequin genes from mixture

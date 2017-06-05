@@ -10,7 +10,7 @@
 
 namespace Anaquin
 {
-    class Interval : public Matched
+    class DInter : public Matched
     {
         public:
         
@@ -48,7 +48,7 @@ namespace Anaquin
                 inline Proportion covered() const { return static_cast<double>(nonZeros) / length; }
             };
         
-            Interval(const IntervalID &id, const Locus &l) : _id(id), _l(l)
+            DInter(const IntervalID &id, const Locus &l) : _id(id), _l(l)
             {
                 _covs.resize(l.length());
             }
@@ -359,22 +359,7 @@ namespace Anaquin
             IntervalData _inters;
     };
 
-    typedef std::map<ChrID, Intervals<>> C2Intervals;
-
-    template <typename T> std::map<SequinID, Counts> countForID(const T& x)
-    {
-        std::map<SequinID, Counts> r;
-        
-        for (auto &i : x)
-        {
-            for (auto &j : i.second.data())
-            {
-                r[j.first] = j.second.stats().aligns;
-            }
-        }
-        
-        return r;
-    }
+    typedef std::map<ChrID, Intervals<>> Chr2DInters;
 
     struct ID2Intervals : std::map<Interval::IntervalID, Intervals<>>
     {

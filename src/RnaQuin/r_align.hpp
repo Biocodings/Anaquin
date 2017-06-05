@@ -59,8 +59,8 @@ namespace Anaquin
 
                 std::map<ChrID, Data> data;
                 
-                MC2Intervals eInters;
-                MC2Intervals iInters;
+                MChr2DInters eInters;
+                MChr2DInters iInters;
 
                 /*
                  * Synthetic statistics

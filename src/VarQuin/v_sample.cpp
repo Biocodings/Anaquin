@@ -9,8 +9,8 @@ using namespace Anaquin;
 
 ParserBAMBED::Stats VSample::sample(const FileName    &file,
                                     const NormFactors &norms,
-                                    const C2Intervals &sampled,
-                                    const C2Intervals &trimmed,
+                                    const Chr2DInters &sampled,
+                                    const Chr2DInters &trimmed,
                                     const VSample::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -120,8 +120,8 @@ template <typename Stats> Coverage stats2cov(const VSample::Method meth, const S
 
 VSample::CalibrateStats VSample::check(const FileName &endo,
                                        const FileName &seqs,
-                                       const C2Intervals &tRegs,
-                                       const C2Intervals &regs,
+                                       const Chr2DInters &tRegs,
+                                       const Chr2DInters &regs,
                                        const VSample::Options &o)
 {
     A_ASSERT(!tRegs.empty());
@@ -300,7 +300,7 @@ VSample::Stats VSample::analyze(const FileName &endo, const FileName &seqs, cons
     return stats;
 }
 
-double VSample::afterSeqsC(const C2Intervals &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> &c2v, VSample::Options o)
+double VSample::afterSeqsC(const Chr2DInters &tRegs, std::map<ChrID, std::map<Locus, SampledInfo>> &c2v, VSample::Options o)
 {
     std::vector<double> allAfterSeqsC;
     

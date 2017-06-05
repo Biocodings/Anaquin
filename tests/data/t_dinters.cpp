@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "data/intervals.hpp"
+#include "data/dinters.hpp"
 
 using namespace Anaquin;
 

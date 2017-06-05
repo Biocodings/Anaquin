@@ -5,7 +5,7 @@
 #include "tools/tools.hpp"
 #include "tools/errors.hpp"
 #include "data/minters.hpp"
-#include "data/intervals.hpp"
+#include "data/dinters.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Anaquin

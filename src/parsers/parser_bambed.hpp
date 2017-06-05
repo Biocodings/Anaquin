@@ -1,7 +1,7 @@
 #ifndef PARSER_BAMBED_HPP
 #define PARSER_BAMBED_HPP
 
-#include "data/intervals.hpp"
+#include "data/dinters.hpp"
 #include "parsers/parser_bam.hpp"
 
 namespace Anaquin
@@ -28,7 +28,7 @@ namespace Anaquin
         };
         
         template <typename F> static ParserBAMBED::Stats parse(const FileName &file,
-                                                               const C2Intervals &c2l,
+                                                               const Chr2DInters &c2l,
                                                                F f)
         {
             ParserBAMBED::Stats stats;

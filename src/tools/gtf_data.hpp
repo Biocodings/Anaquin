@@ -3,7 +3,7 @@
 
 #include "data/hist.hpp"
 #include "tools/tools.hpp"
-#include "data/intervals.hpp"
+#include "data/dinters.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "parsers/parser_gtf.hpp"
 
@@ -269,9 +269,9 @@ namespace Anaquin
         }
         
         // Intervals for merged exons
-        inline MC2Intervals meInters(Strand str) const
+        inline MChr2DInters meInters(Strand str) const
         {
-            MC2Intervals r;
+            MChr2DInters r;
             
             for (const auto &i : *this)
             {
@@ -353,9 +353,9 @@ namespace Anaquin
         }
 
         // Intervals for unique exons
-        inline MC2Intervals ueInters() const
+        inline MChr2DInters ueInters() const
         {
-            MC2Intervals r;
+            MChr2DInters r;
             
             for (const auto &i : *this)
             {
@@ -396,9 +396,9 @@ namespace Anaquin
          * Returns non-overlapping exon intervals for all chromosomes.
          */
 
-        inline MC2Intervals mergedExons() const
+        inline MChr2DInters mergedExons() const
         {
-            MC2Intervals r;
+            MChr2DInters r;
             
             for (const auto &i : *this)
             {
@@ -435,9 +435,9 @@ namespace Anaquin
         }
         
         // Intervals for unique introns
-        inline MC2Intervals uiInters() const
+        inline MChr2DInters uiInters() const
         {
-            MC2Intervals r;
+            MChr2DInters r;
             
             for (const auto &i : *this)
             {
