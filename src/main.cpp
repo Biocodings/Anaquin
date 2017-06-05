@@ -187,9 +187,6 @@ struct Parsing
     // Input files
     std::vector<FileName> inputs;
     
-    // Optional input files
-    std::vector<FileName> oInputs;
-    
     // Context specific options
     std::map<Option, std::string> opts;
     
@@ -1147,10 +1144,10 @@ void parse(int argc, char ** argv)
         }
 
         case Tool::VarCopy:
-        case Tool::VarDetect:
         case Tool::VarFlip:
         case Tool::VarTrim:
         case Tool::VarAlign:
+        case Tool::VarDetect:
         case Tool::VarCancer:
         case Tool::VarSample:
         case Tool::VarKAbund:

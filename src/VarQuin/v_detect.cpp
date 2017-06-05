@@ -42,7 +42,7 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
 
 VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
 {
-    const auto regs = Standard::instance().r_var.regs1();
+    const auto r2 = Standard::instance().r_var.regs2();
     
     VDetect::EStats stats;
 
@@ -62,9 +62,11 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
-            
-            stats.g2c[x.gt]++;
-            stats.v2c[x.type()]++;
+            else if (contains(r2, x.cID, x.l))
+            {
+                stats.g2c[x.gt]++;
+                stats.v2c[x.type()]++;
+            }
         });
     }
 
@@ -74,6 +76,7 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
 VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
+    const auto r2 = Standard::instance().r_var.regs2();
 
     VDetect::SStats stats;
     
@@ -122,8 +125,10 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         {
             return;
         }
-        
-        const auto &r = Standard::instance().r_var;
+        else if (!contains(r2, x.cID, x.l))
+        {
+            return;
+        }
         
         auto findMatch = [&](const Variant &query)
         {
