@@ -135,14 +135,14 @@ namespace Anaquin
         
             inline Chr2DInters  regs1()  const { return _r1->inters();  }
             inline Chr2DInters  regs2()  const { return _r2->inters();  }
-            inline MChr2DInters mRegs1() const { return _r1->minters(); }
-            inline MChr2DInters mRegs2() const { return _r2->minters(); }
+            inline Chr2MInters  mRegs1() const { return _r1->minters(); }
+            inline Chr2MInters  mRegs2() const { return _r2->minters(); }
         
             inline Counts nRegs() const { return _r1->count();  }
             inline Counts lRegs() const { return _r1->length(); }
         
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
-            inline MChr2DInters mInters() const { return _r1->minters(); }
+            inline Chr2MInters mInters() const { return _r1->minters(); }
 
             inline const Data *match(const SequinID &id) const
             {
@@ -345,7 +345,7 @@ namespace Anaquin
             Base nBaseSyn() const;
             Base nBaseGen() const;
         
-            MChr2DInters mInters() const;
+            Chr2MInters mInters() const;
 
         protected:
         
@@ -415,14 +415,14 @@ namespace Anaquin
             std::map<ChrID, Hist> histGene() const;
             std::map<ChrID, Hist> histIsof() const;
 
-            MChr2DInters meInters(Strand str) const;
-            MChr2DInters ueInters() const;
-            MChr2DInters uiInters() const;
+            Chr2MInters meInters(Strand str) const;
+            Chr2MInters ueInters() const;
+            Chr2MInters uiInters() const;
 
             Base countLenSyn() const;
             Base countLenGen() const;
 
-            MChr2DInters mergedExons() const;
+            Chr2MInters mergedExons() const;
             MergedIntervals<> mergedExons(const ChrID &cID) const;
 
             // Number of sequin genes from mixture

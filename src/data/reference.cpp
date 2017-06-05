@@ -268,22 +268,22 @@ MergedIntervals<> RnaRef::mergedExons(const ChrID &cID) const
     return _impl->gData.mergedExons(cID);
 }
 
-MChr2DInters RnaRef::mergedExons() const
+Chr2MInters RnaRef::mergedExons() const
 {
     return _impl->gData.mergedExons();
 }
 
-MChr2DInters RnaRef::meInters(Strand str) const
+Chr2MInters RnaRef::meInters(Strand str) const
 {
     return _impl->gData.meInters(str);
 }
 
-MChr2DInters RnaRef::ueInters() const
+Chr2MInters RnaRef::ueInters() const
 {
     return _impl->gData.ueInters();
 }
 
-MChr2DInters RnaRef::uiInters() const
+Chr2MInters RnaRef::uiInters() const
 {
     return _impl->gData.uiInters();
 }
@@ -449,7 +449,7 @@ void MetaRef::readBed(const Reader &r)
     }
 }
 
-MChr2DInters MetaRef::mInters() const
+Chr2MInters MetaRef::mInters() const
 {
     return _impl->bData.minters();
 }

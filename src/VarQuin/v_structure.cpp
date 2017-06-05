@@ -1,6 +1,4 @@
-#include "tools/tools.hpp"
 #include "VarQuin/v_structure.hpp"
-#include "parsers/parser_vcf.hpp"
 #include "parsers/parser_vcf2.hpp"
 
 using namespace Anaquin;
@@ -15,6 +13,8 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
     stats.v2c[Variation::Insertion];
     stats.v2c[Variation::Duplication];
     
+    const auto r1 = Standard::instance().r_var.regs1();
+
     if (!file.empty())
     {
         ParserVCF2::parse(file, [&](const Variant &x)
@@ -27,8 +27,10 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
-            
-            stats.v2c[x.type()]++;
+            else if (exact(r1, x.cID, x.l))
+            {
+                stats.v2c[x.type()]++;
+            }
         });
     }
 

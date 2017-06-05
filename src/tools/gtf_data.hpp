@@ -269,9 +269,9 @@ namespace Anaquin
         }
         
         // Intervals for merged exons
-        inline MChr2DInters meInters(Strand str) const
+        inline Chr2MInters meInters(Strand str) const
         {
-            MChr2DInters r;
+            Chr2MInters r;
             
             for (const auto &i : *this)
             {
@@ -353,9 +353,9 @@ namespace Anaquin
         }
 
         // Intervals for unique exons
-        inline MChr2DInters ueInters() const
+        inline Chr2MInters ueInters() const
         {
-            MChr2DInters r;
+            Chr2MInters r;
             
             for (const auto &i : *this)
             {
@@ -396,9 +396,9 @@ namespace Anaquin
          * Returns non-overlapping exon intervals for all chromosomes.
          */
 
-        inline MChr2DInters mergedExons() const
+        inline Chr2MInters mergedExons() const
         {
-            MChr2DInters r;
+            Chr2MInters r;
             
             for (const auto &i : *this)
             {
@@ -435,9 +435,9 @@ namespace Anaquin
         }
         
         // Intervals for unique introns
-        inline MChr2DInters uiInters() const
+        inline Chr2MInters uiInters() const
         {
-            MChr2DInters r;
+            Chr2MInters r;
             
             for (const auto &i : *this)
             {

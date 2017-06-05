@@ -276,7 +276,7 @@ namespace Anaquin
             IntervalData _inters;
     };
 
-    typedef std::map<ChrID, MergedIntervals<>> MChr2DInters;
+    typedef std::map<ChrID, MergedIntervals<>> Chr2MInters;
 }
 
 #endif
