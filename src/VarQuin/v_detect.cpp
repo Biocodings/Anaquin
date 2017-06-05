@@ -1,15 +1,9 @@
-#include "tools/tools.hpp"
 #include "VarQuin/v_detect.hpp"
-#include "parsers/parser_vcf.hpp"
 #include "parsers/parser_vcf2.hpp"
 
 using namespace Anaquin;
 
 typedef SequinVariant::Context Context;
-
-extern Scripts PlotVGROC();
-extern Path __output__;
-extern std::string __full_command__;
 
 inline std::string ctx2Str(Context x)
 {
@@ -32,14 +26,18 @@ inline std::string ctx2Str(Context x)
     }
 }
 
-static Scripts createVGROC(const FileName &file, const std::string &score, const std::string &refRat)
+static Scripts createROC(const FileName &file, const std::string &score, const std::string &refRat)
 {
+    extern Scripts PlotVGROC();
+    extern Path __output__;
+    extern std::string __full_command__;
+    
     return (boost::format(PlotVGROC()) % date()
-                                   % __full_command__
-                                   % __output__
-                                   % file
-                                   % score
-                                   % refRat).str();
+                                       % __full_command__
+                                       % __output__
+                                       % file
+                                       % score
+                                       % refRat).str();
 }
 
 VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
@@ -775,7 +773,7 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     
     o.generate("VarDetect_ROC.R");
     o.writer->open("VarDetect_ROC.R");
-    o.writer->write(createVGROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
     
     /*
