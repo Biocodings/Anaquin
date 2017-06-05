@@ -20,10 +20,10 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     const auto shouldL = o.meth == Method::Left  || o.meth == Method::LeftRight;
     const auto shouldR = o.meth == Method::Right || o.meth == Method::LeftRight;
     
-    std::vector<Interval *> multi;
+    std::vector<DInter *> multi;
     
     // Check trimming reads...
-    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
+    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -35,13 +35,11 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
         
         if (m)
         {
-            std::sort(multi.begin(), multi.end(), [&](const Interval * x, const Interval * y)
+            std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
             {
                 return x->l().length() < y->l().length();
             });
 
-
-            
             // The smallest region
             const auto m = multi.front();
             
@@ -63,7 +61,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     writer.openTerm();
     
     // Triming away the paired reads ...
-    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
+    ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -79,7 +77,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
         return ParserBAMBED::Response::OK;
     });
     
-    stats.nRegs = countMap(regs, [&](ChrID, const Intervals<> &x)
+    stats.nRegs = countMap(regs, [&](ChrID, const DIntervals<> &x)
     {
         return x.size();
     });

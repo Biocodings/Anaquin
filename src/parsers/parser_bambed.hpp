@@ -36,12 +36,12 @@ namespace Anaquin
             // For each chromosome...
             for (const auto &i : c2l)
             {
-                Intervals<> x;
+                DIntervals<> x;
                 
                 for (const auto &inter : i.second.data())
                 {
                     const auto &l = inter.second.l();
-                    x.add(Interval(l.key(), l));
+                    x.add(DInter(l.key(), l));
                 }
 
                 stats.inters[i.first] = x;
@@ -50,7 +50,7 @@ namespace Anaquin
 
             ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
             {
-                Interval *matched = nullptr;
+                DInter *matched = nullptr;
                 
                 if (x.mapped && stats.inters.count(x.cID))
                 {

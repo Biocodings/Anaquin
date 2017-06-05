@@ -243,22 +243,22 @@ namespace Anaquin
             return countUIntr() - countUIntrSyn();
         }
         
-        inline Intervals<> gIntervals(const ChrID &cID) const
+        inline DIntervals<> gIntervals(const ChrID &cID) const
         {
-            Intervals<> r;
+            DIntervals<> r;
             
             for (const auto &i : at(cID).g2d)
             {
-                r.add(Interval(i.first, i.second.l));
+                r.add(DInter(i.first, i.second.l));
             }
             
             r.build();
             return r;
         }
         
-        inline std::map<ChrID, Intervals<>> gIntervals() const
+        inline std::map<ChrID, DIntervals<>> gIntervals() const
         {
-            std::map<ChrID, Intervals<>> r;
+            std::map<ChrID, DIntervals<>> r;
             
             for (const auto &i : *this)
             {

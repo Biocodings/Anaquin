@@ -41,7 +41,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
 
     return ParserBAMBED::parse(file, sampled, [&](const ParserBAM::Data &x,
                                                   const ParserBAM::Info &info,
-                                                  const Interval *inter)
+                                                  const DInter *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -60,7 +60,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
         
         if (!shouldSampled)
         {
-            Interval *inter;
+            DInter *inter;
             
             /*
              * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
@@ -130,7 +130,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
     VSample::CalibrateStats stats;
     
     // Checking endogenous alignments before sampling
-    stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *)
+    stats.es = ParserBAMBED::parse(endo, tRegs, [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
@@ -146,7 +146,7 @@ VSample::CalibrateStats VSample::check(const FileName &endo,
     });
     
     // Checking sequin alignments before sampling
-    stats.ss = ParserBAMBED::parse(seqs, tRegs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
+    stats.ss = ParserBAMBED::parse(seqs, tRegs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {

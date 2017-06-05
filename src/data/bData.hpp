@@ -117,13 +117,13 @@ namespace Anaquin
             return r;
         }
         
-        inline Intervals<> inters(const ChrID &cID) const
+        inline DIntervals<> inters(const ChrID &cID) const
         {
-            Intervals<> r;
+            DIntervals<> r;
             
             for (const auto &i : at(cID).r2d)
             {
-                r.add(Interval(i.first, i.second.l));
+                r.add(DInter(i.first, i.second.l));
             }
             
             r.build();
@@ -131,9 +131,9 @@ namespace Anaquin
         }
 
         // Intervals for the genes
-        inline std::map<ChrID, Intervals<>> inters() const
+        inline std::map<ChrID, DIntervals<>> inters() const
         {
-            std::map<ChrID, Intervals<>> r;
+            std::map<ChrID, DIntervals<>> r;
             
             for (const auto &i : *this)
             {

@@ -11,12 +11,12 @@ TEST_CASE("Interval_Test_5")
      * and extensibility.
      */
     
-    std::map<ChrID, Intervals<>> i;
+    std::map<ChrID, DIntervals<>> i;
     
-    i["chrIS_A"].add(Interval("Gene A", Locus(0, 999)));
-    i["chrIS_B"].add(Interval("Gene B", Locus(0, 999)));
-    i["chrIS_C"].add(Interval("Gene C", Locus(0, 999)));
-    i["chrIS_D"].add(Interval("Gene D", Locus(0, 999)));
+    i["chrIS_A"].add(DInter("Gene A", Locus(0, 999)));
+    i["chrIS_B"].add(DInter("Gene B", Locus(0, 999)));
+    i["chrIS_C"].add(DInter("Gene C", Locus(0, 999)));
+    i["chrIS_D"].add(DInter("Gene D", Locus(0, 999)));
     
     i["chrIS_A"].build();
     i["chrIS_B"].build();
@@ -87,7 +87,7 @@ TEST_CASE("Interval_Test_1")
      *  0,0,0,0,0,1,2,4,4,4
      */
     
-    Interval i("Test", Locus(0, 9));
+    DInter i("Test", Locus(0, 9));
 
     const auto r1 = i.stats();
 
@@ -124,7 +124,7 @@ TEST_CASE("Interval_Test_2")
      *  1,5,5,5,5,5,5,5,5
      */
     
-    Interval i("Test", Locus(0, 9));
+    DInter i("Test", Locus(0, 9));
     
     i.add(Locus(0, 4));
     i.add(Locus(0, 4));
@@ -153,7 +153,7 @@ TEST_CASE("Interval_Test_2")
 
 TEST_CASE("Interval_Test_3")
 {
-    Interval i("Test", Locus(0, 9));
+    DInter i("Test", Locus(0, 9));
     
     i.add(Locus(4, 6));
     i.add(Locus(4, 6));
@@ -192,12 +192,12 @@ TEST_CASE("Interval_Test_3")
 
 TEST_CASE("Interval_Test_4")
 {
-    Intervals<> i;
+    DIntervals<> i;
 
-    i.add(Interval("1", Locus(0,  24)));
-    i.add(Interval("2", Locus(25, 49)));
-    i.add(Interval("3", Locus(50, 74)));
-    i.add(Interval("4", Locus(75, 99)));
+    i.add(DInter("1", Locus(0,  24)));
+    i.add(DInter("2", Locus(25, 49)));
+    i.add(DInter("3", Locus(50, 74)));
+    i.add(DInter("4", Locus(75, 99)));
     i.build();
     
     REQUIRE(i.contains(Locus(10, 20)));

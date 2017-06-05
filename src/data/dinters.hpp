@@ -206,7 +206,7 @@ namespace Anaquin
             std::vector<Depth> _covs;
     };
     
-    template <typename T = Interval> class Intervals
+    template <typename T = DInter> class DIntervals
     {
         public:
         
@@ -313,7 +313,7 @@ namespace Anaquin
 
             typename T::Stats stats() const
             {
-                Interval::Stats stats;
+                DInter::Stats stats;
             
                 for (const auto &i : _inters)
                 {
@@ -346,7 +346,7 @@ namespace Anaquin
             inline Base length() const
             {
                 return std::accumulate(_inters.begin(), _inters.end(), 0,
-                        [&](int sums, const std::pair<Interval::IntervalID, Interval> & p)
+                        [&](int sums, const std::pair<DInter::IntervalID, DInter> & p)
                 {
                     return sums + p.second.l().length();
                 });
@@ -359,11 +359,11 @@ namespace Anaquin
             IntervalData _inters;
     };
 
-    typedef std::map<ChrID, Intervals<>> Chr2DInters;
+    typedef std::map<ChrID, DIntervals<>> Chr2DInters;
 
-    struct ID2Intervals : std::map<Interval::IntervalID, Intervals<>>
+    struct ID2Intervals : std::map<DInter::IntervalID, DIntervals<>>
     {
-        inline void add(const Interval::IntervalID &id, const Intervals<> &i)
+        inline void add(const DInter::IntervalID &id, const DIntervals<> &i)
         {
             (*this)[id] = i;
         }
@@ -391,9 +391,9 @@ namespace Anaquin
             return n;
         }
         
-        inline Interval::Stats stats() const
+        inline DInter::Stats stats() const
         {
-            Interval::Stats stats;
+            DInter::Stats stats;
             
             for (const auto &i : *this)
             {

@@ -47,7 +47,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                 const auto l = s.second->seq->l;
                 
                 // Required for detecting overlapping
-                Interval i(s.first, Locus(0, l.length()));
+                DInter i(s.first, Locus(0, l.length()));
                 
                 for (auto &j : s.second->contigs)
                 {

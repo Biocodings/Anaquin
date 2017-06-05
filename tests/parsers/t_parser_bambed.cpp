@@ -7,14 +7,14 @@ typedef ParserBAMBED::Response Response;
 
 TEST_CASE("ParserBAMBED_1")
 {
-    Intervals<> chr10;
-    chr10.add(Interval("Everything", Locus(10020, 133777009)));
+    DIntervals<> chr10;
+    chr10.add(DInter("Everything", Locus(10020, 133777009)));
     
     ID2Intervals c2i;
     c2i["chr10"] = chr10;
 
     const auto r = ParserBAMBED::parse("tests/data/sampled.bam", c2i,
-                    [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const Interval *inter)
+                    [&](const ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)
     {
         return Response::OK;
     }).inters.stats();

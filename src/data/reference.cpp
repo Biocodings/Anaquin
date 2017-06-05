@@ -58,7 +58,7 @@ struct RnaRef::RnaRefImpl
     GTFData gData;
     
     // Intervals for the genes
-    std::map<ChrID, Intervals<>> gInters;
+    std::map<ChrID, DIntervals<>> gInters;
 };
 
 RnaRef::RnaRef() : _impl(new RnaRefImpl()) {}
