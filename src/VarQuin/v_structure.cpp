@@ -27,7 +27,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
-            else if (exact(r1, x.cID, x.l))
+            else if (contains(r1, x.cID, x.l))
             {
                 stats.v2c[x.type()]++;
             }

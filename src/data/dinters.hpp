@@ -361,14 +361,14 @@ namespace Anaquin
 
     typedef std::map<ChrID, DIntervals<>> Chr2DInters;
 
-    template <typename T, typename D = DInter> D * exact(const T &x, const ChrID &cID, const Locus &l)
+    template <typename T, typename D = DInter> D * contains(const T &x, const ChrID &cID, const Locus &l)
     {
         if (!x.count(cID))
         {
             return nullptr;
         }
   
-        return x.at(cID).overlap(l);
+        return x.at(cID).contains(l);
     }
     
     struct ID2Intervals : std::map<DInter::IntervalID, DIntervals<>>
