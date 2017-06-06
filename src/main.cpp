@@ -406,6 +406,7 @@ static Scripts manual(Tool tool)
         case Tool::MetaAssembly:   { return MetaAssembly();   }
         case Tool::MetaAbund:      { return MetaSubsample();  }
         case Tool::MetaFoldChange: { return MetaFoldChange(); }
+        default:                   { return ""; }
     }
 }
 

@@ -130,7 +130,6 @@ namespace Anaquin
             return r;
         }
 
-        // Intervals for the genes
         inline std::map<ChrID, DIntervals<>> inters() const
         {
             std::map<ChrID, DIntervals<>> r;

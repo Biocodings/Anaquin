@@ -740,7 +740,7 @@ void VarRef::validate(Tool x, const UserReference &r)
         case Tool::VarStructure:
         {
             merge(_impl->vIDs);
-            build(r.r1);
+            build(r.r1, r.r2);
             break;
         }
 
