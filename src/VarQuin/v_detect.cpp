@@ -58,7 +58,7 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
     {
         ParserVCF2::parse(file, [&](const Variant &x)
         {
-            if (o.meth != VDetect::Method::Passed && x.filter == Filter::Pass)
+            if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
             {
                 return;
             }
@@ -121,7 +121,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 
     ParserVCF2::parse(file, [&](const Variant &x)
     {
-        if (o.meth != VDetect::Method::Passed && x.filter == Filter::Pass)
+        if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
         {
             return;
         }

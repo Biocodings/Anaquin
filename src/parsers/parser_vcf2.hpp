@@ -58,7 +58,7 @@ namespace Anaquin
                 x.ref = fields[Field::Ref];
                 
                 // Anything but not filtering is "PASS"
-                x.filter = fields[Field::Filt] == "." ? Filter::NotFilted : Filter::Pass;
+                x.filter = fields[Field::Filt] == "PASS" ? Filter::Pass : Filter::NotFilted;
                 
                 if (fields[Field::Info] != ".")
                 {

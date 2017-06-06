@@ -775,8 +775,10 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case Tool::VarCopy:
-                    case Tool::RnaExpress:
                     case Tool::VarSample:
+                    case Tool::VarDetect:
+                    case Tool::RnaExpress:
+                    case Tool::VarStructure:
                     case Tool::RnaFoldChange: { _p.opts[opt] = val; break; }
 
                     case Tool::MetaSubsample:
