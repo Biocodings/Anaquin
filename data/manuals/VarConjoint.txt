@@ -6,17 +6,17 @@
 <b>DESCRIPTION</b>
     VarConjoint can be used for analyzing the conjoint sequins within a library. Comparing the measured
     abundance (typically in counts) relative to the known input concentration provides an indication of
-    the quantitative accuracy for measuring copy number.
+    the quantitative accuracy for measuring copy number and technical bias.
 
 <b>SUPPORT SOFTWARE</b>
     Any short-read aligners such as BWA.
 
 <b>USAGE EXAMPLE</b>
-     anaquin VarConjoint –con reference.csv -usequin sequin.bam
+     anaquin VarConjoint –con conjoint.csv -usequin sequin.bam
 
 <b>TOOL OPTIONS</b>
      Required:
-        -con         Reference mixture file for the CNV ladder in CSV format
+        -con         Reference mixture file for the conjoint ladder in CSV format
         -usequin     User generated sequin-derived alignment file in SAM/BAM format
 
      Optional:

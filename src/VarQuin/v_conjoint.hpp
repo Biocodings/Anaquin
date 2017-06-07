@@ -10,15 +10,9 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
 
-        struct Stats : public LimitStats, public SequinStats
+        struct Stats
         {
-            struct Data
-            {
-                Counts  measured = 0;
-                Concent expected;
-            };
-
-            std::map<SequinID, Data> data;
+            std::map<SequinID, Counts> data;
         };
 
         static Stats analyze(const FileName &, const Options &o);

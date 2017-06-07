@@ -456,7 +456,7 @@ static void writeSummary(const FileName &file,
                          "-------VarDetect Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
                          "       Reference sequin regions:          %2%\n\n"
-                         "       Variant identified in sample:      %3%\n"
+                         "       Variants identified in sample:      %3%\n"
                          "       Variants identified in sequins:    %4%\n\n"
                          "       Number of sample variants (within regions): %5%\n"
                          "       Number of sequin variants (sequin regions): %6%\n\n"

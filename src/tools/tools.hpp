@@ -168,6 +168,21 @@ namespace Anaquin
             return c + p;
         });
     }
+
+    template <typename T1, typename T2> unsigned nonZero(const std::map<T1, T2> &x)
+    {
+        unsigned n = 0;
+
+        for (const auto &i : x)
+        {
+            if (i.second)
+            {
+                n++;
+            }
+        }
+        
+        return n;
+    }
     
     template <typename T1, typename T2> T2 sum(const std::map<T1, T2> &x)
     {

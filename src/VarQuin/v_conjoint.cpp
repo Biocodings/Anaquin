@@ -1,3 +1,4 @@
+#include "tools/tools.hpp"
 #include "VarQuin/v_conjoint.hpp"
 #include "parsers/parser_bam.hpp"
 
@@ -16,11 +17,11 @@ VConjoint::Stats VConjoint::analyze(const FileName &file, const Options &o)
         stats.data[i];
     }
     
-    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &)
     {
         if (stats.data.count(x.cID))
         {
-            stats.data[x.cID].measured++;
+            stats.data[x.cID]++;
         }
     });
 
@@ -45,7 +46,7 @@ static void writeQuins(const FileName &file,
                                                % i.first
                                                % r.concent1(seq)
                                                % r.concent2(i.first)
-                                               % i.second.measured).str());
+                                               % i.second).str());
     }
 
     o.writer->close();
@@ -59,42 +60,21 @@ static void writeSummary(const FileName &file,
     const auto &r = Standard::instance().r_var;
     extern FileName MixRef();
 
-    const auto ls = stats.linear();
     const auto format = "-------VarConjoint Summary Statistics\n\n"
                         "-------VarConjoint Output Results\n\n"
                         "       Summary for input: %1%\n"
                         "       Mixture file: %2%\n\n"
                         "-------Reference Annotations\n\n"
-                        "       Sequins: %3%\n"
+                        "       Sequins: %3%\n\n"
                         "-------Detected sequins\n\n"
-                        "       Sequins: %4%\n"
-                        "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %5%\n"
-                        "       Correlation: %6%\n"
-                        "       R2:          %7%\n"
-                        "       F-statistic: %8%\n"
-                        "       P-value:     %9%\n"
-                        "       SSM:         %10%, DF: %11%\n"
-                        "       SSE:         %12%, DF: %13%\n"
-                        "       SST:         %14%, DF: %15%\n";
+                        "       Sequins: %4%\n";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % seqs              // 1
-                                           % MixRef()          // 2
-                                           % r.l1Seqs().size() // 3
-                                           % stats.size()      // 4
-                                           % ls.m              // 5
-                                           % ls.r              // 6
-                                           % ls.R2             // 7
-                                           % ls.F              // 8
-                                           % ls.p              // 9
-                                           % ls.SSM            // 10
-                                           % ls.SSM_D          // 11
-                                           % ls.SSE            // 12
-                                           % ls.SSE_D          // 13
-                                           % ls.SST            // 14
-                                           % ls.SST_D          // 15
+    o.writer->write((boost::format(format) % seqs                // 1
+                                           % MixRef()            // 2
+                                           % r.l1Seqs().size()   // 3
+                                           % nonZero(stats.data) // 4
             ).str());
 
     o.writer->close();
