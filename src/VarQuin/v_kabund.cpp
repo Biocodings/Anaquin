@@ -80,7 +80,7 @@ static Scripts generateSummary(const FileName &src, const VKAbund::Stats &stats,
 //    const auto &r = Standard::instance().r_var;
     const auto ls = stats.linear();
     
-    const auto format = "-------VarKAbund Output\n\n"
+    const auto format = "-------VarKAbund Output Results\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference Annotations\n\n"
                         "       Synthetic: %2%\n"

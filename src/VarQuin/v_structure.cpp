@@ -222,8 +222,8 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName BedRef();
     
-    const auto summary = "-------VarStructure Output Results\n"
-                         "-------VarStructure Output\n\n"
+    const auto summary = "-------VarStructure Summary Statistics\n\n"
+                         "-------VarStructure Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
                          "       Reference coordinate annotation:   %2%\n\n"
                          "       User identified variants (sample): %3%\n"

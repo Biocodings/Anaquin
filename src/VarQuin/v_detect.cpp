@@ -452,130 +452,76 @@ static void writeSummary(const FileName &file,
     extern FileName BedRef();
     extern FileName MixRef();
 
-    const auto summary = "-------VarDetect Output Results\n\n"
-                         "-------VarDetect Output\n\n"
+    const auto summary = "-------VarDetect Summary Statistics\n\n"
+                         "-------VarDetect Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
-                         "       Reference coordinate annotation:   %2%\n\n"
-                         "       User identified variants (sample): %3%\n"
-                         "       User identified variants (sequin): %4%\n\n"
-                         "       Number of reference variants:      %5%\n"
-                         "       Number of sample-derived variants: %6%\n"
-                         "       Number of sequin-derived variants: %7%\n\n"
-                         "-------Reference variants by mutation\n\n"
-                         "       SNPs:   %8%\n"
-                         "       Indels: %9%\n\n"
-                         "-------Reference variants by genotype\n\n"
-                         "       Homozygosity:   %10%\n"
-                         "       Heterozygosity: %11%\n\n"
-                         "-------Reference variants by context\n\n"
-                         "       Common:                       %12%\n"
-                         "       Very Low GC:                  %13%\n"
-                         "       Low GC:                       %14%\n"
-                         "       High GC:                      %15%\n"
-                         "       Very High GC:                 %16%\n"
-                         "       Short Dinucleotide Repeat:    %17%\n"
-                         "       Long Dinucleotide Repeat:     %18%\n"
-                         "       Short Homopolymer:            %19%\n"
-                         "       Long Homopolymer:             %20%\n"
-                         "       Short Quad Nucleotide Repeat: %21%\n"
-                         "       Long Quad Nucleotide Repeat:  %22%\n"
-                         "       Short Trinucleotide Repeat:   %23%\n"
-                         "       Long Trinucleotide Repeat:    %24%\n\n"
-                         "-------Sample-derived variants by mutation\n\n"
-                         "       %25% SNPs\n"
-                         "       %26% indels\n\n"
-                         "-------Sequin-derived variants by mutation\n\n"
-                         "       %27% SNPs\n"
-                         "       %28% indels\n\n"
-                         "-------Sample-derived variants by genotype\n\n"
-                         "       %29% Homozygosity\n"
-                         "       %30% Heterozygosity\n\n"
-                         "-------Sequin-derived variants by genotype\n\n"
-                         "       %31% Homozygosity\n"
-                         "       %32% Heterozygosity\n\n"
-                         "-------Sequin-derived variants by context\n\n"
-                         "       %33% Low GC\n"
-                         "       %34% High GC\n"
-                         "       %35% Common\n"
-                         "       %36% Long Homopolymer\n"
-                         "       %37% Very Low GC\n"
-                         "       %38% Very High GC\n"
-                         "       %39% Short Dinucleotide Repeat\n"
-                         "       %40% Long Dinucleotide Repeat\n"
-                         "       %41% Short Homopolymer\n"
-                         "       %42% Long Quad Nucleotide Repeat\n"
-                         "       %43% Long Trinucleotide Repeat\n"
-                         "       %44% Short Quad Nucleotide Repeat\n"
-                         "       %45% Short Trinucleotide Repeat\n\n"
-                         "-------Overall diagnostic performance\n\n"
-                         "       Sensitivity: %46$.4f\n"
-                         "       Precision:   %47$.4f\n"
-                         "       F1 Score:    %48$.4f\n"
-                         "       FDR Rate:    %49$.4f\n\n"
-                         "-------Diagnostic performance by mutation\n\n"
-                         "       True Positive:  %50% SNPs\n"
-                         "       True Positive:  %51% indels\n"
-                         "       True Positive:  %52% variants\n\n"
-                         "       False Positive: %53% SNPs\n"
-                         "       False Positive: %54% indels\n"
-                         "       False Positive: %55% variants\n\n"
-                         "       False Negative: %56% SNPs\n"
-                         "       False Negative: %57% indels\n"
-                         "       False Negative: %58% variants\n\n"
-                         "       *SNPs\n"
-                         "       Sensitivity: %59$.4f\n"
-                         "       Precision:   %60$.4f\n"
-                         "       F1 Score:    %61$.4f\n"
-                         "       FDR Rate:    %62$.4f\n\n"
-                         "       *Indels\n"
-                         "       Sensitivity: %63$.4f\n"
-                         "       Precision:   %64$.4f\n"
-                         "       F1 Score:    %65$.4f\n"
-                         "       FDR Rate:    %66$.4f\n\n"
+                         "       Reference sequin regions:          %2%\n\n"
+                         "       Variant identified in sample:      %3%\n"
+                         "       Variants identified in sequins:    %4%\n\n"
+                         "       Number of sample variants (within regions): %5%\n"
+                         "       Number of sequin variants (sequin regions): %6%\n\n"
+                         "-------Diagnostic performance by variant\n\n"
+                         "      *All variants\n"
+                         "       Reference:             %7%\n"
+                         "       True Positive:         %8%\n"
+                         "       False Positive:        %9%\n"
+                         "       False Negative:        %10%\n"
+                         "       Sensitivity:           %11%\n"
+                         "       Precision:             %12%\n"
+                         "       F1 Score:              %13%\n"
+                         "       FDR Rate:              %14%\n\n"
+                         "      *Single Nucleotide Variants (SNVs)\n\n"
+                         "       Reference:             %15%\n"
+                         "       True Positive:         %16%\n"
+                         "       False Positive:        %17%\n"
+                         "       False Negative:        %18%\n"
+                         "       Sensitivity:           %19%\n"
+                         "       Precision:             %20%\n"
+                         "       F1 Score:              %21%\n"
+                         "       FDR Rate:              %22%\n\n"
+                         "      *Small Insertions/Deletions (InDels)\n"
+                         "       Reference:             %23%\n"
+                         "       True Positive:         %24%\n"
+                         "       False Positive:        %25%\n"
+                         "       False Negative:        %26%\n"
+                         "       Sensitivity:           %27%\n"
+                         "       Precision:             %28%\n"
+                         "       F1 Score:              %29%\n"
+                         "       FDR Rate:              %30%\n\n"
                          "-------Diagnostic performance by genotype\n\n"
-                         "       True Positive:  %67% Homozygosity\n"
-                         "       True Positive:  %68% Heterozygosity\n\n"
-                         "       False Positive: %69% Homozygosity\n"
-                         "       False Positive: %70% Heterozygosity\n\n"
-                         "       False Negative: %71% Homozygosity\n"
-                         "       False Negative: %72% Heterozygosity\n\n"
-                         "       *Homozygosity\n"
-                         "       Sensitivity: %73$.4f\n"
-                         "       Precision:   %74$.4f\n"
-                         "       F1 Score:    %75$.4f\n"
-                         "       FDR Rate:    %76$.4f\n\n"
-                         "       *Heterozygosity\n"
-                         "       Sensitivity: %77$.4f\n"
-                         "       Precision:   %78$.4f\n"
-                         "       F1 Score:    %79$.4f\n"
-                         "       FDR Rate:    %80$.4f\n\n"
+                         "      *Homozygous variants\n"
+                         "       Reference:             %31%\n"
+                         "       True Positive:         %32%\n"
+                         "       False Positive:        %33%\n"
+                         "       False Negative:        %34%\n"
+                         "       Sensitivity:           %35%\n"
+                         "       Precision:             %36%\n"
+                         "       F1 Score:              %37%\n"
+                         "       FDR Rate:              %38%\n\n"
+                         "      *Heterozygous variants\n"
+                         "       Reference:             %39%\n"
+                         "       True Positive:         %40%\n"
+                         "       False Positive:        %41%\n"
+                         "       False Negative:        %42%\n"
+                         "       Sensitivity:           %43%\n"
+                         "       Precision:             %44%\n"
+                         "       F1 Score:              %45%\n"
+                         "       FDR Rate:              %46%\n\n"
                          "-------Diagnostic performance by context\n\n"
-                         "       *Low GC\n"
-                         "       Sensitivity: %81$.4f\n\n"
-                         "       *High GC\n"
-                         "       Sensitivity: %82$.4f\n\n"
-                         "       *Common\n"
-                         "       Sensitivity: %83$.4f\n\n"
-                         "       *Long Homopolymer\n"
-                         "       Sensitivity: %84$.4f\n\n"
-                         "       *Very Low GC\n"
-                         "       Sensitivity: %85$.4f\n\n"
-                         "       *Very High GC\n"
-                         "       Sensitivity: %86$.4f\n\n"
-                         "       *Short Dinucleotide Repeat\n"
-                         "       Sensitivity: %87$.4f\n\n"
-                         "       *Long Dinucleotide Repeat\n"
-                         "       Sensitivity: %88$.4f\n\n"
-                         "       *Short Homopolymer\n"
-                         "       Sensitivity: %89$.4f\n\n"
-                         "       *Long Quad Nucleotide Repeat\n"
-                         "       Sensitivity: %90$.4f\n\n"
-                         "       *Long Trinucleotide Repeat\n"
-                         "       Sensitivity: %91$.4f\n\n"
-                         "       *Short Quad Nucleotide Repeat\n"
-                         "       Sensitivity: %92$.4f\n\n"
-                         "       *Short Trinucleotide Repeat\n"
-                         "       Sensitivity: %93$.4f";
+                         "       Context                      Sensitivity:\n"
+                         "       Common                       %47%\n"
+                         "       Low GC                       %48%\n"
+                         "       High GC                      %49%\n"
+                         "       Long Homopolymer             %50%\n"
+                         "       Very Low GC                  %51%\n"
+                         "       Very High GC                 %52%\n"
+                         "       Short Dinucleotide Repeat    %53%\n"
+                         "       Long Dinucleotide Repeat     %54%\n"
+                         "       Short Homopolymer            %55%\n"
+                         "       Long Quad Nucleotide Repeat  %56%\n"
+                         "       Long Trinucleotide Repeat    %57%\n"
+                         "       Short Quad Nucleotide Repeat %58%\n"
+                         "       Short Trinucleotide Repeat   %59%\n";
 
         #define D(x) (isnan(x) ? "-" : std::to_string(x))
         
@@ -589,18 +535,6 @@ static void writeSummary(const FileName &file,
         const auto c_nDel = del.nq();
         const auto c_nIns = ins.nq();
         
-        const auto tp_SNP = snp.tp();
-        const auto tp_Del = del.tp();
-        const auto tp_Ins = ins.tp();
-
-        const auto fp_SNP = snp.fp();
-        const auto fp_Del = del.fp();
-        const auto fp_Ins = ins.fp();
-        
-        const auto fn_SNP = snp.fn();
-        const auto fn_Del = del.fn();
-        const auto fn_Ins = ins.fn();
-        
         auto ind = del;
         ind += ins;
 
@@ -612,7 +546,7 @@ static void writeSummary(const FileName &file,
         #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
         #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
 
-        #define C(x) (D(ss.c2c.at(Context::LowGC).nq()))
+        #define C(x) (D(ss.c2c.at(x).nq()))
 
         o.generate(file);
         o.writer->open(file);
@@ -620,100 +554,65 @@ static void writeSummary(const FileName &file,
                                                 % BedRef()                             // 2
                                                 % seqs                                 // 3
                                                 % (endo.empty() ? "-" : endo)          // 4
+                                                % E3()                                 // 5
+                                                % (c_nSNP + c_nDel + c_nIns)           // 6
                                                 % (r.nType(Variation::SNP) +
                                                    r.nType(Variation::Insertion) +
-                                                   r.nType(Variation::Deletion))       // 5
-                                                % E3()                                 // 6
-                                                % (c_nSNP + c_nDel + c_nIns)           // 7
-                                                % r.nType(Variation::SNP)              // 8
+                                                   r.nType(Variation::Deletion))       // 7
+                                                % D(ss.oc.tp())                        // 8
+                                                % D(ss.oc.fp())                        // 9
+                                                % D(ss.oc.fn())                        // 10
+                                                % D(ss.oc.sn())                        // 11
+                                                % D(ss.oc.pc())                        // 12
+                                                % D(ss.oc.F1())                        // 13
+                                                % D(1-ss.oc.pc())                      // 14
+                                                % r.nType(Variation::SNP)              // 15
+                                                % D(snp.tp())                          // 16
+                                                % D(snp.fp())                          // 17
+                                                % D(snp.fn())                          // 18
+                                                % D(snp.sn())                          // 19
+                                                % D(snp.pc())                          // 20
+                                                % D(snp.F1())                          // 21
+                                                % D(1 - snp.pc())                      // 22
                                                 % (r.nType(Variation::Insertion) +
-                                                   r.nType(Variation::Deletion))       // 9
-                                                % D(r.nGeno(Genotype::Homozygous))     // 10
-                                                % D(r.nGeno(Genotype::Heterzygous))    // 11
-                                                % D(r.nContext(Context::Common))       // 12
-                                                % D(r.nContext(Context::VeryLowGC))    // 13
-                                                % D(r.nContext(Context::LowGC))        // 14
-                                                % D(r.nContext(Context::HighGC))       // 15
-                                                % D(r.nContext(Context::VeryHighGC))   // 16
-                                                % D(r.nContext(Context::ShortDinRep))  // 17
-                                                % D(r.nContext(Context::LongDinRep))   // 18
-                                                % D(r.nContext(Context::ShortHompo))   // 19
-                                                % D(r.nContext(Context::LongHompo))    // 20
-                                                % D(r.nContext(Context::ShortQuadRep)) // 21
-                                                % D(r.nContext(Context::LongQuadRep))  // 22
-                                                % D(r.nContext(Context::ShortTrinRep)) // 23
-                                                % D(r.nContext(Context::LongTrinRep))  // 24
-                                                % E1()                                 // 25
-                                                % E2()                                 // 26
-                                                % c_nSNP                               // 27
-                                                % (c_nDel + c_nIns)                    // 28
-                                                % E4()                                 // 29
-                                                % E5()                                 // 30
-                                                % D(ss.g2c.at(Genotype::Homozygous).nq())                               // 31
-                                                % D(ss.g2c.at(Genotype::Heterzygous).nq())                               // 32
-                                                % (C(Context::LowGC))                  // 33
-                                                % (C(Context::HighGC))                 // 34
-                                                % (C(Context::Common))                 // 35
-                                                % (C(Context::LongHompo))              // 36
-                                                % (C(Context::VeryLowGC))              // 37
-                                                % (C(Context::VeryHighGC))             // 38
-                                                % (C(Context::ShortDinRep))            // 39
-                                                % (C(Context::LongDinRep))             // 40
-                                                % (C(Context::ShortHompo))             // 41
-                                                % (C(Context::LongHomp))               // 42
-                                                % (C(Context::LongQuadRep))            // 43
-                                                % (C(Context::ShortTrinRep))           // 44
-                                                % (C(Context::LongTrinRep))            // 45
-                                                % D(ss.oc.sn())                        // 46
-                                                % D(ss.oc.pc())                        // 47
-                                                % D(ss.oc.F1())                        // 48
-                                                % D(1-ss.oc.pc())                      // 49
-                                                % tp_SNP                               // 50
-                                                % (tp_Del + tp_Ins)                    // 51
-                                                % (tp_SNP + tp_Del + tp_Ins)           // 52
-                                                % fp_SNP                               // 53
-                                                % (fp_Del + fp_Ins)                    // 54
-                                                % (fp_SNP + fp_Del + fp_Ins)           // 55
-                                                % fn_SNP                               // 56
-                                                % (fn_Del + fn_Ins)                    // 57
-                                                % (fn_SNP + fn_Del + fn_Ins)           // 58
-                                                % D(snp.sn())                          // 59
-                                                % D(snp.pc())                          // 60
-                                                % D(snp.F1())                          // 61
-                                                % D(1-snp.pc())                        // 62
-                                                % D(ind.sn())                          // 63
-                                                % D(ind.pc())                          // 64
-                                                % D(ind.F1())                          // 65
-                                                % D(1-ind.pc())                        // 66
-                                                % D(hom.tp())                          // 67
-                                                % D(het.tp())                          // 68
-                                                % D(hom.fp())                          // 69
-                                                % D(het.fp())                          // 70
-                                                % D(hom.fn())                          // 71
-                                                % D(het.fn())                          // 72
-                                                % D(hom.sn())                          // 73
-                                                % D(hom.pc())                          // 74
-                                                % D(hom.F1())                          // 75
-                                                % D(1-hom.pc())                        // 76
-                                                % D(het.sn())                          // 77
-                                                % D(het.pc())                          // 78
-                                                % D(het.F1())                          // 79
-                                                % D(1-het.pc())                        // 80
-                                                % CSN(Context::LowGC)                  // 81
-                                                % CSN(Context::HighGC)                 // 82
-                                                % CSN(Context::Common)                 // 83
-                                                % CSN(Context::LongHompo)              // 84
-                                                % CSN(Context::VeryLowGC)              // 85
-                                                % CSN(Context::VeryHighGC)             // 86
-                                                % CSN(Context::ShortDinRep)            // 87
-                                                % CSN(Context::LongDinRep)             // 88
-                                                % CSN(Context::ShortHompo)             // 89
-                                                % CSN(Context::LongQuadRep)            // 90
-                                                % CSN(Context::LongTrinRep)            // 91
-                                                % CSN(Context::ShortQuadRep)           // 92
-                                                % CSN(Context::ShortTrinRep)           // 93
+                                                   r.nType(Variation::Deletion))       // 23
+                                                % D(ind.tp())                          // 24
+                                                % D(ind.fp())                          // 25
+                                                % D(ind.fn())                          // 26
+                                                % D(ind.sn())                          // 27
+                                                % D(ind.pc())                          // 28
+                                                % D(ind.F1())                          // 29
+                                                % D(1 - ind.pc())                      // 30
+                                                % D(r.nGeno(Genotype::Homozygous))     // 31
+                                                % D(hom.tp())                          // 32
+                                                % D(hom.fp())                          // 33
+                                                % D(hom.fn())                          // 34
+                                                % D(hom.sn())                          // 35
+                                                % D(hom.pc())                          // 36
+                                                % D(hom.F1())                          // 37
+                                                % D(1 - hom.pc())                      // 38
+                                                % D(r.nGeno(Genotype::Heterzygous))    // 39
+                                                % D(het.tp())                          // 40
+                                                % D(het.fp())                          // 41
+                                                % D(het.fn())                          // 42
+                                                % D(het.sn())                          // 43
+                                                % D(het.pc())                          // 44
+                                                % D(het.F1())                          // 45
+                                                % D(1 - het.pc())                      // 46
+                                                % CSN(Context::Common)                 // 47
+                                                % CSN(Context::LowGC)                  // 48
+                                                % CSN(Context::HighGC)                 // 49
+                                                % CSN(Context::LongHompo)              // 50
+                                                % CSN(Context::VeryLowGC)              // 51
+                                                % CSN(Context::VeryHighGC)             // 52
+                                                % CSN(Context::ShortDinRep)            // 53
+                                                % CSN(Context::LongDinRep)             // 54
+                                                % CSN(Context::ShortHompo)             // 55
+                                                % CSN(Context::LongQuadRep)            // 56
+                                                % CSN(Context::LongTrinRep)            // 57
+                                                % CSN(Context::ShortQuadRep)           // 58
+                                                % CSN(Context::ShortTrinRep)           // 59
                          ).str());
-    
     o.writer->close();
 }
 

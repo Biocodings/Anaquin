@@ -60,7 +60,8 @@ static void writeSummary(const FileName &file,
     extern FileName MixRef();
 
     const auto ls = stats.linear();
-    const auto format = "-------VarConjoint Output\n\n"
+    const auto format = "-------VarConjoint Summary Statistics\n\n"
+                        "-------VarConjoint Output Results\n\n"
                         "       Summary for input: %1%\n"
                         "       Mixture file: %2%\n\n"
                         "-------Reference Annotations\n\n"
