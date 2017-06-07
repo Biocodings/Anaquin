@@ -158,17 +158,21 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     initPerf(*(stats.endo));
     initPerf(*(stats.seqs));
     
-    o.logInfo(std::to_string(stats.seqs->inters.size()) + " regions");
-
 #ifdef DEBUG_VALIGN
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
 #endif
 
+    const auto r2 = r.regs2();
+    
     auto classify = [&](ParserBAM::Data &x, const ParserBAM::Info &info, Performance &p)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
+        }
+        else if (!contains(r2, x.cID, x.l))
+        {
+            return;
         }
         
         // Intron? Probably a mistake.

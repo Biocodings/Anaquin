@@ -1169,6 +1169,7 @@ void parse(int argc, char ** argv)
                     case Tool::VarAlign:
                     {
                         readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
                     }
 
@@ -1255,8 +1256,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
-                
+                case Tool::VarFlip:  { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 case Tool::VarAlign: { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case Tool::VarTrim:

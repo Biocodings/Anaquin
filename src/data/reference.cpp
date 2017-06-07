@@ -719,7 +719,7 @@ void VarRef::validate(Tool x, const UserReference &r)
         case Tool::VarAlign:
         {
             merge(r.r1->seqs());
-            build(r.r1);
+            build(r.r1, r.r2);
             break;
         }
 
