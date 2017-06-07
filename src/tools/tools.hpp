@@ -156,6 +156,11 @@ namespace Anaquin
         return n;
     }
     
+    template <typename T> double mean(const T &x)
+    {
+        return std::accumulate(x.begin(), x.end(), 0.0) / x.size();
+    }
+
     template <typename T1, typename T2> T2 sum(const std::vector<T1> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const T1 &p)

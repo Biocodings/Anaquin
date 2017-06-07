@@ -76,12 +76,30 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     // Perform calibration by subsampling
     stats.after = VSample::sample(seqs, stats.before.norms, r1, r2, o);
     
-    stats.tBefore = VSample::tBefore(stats.before, stats.after);
-    stats.tAfter  = VSample::tAfter (stats.before, stats.after);
-    stats.sBefore = VSample::sBefore(stats.before, stats.after);
-    stats.sAfter  = VSample::sAfter (stats.before, stats.after);
+    /*
+     * Genomic coverage for sequins and genome
+     */
 
-    stats.afterSeqs = VSample::afterSeqsC(r2, stats.before.c2v, o);
+    std::set<double> cEndo, bSeqs, aSeqs;
+    VSample::afterSeqsC(r2, stats.before.c2v, o);
+    
+    for (const auto &i : stats.before.c2v)
+    {
+        for (const auto &j : i.second)
+        {
+            // Genomic region?
+            if (l2c.at(j.first) == o.gen)
+            {
+                cEndo.insert(j.second.endo);
+                bSeqs.insert(j.second.before);
+                aSeqs.insert(j.second.after);
+            }
+        }
+    }
+    
+    stats.gEndo = mean(cEndo);
+    stats.bSeqs = mean(bSeqs);
+    stats.aSeqs = mean(aSeqs);
 
     /*
      * Quantifying the CNV ladder
@@ -100,7 +118,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     return stats;
 }
 
-static void writeCSV(const FileName &file, const VCopy::Stats &stats, const VSample::Options &o)
+static void writeQuins(const FileName &file, const VCopy::Stats &stats, const VSample::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -153,24 +171,24 @@ static void writeSummary(const FileName &file,
 
     const auto lm = stats.linear(false);
     const auto summary = "-------VarCopy Summary Statistics\n\n"
-                         "       Reference annotation file: %1%\n"
-                         "       Alignment file (sample):   %2%\n"
-                         "       Alignment file (sequin):   %3%\n\n"
+                         "       Reference annotation file:              %1%\n"
+                         "       Alignments (sample):                    %2%\n"
+                         "       Alignments (sequin):                    %3%\n\n"
                          "-------Reference regions\n\n"
-                         "       Sequin regions: %4% regions\n"
-                         "       Method: %5%\n\n"
-                         "-------CNV Normalization\n\n"
-                         "       Genomic CNV: 2x\n"
-                         "       Genomic normalization: %6%\n\n"
+                         "       Reference regions:                      %4% regions\n"
+                         "       Coverage of sequins (2n):               %5%\n"
+                         "       Coverage of counterpart genome regions: %6%\n"
+                         "       Method:                                 %7%\n"
+                         "       Scaling factor:                         %8%\n\n"
                          "-------Overall linear regression\n\n"
-                         "       Slope:       %7%\n"
-                         "       Correlation: %8%\n"
-                         "       R2:          %9%\n"
-                         "       F-statistic: %10%\n"
-                         "       P-value:     %11%\n"
-                         "       SSM:         %12%, DF: %13%\n"
-                         "       SSE:         %14%, DF: %15%\n"
-                         "       SST:         %16%, DF: %17%\n";
+                         "       Slope:       %9%\n"
+                         "       Correlation: %10%\n"
+                         "       R2:          %11%\n"
+                         "       F-statistic: %12%\n"
+                         "       P-value:     %13%\n"
+                         "       SSM:         %14%, DF: %15%\n"
+                         "       SSE:         %16%, DF: %17%\n"
+                         "       SST:         %18%, DF: %19%\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -178,19 +196,21 @@ static void writeSummary(const FileName &file,
                                             % endo             // 2
                                             % seqs             // 3
                                             % r.nRegs()        // 4
-                                            % meth2Str(o.meth) // 5
-                                            % stats.gNorm      // 6
-                                            % lm.m             // 7
-                                            % lm.r             // 8
-                                            % lm.R2            // 9
-                                            % lm.F             // 10
-                                            % lm.p             // 11
-                                            % lm.SSM           // 12
-                                            % lm.SSM_D         // 13
-                                            % lm.SSE           // 14
-                                            % lm.SSE_D         // 15
-                                            % lm.SST           // 16
-                                            % lm.SST_D         // 17
+                                            % stats.aSeqs      // 5
+                                            % stats.gEndo      // 6
+                                            % stats.gNorm      // 7
+                                            % meth2Str(o.meth) // 8
+                                            % lm.m             // 9
+                                            % lm.r             // 10
+                                            % lm.R2            // 11
+                                            % lm.F             // 12
+                                            % lm.p             // 13
+                                            % lm.SSM           // 14
+                                            % lm.SSM_D         // 15
+                                            % lm.SSE           // 16
+                                            % lm.SSE_D         // 17
+                                            % lm.SST           // 18
+                                            % lm.SST_D         // 19
                      ).str());
     o.writer->close();
 }
@@ -209,7 +229,7 @@ void VCopy::report(const FileName &endo, const FileName &seqs, const Options &o)
      * Generating VarCopy_sequins.csv
      */
     
-    writeCSV("VarCopy_sequins.csv", stats, o);
+    writeQuins("VarCopy_sequins.csv", stats, o);
 
     /*
      * Generating VarCopy_linear.R

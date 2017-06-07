@@ -23,16 +23,17 @@ namespace Anaquin
             // Estimated normalization (genome)
             Proportion gNorm;
             
-            // Estimated coverage (genome)
-            Coverage gCov;
-            
-            double afterSeqs;
-            
-            VSample::GenomeSequins tBefore, tAfter;
-            VSample::GenomeSequins sBefore, sAfter;
-            
             VSample::CalibrateStats before;
             ParserBAMBED::Stats after;
+            
+            // Average coverage for the genome (2n)
+            Coverage gEndo;
+            
+            // Average coverage before subsampling (2n)
+            Coverage bSeqs;
+            
+            // Average coverage after subsampling (2n)
+            Coverage aSeqs;
         };
 
         static Stats analyze(const FileName &, const FileName &, const Options &o);
