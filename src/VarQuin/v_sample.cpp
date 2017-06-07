@@ -421,31 +421,32 @@ static void generateSummary(const FileName &file,
     o.generate(file);
     
     const auto summary = "-------VarSubsample Summary Statistics\n\n"
+                         "-------VarSubsample Inputs\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Alignment file (sample):   %2%\n"
                          "       Alignment file (sequin):   %3%\n\n"
                          "       Method: %5%\n\n"
                          "-------Reference regions\n\n"
                          "       Regions: %4% regions\n\n"
+                         "-------Before subsampling (within sampling regions)\n\n"
+                         "       Sample coverage (average): %16$.2f\n"
+                         "       Sequin coverage (average): %17$.2f\n\n"
+                         "-------After subsampling (within sampling regions)\n\n"
+                         "       Sample coverage (average): %18$.2f\n"
+                         "       Sequin coverage (average): %19$.2f\n\n"
+                         "       Scaling Factor: %14% \u00B1 %15%\n\n"
                          "-------Total alignments (before subsampling)\n\n"
                          "       Sample: %6%\n"
                          "       Sequin: %7%\n\n"
                          "-------Total alignments (after subsampling)\n\n"
                          "       Sample: %8%\n"
                          "       Sequin: %9%\n\n"
-                         "-------Alignments within sampling regions (before subsampling)\n\n"
+                         "-------Alignments within specified regions (before subsampling)\n\n"
                          "       Sample: %10%\n"
                          "       Sequin: %11%\n\n"
-                         "-------Alignments within sampling regions (after subsampling)\n\n"
+                         "-------Alignments within specified regions (after subsampling)\n\n"
                          "       Sample: %12%\n"
-                         "       Sequin: %13%\n\n"
-                         "       Normalization: %14% \u00B1 %15%\n\n"
-                         "-------Before subsampling (within sampling regions)\n\n"
-                         "       Sample coverage (average): %16$.2f\n"
-                         "       Sequin coverage (average): %17$.2f\n\n"
-                         "-------After subsampling (within sampling regions)\n\n"
-                         "       Sample coverage (average): %18$.2f\n"
-                         "       Sequin coverage (average): %19$.2f\n";
+                         "       Sequin: %13%\n\n";
     
     o.generate(file);
     o.writer->open(file);

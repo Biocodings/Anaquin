@@ -103,6 +103,7 @@ static void writeSummary(const FileName &file,
     };
 
     const auto summary = "-------VarTrim Summary Statistics\n\n"
+                         "-------VarTrim Inputs\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Input alignment file: %2%\n\n"
                          "-------Reference regions\n\n"

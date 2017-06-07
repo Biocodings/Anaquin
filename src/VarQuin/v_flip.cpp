@@ -162,7 +162,7 @@ static void writeSummary(const FileName &file,
                          const VFlip::Stats &stats,
                          const VFlip::Options &o)
 {
-    const auto summary = "-------VarFlip Output Results\n\n"
+    const auto summary = "-------VarFlip Summary Statistics\n\n"
                          "-------VarFlip Inputs\n\n"
                          "       Alignment file: %1%\n\n"
                          "-------Alignments\n\n"
