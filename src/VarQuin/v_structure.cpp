@@ -14,7 +14,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
     stats.v2c[Variation::Duplication];
     
     const auto r1 = Standard::instance().r_var.regs1();
-
+    
     if (!file.empty())
     {
         ParserVCF2::parse(file, [&](const Variant &x)
@@ -33,7 +33,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
             }
         });
     }
-
+    
     return stats;
 }
 
@@ -160,7 +160,7 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
-
+    
     for (const auto &i : r.vars())
     {
         if (!stats.findTP(i.name))
@@ -191,7 +191,7 @@ static void writeDetected(const FileName &file,
                                            % "Position"
                                            % "Label"
                                            % "Mutation").str());
-
+    
     auto f = [&](const std::vector<VStructure::Match> &x, const std::string &label)
     {
         for (const auto &i : x)
@@ -217,8 +217,6 @@ static void writeSummary(const FileName &file,
                          const VStructure::SStats &ss,
                          const VStructure::Options &o)
 {
-    const auto &r = Standard::instance().r_var;
-    
     extern FileName VCFRef();
     extern FileName BedRef();
     
@@ -277,70 +275,70 @@ static void writeSummary(const FileName &file,
                          "       F1 Score:              %45%\n"
                          "       FDR Rate:              %46%\n\n";
     
-        #define D(x) (isnan(x) ? "-" : std::to_string(x))
-        
-        const auto &ins = ss.v2c.at(Variation::Insertion);
-        const auto &del = ss.v2c.at(Variation::Deletion);
-        const auto &inv = ss.v2c.at(Variation::Inversion);
-        const auto &dup = ss.v2c.at(Variation::Duplication);
+#define D(x) (isnan(x) ? "-" : std::to_string(x))
     
-        const auto nIns = ins.nq();
-        const auto nDel = del.nq();
-        const auto nInv = inv.nq();
-        const auto nDup = dup.nq();
-
-        #define E(x) (endo.empty() ? "-" : std::to_string(es.v2c.at(x)))
-        #define T()  (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion) + es.v2c.at(Variation::Inversion) + es.v2c.at(Variation::Duplication)))
-
-        o.generate(file);
-        o.writer->open(file);
-        o.writer->write((boost::format(summary) % VCFRef()                       // 1
-                                                % BedRef()                       // 2
-                                                % (endo.empty() ? "-" : endo)    // 3
-                                                % seqs                           // 4
-                                                % T()                            // 5
-                                                % (nIns + nDel + nInv + nDup)    // 6
-                                                % D(ss.oc.nr())                  // 7
-                                                % D(ss.oc.tp())                  // 8
-                                                % D(ss.oc.fp())                  // 9
-                                                % D(ss.oc.fn())                  // 10
-                                                % D(ss.oc.sn())                  // 11
-                                                % D(ss.oc.pc())                  // 12
-                                                % D(ss.oc.F1())                  // 13
-                                                % D(1-ss.oc.pc())                // 14
-                                                % D(ins.nr())                    // 15
-                                                % D(ins.tp())                    // 16
-                                                % D(ins.fp())                    // 17
-                                                % D(ins.fn())                    // 18
-                                                % D(ins.sn())                    // 19
-                                                % D(ins.pc())                    // 20
-                                                % D(ins.F1())                    // 21
-                                                % D(1-ins.pc())                  // 22
-                                                % D(del.nr())                    // 23
-                                                % D(del.tp())                    // 24
-                                                % D(del.fp())                    // 25
-                                                % D(del.fn())                    // 26
-                                                % D(del.sn())                    // 27
-                                                % D(del.pc())                    // 28
-                                                % D(del.F1())                    // 29
-                                                % D(1-del.pc())                  // 30
-                                                % D(inv.nr())                    // 31
-                                                % D(inv.tp())                    // 32
-                                                % D(inv.fp())                    // 33
-                                                % D(inv.fn())                    // 34
-                                                % D(inv.sn())                    // 35
-                                                % D(inv.pc())                    // 36
-                                                % D(inv.F1())                    // 37
-                                                % D(1-inv.pc())                  // 38
-                                                % D(dup.nr())                    // 39
-                                                % D(dup.tp())                    // 40
-                                                % D(dup.fp())                    // 41
-                                                % D(dup.fn())                    // 42
-                                                % D(dup.sn())                    // 43
-                                                % D(dup.pc())                    // 44
-                                                % D(dup.F1())                    // 45
-                                                % D(1-dup.pc())                  // 46
-                         ).str());
+    const auto &ins = ss.v2c.at(Variation::Insertion);
+    const auto &del = ss.v2c.at(Variation::Deletion);
+    const auto &inv = ss.v2c.at(Variation::Inversion);
+    const auto &dup = ss.v2c.at(Variation::Duplication);
+    
+    const auto nIns = ins.nq();
+    const auto nDel = del.nq();
+    const auto nInv = inv.nq();
+    const auto nDup = dup.nq();
+    
+#define E(x) (endo.empty() ? "-" : std::to_string(es.v2c.at(x)))
+#define T()  (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion) + es.v2c.at(Variation::Inversion) + es.v2c.at(Variation::Duplication)))
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % VCFRef()                       // 1
+                                            % BedRef()                       // 2
+                                            % (endo.empty() ? "-" : endo)    // 3
+                                            % seqs                           // 4
+                                            % T()                            // 5
+                                            % (nIns + nDel + nInv + nDup)    // 6
+                                            % D(ss.oc.nr())                  // 7
+                                            % D(ss.oc.tp())                  // 8
+                                            % D(ss.oc.fp())                  // 9
+                                            % D(ss.oc.fn())                  // 10
+                                            % D(ss.oc.sn())                  // 11
+                                            % D(ss.oc.pc())                  // 12
+                                            % D(ss.oc.F1())                  // 13
+                                            % D(1-ss.oc.pc())                // 14
+                                            % D(ins.nr())                    // 15
+                                            % D(ins.tp())                    // 16
+                                            % D(ins.fp())                    // 17
+                                            % D(ins.fn())                    // 18
+                                            % D(ins.sn())                    // 19
+                                            % D(ins.pc())                    // 20
+                                            % D(ins.F1())                    // 21
+                                            % D(1-ins.pc())                  // 22
+                                            % D(del.nr())                    // 23
+                                            % D(del.tp())                    // 24
+                                            % D(del.fp())                    // 25
+                                            % D(del.fn())                    // 26
+                                            % D(del.sn())                    // 27
+                                            % D(del.pc())                    // 28
+                                            % D(del.F1())                    // 29
+                                            % D(1-del.pc())                  // 30
+                                            % D(inv.nr())                    // 31
+                                            % D(inv.tp())                    // 32
+                                            % D(inv.fp())                    // 33
+                                            % D(inv.fn())                    // 34
+                                            % D(inv.sn())                    // 35
+                                            % D(inv.pc())                    // 36
+                                            % D(inv.F1())                    // 37
+                                            % D(1-inv.pc())                  // 38
+                                            % D(dup.nr())                    // 39
+                                            % D(dup.tp())                    // 40
+                                            % D(dup.fp())                    // 41
+                                            % D(dup.fn())                    // 42
+                                            % D(dup.sn())                    // 43
+                                            % D(dup.pc())                    // 44
+                                            % D(dup.F1())                    // 45
+                                            % D(1-dup.pc())                  // 46
+                     ).str());
     o.writer->close();
 }
 
@@ -359,7 +357,7 @@ template <typename Stats, typename Options> void writeQuins(const FileName &file
                                            % "End"
                                            % "Label"
                                            % "Mutation").str());
-
+    
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
@@ -403,7 +401,7 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
     o.generate(file);
     o.writer->open(file);
     o.writer->write(head);
-
+    
     const auto sv2str = std::map<Variation, std::string>
     {
         { Variation::SNP,         "SNP" },
@@ -412,19 +410,19 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
         { Variation::Inversion,   "INV" },
         { Variation::Duplication, "DUP" },
     };
-
+    
     for (const auto &i : x)
     {
         const auto var = i.var ? i.var : &i.qry;
-        const auto format = "%1%\t%2%\t%3%\tN\t%4%\t.\t.\tSVTTYPE=%5%;SVLEN=%6%;END=%7%";
-
+        
+        const auto format = "%1%\t%2%\t%3%\tN\t%4%\t%5%\t%6%\t%7%";
         o.writer->write((boost::format(format) % var->cID
                                                % var->l.start
                                                % var->name
                                                % ("<" + sv2str.at(var->type()) + ">")
-                                               % sv2str.at(var->type())
-                                               % var->opts.at("SVLEN")
-                                               % var->l.end).str());
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))).str());
     }
     
     o.writer->close();
@@ -434,13 +432,13 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
 {
     const auto es = analyzeE(endo, o);
     const auto ss = analyzeS(seqs, o);
-
+    
     /*
      * Generating VarStructure_summary.stats
      */
     
     writeSummary("VarStructure_summary.stats", endo, seqs, es, ss, o);
-
+    
     /*
      * Generating VarStructure_sequins.csv
      */
@@ -450,7 +448,7 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
     /*
      * Generating VarStructure_detected.csv
      */
-
+    
     writeDetected("VarStructure_detected.csv", ss, o);
     
     /*
@@ -458,7 +456,7 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
      */
     
     writeVCF("VarStructure_TP.vcf", ss.tps, o);
-
+    
     /*
      * Generating VarStructure_FP.vcf
      */
@@ -468,5 +466,5 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
     /*
      * Generating VarStructure_FN.vcf
      */
-
+    
     writeVCF("VarStructure_FN.vcf", ss.fns, o);}
