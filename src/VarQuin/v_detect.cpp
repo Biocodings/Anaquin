@@ -630,13 +630,16 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
     for (const auto &i : x)
     {
         const auto var = i.var ? i.var : &i.qry;
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t.\t.\t.";
-        
+
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
         o.writer->write((boost::format(format) % var->cID
-                                           % var->l.start
-                                           % var->name
-                                           % var->ref
-                                           % var->alt).str());
+                                               % var->l.start
+                                               % var->name
+                                               % var->ref
+                                               % var->alt
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
+                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))).str());
     }
     
     o.writer->close();
