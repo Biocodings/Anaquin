@@ -1160,7 +1160,7 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad1(std::bind(&Standard::addCNV, &s,  std::placeholders::_1), OPT_L_CNV, r);
+                        readLad1(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV, r);
                         readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
                         readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
