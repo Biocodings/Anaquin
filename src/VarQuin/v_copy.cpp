@@ -20,7 +20,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     
     for (auto &i : r.seqs())
     {
-        l2c[r.locus(i)] = r.concent1(i);
+        l2c[r.locus(i)] = r.input1(i);
     }
 
     const auto r1 = r.regs1();
@@ -109,7 +109,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     {
         for (const auto &j : i.second)
         {
-            const auto exp = r.concent1(j.second.rID);
+            const auto exp = r.input1(j.second.rID);
             const auto obs = i.second;
             stats.add(j.second.rID, exp, j.second.after);
         }
@@ -148,7 +148,7 @@ static void writeQuins(const FileName &file, const VCopy::Stats &stats, const VS
                                                    % i.first
                                                    % j.first.start
                                                    % j.first.end
-                                                   % r.concent1(j.second.rID)
+                                                   % r.input1(j.second.rID)
                                                    % j.second.endo
                                                    % j.second.before
                                                    % j.second.after

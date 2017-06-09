@@ -12,7 +12,7 @@ VConjoint::Stats VConjoint::analyze(const FileName &file, const Options &o)
     
     VConjoint::Stats stats;
     
-    for (const auto &i : r.l2Seqs())
+    for (const auto &i : r.seqsL2())
     {
         stats.data[i];
     }
@@ -44,8 +44,8 @@ static void writeQuins(const FileName &file,
         const auto seq = noLast(i.first, "_");
         o.writer->write((boost::format(format) % seq
                                                % i.first
-                                               % r.concent1(seq)
-                                               % r.concent2(i.first)
+                                               % r.input1(seq)
+                                               % r.input2(i.first)
                                                % i.second).str());
     }
 
@@ -73,10 +73,9 @@ static void writeSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(format) % seqs                // 1
                                            % MixRef()            // 2
-                                           % r.l1Seqs().size()   // 3
+                                           % r.seqsL1().size()   // 3
                                            % nonZero(stats.data) // 4
             ).str());
-
     o.writer->close();
 }
 

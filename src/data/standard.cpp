@@ -20,6 +20,7 @@ using namespace Anaquin;
 
 enum MixtureFormat
 {
+    Name_Mix,
     Name_Len_Mix,
     Name_Len_X_Mix,
     NUMU,
@@ -68,8 +69,9 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
             
             switch (format)
             {
-                case NUMU:           { x.add(d[0], m, stoi(d[2])); break; }
-                case UNUM:           { x.add(d[1], m, stoi(d[3])); break; }
+                case Name_Mix:       { x.add(d[0], m, stof(d[1])); break; }
+                case NUMU:           { x.add(d[0], m, stof(d[2])); break; }
+                case UNUM:           { x.add(d[1], m, stof(d[3])); break; }
                 case Name_Len_Mix:   { x.add(d[0], m, stof(d[2])); break; }
                 case Name_Len_X_Mix: { x.add(d[0], m, stof(d[3])); break; }
             }
@@ -88,8 +90,8 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
 
 Ladder Standard::addCNV(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file for CNV ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix);
+    A_CHECK(countColumns(r) == 2, "Invalid mixture file for CNV ladder.");
+    return readLadder(Reader(r), r_var, Mix_1, Name_Mix);
 }
 
 Ladder Standard::addCon1(const Reader &r)
@@ -106,8 +108,8 @@ Ladder Standard::addCon2(const Reader &r)
 
 Ladder Standard::addAF(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file for allele frequnecy ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Len_Mix);
+    A_CHECK(countColumns(r) == 2, "Invalid mixture file for allele frequnecy ladder.");
+    return readLadder(Reader(r), r_var, Mix_1, Name_Mix);
 }
 
 void Standard::addMDMix(const Reader &r)

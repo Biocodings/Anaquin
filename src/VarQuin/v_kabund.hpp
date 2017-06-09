@@ -7,33 +7,19 @@ namespace Anaquin
 {
     struct VKAbund
     {
-        enum class Software
+        struct Stats
         {
-            Salmon
-        };
-
-        enum class Mode
-        {
-            CNVLad,
-            AFLad,
-            ConLad,
+            // Read counts for reference and variants (allele frequency ladder)
+            std::map<SequinID, Measured> afR, afV;
+            
+            // Statistics for conjoint sequins
+            SequinStats con;            
         };
         
-        struct Options : public AnalyzerOptions
-        {
-            Options() : mode(Mode::CNVLad), soft(Software::Salmon) {}
-            Mode mode;
-            Software soft;
-        };
+        typedef AnalyzerOptions Options;
         
-        struct Stats : public LimitStats, public SequinStats
-        {
-            // Empty Implementation
-        };
-
         static Stats analyze(const FileName &, const Options &o);
-
-        static void report(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

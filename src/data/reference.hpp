@@ -85,11 +85,11 @@ namespace Anaquin
 
     struct UserReference
     {
-        std::shared_ptr<Ladder> l1, l2, l3;
+        std::shared_ptr<Ladder> l1, l2, l3, l4;
 
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;
-        
+
         // Second bed regions (trimmed)
         std::shared_ptr<BedData> r2;
     };
@@ -98,26 +98,17 @@ namespace Anaquin
     {
         public:
 
-            // All sequins in the reference
-            inline std::set<SequinID> seqs() const { return _seqs; }
-
-            // Sequins in ladder 1
-            inline std::set<SequinID> l1Seqs() const { return _l1->seqs; }
+            typedef std::set<SequinID> SequinIDs;
         
-            // Sequins in ladder 2
-            inline std::set<SequinID> l2Seqs() const { return _l2->seqs; }
-        
-            // Concentation in the reference ladder
-            inline Concent concent1(const SequinID &id, Mixture m = Mix_1) const
-            {
-                return _l1->concent(id, m);
-            }
+            inline SequinIDs seqs()   const { return _seqs; }
+            inline SequinIDs seqsL1() const { return _l1->seqs; }
+            inline SequinIDs seqsL2() const { return _l2->seqs; }
+            inline SequinIDs seqsL3() const { return _l2->seqs; }
 
-            // Concentation in the reference ladder
-            inline Concent concent2(const SequinID &id, Mixture m = Mix_1) const
-            {
-                return _l2->concent(id, m);
-            }
+            inline Concent input1(const SequinID &x, Mixture m = Mix_1) const { return _l1->input(x, m); }
+            inline Concent input2(const SequinID &x, Mixture m = Mix_1) const { return _l2->input(x, m); }
+            inline Concent input3(const SequinID &x, Mixture m = Mix_1) const { return _l3->input(x, m); }
+            inline Concent input4(const SequinID &x, Mixture m = Mix_1) const { return _l4->input(x, m); }
         
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
@@ -186,7 +177,18 @@ namespace Anaquin
                 _l1 = l1;
                 _l2 = l2;
             }
-
+        
+            inline void build(std::shared_ptr<Ladder> l1,
+                              std::shared_ptr<Ladder> l2,
+                              std::shared_ptr<Ladder> l3,
+                              std::shared_ptr<Ladder> l4)
+            {
+                _l1 = l1;
+                _l2 = l2;
+                _l3 = l3;
+                _l4 = l4;
+            }
+        
             inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<BedData> r1)
             {
                 _l1   = l1;
@@ -311,7 +313,7 @@ namespace Anaquin
             std::shared_ptr<BedData> _r1, _r2;
         
             // Sequin ladder
-            std::shared_ptr<Ladder> _l1, _l2;
+            std::shared_ptr<Ladder> _l1, _l2, _l3, _l4;
 
         
         

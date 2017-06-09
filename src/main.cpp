@@ -434,6 +434,14 @@ template <typename F> void readLad3(F f, Option key, UserReference &r)
     }
 }
 
+template <typename F> void readLad4(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.l4 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
+    }
+}
+
 static void readReg1(Option opt, UserReference &r, Base trim = 0)
 {
     if (!_p.opts[opt].empty())
@@ -1160,9 +1168,10 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad1(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV, r);
+                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_AF,  r);
                         readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
                         readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV, r);
                         break;
                     }
 
@@ -1174,31 +1183,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
-
-                case Tool::VarKAbund:
-                {
-                    VKAbund::Options o;
-                    
-                    if (_p.opts.count(OPT_L_CNV))
-                    {
-                        o.mode = VKAbund::Mode::CNVLad;
-                    }
-                    else if (_p.opts.count(OPT_L_CON))
-                    {
-                        o.mode = VKAbund::Mode::ConLad;
-                    }
-                    else
-                    {
-                        o.mode = VKAbund::Mode::AFLad;
-                    }
-
-                    analyze_1<VKAbund>(OPT_U_SEQS, o);
-                    break;
-                }
-
-                case Tool::VarFlip:  { analyze_1<VFlip>(OPT_U_SEQS); break; }
-                case Tool::VarAlign: { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
+                case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);                break; }
+                case Tool::VarKAbund:   { analyze_1<VKAbund>(OPT_U_SEQS);              break; }
+                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS);            break; }
+                case Tool::VarAlign:    { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 
                 case Tool::VarTrim:
                 {

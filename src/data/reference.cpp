@@ -701,6 +701,12 @@ void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
+        case Tool::VarKAbund:
+        {
+            build(r.l1, r.l2, r.l3, r.l4);
+            break;
+        }
+
         case Tool::VarCopy:
         {
             const auto inter = intersect(r.r1->seqs(), r.l1->seqs);

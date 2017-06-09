@@ -22,7 +22,7 @@ namespace Anaquin
         
         inline Counts count() const { return seqs.size(); }
 
-        inline Concent concent(const SequinID &id, Mixture m)
+        inline Concent input(const SequinID &id, Mixture m)
         {
             return m == Mix_1 ? m1.at(id) : m2.at(id);
         }
