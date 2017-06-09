@@ -46,6 +46,10 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", fields);
                 
+                x.opts["QUAL"]   = fields[Field::Qual];
+                x.opts["INFO"]   = fields[Field::Info];
+                x.opts["FILTER"] = fields[Field::Filt];
+                
                 x.cID = standChr(fields[Field::Chrom]);
                 
                 // Eg: D_1_3_R
