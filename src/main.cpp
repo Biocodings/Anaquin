@@ -161,7 +161,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKAbund,    { OPT_U_SEQS } },
+    { Tool::VarKAbund,    { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_L_CON } },
 
@@ -410,26 +410,6 @@ static Scripts manual(Tool tool)
     }
 }
 
-#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
-
-static void printError(const std::string &msg)
-{
-    std::cerr << "***********************" << std::endl;
-    std::cerr << "[ERRO]: " << msg << std::endl;
-    std::cerr << "***********************" << std::endl;
-}
-
-template <typename Mixture> void applyMix(Mixture mix)
-{
-//    if (mixture().empty())
-//    {
-//        return;
-//    }
-//    
-//    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
-//    mix(Reader(mixture()));
-}
-
 template <typename F> void readLad1(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
@@ -446,50 +426,11 @@ template <typename F> void readLad2(F f, Option key, UserReference &r)
     }
 }
 
-template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
+template <typename F> void readLad3(F f, Option key, UserReference &r)
 {
-    if (__showInfo__)
+    if (_p.opts.count(key))
     {
-        std::cout << "[INFO]: Loading: " << file << std::endl;
-    }
-    
-    ref(Reader(file));
-}
-
-template <typename Reference> void addRef(const ChrID &cID, Reference ref)
-{
-    for (const auto &i : _p.opts)
-    {
-        if (CHECK_REF(i.first))
-        {
-            addRef(cID, ref, _p.opts[i.first]);
-            break;
-        }
-    }
-}
-
-template <typename Reference> void addRef(Reference ref)
-{
-    for (const auto &i : _p.opts)
-    {
-        const auto opt = i.first;
-        
-        if (CHECK_REF(opt))
-        {
-            switch (opt)
-            {
-                case OPT_R_IND:
-                {
-                    continue;
-                }
-
-                default:
-                {
-                    addRef(ChrIS, ref, _p.opts[opt]);
-                    break;
-                }
-            }
-        }
+        r.l3 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -917,27 +858,27 @@ void parse(int argc, char ** argv)
                 {
                     case Tool::RnaAlign:
                     {
-                        addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
+                        //addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
                         break;
                     }
 
                     case Tool::RnaFoldChange:
                     {
-                        applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
+                        //applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     case Tool::RnaExpress:
                     case Tool::RnaAssembly:
                     {
-                        applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                        //applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
-                        addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
-                        applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                        //addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
+                        //applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
                         break;
                     }
                 }
@@ -1056,8 +997,8 @@ void parse(int argc, char ** argv)
         {
             switch (_p.tool)
             {
-                case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
-                case Tool::MetaAbund:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
+//                case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
+//                case Tool::MetaAbund:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
 //                case Tool::MetaAlign:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
 //                case Tool::MetaSubsample: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
 //
@@ -1219,9 +1160,9 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad1(std::bind(&Standard::addAF,  &s, std::placeholders::_1), OPT_L_AF,  r);
-                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
-//                      readLad1(std::bind(&Standard::addCon, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad1(std::bind(&Standard::addCNV, &s,  std::placeholders::_1), OPT_L_CNV, r);
+                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
                         break;
                     }
 
@@ -1437,6 +1378,13 @@ void parse(int argc, char ** argv)
 extern int parse_options(int argc, char ** argv)
 {
     char cwd[1024];
+    
+    auto printError = [&](const std::string &x)
+    {
+        std::cerr << "***********************" << std::endl;
+        std::cerr << "[ERRO]: " << x << std::endl;
+        std::cerr << "***********************" << std::endl;
+    };
     
     if (getcwd(cwd, sizeof(cwd)))
     {

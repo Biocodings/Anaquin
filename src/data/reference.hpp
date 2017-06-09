@@ -85,7 +85,7 @@ namespace Anaquin
 
     struct UserReference
     {
-        std::shared_ptr<Ladder> l1, l2;
+        std::shared_ptr<Ladder> l1, l2, l3;
 
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;

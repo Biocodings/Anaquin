@@ -1,5 +1,5 @@
 #
-# Anaquin - Sequin statistical analysis. Version 1.1.1.
+# Anaquin - Sequin statistical analysis
 #
 # This R script was generated at %1%.
 #
