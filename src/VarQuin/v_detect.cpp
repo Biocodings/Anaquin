@@ -192,7 +192,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             const auto exp = r.findAFreq(m.var->name);
             const auto obs = m.qry.allF;
             
-            A_ASSERT(!isnan(exp) && !isnan(obs));
+            A_ASSERT(!isnan(exp));
             
             // Eg: 2821292107
             const auto id = toString(key);
