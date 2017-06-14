@@ -616,7 +616,7 @@ static void writeSummary(const FileName &file,
     o.writer->close();
 }
 
-template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o)
+template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o, bool useVar)
 {
     const auto head = "##fileformat=VCFv4.1\n"
                       "##reference=https://www.sequin.xyz\n"
@@ -629,8 +629,7 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
     
     for (const auto &i : x)
     {
-        const auto var = i.var ? i.var : &i.qry;
-
+        const auto var = useVar ? i.var : &i.qry;
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
         o.writer->write((boost::format(format) % var->cID
                                                % var->l.start
@@ -684,20 +683,20 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     o.writer->close();
     
     /*
-     * Generating VarDa _TP.vcf
+     * Generating VarDetect_TP.vcf
      */
     
-    writeVCF("VarDetect_TP.vcf", ss.tps, o);
+    writeVCF("VarDetect_TP.vcf", ss.tps, o, true);
     
     /*
      * Generating VarDetect_FP.vcf
      */
     
-    writeVCF("VarDetect_FP.vcf", ss.fps, o);
+    writeVCF("VarDetect_FP.vcf", ss.fps, o, false);
     
     /*
      * Generating VarDetect_FN.vcf
      */
     
-    writeVCF("VarDetect_FN.vcf", ss.fns, o);
+    writeVCF("VarDetect_FN.vcf", ss.fns, o, true);
 }

@@ -388,7 +388,7 @@ template <typename Stats, typename Options> void writeQuins(const FileName &file
     o.writer->close();
 }
 
-template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o)
+template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o, bool useVar)
 {
     const auto head = "##fileformat=VCFv4.1\n"
                       "##reference=https://www.sequin.xyz\n"
@@ -413,8 +413,7 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
     
     for (const auto &i : x)
     {
-        const auto var = i.var ? i.var : &i.qry;
-        
+        const auto var = useVar ? i.var : &i.qry;        
         const auto format = "%1%\t%2%\t%3%\tN\t%4%\t%5%\t%6%\t%7%";
         o.writer->write((boost::format(format) % var->cID
                                                % var->l.start
@@ -455,16 +454,16 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
      * Generating VarStructure_TP.vcf
      */
     
-    writeVCF("VarStructure_TP.vcf", ss.tps, o);
+    writeVCF("VarStructure_TP.vcf", ss.tps, o, true);
     
     /*
      * Generating VarStructure_FP.vcf
      */
     
-    writeVCF("VarStructure_FP.vcf", ss.fps, o);
+    writeVCF("VarStructure_FP.vcf", ss.fps, o, false);
     
     /*
      * Generating VarStructure_FN.vcf
      */
     
-    writeVCF("VarStructure_FN.vcf", ss.fns, o);}
+    writeVCF("VarStructure_FN.vcf", ss.fns, o, true);}
