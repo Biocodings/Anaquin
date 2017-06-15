@@ -743,6 +743,7 @@ void VarRef::validate(Tool x, const UserReference &r)
         }
 
         case Tool::VarDetect:
+        case Tool::VarSomatic:
         case Tool::VarStructure:
         {
             merge(_impl->vIDs);

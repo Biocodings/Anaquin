@@ -20,7 +20,7 @@
 #include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "VarQuin/v_cancer.hpp"
+#include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
@@ -126,7 +126,7 @@ static std::map<Value, Tool> _tools =
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
-    { "VarCancer",      Tool::VarCancer      },
+    { "VarSomatic",     Tool::VarSomatic     },
     { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
@@ -163,6 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKAbund,    { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_L_CON } },
 
     /*
@@ -394,7 +395,7 @@ static Scripts manual(Tool tool)
         case Tool::VarCopy:        { return VarCopy();        }
         case Tool::VarFlip:        { return VarFlip();        }
         case Tool::VarTrim:        { return VarTrim();        }
-        case Tool::VarCancer:      { return VarSomatic();     }
+        case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarSample:      { return VarSample();      }
         case Tool::VarKAbund:      { return VarKAbund();      }
@@ -726,6 +727,7 @@ void parse(int argc, char ** argv)
                     case Tool::VarCopy:
                     case Tool::VarSample:
                     case Tool::VarDetect:
+                    case Tool::VarSomatic:
                     case Tool::RnaExpress:
                     case Tool::VarStructure:
                     case Tool::RnaFoldChange: { _p.opts[opt] = val; break; }
@@ -1100,9 +1102,9 @@ void parse(int argc, char ** argv)
         case Tool::VarTrim:
         case Tool::VarAlign:
         case Tool::VarDetect:
-        case Tool::VarCancer:
         case Tool::VarSample:
         case Tool::VarKAbund:
+        case Tool::VarSomatic:
         case Tool::VarConjoint:
         case Tool::VarStructure:
         {
@@ -1159,6 +1161,7 @@ void parse(int argc, char ** argv)
                     }
 
                     case Tool::VarDetect:
+                    case Tool::VarSomatic:
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
@@ -1209,6 +1212,23 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
+                case Tool::VarSomatic:
+                {
+                    VSomatic::Options o;
+                    
+                    if (_p.opts.count(OPT_METHOD))
+                    {
+                        const auto &x = _p.opts.at(OPT_METHOD);
+                        
+                        if (x == "pass")     { o.meth = VSomatic::Method::Passed;         }
+                        else if (x == "all") { o.meth = VSomatic::Method::NotFiltered;    }
+                        else                 { throw InvalidValueException("-method", x); }
+                    }
+                    
+                    analyze_2<VSomatic>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
+                    
                 case Tool::VarDetect:
                 {
                     VDetect::Options o;

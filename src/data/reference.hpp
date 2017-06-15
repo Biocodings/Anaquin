@@ -26,7 +26,7 @@ namespace Anaquin
         VarCopy,
         VarAlign,
         VarDetect,
-        VarCancer,
+        VarSomatic,
         VarSample,
         VarTrim,
         VarFlip,
