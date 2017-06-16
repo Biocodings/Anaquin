@@ -15,16 +15,17 @@ namespace Anaquin
     {
         enum Field
         {
-            Chrom  = 0,
-            Pos    = 1,
-            ID     = 2,
-            Ref    = 3,
-            Alt    = 4,
-            Qual   = 5,
-            Filt   = 6,
-            Info   = 7,
-            Format = 8,
-            Sample = 9
+            Chrom   = 0,
+            Pos     = 1,
+            ID      = 2,
+            Ref     = 3,
+            Alt     = 4,
+            Qual    = 5,
+            Filt    = 6,
+            Info    = 7,
+            Format  = 8,
+            Sample1 = 9,
+            Sample2 = 10,
         };
 
         template <typename F> static void parse(const Reader &r, F f)
@@ -109,8 +110,10 @@ namespace Anaquin
                 {
                     Tokens::split(fields[Field::Format], ":", formats);
                     
+                    auto hack = fields.size() > Field::Sample2 ? Field::Sample2 : Field::Sample1;
+                    
                     // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
-                    Tokens::split(fields[Field::Sample], ":", tmp);
+                    Tokens::split(fields[hack], ":", tmp);
                     
                     // Check all the format data...
                     for (auto j = 0; j < tmp.size(); j++)

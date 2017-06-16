@@ -333,18 +333,18 @@ static void writeQuins(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                     % "Chrom"
-                     % "Position"
-                     % "Label"
-                     % "ReadR"
-                     % "ReadV"
-                     % "Depth"
-                     % "ExpFreq"
-                     % "ObsFreq"
-                     % "Qual"
-                     % "Genotype"
-                     % "Context"
-                     % "Mutation").str());
+                                           % "Chrom"
+                                           % "Position"
+                                           % "Label"
+                                           % "ReadR"
+                                           % "ReadV"
+                                           % "Depth"
+                                           % "ExpFreq"
+                                           % "ObsFreq"
+                                           % "Qual"
+                                           % "Genotype"
+                                           % "Context"
+                                           % "Mutation").str());
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
@@ -359,7 +359,7 @@ static void writeQuins(const FileName &file,
             const auto &c = isTP->qry;
             
             o.writer->write((boost::format(format) % i.name
-                             % i.cID
+                                                   % i.cID
                              % i.l.start
                              % "TP"
                              % c.readR

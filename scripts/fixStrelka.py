@@ -146,23 +146,27 @@ def transformDataLine(line, normal_index, tumour_index):
 		format_tags.append('AD')
 		format_tags.append('AF')        
 
-        x = makeSNVAD(format_tags, normal_sample_format_values, ref, alts)
+        def calAF(x):
+            #x = makeSNVAD(format_tags, normal_sample_format_values, ref, alts)
         
-        r = float(x.split(',')[0])
-        a = float(x.split(',')[1])
-        
-        if (r + a) == 0:
-            allF = 0
-        else:
-            allF = a / (r + a)
+            r = float(x.split(',')[0])
+            a = float(x.split(',')[1])
+
+            if (r + a) == 0:
+                return 0
+            else:
+                return a / (r + a)
+                
+        n = makeSNVAD(format_tags, normal_sample_format_values, ref, alts)
+        t = makeSNVAD(format_tags, tumour_sample_format_values, ref, alts)
         
 		# Add AD values for both samples
-        normal_sample_format_values.append(makeSNVAD(format_tags, normal_sample_format_values, ref, alts))
-        tumour_sample_format_values.append(makeSNVAD(format_tags, tumour_sample_format_values, ref, alts))
+        normal_sample_format_values.append(n)
+        tumour_sample_format_values.append(t)
 
 		# Add AF values for both samples
-        normal_sample_format_values.append(allF)
-        tumour_sample_format_values.append(allF)
+        normal_sample_format_values.append(calAF(n))
+        tumour_sample_format_values.append(calAF(t))
 
 	new_format_field = ':'.join(str(v) for v in format_tags)
 	new_normal_field = ':'.join(str(v) for v in normal_sample_format_values)
