@@ -11,7 +11,6 @@
 #include "data/standard.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_csv.hpp"
-#include "parsers/parser_vcf.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_gtf.hpp"
 #include <boost/algorithm/string/replace.hpp>

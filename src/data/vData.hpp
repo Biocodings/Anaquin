@@ -3,8 +3,8 @@
 
 #include "data/hist.hpp"
 #include "tools/tools.hpp"
-#include "data/standard.hpp"
 #include "data/dinters.hpp"
+#include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_variants.hpp"
 
