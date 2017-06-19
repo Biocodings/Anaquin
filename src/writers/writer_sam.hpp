@@ -9,9 +9,6 @@
 // Defined in the HTSLIB library
 extern "C" int sam_hdr_print(htsFile *fp, const bam_hdr_t *h);
 
-// Defined in the HTSLIB library
-//extern "C" int __NO_SAM_FILE_WRITING__; TODO: ?????
-
 namespace Anaquin
 {
     class WriterSAM : public Writer
@@ -28,11 +25,7 @@ namespace Anaquin
 
             inline void openTerm()
             {
-                // Disable file writing in the htslib library
-                //__NO_SAM_FILE_WRITING__ = 1;
-                
                 _fp = sam_open(System::tmpFile().c_str(), "w");
-                
                 _term = true;
             }
         
@@ -57,40 +50,19 @@ namespace Anaquin
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
                 
-                if (_term)
+                if (!_header)
                 {
-                    if (!_header)
-                    {
-                        // TODO sam_hdr_print(_fp, h);
-                    }
-                    
-                    // This won't write anything (__NO_SAM_FILE_WRITING__)
-                    if (sam_write1(_fp, h, b) == -1)
-                    {
-                        throw std::runtime_error("Failed to write in write()");
-                    }
-
-                #ifndef UNIT_TEST
-                    std::cout << _fp->line.s;
-                #endif
+                    // TODO sam_hdr_print(_fp, h);
                 }
-                else
+                
+                if (sam_write1(_fp, h, b) == -1)
                 {
-                    if (!_fp)
-                    {
-                        throw std::runtime_error("Failed to initialize the file pointer");
-                    }
-
-                    if (!_header)
-                    {
-                        sam_hdr_write(_fp, h);
-                    }
-                    
-                    if (sam_write1(_fp, h, b) == -1)
-                    {
-                        throw std::runtime_error("Failed to write in write()");
-                    }
+                    throw std::runtime_error("Failed to write in write()");
                 }
+                
+#ifndef UNIT_TEST
+                std::cout << _fp->line.s;
+#endif
 
                 _header = true;
             }
