@@ -75,7 +75,7 @@ namespace Anaquin
         ChrID cID;
 
         // Eg: GI_005
-        std::string name;
+        SequinID name;
 
         // The reference position, with the 1st base having position 1
         Locus l;

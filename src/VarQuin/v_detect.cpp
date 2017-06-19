@@ -636,9 +636,9 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
                                                % var->name
                                                % var->ref
                                                % var->alt
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))).str());
+                                               % "????" //(i.qry.name.empty() ? "." : toString(i.qry.qual))
+                                               % "????" //(i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
+                                               % "????" /*(i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))*/ ).str());
     }
     
     o.writer->close();

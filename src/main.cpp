@@ -40,6 +40,8 @@
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
 
+#include "parsers/parser_vcf2.hpp"
+
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 

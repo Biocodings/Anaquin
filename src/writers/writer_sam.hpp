@@ -10,7 +10,7 @@
 extern "C" int sam_hdr_print(htsFile *fp, const bam_hdr_t *h);
 
 // Defined in the HTSLIB library
-extern "C" int __NO_SAM_FILE_WRITING__;
+//extern "C" int __NO_SAM_FILE_WRITING__; TODO: ?????
 
 namespace Anaquin
 {
@@ -29,7 +29,7 @@ namespace Anaquin
             inline void openTerm()
             {
                 // Disable file writing in the htslib library
-                __NO_SAM_FILE_WRITING__ = 1;
+                //__NO_SAM_FILE_WRITING__ = 1;
                 
                 _fp = sam_open(System::tmpFile().c_str(), "w");
                 
@@ -61,7 +61,7 @@ namespace Anaquin
                 {
                     if (!_header)
                     {
-                        sam_hdr_print(_fp, h);
+                        // TODO sam_hdr_print(_fp, h);
                     }
                     
                     // This won't write anything (__NO_SAM_FILE_WRITING__)

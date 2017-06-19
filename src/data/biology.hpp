@@ -63,10 +63,10 @@ namespace Anaquin
     }
 
     /*
-     * Standardize chromosome name. For example, "1" and "chr1" should have the same meaning.
+     * Standardize chromosome name. For example, "1" and "chr1" should mean the same.
      */
     
-    template <typename T> T standChr(const T &x)
+    template <typename T> T chrom(const T &x)
     {
         return !x.empty() && isdigit(x.front()) ? "chr" + x : x;
     }
