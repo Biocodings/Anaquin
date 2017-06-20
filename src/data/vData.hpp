@@ -3,7 +3,7 @@
 
 #include "tools/tools.hpp"
 #include "data/standard.hpp"
-#include "parsers/parser_vcf2.hpp"
+#include "parsers/parser_vcf.hpp"
 
 namespace Anaquin
 {
@@ -67,7 +67,7 @@ namespace Anaquin
     {
         VData c2d;
         
-        ParserVCF2::parse(r, [&](const Variant &x)
+        ParserVCF::parse(r, [&](const Variant &x)
         {
             c2d[x.cID].b2v[x.l.start] = x;
             c2d[x.cID].m2v[x.type()].insert(x);

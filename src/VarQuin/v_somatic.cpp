@@ -1,5 +1,5 @@
 #include "VarQuin/v_somatic.hpp"
-#include "parsers/parser_vcf2.hpp"
+#include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
 
@@ -75,7 +75,7 @@ VSomatic::EStats VSomatic::analyzeE(const FileName &file, const Options &o)
     
     if (!file.empty())
     {
-        ParserVCF2::parse(file, [&](const Variant &x)
+        ParserVCF::parse(file, [&](const Variant &x)
         {
             if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
             {
@@ -125,7 +125,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
     
-    ParserVCF2::parse(file, [&](const Variant &x)
+    ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
         {

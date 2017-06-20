@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include "htslib/hts.h"
 #include "htslib/vcf.h"
-#include "parsers/parser_vcf2.hpp"
-#include <iostream>
+#include "parsers/parser_vcf.hpp"
+
 using namespace Anaquin;
 
-void ParserVCF2::parse(const Reader &r, Functor f)
+void ParserVCF::parse(const Reader &r, Functor f)
 {
     htsFile *fp = bcf_open(r.src().c_str(), "r");
     
@@ -44,6 +44,7 @@ void ParserVCF2::parse(const Reader &r, Functor f)
         
         x.ref    =  std::string(line->d.allele[0]);
         x.alt    =  std::string(line->d.allele[1]);
+        x.qual   = line->qual;
         x.filter = (bcf_has_filter(hdr, line, pass) == 1) ? Filter::Pass : Filter::NotFilted;
 
         auto info1 = [&](const std::string &key)
@@ -96,7 +97,20 @@ void ParserVCF2::parse(const Reader &r, Functor f)
             free(a1);
         }
         
-        x.qual = line->qual;
+        auto for1 = [&](const std::string &key, const std::string &to, unsigned i)
+        {
+            if (bcf_get_format_int32(hdr, line, key.c_str(), &pi, &c) > i)
+            {
+                x.for1[to] = *(pi+i);
+            }
+        };
+        
+        for1("DP", "DP_1", 0);
+        for1("DP", "DP_1", 1);
+
+        x.hdr  = (void *) hdr;
+        x.line = (void *) line;
+        
         f(x);
     }
     

@@ -24,6 +24,11 @@ namespace Anaquin
         NotFilted,
     };
     
+    /*
+     * This class represents a VCF variant. Not everything in a VCF file is important, only
+     * the required fields are included.
+     */
+    
     struct Variant
     {
         operator const Locus &() const { return l; }
@@ -90,11 +95,8 @@ namespace Anaquin
         // Allelle frequency
         Proportion allF = NAN;
         
-        // Quality score (eg: QUAL in VCF (62.74))
+        // Quality score
         double qual = NAN;
-        
-        // P-value (not always provided)
-        Probability p = NAN;
         
         // Eg: AD for VCF and REF for VarScan
         Counts readR = NAN;
@@ -107,6 +109,11 @@ namespace Anaquin
         
         // Optional data
         std::map<std::string, std::string> opts;
+
+        // Other data for FORMATS (integer)
+        std::map<std::string, int> for1;
+        
+        void *hdr, *line;
     };
 }
 

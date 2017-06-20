@@ -1,5 +1,5 @@
-#ifndef WRITER_SAM_HPP
-#define WRITER_SAM_HPP
+#ifndef SAM_WRITER_HPP
+#define SAM_WRITER_HPP
 
 #include <htslib/sam.h>
 #include "tools/samtools.hpp"
@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    class WriterSAM : public Writer
+    class SAMWriter : public Writer
     {
         public:
 
@@ -47,7 +47,7 @@ namespace Anaquin
 
             inline void create(const std::string &) override
             {
-                throw std::runtime_error("Not supported in WriterSAM");
+                throw std::runtime_error("Not supported in SAMWriter");
             }
 
         private:

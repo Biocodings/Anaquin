@@ -1,5 +1,6 @@
 #include "VarQuin/v_detect.hpp"
-#include "parsers/parser_vcf2.hpp"
+#include "writers/vcf_writer.hpp"
+#include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
 
@@ -56,7 +57,7 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
     
     if (!file.empty())
     {
-        ParserVCF2::parse(file, [&](const Variant &x)
+        ParserVCF::parse(file, [&](const Variant &x)
         {
             if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
             {
@@ -119,7 +120,10 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
 
-    ParserVCF2::parse(file, [&](const Variant &x)
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarDetect_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarDetect_FP.vcf");
+    
+    ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
         {
@@ -185,6 +189,8 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
+            wTP.write(x.hdr, x.line);
+            
             const auto key = m.var->key();
             
             stats.tps.push_back(m);
@@ -205,10 +211,15 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
+            wFP.write(x.hdr, x.line);
+            
             // FP because the variant is not found in the reference
             stats.fps.push_back(m);
         }
     });
+    
+    wTP.close();
+    wFP.close();
     
     o.info("Aggregating statistics");
 
@@ -616,7 +627,7 @@ static void writeSummary(const FileName &file,
     o.writer->close();
 }
 
-template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o, bool useVar)
+template <typename T, typename O> void writeFN(const FileName &file, const T &x, const O &o, bool useVar)
 {
     const auto head = "##fileformat=VCFv4.1\n"
                       "##reference=https://www.sequin.xyz\n"
@@ -681,22 +692,10 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     o.writer->open("VarDetect_ROC.R");
     o.writer->write(createROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
-    
-    /*
-     * Generating VarDetect_TP.vcf
-     */
-    
-    writeVCF("VarDetect_TP.vcf", ss.tps, o, true);
-    
-    /*
-     * Generating VarDetect_FP.vcf
-     */
-    
-    writeVCF("VarDetect_FP.vcf", ss.fps, o, false);
-    
+
     /*
      * Generating VarDetect_FN.vcf
      */
-    
-    writeVCF("VarDetect_FN.vcf", ss.fns, o, true);
+
+    writeFN("VarDetect_FN.vcf", ss.fns, o, true);
 }

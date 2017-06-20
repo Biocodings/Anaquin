@@ -1,5 +1,5 @@
+#include "parsers/parser_vcf.hpp"
 #include "VarQuin/v_structure.hpp"
-#include "parsers/parser_vcf2.hpp"
 
 using namespace Anaquin;
 
@@ -17,7 +17,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
     
     if (!file.empty())
     {
-        ParserVCF2::parse(file, [&](const Variant &x)
+        ParserVCF::parse(file, [&](const Variant &x)
         {
             if (o.meth == VStructure::Method::Passed && x.filter != Filter::Pass)
             {
@@ -55,7 +55,7 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
     
-    ParserVCF2::parse(file, [&](const Variant &x)
+    ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.meth == VStructure::Method::Passed && x.filter != Filter::Pass)
         {

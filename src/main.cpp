@@ -30,6 +30,7 @@
 #include "MetaQuin/m_sample.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
+#include "parsers/parser_vcf.hpp"
 #include "parsers/parser_blat.hpp"
 #include "parsers/parser_fold.hpp"
 #include "parsers/parser_cdiff.hpp"
@@ -39,8 +40,6 @@
 #include "parsers/parser_express.hpp"
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
-
-#include "parsers/parser_vcf2.hpp"
 
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
@@ -1453,5 +1452,8 @@ extern int parse_options(int argc, char ** argv)
 
 int main(int argc, char ** argv)
 {
+    ParserVCF::parse(Reader("CancerRep3.somatic.filtered.vcf"), [&](const Variant &)
+                      {});
+    
     return parse_options(argc, argv);
 }

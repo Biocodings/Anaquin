@@ -6,7 +6,7 @@
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "MetaQuin/MetaQuin.hpp"
-#include "parsers/parser_vcf2.hpp"
+#include "parsers/parser_vcf.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -568,7 +568,7 @@ template <typename F, typename T = VData> T parseVCF2(const Reader &r, F f)
 {
     T t;
     
-    ParserVCF2::parse(r, [&](const Variant &x)
+    ParserVCF::parse(r, [&](const Variant &x)
                       {
                           t[x.cID].b2v[x.l.start] = x;
                           t[x.cID].m2v[x.type()].insert(x);

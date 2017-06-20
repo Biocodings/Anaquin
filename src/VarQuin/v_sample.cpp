@@ -1,7 +1,7 @@
 #include <ss/stats.hpp>
 #include "tools/random.hpp"
 #include "VarQuin/v_sample.hpp"
-#include "writers/writer_sam.hpp"
+#include "writers/sam_writer.hpp"
 
 extern Anaquin::FileName BedRef();
 
@@ -36,7 +36,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
 
     o.info("Sampling: " + file);
     
-    WriterSAM writer;
+    SAMWriter writer;
     writer.open("");
 
     return ParserBAMBED::parse(file, sampled, [&](const ParserBAM::Data &x,

@@ -1,7 +1,7 @@
 #include "tools/errors.hpp"
 #include "MetaQuin/MetaQuin.hpp"
 #include "MetaQuin/m_sample.hpp"
-#include "writers/writer_sam.hpp"
+#include "writers/sam_writer.hpp"
 
 using namespace Anaquin;
 

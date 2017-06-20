@@ -1,7 +1,7 @@
 #include "tools/errors.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_sample.hpp"
-#include "writers/writer_sam.hpp"
+#include "writers/sam_writer.hpp"
 
 using namespace Anaquin;
 

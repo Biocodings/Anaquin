@@ -1,6 +1,6 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_trim.hpp"
-#include "writers/writer_sam.hpp"
+#include "writers/sam_writer.hpp"
 #include "parsers/parser_bambed.hpp"
 
 extern Anaquin::FileName BedRef();
@@ -57,7 +57,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     stats.left  = stats.lTrim.size();
     stats.right = stats.rTrim.size();
     
-    WriterSAM writer;
+    SAMWriter writer;
     writer.open("");
     
     // Triming away the paired reads ...
