@@ -71,12 +71,22 @@ void ParserVCF2::parse(const Reader &r, Functor f)
         
         if (x.opts.count("AF")) { x.allF = stod(x.opts.at("AF")); }
         
-        int32_t *gt = NULL, ngt_arr = 0;
-        if (bcf_get_genotypes(hdr, line, &gt, &ngt_arr) == 2)
+        int32_t *g1 = NULL, g2 = 0;
+        if (bcf_get_genotypes(hdr, line, &g1, &g2) == 2)
         {
-            x.gt = gt[0] == gt[1] ? Genotype::Homozygous : Genotype::Heterzygous;
-            free(gt);
+            x.gt = g1[0] == g1[1] ? Genotype::Homozygous : Genotype::Heterzygous;
+            free(g1);
         }
+
+        int32_t *a1 = NULL, a2 = 0;
+        if (bcf_get_format_int32(hdr, line, "AD", &a1, &a2) == 2)
+        {
+            x.readR = a1[0];
+            x.readV = a1[1];
+            free(a1);
+        }
+        
+        //AD
         
         x.qual = line->qual;
         

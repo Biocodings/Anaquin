@@ -33,14 +33,7 @@ namespace Anaquin
 
                 if (!_header)
                 {
-                    samFile *tmp = sam_open("-", "w");
-                    
-                    if (sam_hdr_write(tmp, h) != 0)
-                    {
-                        throw std::runtime_error("Failed to write SAM headers");
-                    }
-                    
-                    sam_close(tmp);
+                    std::cout << std::string(h->text);
                 }
                 
                 if (sam_write1(_fp, h, b) == -1)
@@ -48,6 +41,7 @@ namespace Anaquin
                     throw std::runtime_error("Failed to SAM record");
                 }
                 
+                std::cout << std::string(_fp->line.s);
                 _header = true;
             }
 
