@@ -3,7 +3,7 @@
 #include "htslib/hts.h"
 #include "htslib/vcf.h"
 #include "parsers/parser_vcf2.hpp"
-
+#include <iostream>
 using namespace Anaquin;
 
 void ParserVCF2::parse(const Reader &r, Functor f)
@@ -26,6 +26,7 @@ void ParserVCF2::parse(const Reader &r, Functor f)
     char pass[] = "PASS";
 
     char  *ps = (char  *) malloc(1024 * sizeof(int));
+    int   *pi = (int *)   malloc(1024 * sizeof(int));
     float *pf = (float *) malloc(1024 * sizeof(float));
     
     bcf1_t *line = bcf_init();
@@ -60,16 +61,25 @@ void ParserVCF2::parse(const Reader &r, Functor f)
                 x.opts[key] = std::to_string(*pf);
             }
         };
+
+        auto info3 = [&](const std::string &key)
+        {
+            if (bcf_get_info_int32(hdr, line, key.c_str(), &pi, &c) > 0)
+            {
+                x.opts[key] = std::to_string(*pi);
+            }
+        };
         
         info1("CS");
         info1("CX");
         info1("GN");
         info1("GT");
-        info2("DP");
         info2("AF");
         info2("CP");
+        info3("DP");
         
-        if (x.opts.count("AF")) { x.allF = stod(x.opts.at("AF")); }
+        if (x.opts.count("AF")) { x.allF  = stod(x.opts.at("AF")); }
+        if (x.opts.count("DP")) { x.depth = stod(x.opts.at("DP")); }
         
         int32_t *g1 = NULL, g2 = 0;
         if (bcf_get_genotypes(hdr, line, &g1, &g2) == 2)
@@ -86,9 +96,12 @@ void ParserVCF2::parse(const Reader &r, Functor f)
             free(a1);
         }
         
-        x.qual = line->qual;        
+        x.qual = line->qual;
         f(x);
     }
     
+    free(ps);
+    free(pi);
+    free(pf);
     hts_close(fp);
 }
