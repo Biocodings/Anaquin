@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("StandChr_1")
+TEST_CASE("Chrom_1")
 {
     auto x1 = std::string("1");
     auto x2 = std::string("3");

@@ -564,6 +564,20 @@ const SequinVariant & VarRef::findSeqVar(long key) const
     return _impl->sVars.at(key);
 }
 
+template <typename F, typename T = VData> T parseVCF2(const Reader &r, F f)
+{
+    T t;
+    
+    ParserVCF2::parse(r, [&](const Variant &x)
+                      {
+                          t[x.cID].b2v[x.l.start] = x;
+                          t[x.cID].m2v[x.type()].insert(x);
+                          f(x);
+                      });
+    
+    return t;
+}
+
 void VarRef::readVRef(const Reader &r)
 {
     typedef SequinVariant::Context Context;

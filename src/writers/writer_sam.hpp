@@ -2,12 +2,8 @@
 #define WRITER_SAM_HPP
 
 #include <htslib/sam.h>
-#include "tools/system.hpp"
 #include "tools/samtools.hpp"
 #include "writers/writer.hpp"
-
-// Defined in the HTSLIB library
-extern "C" int sam_hdr_print(htsFile *fp, const bam_hdr_t *h);
 
 namespace Anaquin
 {
@@ -15,29 +11,11 @@ namespace Anaquin
     {
         public:
 
-            inline void close() override
-            {
-                if (!_term)
-                {
-                    sam_close(_fp);
-                }
-            }
+            inline void close() override { sam_close(_fp); }
 
-            inline void openTerm()
-            {
-                _fp = sam_open(System::tmpFile().c_str(), "w");
-                _term = true;
-            }
-        
             inline void open(const FileName &file) override
             {
-                _term = false;
-                _fp = sam_open(file.c_str(), "w");
-                
-                if (!_fp)
-                {
-                    throw std::runtime_error("Failed to open " + file);
-                }
+                _fp = sam_open("-", "w");
             }
 
             inline void write(const std::string &, bool) override
@@ -49,20 +27,16 @@ namespace Anaquin
             {
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
-                
-                if (!_header)
+
+                if (!_header && sam_hdr_write(_fp, h) != 0)
                 {
-                    // TODO sam_hdr_print(_fp, h);
+                    throw std::runtime_error("Failed to write SAM headers");
                 }
                 
                 if (sam_write1(_fp, h, b) == -1)
                 {
-                    throw std::runtime_error("Failed to write in write()");
+                    throw std::runtime_error("Failed to SAM record");
                 }
-                
-#ifndef UNIT_TEST
-                std::cout << _fp->line.s;
-#endif
 
                 _header = true;
             }
@@ -74,9 +48,7 @@ namespace Anaquin
 
         private:
 
-            bool _term;
-
-            // Whether the header has been written
+            // Whether the header has written
             bool _header = false;
 
             // File pointer

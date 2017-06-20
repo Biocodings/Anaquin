@@ -12,7 +12,6 @@ TEST_CASE("Locus_Merge_Overlap_Last")
     };
 
     const auto r = Locus::merge<Locus, Locus>(ls);
-
     REQUIRE(r.size() == 1);
 }
 

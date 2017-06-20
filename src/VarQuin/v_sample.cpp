@@ -37,7 +37,7 @@ ParserBAMBED::Stats VSample::sample(const FileName    &file,
     o.info("Sampling: " + file);
     
     WriterSAM writer;
-    writer.openTerm();
+    writer.open("");
 
     return ParserBAMBED::parse(file, sampled, [&](const ParserBAM::Data &x,
                                                   const ParserBAM::Info &info,

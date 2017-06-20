@@ -175,22 +175,22 @@ static void writeAllele(const FileName &file, const VKAbund::Stats &stats, const
     o.writer->close();
 }
 
-static void writeConjointR(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-{
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarKAbund_sequins.csv",
-                                           o.work,
-                                           "Expected Concentration vs Observed Abundance",
-                                           "Expected Concentration (log2)",
-                                           "Observed Abundance (log2)",
-                                           "log2(data$Expected)",
-                                           "log2(data$Observed)",
-                                           "input",
-                                           true,
-                                           PlotConjoint()));
-    o.writer->close();
-}
+//static void writeConjointR(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
+//{
+//    o.generate(file);
+//    o.writer->open(file);
+//    o.writer->write(RWriter::createRLinear("VarKAbund_sequins.csv",
+//                                           o.work,
+//                                           "Expected Concentration vs Observed Abundance",
+//                                           "Expected Concentration (log2)",
+//                                           "Observed Abundance (log2)",
+//                                           "log2(data$Expected)",
+//                                           "log2(data$Observed)",
+//                                           "input",
+//                                           true,
+//                                           PlotConjoint()));
+//    o.writer->close();
+//}
 
 void VKAbund::report(const FileName &file, const Options &o)
 {

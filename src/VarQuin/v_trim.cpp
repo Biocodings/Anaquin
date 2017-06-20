@@ -58,7 +58,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     stats.right = stats.rTrim.size();
     
     WriterSAM writer;
-    writer.openTerm();
+    writer.open("");
     
     // Triming away the paired reads ...
     ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)

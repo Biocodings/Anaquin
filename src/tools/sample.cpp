@@ -12,7 +12,7 @@ Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const Analyze
     Random r(1.0 - p);
 
     WriterSAM w;
-    w.openTerm();
+    w.open("");
     
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {

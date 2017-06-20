@@ -1,7 +1,6 @@
 #ifndef V_SOMATIC_HPP
 #define V_SOMATIC_HPP
 
-#include "data/vData.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 

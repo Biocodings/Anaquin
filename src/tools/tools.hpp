@@ -184,6 +184,31 @@ namespace Anaquin
         return n;
     }
     
+    inline FileName path2file(const Path &path)
+    {
+        auto tmp = path;
+        const auto last = path.find_last_of("\\/");
+        
+        if (std::string::npos != last)
+        {
+            tmp.erase(0, last + 1);
+        }
+        
+        return tmp;
+    }
+    
+    inline std::vector<FileName> path2file(const std::vector<FileName> &files)
+    {
+        auto tmp = files;
+        
+        for (auto i = 0; i < tmp.size(); i++)
+        {
+            tmp[i] = path2file(tmp[i]);
+        }
+        
+        return tmp;
+    }
+
     template <typename T1, typename T2> T2 sum(const std::map<T1, T2> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const std::pair<T1, T2>& p)

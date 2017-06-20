@@ -1,12 +1,9 @@
 #ifndef V_DATA_HPP
 #define V_DATA_HPP
 
-#include "data/hist.hpp"
 #include "tools/tools.hpp"
-#include "data/dinters.hpp"
 #include "data/standard.hpp"
-#include "parsers/parser_vcf.hpp"
-#include "parsers/parser_variants.hpp"
+#include "parsers/parser_vcf2.hpp"
 
 namespace Anaquin
 {
@@ -70,11 +67,11 @@ namespace Anaquin
     {
         VData c2d;
         
-        ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &p)
+        ParserVCF2::parse(r, [&](const Variant &x)
         {
             c2d[x.cID].b2v[x.l.start] = x;
             c2d[x.cID].m2v[x.type()].insert(x);
-            f(x, p);
+            f(x);
         });
         
         return c2d;
@@ -82,7 +79,7 @@ namespace Anaquin
     
     inline VData readVFile(const Reader &r)
     {
-        return readVFile(r, [](const ParserVCF::Data &x, const ParserProgress &) {});
+        return readVFile(r, [](const Variant &) {});
     }
 }
 

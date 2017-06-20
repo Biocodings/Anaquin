@@ -14,16 +14,6 @@ bool System::isEmpty(const FileName& file)
     return ss.peek() == std::ifstream::traits_type::eof();
 }
 
-bool System::checkConsole(const Executable &)
-{
-    return true;
-}
-
-bool System::checkRPack(const Package &)
-{
-    return true;
-}
-
 FileName System::tmpFile()
 {
     static std::mutex mtx;
@@ -61,15 +51,4 @@ FileName System::tmpFile()
 void System::runCmd(const std::string &cmd)
 {
     system(cmd.c_str());
-}
-
-void System::runRScript(const std::string &code)
-{
-    const auto tmp = tmpFile();
-
-    std::ofstream out(tmp);
-    out << code;
-    out.close();
-
-    System::runCmd("R CMD BATCH " + tmp);
 }

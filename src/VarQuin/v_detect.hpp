@@ -1,7 +1,6 @@
 #ifndef V_DETECT_HPP
 #define V_DETECT_HPP
 
-#include "data/vData.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 
