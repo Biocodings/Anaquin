@@ -144,7 +144,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
 {
     extern FileName BedRef();
     
-    const auto &r = Standard::instance().r_meta;
+//    const auto &r = Standard::instance().r_meta;
     
     const auto summary = "-------MetaAssembly Output\n\n"
                          "       Summary for input: %1%\n\n"
@@ -192,7 +192,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
 
 static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
-    const auto &r = Standard::instance().r_meta;
+//    const auto &r = Standard::instance().r_meta;
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     

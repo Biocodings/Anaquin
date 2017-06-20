@@ -236,15 +236,8 @@ FileName MixRef()
     return _p.opts.at(OPT_L_AF);
 }
 
-FileName VCFRef()
-{
-    return _p.opts.at(OPT_R_VCF);
-}
-
-FileName BedRef()
-{
-    return _p.opts.at(OPT_R_BED);
-}
+FileName BedRef() { return _p.opts.at(OPT_R_BED); }
+FileName VCFRef() { return _p.opts.at(OPT_R_VCF); }
 
 static Scripts fixManual(const Scripts &str)
 {
@@ -258,12 +251,10 @@ static Scripts fixManual(const Scripts &str)
     return x;
 }
 
-typedef std::string ErrorMsg;
-
 struct InvalidOptionException : public std::exception
 {
     InvalidOptionException(const std::string &opt) : opt(opt) {}
-    
+
     const std::string opt;
 };
 
@@ -1452,8 +1443,5 @@ extern int parse_options(int argc, char ** argv)
 
 int main(int argc, char ** argv)
 {
-    ParserVCF::parse(Reader("CancerRep3.somatic.filtered.vcf"), [&](const Variant &)
-                      {});
-    
     return parse_options(argc, argv);
 }

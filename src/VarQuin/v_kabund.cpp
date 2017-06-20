@@ -117,8 +117,8 @@ static void writeQuins(const FileName &file, const VKAbund::Stats &stats, const 
     o.writer->close();
 }
 
-static bool writeConjoint(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-{
+//static bool writeConjoint(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
+//{
 //    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 //    
 //    for (const auto &i : stats)
@@ -145,9 +145,9 @@ static bool writeConjoint(const FileName &file, const VKAbund::Stats &stats, con
 //            return true;
 //        }
 //    }
-    
-    return false;
-}
+//    
+//    return false;
+//}
 
 static void writeCNVR(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
 {

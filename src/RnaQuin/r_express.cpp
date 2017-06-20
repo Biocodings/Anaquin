@@ -430,7 +430,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     
     assert(!isnan(limit.abund) && !limit.id.empty());
     
-    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+//    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     
     const auto ms = multiStats(files, mStats, lStats);
 

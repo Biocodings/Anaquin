@@ -7,7 +7,7 @@ using namespace Anaquin;
 
 MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_meta;
+//    const auto &r = Standard::instance().r_meta;
     
     /*
      * Create data-structure for each of the sequin

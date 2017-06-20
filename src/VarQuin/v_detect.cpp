@@ -629,30 +629,22 @@ static void writeSummary(const FileName &file,
 
 template <typename T, typename O> void writeFN(const FileName &file, const T &x, const O &o, bool useVar)
 {
-    const auto head = "##fileformat=VCFv4.1\n"
-                      "##reference=https://www.sequin.xyz\n"
-                      "##INFO=<ID=AF,Number=A,Type=Float,Description=""Allele Frequency"">\n"
-                      "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
-    
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write(head);
-    
-    for (const auto &i : x)
+    extern FileName VCFRef();
+
+    auto wFN = VCFWriter(); wFN.open(o.work + "/" + file);
+
+    std::set<long> keys;
+    for (const auto &i : x) { keys.insert(i.var->key()); }
+
+    ParserVCF::parse(VCFRef(), [&](const Variant &x)
     {
-        const auto var = useVar ? i.var : &i.qry;
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-        o.writer->write((boost::format(format) % var->cID
-                                               % var->l.start
-                                               % var->name
-                                               % var->ref
-                                               % var->alt
-                                               % "????" //(i.qry.name.empty() ? "." : toString(i.qry.qual))
-                                               % "????" //(i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
-                                               % "????" /*(i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))*/ ).str());
-    }
+        if (keys.count(x.key()))
+        {
+            wFN.write(x.hdr, x.line);
+        }
+    });
     
-    o.writer->close();
+    wFN.close();
 }
 
 void VDetect::report(const FileName &endo, const FileName &seqs, const Options &o)
