@@ -184,6 +184,9 @@ namespace Anaquin
         return n;
     }
     
+    typedef std::string Path;
+    typedef std::string FileName;
+    
     inline FileName path2file(const Path &path)
     {
         auto tmp = path;
