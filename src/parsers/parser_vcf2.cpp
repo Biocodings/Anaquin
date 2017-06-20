@@ -86,10 +86,7 @@ void ParserVCF2::parse(const Reader &r, Functor f)
             free(a1);
         }
         
-        //AD
-        
-        x.qual = line->qual;
-        
+        x.qual = line->qual;        
         f(x);
     }
     
