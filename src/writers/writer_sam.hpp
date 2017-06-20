@@ -11,11 +11,14 @@ namespace Anaquin
     {
         public:
 
-            inline void close() override { sam_close(_fp); }
+            inline void close() override
+            {
+                sam_close(_fp);
+            }
 
             inline void open(const FileName &file) override
             {
-                _fp = sam_open("-", "w");
+                _fp = sam_open("/dev/null", "w");
             }
 
             inline void write(const std::string &, bool) override
@@ -28,16 +31,23 @@ namespace Anaquin
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
 
-                if (!_header && sam_hdr_write(_fp, h) != 0)
+                if (!_header)
                 {
-                    throw std::runtime_error("Failed to write SAM headers");
+                    samFile *tmp = sam_open("-", "w");
+                    
+                    if (sam_hdr_write(tmp, h) != 0)
+                    {
+                        throw std::runtime_error("Failed to write SAM headers");
+                    }
+                    
+                    sam_close(tmp);
                 }
                 
                 if (sam_write1(_fp, h, b) == -1)
                 {
                     throw std::runtime_error("Failed to SAM record");
                 }
-
+                
                 _header = true;
             }
 

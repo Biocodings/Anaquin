@@ -242,5 +242,6 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
         info.p.i++;
     }
 
+    bam_destroy1(t);
     sam_close(f);
 }
