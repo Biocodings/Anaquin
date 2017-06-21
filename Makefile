@@ -20,7 +20,7 @@ SOURCES_LIB  = $(wildcard src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lpthread -lz -lhts -L /Users/tedwong/Sources/QA/htslib -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lpthread -lz -lhts -L $(HTSLIB) -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
