@@ -126,8 +126,8 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
     
-    auto wTP = VCFWriter(); wTP.open(o.work + "/VarDetect_TP.vcf");
-    auto wFP = VCFWriter(); wFP.open(o.work + "/VarDetect_FP.vcf");
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarSomatic_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarSomatic_FP.vcf");
     
     ParserVCF::parse(file, [&](const Variant &x)
     {
@@ -500,6 +500,7 @@ static void writeSummary(const FileName &file,
                          "       True Positive:         %24%\n"
                          "       False Positive:        %25%\n"
                          "       False Negative:        %26%\n"
+                         "       Sensitivity:           %27%\n"
                          "       Precision:             %28%\n"
                          "       F1 Score:              %29%\n"
                          "       FDR Rate:              %30%\n\n"
