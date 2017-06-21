@@ -1,4 +1,5 @@
 #include "VarQuin/v_somatic.hpp"
+#include "writers/vcf_writer.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
@@ -125,6 +126,9 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
     
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarDetect_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarDetect_FP.vcf");
+    
     ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
@@ -191,6 +195,8 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
+            wTP.write(x.hdr, x.line);
+
             const auto key = m.var->key();
             
             stats.tps.push_back(m);
@@ -211,10 +217,15 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
+            wFP.write(x.hdr, x.line);
+
             // FP because the variant is not found in the reference
             stats.fps.push_back(m);
         }
     });
+    
+    wTP.close();
+    wFP.close();
     
     o.info("Aggregating statistics");
     
@@ -456,68 +467,66 @@ static void writeSummary(const FileName &file,
     
     extern FileName VCFRef();
     extern FileName BedRef();
-    extern FileName MixRef();
     
     const auto summary = "-------VarSomatic Summary Statistics\n\n"
-    "-------VarSomatic Output Results\n\n"
-    "       Reference variant annotation:      %1%\n"
-    "       Reference sequin regions:          %2%\n\n"
-    "       Variants identified in sample:      %3%\n"
-    "       Variants identified in sequins:    %4%\n\n"
-    "       Number of sample variants (within regions): %5%\n"
-    "       Number of sequin variants (sequin regions): %6%\n\n"
-    "-------Diagnostic performance by variant\n\n"
-    "      *All variants\n"
-    "       Reference:             %7%\n"
-    "       True Positive:         %8%\n"
-    "       False Positive:        %9%\n"
-    "       False Negative:        %10%\n"
-    "       Sensitivity:           %11%\n"
-    "       Precision:             %12%\n"
-    "       F1 Score:              %13%\n"
-    "       FDR Rate:              %14%\n\n"
-    "      *Single Nucleotide Variants (SNVs)\n\n"
-    "       Reference:             %15%\n"
-    "       True Positive:         %16%\n"
-    "       False Positive:        %17%\n"
-    "       False Negative:        %18%\n"
-    "       Sensitivity:           %19%\n"
-    "       Precision:             %20%\n"
-    "       F1 Score:              %21%\n"
-    "       FDR Rate:              %22%\n\n"
-    "      *Small Insertions/Deletions (InDels)\n"
-    "       Reference:             %23%\n"
-    "       True Positive:         %24%\n"
-    "       False Positive:        %25%\n"
-    "       False Negative:        %26%\n"
-    "       Sensitivity:           %27%\n"
-    "       Precision:             %28%\n"
-    "       F1 Score:              %29%\n"
-    "       FDR Rate:              %30%\n\n"
-    "-------Diagnostic performance by genotype\n\n"
-    "      *Homozygous variants\n"
-    "       Reference:             %31%\n"
-    "       True Positive:         %32%\n"
-    "       False Positive:        %33%\n"
-    "       False Negative:        %34%\n"
-    "       Sensitivity:           %35%\n"
-    "       Precision:             %36%\n"
-    "       F1 Score:              %37%\n"
-    "       FDR Rate:              %38%\n\n"
-    "      *Heterozygous variants\n"
-    "       Reference:             %39%\n"
-    "       True Positive:         %40%\n"
-    "       False Positive:        %41%\n"
-    "       False Negative:        %42%\n"
-    "       Sensitivity:           %43%\n"
-    "       Precision:             %44%\n"
-    "       F1 Score:              %45%\n"
-    "       FDR Rate:              %46%\n\n"
-    "-------Diagnostic performance by context\n\n"
-    "       Context                      Sensitivity:\n"
-    "       Cancer                       %47%\n";
-    
-#define D(x) (isnan(x) ? "-" : std::to_string(x))
+                         "-------VarSomatic Output Results\n\n"
+                         "       Reference variant annotation:      %1%\n"
+                         "       Reference sequin regions:          %2%\n\n"
+                         "       Variants identified in sample:     %3%\n"
+                         "       Variants identified in sequins:    %4%\n\n"
+                         "       Number of sample variants (within regions): %5%\n"
+                         "       Number of sequin variants (sequin regions): %6%\n\n"
+                         "-------Diagnostic performance by variant\n\n"
+                         "      *All variants\n"
+                         "       Reference:             %7%\n"
+                         "       True Positive:         %8%\n"
+                         "       False Positive:        %9%\n"
+                         "       False Negative:        %10%\n"
+                         "       Sensitivity:           %11%\n"
+                         "       Precision:             %12%\n"
+                         "       F1 Score:              %13%\n"
+                         "       FDR Rate:              %14%\n\n"
+                         "      *Single Nucleotide Variants (SNVs)\n\n"
+                         "       Reference:             %15%\n"
+                         "       True Positive:         %16%\n"
+                         "       False Positive:        %17%\n"
+                         "       False Negative:        %18%\n"
+                         "       Sensitivity:           %19%\n"
+                         "       Precision:             %20%\n"
+                         "       F1 Score:              %21%\n"
+                         "       FDR Rate:              %22%\n\n"
+                         "      *Small Insertions/Deletions (InDels)\n"
+                         "       Reference:             %23%\n"
+                         "       True Positive:         %24%\n"
+                         "       False Positive:        %25%\n"
+                         "       False Negative:        %26%\n"
+                         "       Precision:             %28%\n"
+                         "       F1 Score:              %29%\n"
+                         "       FDR Rate:              %30%\n\n"
+                         "-------Diagnostic performance by genotype\n\n"
+                         "      *Homozygous variants\n"
+                         "       Reference:             %31%\n"
+                         "       True Positive:         %32%\n"
+                         "       False Positive:        %33%\n"
+                         "       False Negative:        %34%\n"
+                         "       Sensitivity:           %35%\n"
+                         "       Precision:             %36%\n"
+                         "       F1 Score:              %37%\n"
+                         "       FDR Rate:              %38%\n\n"
+                         "      *Heterozygous variants\n"
+                         "       Reference:             %39%\n"
+                         "       True Positive:         %40%\n"
+                         "       False Positive:        %41%\n"
+                         "       False Negative:        %42%\n"
+                         "       Sensitivity:           %43%\n"
+                         "       Precision:             %44%\n"
+                         "       F1 Score:              %45%\n"
+                         "       FDR Rate:              %46%\n\n"
+                         "-------Diagnostic performance by context\n\n"
+                         "       Context                Sensitivity:\n"
+                         "       Cancer                 %47%\n";
+
+    #define D(x) (isnan(x) ? "-" : std::to_string(x))
     
     const auto &snp = ss.v2c.at(Variation::SNP);
     const auto &del = ss.v2c.at(Variation::Deletion);
@@ -531,99 +540,91 @@ static void writeSummary(const FileName &file,
     
     auto ind = del;
     ind += ins;
+
+    #define CSN(x) D(ss.c2c.at(x).sn())
     
-#define CSN(x) D(ss.c2c.at(x).sn())
+    #define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
+    #define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
+    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
+    #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
+    #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
     
-#define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
-#define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
-#define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
-#define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
-#define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
-    
-#define C(x) (D(ss.c2c.at(x).nq()))
+    #define C(x) (D(ss.c2c.at(x).nq()))
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % VCFRef()                             // 1
-                     % BedRef()                             // 2
-                     % seqs                                 // 3
-                     % (endo.empty() ? "-" : endo)          // 4
-                     % E3()                                 // 5
-                     % (c_nSNP + c_nDel + c_nIns)           // 6
-                     % (r.nType(Variation::SNP) +
-                        r.nType(Variation::Insertion) +
-                        r.nType(Variation::Deletion))       // 7
-                     % D(ss.oc.tp())                        // 8
-                     % D(ss.oc.fp())                        // 9
-                     % D(ss.oc.fn())                        // 10
-                     % D(ss.oc.sn())                        // 11
-                     % D(ss.oc.pc())                        // 12
-                     % D(ss.oc.F1())                        // 13
-                     % D(1-ss.oc.pc())                      // 14
-                     % r.nType(Variation::SNP)              // 15
-                     % D(snp.tp())                          // 16
-                     % D(snp.fp())                          // 17
-                     % D(snp.fn())                          // 18
-                     % D(snp.sn())                          // 19
-                     % D(snp.pc())                          // 20
-                     % D(snp.F1())                          // 21
-                     % D(1 - snp.pc())                      // 22
-                     % (r.nType(Variation::Insertion) +
-                        r.nType(Variation::Deletion))       // 23
-                     % D(ind.tp())                          // 24
-                     % D(ind.fp())                          // 25
-                     % D(ind.fn())                          // 26
-                     % D(ind.sn())                          // 27
-                     % D(ind.pc())                          // 28
-                     % D(ind.F1())                          // 29
-                     % D(1 - ind.pc())                      // 30
-                     % D(r.nGeno(Genotype::Homozygous))     // 31
-                     % D(hom.tp())                          // 32
-                     % D(hom.fp())                          // 33
-                     % D(hom.fn())                          // 34
-                     % D(hom.sn())                          // 35
-                     % D(hom.pc())                          // 36
-                     % D(hom.F1())                          // 37
-                     % D(1 - hom.pc())                      // 38
-                     % D(r.nGeno(Genotype::Heterzygous))    // 39
-                     % D(het.tp())                          // 40
-                     % D(het.fp())                          // 41
-                     % D(het.fn())                          // 42
-                     % D(het.sn())                          // 43
-                     % D(het.pc())                          // 44
-                     % D(het.F1())                          // 45
-                     % D(1 - het.pc())                      // 46
-                     % CSN(Context::Cancer)                 // 47
+                                            % BedRef()                             // 2
+                                            % seqs                                 // 3
+                                            % (endo.empty() ? "-" : endo)          // 4
+                                            % E3()                                 // 5
+                                            % (c_nSNP + c_nDel + c_nIns)           // 6
+                                            % (r.nType(Variation::SNP) +
+                                               r.nType(Variation::Insertion) +
+                                               r.nType(Variation::Deletion))       // 7
+                                            % D(ss.oc.tp())                        // 8
+                                            % D(ss.oc.fp())                        // 9
+                                            % D(ss.oc.fn())                        // 10
+                                            % D(ss.oc.sn())                        // 11
+                                            % D(ss.oc.pc())                        // 12
+                                            % D(ss.oc.F1())                        // 13
+                                            % D(1-ss.oc.pc())                      // 14
+                                            % r.nType(Variation::SNP)              // 15
+                                            % D(snp.tp())                          // 16
+                                            % D(snp.fp())                          // 17
+                                            % D(snp.fn())                          // 18
+                                            % D(snp.sn())                          // 19
+                                            % D(snp.pc())                          // 20
+                                            % D(snp.F1())                          // 21
+                                            % D(1 - snp.pc())                      // 22
+                                            % (r.nType(Variation::Insertion) +
+                                               r.nType(Variation::Deletion))       // 23
+                                            % D(ind.tp())                          // 24
+                                            % D(ind.fp())                          // 25
+                                            % D(ind.fn())                          // 26
+                                            % D(ind.sn())                          // 27
+                                            % D(ind.pc())                          // 28
+                                            % D(ind.F1())                          // 29
+                                            % D(1 - ind.pc())                      // 30
+                                            % D(r.nGeno(Genotype::Homozygous))     // 31
+                                            % D(hom.tp())                          // 32
+                                            % D(hom.fp())                          // 33
+                                            % D(hom.fn())                          // 34
+                                            % D(hom.sn())                          // 35
+                                            % D(hom.pc())                          // 36
+                                            % D(hom.F1())                          // 37
+                                            % D(1 - hom.pc())                      // 38
+                                            % D(r.nGeno(Genotype::Heterzygous))    // 39
+                                            % D(het.tp())                          // 40
+                                            % D(het.fp())                          // 41
+                                            % D(het.fn())                          // 42
+                                            % D(het.sn())                          // 43
+                                            % D(het.pc())                          // 44
+                                            % D(het.F1())                          // 45
+                                            % D(1 - het.pc())                      // 46
+                                            % CSN(Context::Cancer)                 // 47
                      ).str());
     o.writer->close();
 }
 
-template <typename T, typename O> void writeVCF(const FileName &file, const T &x, const O &o, bool useVar)
+template <typename T, typename O> void writeFN(const FileName &file, const T &x, const O &o, bool useVar)
 {
-    const auto head = "##fileformat=VCFv4.1\n"
-    "##reference=https://www.sequin.xyz\n"
-    "##INFO=<ID=AF,Number=A,Type=Float,Description=""Allele Frequency"">\n"
-    "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO";
+    extern FileName VCFRef();
     
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write(head);
+    auto wFN = VCFWriter(); wFN.open(o.work + "/" + file);
     
-    for (const auto &i : x)
+    std::set<long> keys;
+    for (const auto &i : x) { keys.insert(i.var->key()); }
+    
+    ParserVCF::parse(VCFRef(), [&](const Variant &x)
     {
-        const auto var = useVar ? i.var : &i.qry;
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-        o.writer->write((boost::format(format) % var->cID
-                                               % var->l.start
-                                               % var->name
-                                               % var->ref
-                                               % var->alt
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))).str());
-    }
+        if (keys.count(x.key()))
+        {
+            wFN.write(x.hdr, x.line);
+        }
+    });
     
-    o.writer->close();
+    wFN.close();
 }
 
 void VSomatic::report(const FileName &endo, const FileName &seqs, const Options &o)
@@ -671,20 +672,8 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     writeAllele(o);
 
     /*
-     * Generating VarSomatic_TP.vcf
-     */
-    
-    writeVCF("VarSomatic_TP.vcf", ss.tps, o, true);
-    
-    /*
-     * Generating VarSomatic_FP.vcf
-     */
-    
-    writeVCF("VarSomatic_FP.vcf", ss.fps, o, false);
-    
-    /*
      * Generating VarSomatic_FN.vcf
      */
     
-    writeVCF("VarSomatic_FN.vcf", ss.fns, o, true);
+    writeFN("VarSomatic_FN.vcf", ss.fns, o, true);
 }

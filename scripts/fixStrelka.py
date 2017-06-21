@@ -196,7 +196,7 @@ if __name__ == '__main__':
                 #sys.stdout.write('##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n')
                 #sys.stdout.write('##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Quality score for any somatic snv/indel (duplicated from QSS/QSI), ie. for the ALT allele to be present at a significantly different frequency in the tumor and normal\">\n')
                 sys.stdout.write('##FORMAT=<ID=AD,Number=.,Type=Integer,Description=\"Allelic depths for the ref and alt alleles in the order listed\">\n')
-                sys.stdout.write('##FORMAT=<ID=AF,Number=.,Type=Integer,Description=\"Allelic frequency\">\n')
+                sys.stdout.write('##FORMAT=<ID=AF,Number=1,Type=Float,Description=\"Allelic frequency\">\n')
             sys.stdout.write(line + '\n')
         elif state == 'in_header_after_format':
             if line.startswith('#CHROM'):

@@ -461,7 +461,6 @@ static void writeSummary(const FileName &file,
 
     extern FileName VCFRef();
     extern FileName BedRef();
-    extern FileName MixRef();
 
     const auto summary = "-------VarDetect Summary Statistics\n\n"
                          "-------VarDetect Output Results\n\n"
