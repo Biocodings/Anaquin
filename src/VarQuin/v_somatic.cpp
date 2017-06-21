@@ -35,7 +35,7 @@ static void writeAllele(const VSomatic::Options &o)
     o.writer->open("VarSomatic_allele.R");
     o.writer->write(RWriter::createRLinear("VarSomatic_sequins.csv",
                                            o.work,
-                                           "Allele Frequency",
+                                           "Tumor Sample",
                                            "Expected Allele Frequency (log2)",
                                            "Measured Allele Frequency (log2)",
                                            "log2(data$ExpFreq)",
@@ -339,7 +339,7 @@ static void writeQuins(const FileName &file,
                        const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
     
     o.generate(file);
     o.writer->open(file);
@@ -347,17 +347,16 @@ static void writeQuins(const FileName &file,
                                            % "Chrom"
                                            % "Position"
                                            % "Label"
-                                           % "ReadR (Normal)"
-                                           % "ReadV (Normal)"
-                                           % "ReadR (Tumor)"
-                                           % "ReadV (Tumor)"
-                                           % "Depth (Normal)"
-                                           % "Depth (Tumor)"
+                                           % "ReadR_Normal"
+                                           % "ReadV_Normal"
+                                           % "ReadR_Tumor"
+                                           % "ReadV_Tumor"
+                                           % "Depth_Normal"
+                                           % "Depth_Tumor"
                                            % "ExpFreq"
-                                           % "ObsFreq (Norma)"
-                                           % "ObsFreq (Tumor)"
+                                           % "ObsFreq_Normal"
+                                           % "ObsFreq_Tumor"
                                            % "Qual"
-                                           % "Genotype"
                                            % "Context"
                                            % "Mutation").str());
     for (const auto &i : r.vars())
@@ -390,7 +389,6 @@ static void writeQuins(const FileName &file,
                                                    % FORMAT_F("AF_1")
                                                    % FORMAT_F("AF_2")                             
                                                    % toString(c.qual)
-                                                   % gt2str(sv.gt)
                                                    % ctx2Str(sv.ctx)
                                                    % var2str(i.type())).str());
         }
@@ -412,7 +410,6 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
-                                                   % gt2str(sv.gt)
                                                    % ctx2Str(sv.ctx)
                                                    % var2str(i.type())).str());
         }
@@ -426,7 +423,7 @@ static void writeDetected(const FileName &file,
                           const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
     
     o.generate(file);
     o.writer->open(file);
@@ -434,14 +431,15 @@ static void writeDetected(const FileName &file,
                                            % "Chrom"
                                            % "Position"
                                            % "Label"
-                                           % "ReadR (Normal)"
-                                           % "ReadV (Normal)"
-                                           % "ReadR (Somatic)"
-                                           % "ReadV (Somatic)"
-                                           % "Depth (Normal)"
-                                           % "Depth (Somatic)"
+                                           % "ReadR_Normal"
+                                           % "ReadV_Normal"
+                                           % "ReadR_Somatic"
+                                           % "ReadV_Somatic"
+                                           % "Depth_Normal"
+                                           % "Depth_Somatic"
                                            % "ExpFreq"
-                                           % "ObsFreq"
+                                           % "ObsFreq_Normal"
+                                           % "ObsFreq_Tumor"
                                            % "Qual"
                                            % "Context"
                                            % "Mutation").str());
@@ -453,20 +451,22 @@ static void writeDetected(const FileName &file,
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
             const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
             
-            #define FORMAT_D(x) (i.qry.for1.count(x) ? i.qry.for1.at(x) : i.qry.for1.at(x))
+            #define _F1_(x) (i.qry.for1.count(x) ? i.qry.for1.at(x) : i.qry.for1.at(x))
+            #define _F2_(x) (i.qry.for1.count(x) ? i.qry.for2.at(x) : i.qry.for2.at(x))
             
             o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
                                                    % i.qry.cID
                                                    % i.qry.l.start
                                                    % label
-                                                   % FORMAT_D("AD_1_1")
-                                                   % FORMAT_D("AD_1_2")
-                                                   % FORMAT_D("AD_2_1")
-                                                   % FORMAT_D("AD_2_2")
-                                                   % FORMAT_D("DP_1")
-                                                   % FORMAT_D("DP_2")
+                                                   % _F1_("AD_1_1")
+                                                   % _F1_("AD_1_2")
+                                                   % _F1_("AD_2_1")
+                                                   % _F1_("AD_2_2")
+                                                   % _F1_("DP_1")
+                                                   % _F1_("DP_2")
                                                    % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
-                                                   % i.qry.allF
+                                                   % _F2_("AF_1")
+                                                   % _F2_("AF_2")
                                                    % toString(i.qry.qual)
                                                    % ctx
                                                    % var2str(i.qry.type())).str());
@@ -527,28 +527,9 @@ static void writeSummary(const FileName &file,
                          "       Precision:             %28%\n"
                          "       F1 Score:              %29%\n"
                          "       FDR Rate:              %30%\n\n"
-                         "-------Diagnostic performance by genotype\n\n"
-                         "      *Homozygous variants\n"
-                         "       Reference:             %31%\n"
-                         "       True Positive:         %32%\n"
-                         "       False Positive:        %33%\n"
-                         "       False Negative:        %34%\n"
-                         "       Sensitivity:           %35%\n"
-                         "       Precision:             %36%\n"
-                         "       F1 Score:              %37%\n"
-                         "       FDR Rate:              %38%\n\n"
-                         "      *Heterozygous variants\n"
-                         "       Reference:             %39%\n"
-                         "       True Positive:         %40%\n"
-                         "       False Positive:        %41%\n"
-                         "       False Negative:        %42%\n"
-                         "       Sensitivity:           %43%\n"
-                         "       Precision:             %44%\n"
-                         "       F1 Score:              %45%\n"
-                         "       FDR Rate:              %46%\n\n"
                          "-------Diagnostic performance by context\n\n"
                          "       Context                Sensitivity:\n"
-                         "       Cancer                 %47%\n";
+                         "       Cancer                 %31%\n";
 
     #define D(x) (isnan(x) ? "-" : std::to_string(x))
     
@@ -610,22 +591,6 @@ static void writeSummary(const FileName &file,
                                             % D(ind.pc())                          // 28
                                             % D(ind.F1())                          // 29
                                             % D(1 - ind.pc())                      // 30
-                                            % D(r.nGeno(Genotype::Homozygous))     // 31
-                                            % D(hom.tp())                          // 32
-                                            % D(hom.fp())                          // 33
-                                            % D(hom.fn())                          // 34
-                                            % D(hom.sn())                          // 35
-                                            % D(hom.pc())                          // 36
-                                            % D(hom.F1())                          // 37
-                                            % D(1 - hom.pc())                      // 38
-                                            % D(r.nGeno(Genotype::Heterzygous))    // 39
-                                            % D(het.tp())                          // 40
-                                            % D(het.fp())                          // 41
-                                            % D(het.fn())                          // 42
-                                            % D(het.sn())                          // 43
-                                            % D(het.pc())                          // 44
-                                            % D(het.F1())                          // 45
-                                            % D(1 - het.pc())                      // 46
                                             % CSN(Context::Cancer)                 // 47
                      ).str());
     o.writer->close();
@@ -686,7 +651,7 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     
     o.generate("VarSomatic_ROC.R");
     o.writer->open("VarSomatic_ROC.R");
-    o.writer->write(createROC("VarSomatic_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createROC("VarSomatic_detected.csv", "data$Depth_Somatic", "'-'"));
     o.writer->close();
     
     /*
