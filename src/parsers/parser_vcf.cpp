@@ -3,7 +3,7 @@
 #include "htslib/hts.h"
 #include "htslib/vcf.h"
 #include "parsers/parser_vcf.hpp"
-
+#include <iostream>
 using namespace Anaquin;
 
 void ParserVCF::parse(const Reader &r, Functor f)
@@ -97,7 +97,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
             free(a1);
         }
         
-        auto for1 = [&](const std::string &key, const std::string &to, unsigned i)
+        auto for1 = [&](const std::string &key, const std::string &to, int i)
         {
             if (bcf_get_format_int32(hdr, line, key.c_str(), &pi, &c) > i)
             {
@@ -107,6 +107,18 @@ void ParserVCF::parse(const Reader &r, Functor f)
         
         for1("DP", "DP_1", 0);
         for1("DP", "DP_1", 1);
+
+        /*
+         * Eg: "AD_1_1" -> first value in the first sample
+         *     "AD_2_1" -> firsr value in the second sample
+         *
+         * Note that we assume the sample is diploid.
+         */
+        
+        for1("AD", "AD_1_1", 0);
+        for1("AD", "AD_1_2", 1);
+        for1("AD", "AD_2_1", 2);
+        for1("AD", "AD_2_2", 3);
 
         x.hdr  = (void *) hdr;
         x.line = (void *) line;
