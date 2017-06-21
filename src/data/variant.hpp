@@ -107,14 +107,12 @@ namespace Anaquin
         // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
         Counts depth = NAN;
         
-        // Optional data
-        std::map<std::string, std::string> opts;
-
-        // Other data for FORMATS (integer)
-        std::map<std::string, int> for1;
-
-        // Other data for FORMATS (float)
-        std::map<std::string, float> for2;
+        std::map<std::string, int> ifi;
+        std::map<std::string, float> iff;
+        std::map<std::string, std::string> ifs;
+        
+        std::map<std::string, int> fi;
+        std::map<std::string, float> ff;
         
         void *hdr, *line;
     };

@@ -6,11 +6,6 @@
 
 namespace Anaquin
 {
-    // Hask key for mapping a variant
-    typedef long VarHashKey;
-    
-    typedef std::map<VarHashKey, Counts> VarHashTable;
-    
     struct VSomatic
     {
         struct Match
@@ -64,6 +59,13 @@ namespace Anaquin
             
             // Overall performance
             Confusion oc;
+            
+            /*
+             * Caller specific fields
+             */
+            
+            std::map<std::string, std::map<long, int>>   si;
+            std::map<std::string, std::map<long, float>> sf;
             
             /*
              * Statistics for allele frequency

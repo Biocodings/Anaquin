@@ -129,6 +129,12 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     auto wTP = VCFWriter(); wTP.open(o.work + "/VarSomatic_TP.vcf");
     auto wFP = VCFWriter(); wFP.open(o.work + "/VarSomatic_FP.vcf");
     
+    // Caller specific fields
+    const auto keys = std::set<std::string>
+    {
+        "SomaticEVS", "QSS", "QSI",
+    };;
+    
     ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
@@ -187,7 +193,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             
             return m;
         };
-        
+
         const auto m = findMatch(x);
         
         // Matched if the position and alleles agree
@@ -195,6 +201,14 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
+            for (const auto &i : keys)
+            {
+                if (x.fi.count(i))  { stats.si[i][m.var->key()] = x.fi.at(i);  }
+                if (x.ff.count(i))  { stats.sf[i][m.var->key()] = x.ff.at(i);  }
+                if (x.ifi.count(i)) { stats.si[i][m.var->key()] = x.ifi.at(i); }
+                if (x.iff.count(i)) { stats.sf[i][m.var->key()] = x.iff.at(i); }
+            }
+            
             wTP.write(x.hdr, x.line);
 
             const auto key = m.var->key();
@@ -217,6 +231,14 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
+            for (const auto &i : keys)
+            {
+                if (x.fi.count(i))  { stats.si[i][x.key()] = x.fi.at(i);  }
+                if (x.ff.count(i))  { stats.sf[i][x.key()] = x.ff.at(i);  }
+                if (x.ifi.count(i)) { stats.si[i][x.key()] = x.ifi.at(i); }
+                if (x.iff.count(i)) { stats.sf[i][x.key()] = x.iff.at(i); }
+            }
+            
             wFP.write(x.hdr, x.line);
 
             // FP because the variant is not found in the reference
@@ -334,12 +356,44 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     return stats;
 }
 
+template <typename T> std::string head(const T &x)
+{
+    std::stringstream ss;
+    
+    for (auto &i : x.si) { ss << ("\t" + i.first); }
+    for (auto &i : x.sf) { ss << ("\t" + i.first); }
+    
+    return ss.str();
+}
+
+template <typename T> std::string extra(const T &x, long key)
+{
+    std::stringstream ss;
+    
+    for (auto &i : x.si)
+    {
+        if (i.second.count(key))
+        {
+            ss << ("\t" + toString(i.second.at(key)));
+        }
+        else                     { ss << "\t-"; }
+    }
+
+    for (auto &i : x.sf)
+    {
+        if (i.second.count(key)) { ss << ("\t" + toString(i.second.at(key))); }
+        else                     { ss << "\t-"; }
+    }
+
+    return ss.str();
+}
+
 static void writeQuins(const FileName &file,
                        const VSomatic::SStats &ss,
                        const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%%17%";
     
     o.generate(file);
     o.writer->open(file);
@@ -358,7 +412,8 @@ static void writeQuins(const FileName &file,
                                            % "ObsFreq_Tumor"
                                            % "Qual"
                                            % "Context"
-                                           % "Mutation").str());
+                                           % "Mutation"
+                                           % head(ss)).str());
     for (const auto &i : r.vars())
     {
         // Can we find this sequin?
@@ -367,8 +422,8 @@ static void writeQuins(const FileName &file,
         // This shouldn't fail...
         const auto &sv = r.findSeqVar(i.key());
         
-        #define FORMAT_I(x) (c.for1.count(x) ? c.for1.at(x) : c.for1.at(x))
-        #define FORMAT_F(x) (c.for1.count(x) ? c.for2.at(x) : c.for2.at(x))
+        #define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
+        #define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
         
         if (isTP)
         {
@@ -390,7 +445,8 @@ static void writeQuins(const FileName &file,
                                                    % FORMAT_F("AF_2")                             
                                                    % toString(c.qual)
                                                    % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())).str());
+                                                   % var2str(i.type())
+                                                   % extra(ss, i.key())).str());
         }
         
         // Failed to detect the variant
@@ -411,7 +467,8 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())).str());
+                                                   % var2str(i.type())
+                                                   % "").str());
         }
     }
     
@@ -423,7 +480,7 @@ static void writeDetected(const FileName &file,
                           const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%%17%";
     
     o.generate(file);
     o.writer->open(file);
@@ -442,7 +499,8 @@ static void writeDetected(const FileName &file,
                                            % "ObsFreq_Tumor"
                                            % "Qual"
                                            % "Context"
-                                           % "Mutation").str());
+                                           % "Mutation"
+                                           % head(ss)).str());
     
     auto f = [&](const std::vector<VSomatic::Match> &x, const std::string &label)
     {
@@ -451,25 +509,28 @@ static void writeDetected(const FileName &file,
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
             const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
             
-            #define _F1_(x) (i.qry.for1.count(x) ? i.qry.for1.at(x) : i.qry.for1.at(x))
-            #define _F2_(x) (i.qry.for1.count(x) ? i.qry.for2.at(x) : i.qry.for2.at(x))
+            #define _FI_(x) (i.qry.fi.count(x) ? toString(i.qry.fi.at(x)) : "-")
+            #define _FF_(x) (i.qry.ff.count(x) ? toString(i.qry.ff.at(x)) : "-")
+            
+            const auto key = i.var && i.alt && i.ref ? i.var->key() : i.qry.key();
             
             o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
                                                    % i.qry.cID
                                                    % i.qry.l.start
                                                    % label
-                                                   % _F1_("AD_1_1")
-                                                   % _F1_("AD_1_2")
-                                                   % _F1_("AD_2_1")
-                                                   % _F1_("AD_2_2")
-                                                   % _F1_("DP_1")
-                                                   % _F1_("DP_2")
+                                                   % _FI_("AD_1_1")
+                                                   % _FI_("AD_1_2")
+                                                   % _FI_("AD_2_1")
+                                                   % _FI_("AD_2_2")
+                                                   % _FI_("DP_1")
+                                                   % _FI_("DP_2")
                                                    % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
-                                                   % _F2_("AF_1")
-                                                   % _F2_("AF_2")
+                                                   % _FF_("AF_1")
+                                                   % _FF_("AF_2")
                                                    % toString(i.qry.qual)
                                                    % ctx
-                                                   % var2str(i.qry.type())).str());
+                                                   % var2str(i.qry.type())
+                                                   % extra(ss, key)).str());
         }
     };
     
@@ -536,8 +597,6 @@ static void writeSummary(const FileName &file,
     const auto &snp = ss.v2c.at(Variation::SNP);
     const auto &del = ss.v2c.at(Variation::Deletion);
     const auto &ins = ss.v2c.at(Variation::Insertion);
-    const auto &hom = ss.g2c.at(Genotype::Homozygous);
-    const auto &het = ss.g2c.at(Genotype::Heterzygous);
     
     const auto c_nSNP = snp.nq();
     const auto c_nDel = del.nq();
@@ -626,13 +685,7 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     o.info("FN: " + std::to_string(ss.oc.fn()));
     
     o.info("Generating statistics");
-    
-    /*
-     * Generating VarSomatic_sequins.csv
-     */
-    
-    writeQuins("VarSomatic_sequins.csv", ss, o);
-    
+
     /*
      * Generating VarSomatic_summary.stats
      */
@@ -644,6 +697,12 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
      */
     
     writeDetected("VarSomatic_detected.csv", ss, o);
+    
+    /*
+     * Generating VarSomatic_sequins.csv
+     */
+    
+    writeQuins("VarSomatic_sequins.csv", ss, o);
     
     /*
      * Generating VarSomatic_ROC.R

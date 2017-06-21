@@ -629,20 +629,20 @@ void VarRef::readVRef(const Reader &r)
                 throw std::runtime_error(r.src() + " doesn't seem to be a valid VCF reference file. Reason: " + x);
             };
 
-            if (!x.opts.count("CX") || !m1.count(x.opts.at("CX")))
+            if (!x.ifs.count("CX") || !m1.count(x.ifs.at("CX")))
             {
                 throwInvalidRef("The CX field is not found or invalid");
             }
-            else if (!x.opts.count("GT") || !m2.count(x.opts.at("GT")))
+            else if (!x.ifs.count("GT") || !m2.count(x.ifs.at("GT")))
             {
                 throwInvalidRef("The GT field is not found or invalid");
             }
             
             SequinVariant s;
             
-            s.gt   = m2.at(x.opts.at("GT"));
-            s.ctx  = m1.at(x.opts.at("CX"));
-            s.copy = stoi(x.opts.at("CP"));
+            s.gt   = m2.at(x.ifs.at("GT"));
+            s.ctx  = m1.at(x.ifs.at("CX"));
+            s.copy = x.iff.at("CP");
             
             _impl->vIDs.insert(x.name);
             

@@ -23,7 +23,7 @@ VStructure::EStats VStructure::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
-            else if (!x.opts.count("SVLEN"))
+            else if (!x.ifi.count("SVLEN"))
             {
                 return;
             }
@@ -61,7 +61,7 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
         {
             return;
         }
-        else if (!x.opts.count("SVLEN"))
+        else if (!x.ifi.count("SVLEN"))
         {
             return;
         }
@@ -419,9 +419,9 @@ template <typename T, typename O> void writeVCF(const FileName &file, const T &x
                                                % var->l.start
                                                % var->name
                                                % ("<" + sv2str.at(var->type()) + ">")
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
-                                               % (i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))).str());
+                                               % "????" //(i.qry.name.empty() ? "." : i.qry.opts.at("QUAL"))
+                                               % "????" //(i.qry.name.empty() ? "." : i.qry.opts.at("FILTER"))
+                                               % "????" /*(i.qry.name.empty() ? "." : i.qry.opts.at("INFO"))*/).str());
     }
     
     o.writer->close();

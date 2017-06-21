@@ -3,7 +3,7 @@
 #include "htslib/hts.h"
 #include "htslib/vcf.h"
 #include "parsers/parser_vcf.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 void ParserVCF::parse(const Reader &r, Functor f)
@@ -51,7 +51,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
         {
             if (bcf_get_info_string(hdr, line, key.c_str(), &ps, &c) > 0)
             {
-                x.opts[key] = ps;
+                x.ifs[key] = ps;
             }
         };
         
@@ -59,7 +59,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
         {
             if (bcf_get_info_float(hdr, line, key.c_str(), &pf, &c) > 0)
             {
-                x.opts[key] = std::to_string(*pf);
+                x.iff[key] = *pf;
             }
         };
 
@@ -67,7 +67,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
         {
             if (bcf_get_info_int32(hdr, line, key.c_str(), &pi, &c) > 0)
             {
-                x.opts[key] = std::to_string(*pi);
+                x.ifi[key] = *pi;
             }
         };
         
@@ -79,8 +79,12 @@ void ParserVCF::parse(const Reader &r, Functor f)
         info2("CP");
         info3("DP");
         
-        if (x.opts.count("AF")) { x.allF  = stod(x.opts.at("AF")); }
-        if (x.opts.count("DP")) { x.depth = stod(x.opts.at("DP")); }
+        info3("QSI");        // Strelka
+        info3("QSS");        // Strelka        
+        info2("SomaticEVS"); // Strelka
+        
+        if (x.iff.count("AF")) { x.allF  = x.iff.at("AF"); }
+        if (x.ifi.count("DP")) { x.depth = x.ifi.at("DP"); }
         
         int32_t *g1 = NULL, g2 = 0;
         if (bcf_get_genotypes(hdr, line, &g1, &g2) == 2)
@@ -97,26 +101,26 @@ void ParserVCF::parse(const Reader &r, Functor f)
             free(a1);
         }
         
-        auto for1 = [&](const std::string &key, const std::string &to, int i)
+        auto fi = [&](const std::string &key, const std::string &to, int i)
         {
             if (bcf_get_format_int32(hdr, line, key.c_str(), &pi, &c) > i)
             {
-                x.for1[to] = *(pi+i);
+                x.fi[to] = *(pi+i);
             }
         };
 
-        auto for2 = [&](const std::string &key, const std::string &to, int i)
+        auto ff = [&](const std::string &key, const std::string &to, int i)
         {
             if (bcf_get_format_float(hdr, line, key.c_str(), &pf, &c) > i)
             {
-                x.for2[to] = *(pf+i);
+                x.ff[to] = *(pf+i);
             }
         };
         
-        for1("DP", "DP_1", 0);
-        for1("DP", "DP_2", 1);
-        for2("AF", "AF_1", 0);
-        for2("AF", "AF_2", 1);
+        fi("DP", "DP_1", 0);
+        fi("DP", "DP_2", 1);
+        ff("AF", "AF_1", 0);
+        ff("AF", "AF_2", 1);
         
         /*
          * Eg: "AD_1_1" -> first value in the first sample
@@ -125,10 +129,10 @@ void ParserVCF::parse(const Reader &r, Functor f)
          * Note that we assume the sample is diploid.
          */
         
-        for1("AD", "AD_1_1", 0);
-        for1("AD", "AD_1_2", 1);
-        for1("AD", "AD_2_1", 2);
-        for1("AD", "AD_2_2", 3);
+        fi("AD", "AD_1_1", 0);
+        fi("AD", "AD_1_2", 1);
+        fi("AD", "AD_2_1", 2);
+        fi("AD", "AD_2_2", 3);
 
         x.hdr  = (void *) hdr;
         x.line = (void *) line;
