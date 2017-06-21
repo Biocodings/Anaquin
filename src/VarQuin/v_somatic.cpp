@@ -339,7 +339,7 @@ static void writeQuins(const FileName &file,
                        const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%";
     
     o.generate(file);
     o.writer->open(file);
@@ -347,11 +347,15 @@ static void writeQuins(const FileName &file,
                                            % "Chrom"
                                            % "Position"
                                            % "Label"
-                                           % "ReadR"
-                                           % "ReadV"
-                                           % "Depth"
+                                           % "ReadR (Normal)"
+                                           % "ReadV (Normal)"
+                                           % "ReadR (Tumor)"
+                                           % "ReadV (Tumor)"
+                                           % "Depth (Normal)"
+                                           % "Depth (Tumor)"
                                            % "ExpFreq"
-                                           % "ObsFreq"
+                                           % "ObsFreq (Norma)"
+                                           % "ObsFreq (Tumor)"
                                            % "Qual"
                                            % "Genotype"
                                            % "Context"
@@ -364,6 +368,9 @@ static void writeQuins(const FileName &file,
         // This shouldn't fail...
         const auto &sv = r.findSeqVar(i.key());
         
+        #define FORMAT_I(x) (c.for1.count(x) ? c.for1.at(x) : c.for1.at(x))
+        #define FORMAT_F(x) (c.for1.count(x) ? c.for2.at(x) : c.for2.at(x))
+        
         if (isTP)
         {
             // Called variant (if found)
@@ -371,35 +378,43 @@ static void writeQuins(const FileName &file,
             
             o.writer->write((boost::format(format) % i.name
                                                    % i.cID
-                             % i.l.start
-                             % "TP"
-                             % c.readR
-                             % c.readV
-                             % c.depth
-                             % r.findAFreq(i.name)
-                             % c.allF
-                             % toString(c.qual)
-                             % gt2str(sv.gt)
-                             % ctx2Str(sv.ctx)
-                             % var2str(i.type())).str());
+                                                   % i.l.start
+                                                   % "TP"
+                                                   % FORMAT_I("AD_1_1")
+                                                   % FORMAT_I("AD_1_2")
+                                                   % FORMAT_I("AD_2_1")
+                                                   % FORMAT_I("AD_2_2")
+                                                   % FORMAT_I("DP_1")
+                                                   % FORMAT_I("DP_2")
+                                                   % r.findAFreq(i.name)
+                                                   % FORMAT_F("AF_1")
+                                                   % FORMAT_F("AF_2")                             
+                                                   % toString(c.qual)
+                                                   % gt2str(sv.gt)
+                                                   % ctx2Str(sv.ctx)
+                                                   % var2str(i.type())).str());
         }
         
         // Failed to detect the variant
         else
         {
             o.writer->write((boost::format(format) % i.name
-                             % i.cID
-                             % i.l.start
-                             % "FN"
-                             % "-"
-                             % "-"
-                             % "-"
-                             % r.findAFreq(i.name)
-                             % "-"
-                             % "-"
-                             % gt2str(sv.gt)
-                             % ctx2Str(sv.ctx)
-                             % var2str(i.type())).str());
+                                                   % i.cID
+                                                   % i.l.start
+                                                   % "FN"
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % r.findAFreq(i.name)
+                                                   % "-"
+                                                   % "-"
+                                                   % "-"
+                                                   % gt2str(sv.gt)
+                                                   % ctx2Str(sv.ctx)
+                                                   % var2str(i.type())).str());
         }
     }
     
@@ -411,7 +426,7 @@ static void writeDetected(const FileName &file,
                           const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%";
     
     o.generate(file);
     o.writer->open(file);
@@ -419,9 +434,12 @@ static void writeDetected(const FileName &file,
                                            % "Chrom"
                                            % "Position"
                                            % "Label"
-                                           % "ReadR"
-                                           % "ReadV"
-                                           % "Depth"
+                                           % "ReadR (Normal)"
+                                           % "ReadV (Normal)"
+                                           % "ReadR (Somatic)"
+                                           % "ReadV (Somatic)"
+                                           % "Depth (Normal)"
+                                           % "Depth (Somatic)"
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Qual"
@@ -435,18 +453,23 @@ static void writeDetected(const FileName &file,
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
             const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
             
+            #define FORMAT_D(x) (i.qry.for1.count(x) ? i.qry.for1.at(x) : i.qry.for1.at(x))
+            
             o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
-                             % i.qry.cID
-                             % i.qry.l.start
-                             % label
-                             % i.qry.readR
-                             % i.qry.readV
-                             % i.qry.depth
-                             % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
-                             % i.qry.allF
-                             % toString(i.qry.qual)
-                             % ctx
-                             % var2str(i.qry.type())).str());
+                                                   % i.qry.cID
+                                                   % i.qry.l.start
+                                                   % label
+                                                   % FORMAT_D("AD_1_1")
+                                                   % FORMAT_D("AD_1_2")
+                                                   % FORMAT_D("AD_2_1")
+                                                   % FORMAT_D("AD_2_2")
+                                                   % FORMAT_D("DP_1")
+                                                   % FORMAT_D("DP_2")
+                                                   % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
+                                                   % i.qry.allF
+                                                   % toString(i.qry.qual)
+                                                   % ctx
+                                                   % var2str(i.qry.type())).str());
         }
     };
     

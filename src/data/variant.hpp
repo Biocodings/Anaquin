@@ -112,6 +112,9 @@ namespace Anaquin
 
         // Other data for FORMATS (integer)
         std::map<std::string, int> for1;
+
+        // Other data for FORMATS (float)
+        std::map<std::string, float> for2;
         
         void *hdr, *line;
     };

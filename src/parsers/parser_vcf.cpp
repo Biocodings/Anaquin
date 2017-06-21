@@ -104,10 +104,20 @@ void ParserVCF::parse(const Reader &r, Functor f)
                 x.for1[to] = *(pi+i);
             }
         };
+
+        auto for2 = [&](const std::string &key, const std::string &to, int i)
+        {
+            if (bcf_get_format_float(hdr, line, key.c_str(), &pf, &c) > i)
+            {
+                x.for2[to] = *(pf+i);
+            }
+        };
         
         for1("DP", "DP_1", 0);
-        for1("DP", "DP_1", 1);
-
+        for1("DP", "DP_2", 1);
+        for2("AF", "AF_1", 0);
+        for2("AF", "AF_2", 1);
+        
         /*
          * Eg: "AD_1_1" -> first value in the first sample
          *     "AD_2_1" -> firsr value in the second sample
