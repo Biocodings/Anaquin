@@ -98,20 +98,30 @@ static void writeSummary(const FileName &file, const FileName &src, const VKAbun
 
 static void writeQuins(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name" % "Copy" % "Allele" % "Ref" % "Var").str());
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Copy"
+                                           % "ExpFreq"
+                                           % "ObsRef"
+                                           % "ObsVar"
+                                           % "ObsFreq").str());
 
     for (const auto &i : stats.afV)
     {
         const auto &r = Standard::instance().r_var;
+        
+        const auto obsR = (stats.afR.count(i.first) ? stats.afR.at(i.first) : 0);
+        const auto obsV =  stats.afV.at(i.first);
+        
         o.writer->write((boost::format(format) % i.first
-                                               % r.input4(i.first)
+                                               % "????" //r.input4(i.first)
                                                % r.input1(i.first)
-                                               % (stats.afR.count(i.first) ? stats.afR.at(i.first) : 0)
-                                               % stats.afV.at(i.first)).str());
+                                               % obsR
+                                               % obsV
+                                               % ((float) obsV / (obsR + obsV))).str());
     }
 
     o.writer->close();

@@ -9,18 +9,11 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- data[data$ExpRef > 0,]
-data <- data[data$ObsRef > 0 & data$ObsVar > 0,]
 
 # Expected allele frequency (x-axis)
-input <- log2(data$ExpVar / (data$ExpRef + data$ExpVar))
+input <- log2(data$ExpFreq)
 
 # Measured allele frequency (y-axis)
-measured <- log2(data$ObsVar / (data$ObsRef + data$ObsVar))
+measured <- log2(data$ObsFreq)
 
-a <- data.frame(input=input, measured=measured, row.names=row.names(data))
-a <- a[a$measured > -15,]
-input <- a$input
-measured <- a$measured
-
-plotLinear(row.names(a), input, measured, title='Allele Frequency', xlab='Expected Allele Frequency (log2)', ylab='Observed Allele Frequency (log2)', showLOQ=TRUE)
+plotLinear(row.names(data), input, measured, title='Allele Frequency', xlab='Expected Allele Frequency (log2)', ylab='Observed Allele Frequency (log2)', showLOQ=TRUE)
