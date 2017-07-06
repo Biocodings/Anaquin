@@ -103,7 +103,7 @@ namespace Anaquin
             inline SequinIDs seqs()   const { return _seqs; }
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
-            inline SequinIDs seqsL3() const { return _l2->seqs; }
+            inline SequinIDs seqsL3() const { return _l3->seqs; }
 
             inline Concent input1(const SequinID &x, Mixture m = Mix_1) const { return _l1->input(x, m); }
             inline Concent input2(const SequinID &x, Mixture m = Mix_1) const { return _l2->input(x, m); }

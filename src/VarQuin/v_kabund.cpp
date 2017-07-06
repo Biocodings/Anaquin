@@ -15,21 +15,33 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
     // Ladder for allele frequency
     const auto l1 = r.seqsL1();
 
-    // Ladder for conjoint
-    const auto l2 = r.seqsL2();
-
-    // Ladder for conjoint
+    // Ladder for conjoint (unit level)
     const auto l3 = r.seqsL3();
 
+    A_ASSERT(!l3.empty());
+    
     VKAbund::Stats stats;
 
     ParserSalmon::parse(Reader(file), [&](const ParserSalmon::Data &x, const ParserProgress &)
     {
         /*
-         * Ladder for allele frequency (homozygous and heterozygous for non-cancer)
+         * Ladder for copy number
          */
         
-        if (l1.count(noLast(x.name, "_")))
+        /*
+         * Ladder for conjoint sequins (unit level)
+         */
+        
+        if (l3.count(x.name))
+        {
+            stats.con[x.name] = x.abund;
+        }
+        
+        /*
+         * Ladder for allele frequency
+         */
+
+        else if (l1.count(noLast(x.name, "_")))
         {
             if (x.name[x.name.size() - 1] == 'R')
             {
@@ -96,19 +108,71 @@ static void writeSummary(const FileName &file, const FileName &src, const VKAbun
 //            ).str();
 }
 
-static void writeQuins(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeConjoint(const VKAbund::Stats &stats, const VKAbund::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate(file);
-    o.writer->open(file);
+    o.generate("VarKAbund_conjoint.csv");
+    o.writer->open("VarKAbund_conjoint.csv");
     o.writer->write((boost::format(format) % "Name"
+                                           % "Unit"
+                                           % "Input"
                                            % "Copy"
+                                           % "Observed").str());
+
+    for (const auto &i : stats.con)
+    {
+        const auto &r = Standard::instance().r_var;
+        
+        o.writer->write((boost::format(format) % noLast(i.first, "_")
+                                               % i.first
+                                               % r.input2(noLast(i.first, "_"))
+                                               % r.input3(i.first)
+                                               % i.second).str());
+    }
+    
+    o.writer->close();
+
+    o.generate("VarKAbund_conjoint.R");
+    o.writer->open("VarKAbund_conjoint.R");
+    o.writer->write((boost::format(PlotConjoint()) % date()
+                                                   % __full_command__
+                                                   % o.work
+                                                   % "VarKAbund_conjoint.csv"
+                                                   % "Expected Copy Number vs Observed Abundance"
+                                                   % "Expected Copy Number (log2)"
+                                                   % "Observed Abundance (log2)"
+                                                   % "log2(data$Input * data$Copy)"
+                                                   % "log2(data$Observed)"
+                     ).str());
+    o.writer->close();
+}
+
+static void writeCNV(const VKAbund::Stats &stats, const VKAbund::Options &o)
+{
+//    extern std::string __full_command__;
+//    
+//    o.generate(file);
+//    o.writer->open(file);
+//    o.writer->write((boost::format(PlotCNV()) % date()
+//                                              % __full_command__
+//                                              % o.work
+//                                              % "VarKAbund_sequins.csv").str());
+//    o.writer->close();
+}
+
+static void writeAllele(const VKAbund::Stats &stats, const VKAbund::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.generate("VarKAbund_allele.csv");
+    o.writer->open("VarKAbund_allele.csv");
+    o.writer->write((boost::format(format) % "Name"
                                            % "ExpFreq"
                                            % "ObsRef"
                                            % "ObsVar"
                                            % "ObsFreq").str());
-
+    
     for (const auto &i : stats.afV)
     {
         const auto &r = Standard::instance().r_var;
@@ -117,90 +181,24 @@ static void writeQuins(const FileName &file, const VKAbund::Stats &stats, const 
         const auto obsV =  stats.afV.at(i.first);
         
         o.writer->write((boost::format(format) % i.first
-                                               % "????" //r.input4(i.first)
                                                % r.input1(i.first)
                                                % obsR
                                                % obsV
                                                % ((float) obsV / (obsR + obsV))).str());
     }
-
+    
     o.writer->close();
-}
 
-//static bool writeConjoint(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-//{
-//    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-//    
-//    for (const auto &i : stats)
-//    {
-//        if (!isAllele(i.first) && !isCNV(i.first))
-//        {
-//            o.generate(file);
-//            o.writer->open(file);
-//            o.writer->write((boost::format(format) % "Name" % "Sequin" % "Expected" % "Observed" % "Fold").str());
-//            
-//            for (const auto &i : stats)
-//            {
-//                if (!isAllele(i.first) && !isCNV(i.first))
-//                {
-//                    o.writer->write((boost::format(format) % i.first
-//                                                           % noLast(i.first, "_")
-//                                                           % i.second.x
-//                                                           % i.second.y
-//                                                           % last(i.first, "_")).str());
-//                }
-//            }
-//            
-//            o.writer->close();
-//            return true;
-//        }
-//    }
-//    
-//    return false;
-//}
-
-static void writeCNVR(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-{
     extern std::string __full_command__;
     
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write((boost::format(PlotCNV()) % date()
-                                              % __full_command__
-                                              % o.work
-                                              % "VarKAbund_sequins.csv").str());
-    o.writer->close();
-}
-
-static void writeAllele(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-{
-    extern std::string __full_command__;
-    
-    o.generate(file);
-    o.writer->open(file);
+    o.generate("VarKAbund_allele.R");
+    o.writer->open("VarKAbund_allele.R");
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKAbund_sequins.csv").str());
+                                                  % "VarKAbund_allele.csv").str());
     o.writer->close();
 }
-
-//static void writeConjointR(const FileName &file, const VKAbund::Stats &stats, const VKAbund::Options &o)
-//{
-//    o.generate(file);
-//    o.writer->open(file);
-//    o.writer->write(RWriter::createRLinear("VarKAbund_sequins.csv",
-//                                           o.work,
-//                                           "Expected Concentration vs Observed Abundance",
-//                                           "Expected Concentration (log2)",
-//                                           "Observed Abundance (log2)",
-//                                           "log2(data$Expected)",
-//                                           "log2(data$Observed)",
-//                                           "input",
-//                                           true,
-//                                           PlotConjoint()));
-//    o.writer->close();
-//}
 
 void VKAbund::report(const FileName &file, const Options &o)
 {
@@ -213,24 +211,20 @@ void VKAbund::report(const FileName &file, const Options &o)
     writeSummary("VarKAbund_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKAbund_sequins.csv
+     * Generating VarKAbund_allele.csv and VarKAbund_allele.R
      */
     
-    writeQuins("VarKAbund_sequins.csv", stats, o);
-
-    /*
-     * Generating VarKAbund_allele.R
-     */
-    
-    writeAllele("VarKAbund_allele.R", stats, o);
+    writeAllele(stats, o);
     
     /*
-     * Generating VarKAbund_CNV.R
+     * Generating VarKAbund_CNV.csv and VarKAbund_CNV.R
      */
     
-    writeCNVR("VarKAbund_CNV.R", stats, o);
+    writeCNV(stats, o);
 
-    
-//            writeConjointR("VarKAbund_linear.R",   stats, o);
-//            break;
+    /*
+     * Generating VarKAbund_conjoint.csv and VarKAbund_conjoint.R
+     */
+
+    writeConjoint(stats, o);
 }

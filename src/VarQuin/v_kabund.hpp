@@ -9,11 +9,21 @@ namespace Anaquin
     {
         struct Stats
         {
-            // Read counts for reference and variants (allele frequency ladder)
-            std::map<SequinID, Measured> afR, afV;
+            /*
+             * Copy number ladder
+             */
             
-            // Statistics for conjoint sequins
-            SequinStats con;            
+            /*
+             * Allele frequency ladder
+             */
+            
+            std::map<SequinID, Measured> afR, afV;
+
+            /*
+             * Conjoint ladder
+             */
+            
+            std::map<SequinID, Measured> con;
         };
         
         typedef AnalyzerOptions Options;
