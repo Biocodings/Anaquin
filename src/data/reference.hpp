@@ -85,7 +85,7 @@ namespace Anaquin
 
     struct UserReference
     {
-        std::shared_ptr<Ladder> l1, l2, l3, l4;
+        std::shared_ptr<Ladder> l1, l2, l3, l4, l5;
 
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;
@@ -104,11 +104,14 @@ namespace Anaquin
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
             inline SequinIDs seqsL3() const { return _l3->seqs; }
+            inline SequinIDs seqsL4() const { return _l4->seqs; }
+            inline SequinIDs seqsL5() const { return _l5->seqs; }
 
             inline Concent input1(const SequinID &x, Mixture m = Mix_1) const { return _l1->input(x, m); }
             inline Concent input2(const SequinID &x, Mixture m = Mix_1) const { return _l2->input(x, m); }
             inline Concent input3(const SequinID &x, Mixture m = Mix_1) const { return _l3->input(x, m); }
             inline Concent input4(const SequinID &x, Mixture m = Mix_1) const { return _l4->input(x, m); }
+            inline Concent input5(const SequinID &x, Mixture m = Mix_1) const { return _l5->input(x, m); }
         
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
@@ -181,12 +184,14 @@ namespace Anaquin
             inline void build(std::shared_ptr<Ladder> l1,
                               std::shared_ptr<Ladder> l2,
                               std::shared_ptr<Ladder> l3,
-                              std::shared_ptr<Ladder> l4)
+                              std::shared_ptr<Ladder> l4,
+                              std::shared_ptr<Ladder> l5)
             {
                 _l1 = l1;
                 _l2 = l2;
                 _l3 = l3;
                 _l4 = l4;
+                _l5 = l5;
             }
         
             inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<BedData> r1)
@@ -313,7 +318,7 @@ namespace Anaquin
             std::shared_ptr<BedData> _r1, _r2;
         
             // Sequin ladder
-            std::shared_ptr<Ladder> _l1, _l2, _l3, _l4;
+            std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5;
 
         
         

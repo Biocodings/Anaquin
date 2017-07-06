@@ -18,21 +18,37 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
     // Ladder for conjoint (unit level)
     const auto l3 = r.seqsL3();
 
+    // Ladder for germline mutations
+    const auto l5 = r.seqsL5();
+    
     A_ASSERT(!l3.empty());
+    A_ASSERT(!l5.empty());
     
     VKAbund::Stats stats;
 
     ParserSalmon::parse(Reader(file), [&](const ParserSalmon::Data &x, const ParserProgress &)
     {
         /*
-         * Ladder for copy number
+         * Ladder for germline mutation (0 and 0.5)
          */
+        
+        if (l5.count(noLast(x.name, "_")))
+        {
+            if (x.name[x.name.size() - 1] == 'R')
+            {
+                stats.germR[noLast(x.name, "_")] = x.abund;
+            }
+            else
+            {
+                stats.germV[noLast(x.name, "_")] = x.abund;
+            }
+        }
         
         /*
          * Ladder for conjoint sequins (unit level)
          */
         
-        if (l3.count(x.name))
+        else if (l3.count(x.name))
         {
             stats.con[x.name] = x.abund;
         }
@@ -45,11 +61,11 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
         {
             if (x.name[x.name.size() - 1] == 'R')
             {
-                stats.afR[noLast(x.name, "_")] = x.abund;
+                stats.canR[noLast(x.name, "_")] = x.abund;
             }
             else
             {
-                stats.afV[noLast(x.name, "_")] = x.abund;
+                stats.canV[noLast(x.name, "_")] = x.abund;
             }
         }
     });
@@ -161,24 +177,24 @@ static void writeCNV(const VKAbund::Stats &stats, const VKAbund::Options &o)
 //    o.writer->close();
 }
 
-static void writeAllele(const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeCancer(const VKAbund::Stats &stats, const VKAbund::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate("VarKAbund_allele.csv");
-    o.writer->open("VarKAbund_allele.csv");
+    o.generate("VarKAbund_somatic.csv");
+    o.writer->open("VarKAbund_somatic.csv");
     o.writer->write((boost::format(format) % "Name"
                                            % "ExpFreq"
                                            % "ObsRef"
                                            % "ObsVar"
                                            % "ObsFreq").str());
     
-    for (const auto &i : stats.afV)
+    for (const auto &i : stats.canV)
     {
         const auto &r = Standard::instance().r_var;
         
-        const auto obsR = (stats.afR.count(i.first) ? stats.afR.at(i.first) : 0);
-        const auto obsV =  stats.afV.at(i.first);
+        const auto obsR = (stats.canR.count(i.first) ? stats.canR.at(i.first) : 0);
+        const auto obsV =  stats.canV.at(i.first);
         
         o.writer->write((boost::format(format) % i.first
                                                % r.input1(i.first)
@@ -191,12 +207,51 @@ static void writeAllele(const VKAbund::Stats &stats, const VKAbund::Options &o)
 
     extern std::string __full_command__;
     
-    o.generate("VarKAbund_allele.R");
-    o.writer->open("VarKAbund_allele.R");
+    o.generate("VarKAbund_somatic.R");
+    o.writer->open("VarKAbund_somatic.R");
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKAbund_allele.csv").str());
+                                                  % "VarKAbund_somatic.csv").str());
+    o.writer->close();
+}
+
+static void writeGerm(const VKAbund::Stats &stats, const VKAbund::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.generate("VarKAbund_germline.csv");
+    o.writer->open("VarKAbund_germline.csv");
+    o.writer->write((boost::format(format) % "Name"
+                                           % "ExpFreq"
+                                           % "ObsRef"
+                                           % "ObsVar"
+                                           % "ObsFreq").str());
+    
+    for (const auto &i : stats.germV)
+    {
+        const auto &r = Standard::instance().r_var;
+        
+        const auto obsR = (stats.germR.count(i.first) ? stats.germR.at(i.first) : 0);
+        const auto obsV =  stats.germV.at(i.first);
+        
+        o.writer->write((boost::format(format) % i.first
+                                               % r.input5(i.first)
+                                               % obsR
+                                               % obsV
+                                               % ((float) obsV / (obsR + obsV))).str());
+    }
+    
+    o.writer->close();
+    
+    extern std::string __full_command__;
+    
+    o.generate("VarKAbund_germline.R");
+    o.writer->open("VarKAbund_germline.R");
+    o.writer->write((boost::format(PlotKAllele()) % date()
+                                                  % __full_command__
+                                                  % o.work
+                                                  % "VarKAbund_germline.csv").str());
     o.writer->close();
 }
 
@@ -211,10 +266,16 @@ void VKAbund::report(const FileName &file, const Options &o)
     writeSummary("VarKAbund_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKAbund_allele.csv and VarKAbund_allele.R
+     * Generating VarKAbund_somatic.csv and VarKAbund_somatic.R
      */
     
-    writeAllele(stats, o);
+    writeCancer(stats, o);
+
+    /*
+     * Generating VarKAbund_germline.csv and VarKAbund_germline.R
+     */
+    
+    writeGerm(stats, o);
     
     /*
      * Generating VarKAbund_CNV.csv and VarKAbund_CNV.R

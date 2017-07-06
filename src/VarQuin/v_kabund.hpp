@@ -10,14 +10,16 @@ namespace Anaquin
         struct Stats
         {
             /*
-             * Copy number ladder
+             * Germline mutation ladder
              */
+            
+            std::map<SequinID, Measured> germR, germV;
             
             /*
-             * Allele frequency ladder
+             * Cancer mutation ladder
              */
             
-            std::map<SequinID, Measured> afR, afV;
+            std::map<SequinID, Measured> canR, canV;
 
             /*
              * Conjoint ladder

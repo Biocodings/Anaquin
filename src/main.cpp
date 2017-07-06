@@ -74,6 +74,7 @@ typedef std::set<Value> Range;
 #define OPT_L_CON    808
 #define OPT_L_CNV    809
 #define OPT_FUZZY    810
+#define OPT_L_GERM   811
 #define OPT_R_IND    812
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
@@ -162,7 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKAbund,    { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON } },
+    { Tool::VarKAbund,    { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON, OPT_L_GERM } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_L_CON } },
@@ -307,9 +308,10 @@ static const struct option long_options[] =
     { "usequin", required_argument, 0, OPT_U_SEQS  },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
 
-    { "af",      required_argument, 0, OPT_L_AF  }, // Ladder for allele frequency
-    { "cnv",     required_argument, 0, OPT_L_CNV }, // Ladder for copy number variation
-    { "con",     required_argument, 0, OPT_L_CON }, // Ladder for conjoint k-mers
+    { "af",      required_argument, 0, OPT_L_AF   }, // Ladder for allele frequency
+    { "cnv",     required_argument, 0, OPT_L_CNV  }, // Ladder for copy number variation
+    { "con",     required_argument, 0, OPT_L_CON  }, // Ladder for conjoint k-mers
+    { "germ",    required_argument, 0, OPT_L_GERM }, // Ladder for germline mutations
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -432,6 +434,14 @@ template <typename F> void readLad4(F f, Option key, UserReference &r)
     if (_p.opts.count(key))
     {
         r.l4 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
+    }
+}
+
+template <typename F> void readLad5(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.l5 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -764,7 +774,8 @@ void parse(int argc, char ** argv)
             case OPT_TRIM:
             case OPT_L_AF:
             case OPT_L_CNV:
-            case OPT_L_CON: { _p.opts[opt] = val; break; }
+            case OPT_L_CON:
+            case OPT_L_GERM: { _p.opts[opt] = val; break; }
 
             case OPT_R_IND:
             case OPT_R_VCF:
@@ -1163,10 +1174,11 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKAbund:
                     {
-                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_AF,  r);
-                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
-                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
-                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV, r);
+                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_AF,   r);
+                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON,  r);
+                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON,  r);
+                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV,  r);
+                        readLad5(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_GERM, r);
                         break;
                     }
 

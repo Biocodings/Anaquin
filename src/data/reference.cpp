@@ -717,7 +717,7 @@ void VarRef::validate(Tool x, const UserReference &r)
     {
         case Tool::VarKAbund:
         {
-            build(r.l1, r.l2, r.l3, r.l4);
+            build(r.l1, r.l2, r.l3, r.l4, r.l5);
             break;
         }
 
