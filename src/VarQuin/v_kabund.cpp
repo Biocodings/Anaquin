@@ -177,7 +177,7 @@ static void writeCNV(const VKAbund::Stats &stats, const VKAbund::Options &o)
 //    o.writer->close();
 }
 
-static void writeCancer(const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeSomatic(const VKAbund::Stats &stats, const VKAbund::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
@@ -269,7 +269,7 @@ void VKAbund::report(const FileName &file, const Options &o)
      * Generating VarKAbund_somatic.csv and VarKAbund_somatic.R
      */
     
-    writeCancer(stats, o);
+    writeSomatic(stats, o);
 
     /*
      * Generating VarKAbund_germline.csv and VarKAbund_germline.R
