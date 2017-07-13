@@ -25,7 +25,6 @@
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_diff.hpp"
-#include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_sample.hpp"
 #include "MetaQuin/m_assembly.hpp"
@@ -134,11 +133,10 @@ static std::map<Value, Tool> _tools =
     { "VarFlip",        Tool::VarFlip        },
     { "VarKAbund",      Tool::VarKAbund      },
 
-    { "MetaFoldChange", Tool::MetaFoldChange },
-    { "MetaAlign",      Tool::MetaAlign      },
     { "MetaAbund",      Tool::MetaAbund      },
     { "MetaAssembly",   Tool::MetaAssembly   },
     { "MetaSubsample",  Tool::MetaSubsample  },
+    { "MetaFoldChange", Tool::MetaFoldChange },
 };
 
 static std::map<Tool, std::set<Option>> _options =
@@ -173,7 +171,6 @@ static std::map<Tool, std::set<Option>> _options =
      */
 
     { Tool::MetaFoldChange, { OPT_U_FILES } },
-    { Tool::MetaAlign,      { OPT_R_BED, OPT_U_FILES } },
     { Tool::MetaAssembly,   { OPT_R_BED, OPT_U_FILES } },
     { Tool::MetaSubsample,  { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
 };
@@ -251,6 +248,8 @@ static Scripts fixManual(const Scripts &str)
     
     return x;
 }
+
+struct InvalidUsageException : public std::exception {};
 
 struct InvalidOptionException : public std::exception
 {
@@ -373,7 +372,6 @@ static Scripts manual(Tool tool)
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
     extern Scripts RnaFoldChange();
-    extern Scripts MetaAlign();
     extern Scripts MetaAbund();
     extern Scripts MetaAssembly();
     extern Scripts MetaSubsample();
@@ -396,7 +394,6 @@ static Scripts manual(Tool tool)
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
-        case Tool::MetaAlign:      { return MetaAlign();      }
         case Tool::MetaSubsample:  { return MetaAbund();      }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
         case Tool::MetaAbund:      { return MetaSubsample();  }
@@ -790,10 +787,7 @@ void parse(int argc, char ** argv)
 
             case OPT_PATH: { _p.path = val; break; }
 
-            default:
-            {
-                throw InvalidOptionException(argv[n]);
-            }
+            default: { throw InvalidUsageException(); }
         }
     }
 
@@ -1002,12 +996,13 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case Tool::MetaFoldChange:
         case Tool::MetaAbund:
-        case Tool::MetaAlign:
         case Tool::MetaAssembly:
         case Tool::MetaSubsample:
+        case Tool::MetaFoldChange:
         {
+            std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
+            
             switch (_p.tool)
             {
 //                case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
@@ -1091,8 +1086,6 @@ void parse(int argc, char ** argv)
                     analyze_n<MAssembly>(o);
                     break;
                 }
-
-                case Tool::MetaAlign: { analyze_n<MAlign>(); break; }
 
                 default: { break; }
             }
@@ -1424,13 +1417,17 @@ extern int parse_options(int argc, char ** argv)
     {
         printError("Unknown format for the input file(s)");
     }
+    catch (const InvalidUsageException &ex)
+    {
+        printError("Invalid usage. Please check and try again.");
+    }
     catch (const InvalidToolError &ex)
     {
         printError("Invalid command. Unknown tool: " + ex.val + ". Please check your usage and try again.");
     }
     catch (const InvalidOptionException &ex)
     {
-        printError((boost::format("Invalid command. Unknown option: %1%") % ex.opt).str());
+        printError((boost::format("Invalid usage. Unknown option: %1%") % ex.opt).str());
     }
     catch (const InvalidValueException &ex)
     {

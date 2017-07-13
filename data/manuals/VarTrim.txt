@@ -1,7 +1,7 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-     VarTrim - Trim artificials reads aligned to the sequin boundaries
+     VarTrim - Trim artificial reads aligned to the sequin boundaries
 
 <b>DESCRIPTION</b>
      Sequin alignments give artificials near the region boundaries. This tool can be used to trim those reads.

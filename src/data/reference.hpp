@@ -34,11 +34,10 @@ namespace Anaquin
         VarStructure,
         VarConjoint,
         
-        MetaAlign,
-        MetaFoldChange,
         MetaAbund,
         MetaAssembly,
-        MetaSubsample
+        MetaSubsample,
+        MetaFoldChange,
     };
     
     /*

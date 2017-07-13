@@ -1,7 +1,7 @@
 <b>ANAQUIN MANUAL</b>
 
 <b>NAME</b>
-    VarFlip - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation.
+    VarFlip - Flip sequin-derived reads from chiral (3’ to 5’) to human genome (5’ to 3’) orientation.
 
 <b>DESCRIPTION</b>
     VarFlip will reverse the sequence (and quality scores) of sequin-derived reads. This generates a

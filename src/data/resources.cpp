@@ -23,7 +23,6 @@
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
 
-#include "resources/MetaAlign.txt"
 #include "resources/MetaSubsample.txt"
 #include "resources/MetaAssembly.txt"
 #include "resources/MetaAbund.txt"
@@ -95,7 +94,6 @@ Scripts VarConjoint()    { return ToString(data_manuals_VarConjoint_txt); }
 Scripts VarStructure()   { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaAbund()      { return ToString(data_manuals_MetaAbund_txt);      }
-Scripts MetaAlign()      { return ToString(data_manuals_MetaAlign_txt);      }
 Scripts MetaSubsample()  { return ToString(data_manuals_MetaSubsample_txt);  }
 Scripts MetaAssembly()   { return ToString(data_manuals_MetaAssembly_txt);   }
 Scripts MetaFoldChange() { return ToString(data_manuals_MetaFoldChange_txt); }

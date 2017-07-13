@@ -31,7 +31,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarStructure.txt',
           'data/manuals/VarSubsample.txt',
 
-          'data/manuals/MetaAlign.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAbund.txt',
           'data/manuals/MetaFoldChange.txt',
