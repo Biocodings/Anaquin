@@ -102,21 +102,6 @@ namespace Anaquin
             return nGene() - nGeneSyn(f);
         }
 
-        inline std::map<ChrID, Hist> hist() const
-        {
-            std::map<ChrID, Hist> r;
-            
-            for (const auto &i : *this)
-            {
-                for (const auto &j :i.second.r2d)
-                {
-                    r[i.first][j.first];
-                }
-            }
-            
-            return r;
-        }
-        
         inline DIntervals<> inters(const ChrID &cID) const
         {
             DIntervals<> r;

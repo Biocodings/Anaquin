@@ -7,6 +7,7 @@
 #include "data/variant.hpp"
 #include "data/minters.hpp"
 #include "data/dinters.hpp"
+#include "tools/gtf_data.hpp"
 #include "RnaQuin/RnaQuin.hpp"
 #include "VarQuin/VarQuin.hpp"
 
@@ -80,6 +81,7 @@ namespace Anaquin
     };
     
     class Ladder;
+    class GTFData;
 
     struct UserReference
     {
@@ -90,6 +92,9 @@ namespace Anaquin
 
         // Second bed regions (trimmed)
         std::shared_ptr<BedData> r2;
+        
+        // GTF annoation
+        std::shared_ptr<GTFData> g1;
     };
     
     template <typename Data = SequinData> class Reference
@@ -175,6 +180,13 @@ namespace Anaquin
 
             inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<Ladder> l2)
             {
+                _l1 = l1;
+                _l2 = l2;
+            }
+
+            inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<Ladder> l2, std::shared_ptr<GTFData> g1)
+            {
+                _g1 = g1;
                 _l1 = l1;
                 _l2 = l2;
             }
@@ -314,6 +326,9 @@ namespace Anaquin
         
             // Sequin regions
             std::shared_ptr<BedData> _r1, _r2;
+
+            // Sequin regions
+            std::shared_ptr<GTFData> _g1;
         
             // Sequin ladder
             std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5;
@@ -339,18 +354,7 @@ namespace Anaquin
     class MetaRef : public Reference<>
     {
         public:
-        
             MetaRef();
-
-            void readBed(const Reader &);
-
-            Counts nMicroSyn() const;
-            Counts nMicroGen() const;
-
-            Base nBaseSyn() const;
-            Base nBaseGen() const;
-        
-            Chr2MInters mInters() const;
 
         protected:
         

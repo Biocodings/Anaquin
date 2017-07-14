@@ -123,17 +123,6 @@ Counts RnaRef::countTransGen() const
     return _impl->gData.countTransGen();
 }
 
-void RnaRef::readRef(const Reader &r)
-{
-    for (const auto &i : (_impl->gData = gtfData(r)))
-    {
-        if (!isRNARevChr(i.first))
-        {
-//            Standard::addGenomic(i.first);
-        }
-    }
-}
-
 std::map<ChrID, Hist> RnaRef::histGene() const
 {
     return _impl->gData.histGene();
@@ -359,8 +348,9 @@ void RnaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::RnaFoldChange: { build(r.l1, r.l2); break; }
-        case Tool::RnaExpress:    { build(r.l1, r.l2); break; }
+        case Tool::RnaFoldChange: { build(r.l1, r.l2);       break; }
+        case Tool::RnaExpress:    { build(r.l1, r.l2);       break; }
+        case Tool::RnaAssembly:   { build(r.l1, r.l1, r.g1); break; }
 
         default : { break; }
     }
@@ -446,30 +436,15 @@ struct MetaRef::MetaRefImpl
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
-void MetaRef::readBed(const Reader &r)
+void MetaRef::validate(Tool x, const UserReference &r)
 {
-    for (const auto &i : (_impl->bData = readRegions(r)))
+    switch (x)
     {
-        if (!isMetaQuin(i.first))
-        {
-//            Standard::addGenomic(i.first);
-        }
+        case Tool::MetaAbund:    { break; }
+        case Tool::MetaAssembly: { break; }
+        default: { break; }
     }
-}
-
-Chr2MInters MetaRef::mInters() const
-{
-    return _impl->bData.minters();
-}
-
-Base MetaRef::nBaseSyn() const { return 0; /*return _impl->bData.countBaseSyn(isMetaQuin);*/ }
-Base MetaRef::nBaseGen() const { return 0; /*return _impl->bData.countBaseGen(isMetaQuin);*/ }
-
-Counts MetaRef::nMicroSyn() const { return _impl->bData.nGeneSyn(isMetaQuin); }
-Counts MetaRef::nMicroGen() const { return _impl->bData.nGeneGen(isMetaQuin); }
-
-void MetaRef::validate(Tool, const UserReference &r)
-{
+    
 //    auto bed2ID = [](const BedData &data)
 //    {
 //        std::set<SequinID> ids;

@@ -76,7 +76,6 @@ typedef std::set<Value> Range;
 #define OPT_R_IND    812
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
-#define OPT_U_FILES  816
 #define OPT_EDGE     817
 #define OPT_U_BASE   818
 
@@ -144,7 +143,7 @@ static std::map<Tool, std::set<Option>> _options =
      */
     
     { Tool::RnaSubsample,  { OPT_U_SEQS, OPT_METHOD } },
-    { Tool::RnaAssembly,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { Tool::RnaAssembly,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_SEQS } },
     { Tool::RnaFoldChange, { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaExpress,    { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
@@ -168,8 +167,8 @@ static std::map<Tool, std::set<Option>> _options =
      * MetaQuin Analysis
      */
 
-    { Tool::MetaAssembly,   { OPT_R_BED, OPT_U_SEQS } },
-    { Tool::MetaSubsample,  { OPT_U_SEQS, OPT_R_BED, OPT_METHOD } },
+    { Tool::MetaAssembly,   { OPT_R_BED,  OPT_U_SEQS  } },
+    { Tool::MetaSubsample,  { OPT_METHOD, OPT_U_SEQS, } },
 };
 
 /*
@@ -390,6 +389,14 @@ static Scripts manual(Tool tool)
         case Tool::MetaAssembly:   { return MetaAssembly();   }
         case Tool::MetaAbund:      { return MetaSubsample();  }
         default:                   { return ""; }
+    }
+}
+
+template <typename F> void readGTF(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+      //  r.g1 = std::shared_ptr<GTFData>(new GTFData(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -837,11 +844,11 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case Tool::RnaFoldChange:
         case Tool::RnaAlign:
         case Tool::RnaExpress:
         case Tool::RnaAssembly:
         case Tool::RnaSubsample:
+        case Tool::RnaFoldChange:
         {
             if (__showInfo__)
             {
@@ -854,12 +861,19 @@ void parse(int argc, char ** argv)
                 {
                     case Tool::RnaAlign:
                     {
-                        //addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
+                        readGTF(std::bind(&Standard::readGTF, &s, std::placeholders::_1), OPT_R_GTF, r);
                         break;
                     }
 
-                    case Tool::RnaExpress:
                     case Tool::RnaAssembly:
+                    {
+                        readGTF(std::bind(&Standard::readGTF, &s, std::placeholders::_1), OPT_R_GTF, r);
+                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                        break;                        
+                    }
+                        
+                    case Tool::RnaExpress:
                     case Tool::RnaFoldChange:
                     {
                         readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_MIXTURE, r);
@@ -875,14 +889,14 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_FILES);    break; }
-                case Tool::RnaAssembly: { analyze_1<RAssembly>(OPT_U_FILES); break; }
+                case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_SEQS);    break; }
+                case Tool::RnaAssembly: { analyze_1<RAssembly>(OPT_U_SEQS); break; }
 
                 case Tool::RnaSubsample:
                 {
                     RSample::Options o;
                     o.p = _p.sampled;
-                    analyze_1<RSample>(OPT_U_FILES, o);
+                    analyze_1<RSample>(OPT_U_SEQS, o);
                     break;
                 }
                     
@@ -966,7 +980,7 @@ void parse(int argc, char ** argv)
                         throw std::runtime_error("Unknown file format: " + file + ". Anaquin supports Cuffdiff, DESeq2, edgeR and RnaQuin FoldChange format. Please note the input file requires a header.");
                     }
 
-                    analyze_1<RFold>(OPT_U_FILES, o);
+                    analyze_1<RFold>(OPT_U_SEQS, o);
                     break;
                 }
 
@@ -984,11 +998,7 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-//                case Tool::MetaFoldChange:   { applyMix(std::bind(&Standard::addMDMix, &s, std::placeholders::_1)); break; }
-//                case Tool::MetaAbund:  { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-//                case Tool::MetaAlign:  { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-//                case Tool::MetaSubsample: { applyRef(std::bind(&Standard::addMBed,  &s, std::placeholders::_1)); break; }
-//
+//                case Tool::MetaAbund:    { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
 //                case Tool::MetaAssembly:
 //                {
 //                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
@@ -1028,7 +1038,7 @@ void parse(int argc, char ** argv)
                 {
                     MSample::Options o;
                     o.p = _p.sampled;
-                    analyze_1<MSample>(OPT_U_FILES, o);
+                    analyze_1<MSample>(OPT_U_SEQS, o);
                     break;
                 }
 

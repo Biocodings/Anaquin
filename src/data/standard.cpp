@@ -50,6 +50,11 @@ BedData Standard::readBED(const Reader &r, Base trim)
     return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o);
 }
 
+GTFData Standard::readGTF(const Reader &r)
+{
+    return gtfData(r);
+}
+
 template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, Ladder x = Ladder())
 {
     auto parse = [&](const std::string &delim)
@@ -109,18 +114,14 @@ Ladder Standard::addAF(const Reader &r)
     return readLadder(Reader(r), r_var, Mix_1, Name_Mix);
 }
 
-void Standard::addMDMix(const Reader &r)
+Ladder Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
     readLadder(Reader(r), r_meta, Mix_1, Name_X_Mix);
     readLadder(Reader(r), r_meta, Mix_2, Name_X_Mix);
-}
-
-void Standard::addMMix(const Reader &r)
-{
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    readLadder(Reader(r), r_meta, Mix_1, Name_X_Mix);
+    
+    throw "";
 }
 
 Ladder Standard::addIsoform(const Reader &r)

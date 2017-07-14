@@ -125,9 +125,9 @@ static RAssembly::Stats init(const RAssembly::Options &o)
 
     RAssembly::Stats stats;
 
-    for (const auto &i : r.histGene())
+    for (const auto &i : r.seqsL1())
     {
-        stats.data[i.first];
+        stats.data[i];
     }
 
     return stats;
@@ -135,7 +135,7 @@ static RAssembly::Stats init(const RAssembly::Options &o)
 
 RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 {
-//    const auto &r = Standard::instance().r_rna;
+    const auto &r = Standard::instance().r_rna;
 
     auto stats = init(o);
     __Stats__ = &stats;
@@ -195,25 +195,23 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         if (isRNARevChr(cID))
         {
             /*
-             * Calculating sensitivty for each sequin. Unfortunately, there is no simpler way
+             * Calculate sensitivty for each sequin. Unfortunately, there is no simpler way
              * than Cuffcompare. Cuffcompare doesn't show sensitivity for each isoforms,
              * thus we'll need to generate a GTF file for each sequin.
              */
 
-//            const auto hist = r.hist();   TODO: Fix this because hist() removed. Get from r3682.
-//            
-//            for (const auto &i : hist)
-//            {
-//                // Generate a new reference GTF solely for the sequins
-//                const auto tmp = grepGTF(ref, i.first);
-//                
-//                o.analyze(i.first);
-//                
-//                // Compare only the sequin against the reference
-//                CUFFCOMPARE(tmp, qry);
-//                
-//                stats.tSPs[i.first] = __cmp__.b_sn;
-//            }
+            for (const auto &i : r.seqsL1())
+            {
+                // Generate a new reference GTF solely for the sequins
+                const auto tmp = grepGTF(ref, i);
+                
+                o.analyze(i);
+                
+                // Compare only the sequin against the reference
+                CUFFCOMPARE(tmp, qry);
+                
+                stats.tSPs[i] = __cmp__.b_sn;
+            }
         }
 
         // Compare everything about the chromosome against the reference
@@ -286,20 +284,17 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 static void generateQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%";
 
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "Length"
                                            % "InputConcent"
                                            % "Sn").str());
 
     for (const auto &i : stats.tSPs)
     {
-        const auto m = r.findTrans(ChrIS, i.first);
         o.writer->write((boost::format(format) % i.first
-                                               % m->l.length()
                                                % r.match(i.first)->concent()
                                                % (stats.tSPs.at(i.first) / 100.0)).str());
     }

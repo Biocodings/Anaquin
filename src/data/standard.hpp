@@ -1,8 +1,6 @@
 #ifndef STANDARD_HPP
 #define STANDARD_HPP
 
-#include <set>
-#include <memory>
 #include "data/ladder.hpp"
 #include "data/reader.hpp"
 #include "data/reference.hpp"
@@ -27,21 +25,14 @@ namespace Anaquin
             }
 
             // Add sequin regions in BED format
-            static BedData readBED(const Reader &r, Base trim = 0);
-        
-            // Whether the chromosome is genomic
-            static bool isGenomic(const ChrID &cID)
-            {
-                A_ASSERT(!cID.empty());
-                return cID != ChrIS;
-            }
+            static BedData readBED(const Reader &, Base trim = 0);
 
-            /*
+            // Add sequin regions in GTF format
+            static GTFData readGTF(const Reader &);
+        
+           /*
              * ---------------- RnaQuin analysis ----------------
              */
-
-            // Add reference annotation for RnaQuin in GTF format
-            inline void addRRef(const Reader &r) { r_rna.readRef(r); }
 
             Ladder addGene(const Reader &);
             Ladder addIsoform(const Reader &);
@@ -52,15 +43,8 @@ namespace Anaquin
              * ---------------- MetaQuin analysis ----------------
              */
 
-            // Add reference mixture for MetaQuin
-            void addMMix(const Reader &);
-
-            // Add reference differential mixture for MetaQuin
-            void addMDMix(const Reader &);
+            Ladder addMMix(const Reader &);
         
-            // Add reference annotation for MetaQuin in BED format
-            inline void addMBed(const Reader &r) { r_meta.readBed(r); }
-
             MetaRef r_meta;
         
             /*

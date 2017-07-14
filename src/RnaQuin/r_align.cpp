@@ -352,7 +352,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             {
                 return;
             }
-            else if (isRNARevChr(x.cID) || Standard::isGenomic(x.cID))
+            else if (isRNARevChr(x.cID) || x.cID != ChrIS)
             {
                 match(stats, info, x);
             }

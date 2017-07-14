@@ -34,7 +34,6 @@ namespace Anaquin
         {
             Gene,
             Isoform,
-            ERCC
         };
 
         enum class Format

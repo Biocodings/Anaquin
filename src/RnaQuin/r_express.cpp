@@ -295,8 +295,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
 
 static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics metrs)
 {
-    const auto &r = Standard::instance().r_rna;
-    
     std::set<SequinID> seqs;
     
     // This is the data structure that will be useful
@@ -306,7 +304,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     std::map<SequinID, Concent> expect;
     
     std::stringstream ss;
-    ss << "ID\tLength\tInputConcent";
+    ss << "ID\tInput";
     
     for (auto i = 0; i < stats.size(); i++)
     {
@@ -328,17 +326,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     
     for (const auto &seq : seqs)
     {
-        Locus l;
-        
-        switch (metrs)
-        {
-            case Metrics::Gene:    { l = r.findGene(ChrIS, seq)->l;  break; }
-            case Metrics::Isoform: { l = r.findTrans(ChrIS, seq)->l; break; }
-        }
-        
-        ss << ((boost::format("%1%\t%2%\t%3%") % seq
-                                               % l.length()
-                                               % expect.at(seq)).str());
+        ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
         
         for (auto i = 0; i < stats.size(); i++)
         {

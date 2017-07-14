@@ -99,7 +99,6 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
             break;
         }
 
-        case Metrics::ERCC:
         case Metrics::Isoform:
         {
             assert(!t.iID.empty());
@@ -143,7 +142,6 @@ template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Func
     switch (o.metrs)
     {
         case Metrics::Gene:    { stats.hist = r.histGene(); break; }
-        case Metrics::ERCC:
         case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
     }
 
@@ -292,7 +290,6 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
                 break;
             }
 
-            case Metrics::ERCC:
             case Metrics::Isoform:
             {
                 fold = r.logFoldSeq(id);
@@ -477,7 +474,6 @@ void RFold::report(const FileName &file, const Options &o)
     switch (o.metrs)
     {
         case Metrics::Gene:    { o.info("Gene Differential");    break; }
-        case Metrics::ERCC:
         case Metrics::Isoform: { o.info("Isoform Differential"); break; }
     }
     
