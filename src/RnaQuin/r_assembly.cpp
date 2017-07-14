@@ -289,13 +289,13 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "InputConcent"
+                                           % "Input"
                                            % "Sn").str());
 
     for (const auto &i : stats.tSPs)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % r.match(i.first)->concent()
+                                               % r.input1(i.first)
                                                % (stats.tSPs.at(i.first) / 100.0)).str());
     }
     

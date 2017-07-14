@@ -998,13 +998,18 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-//                case Tool::MetaAbund:    { applyMix(std::bind(&Standard::addMMix,  &s, std::placeholders::_1)); break; }
-//                case Tool::MetaAssembly:
-//                {
-//                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
-//                    applyRef(std::bind(&Standard::addMBed, &s, std::placeholders::_1));
-//                    break;
-//                }
+                case Tool::MetaAbund:
+                {
+                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                    break;
+                }
+
+                case Tool::MetaAssembly:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                    break;
+                }
 
                 default: { break; }
             }
@@ -1015,22 +1020,22 @@ void parse(int argc, char ** argv)
             {
                 case Tool::MetaAbund:
                 {
-//                    MAbund::Options o;
-//                    
-//                    if (_p.inputs.size() == 1 && ParserBAM::isBAM(Reader(_p.inputs[0])))
-//                    {
-//                        o.format = MAbund::Format::BAM;
-//                    }
-//                    else if (_p.inputs.size() == 2 && ParserBlat::isBlat(Reader(_p.inputs[1])))
-//                    {
-//                        o.format = MAbund::Format::RayMeta;
-//                    }
-//                    else
-//                    {
-//                        throw UnknownFormatError();
-//                    }
-//                    
-//                    analyze_n<MAbund>(o);
+                    MAbund::Options o;
+                    
+                    if (_p.seqs.size() == 1)
+                    {
+                        o.format = MAbund::Format::BAM;
+                    }
+                    else if (_p.seqs.size() == 2)
+                    {
+                        o.format = MAbund::Format::RayMeta;
+                    }
+                    else
+                    {
+                        throw UnknownFormatError();
+                    }
+                    
+                    analyze_n<MAbund>(o);
                     break;
                 }
 

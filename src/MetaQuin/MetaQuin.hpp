@@ -249,7 +249,7 @@ namespace Anaquin
             
             if (!contigs.empty())
             {
-                ParserTSV::parse(Reader(contigs), [&](const ParserTSV::TSV &t, const ParserProgress &)
+                ParserTSV::parse(Reader(contigs), [&](const ParserTSV::TSV &t)
                 {
                     covs[t.id] = t.kmer;
                     lens[t.id] = t.klen;

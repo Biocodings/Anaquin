@@ -21,10 +21,9 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Format format;
+            Mixture mix = Mixture::Mix_1;
         };
-        
-        static Scripts generateRLinear(const FileName &, const Stats &, const Options &);
-        
+
         static Stats analyze(const std::vector<FileName> &, const Options &);
         static void  report (const std::vector<FileName> &, const Options &o = Options());
     };

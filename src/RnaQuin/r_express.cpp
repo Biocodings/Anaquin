@@ -79,7 +79,7 @@ template <typename T> void update(RExpress::Stats &stats,
                     if (!isnan(x.abund) && x.abund)
                     {
                         id  = x.id;
-                        exp = r.concent(x.id, o.mix);
+                        exp = r.input2(x.id, o.mix);
                         obs = x.abund;
                     }
                     else

@@ -145,61 +145,61 @@ Counts RnaRef::nGeneSeqs() const
     return gIDs.size();
 }
 
-LogFold RnaRef::logFoldGene(const GeneID &gID) const
-{
-    const auto e1 = concent(gID, Mix_1);
-    const auto e2 = concent(gID, Mix_2);
+//LogFold RnaRef::logFoldGene(const GeneID &gID) const
+//{
+//    const auto e1 = concent(gID, Mix_1);
+//    const auto e2 = concent(gID, Mix_2);
+//
+//    return log2(e2 / e1);
+//}
 
-    return log2(e2 / e1);
-}
+//LogFold RnaRef::logFoldSeq(const IsoformID &iID) const
+//{
+//    const auto m = match(iID);
+//    
+//    // It's pre-condition that the sequin exists
+//    assert(m);
+//    
+//    const auto e1 = m->concent(Mix_1);
+//    const auto e2 = m->concent(Mix_2);
+//    
+//    return log2(e2 / e1);
+//}
 
-LogFold RnaRef::logFoldSeq(const IsoformID &iID) const
-{
-    const auto m = match(iID);
-    
-    // It's pre-condition that the sequin exists
-    assert(m);
-    
-    const auto e1 = m->concent(Mix_1);
-    const auto e2 = m->concent(Mix_2);
-    
-    return log2(e2 / e1);
-}
-
-Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
-{
-    for (const auto &i : _impl->gData)
-    {
-        if (isRNARevChr(i.first))
-        {
-            A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
-
-            Concent r = 0;
-
-            for (const auto &j : i.second.t2g)
-            {
-                // Does this transcript belong to the gene?
-                if (j.second == gID)
-                {
-                    // Add up the concentration
-                    r += match(j.first)->mixes.at(mix);
-                }
-            }
-
-            if (!r)
-            {
-                A_THROW("Concentration is zero for gene [" + gID + "]");
-            }
-
-            return r;
-        }
-    }
-    
-    A_THROW("Failed to find gene [" + gID + "]");
-
-    // Never executed
-    return Concent();
-}
+//Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
+//{
+//    for (const auto &i : _impl->gData)
+//    {
+//        if (isRNARevChr(i.first))
+//        {
+//            A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
+//
+//            Concent r = 0;
+//
+//            for (const auto &j : i.second.t2g)
+//            {
+//                // Does this transcript belong to the gene?
+//                if (j.second == gID)
+//                {
+//                    // Add up the concentration
+//                    r += match(j.first)->mixes.at(mix);
+//                }
+//            }
+//
+//            if (!r)
+//            {
+//                A_THROW("Concentration is zero for gene [" + gID + "]");
+//            }
+//
+//            return r;
+//        }
+//    }
+//    
+//    A_THROW("Failed to find gene [" + gID + "]");
+//
+//    // Never executed
+//    return Concent();
+//}
 
 GeneID RnaRef::s2g(const SequinID &sID) const
 {
@@ -440,55 +440,10 @@ void MetaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::MetaAbund:    { break; }
-        case Tool::MetaAssembly: { break; }
+        case Tool::MetaAbund:    { build(r.l1);       break; }
+        case Tool::MetaAssembly: { build(r.l1, r.r1); break; }
         default: { break; }
-    }
-    
-//    auto bed2ID = [](const BedData &data)
-//    {
-//        std::set<SequinID> ids;
-//        
-//        std::for_each(data.begin(), data.end(), [&](const std::pair<ChrID, BedChrData> & p)
-//        {
-//            if (isMetaQuin(p.first))
-//            {
-//                ids.insert(p.first);
-//            }
-//        });
-//        
-//        A_CHECK(!ids.empty(), "No sequin found in the reference");
-//        
-//        return ids;
-//    };
-//
-//    if (!_impl->bData.length())
-//    {
-//        merge(_rawMIDs, _rawMIDs);
-//    }
-//    else if (_rawMIDs.empty())
-//    {
-//        merge(bed2ID(_impl->bData));
-//    }
-//    else
-//    {
-//        merge(_rawMIDs, bed2ID(_impl->bData));
-//        
-//        /*
-//         * Build length for each synthetic genome
-//         */
-//        
-//        for (const auto &i : _impl->bData)
-//        {
-//            for (const auto &j : i.second.r2d)
-//            {
-//                if (_data.count(i.first))
-//                {
-//                    _data.at(i.first).l = j.second.l;
-//                }
-//            }
-//        }
-//    }
+    }    
 }
 
 /*

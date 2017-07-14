@@ -78,7 +78,7 @@ namespace Anaquin
                     t.iID = toks[Field::TargetID];
                     
                     // Can we match the isoform to sequins?
-                    auto isChrIS = ref.match(t.iID);
+                    auto isChrIS = ref.seqsL1().count(t.iID);
                     
                     t.cID = isChrIS ? ChrIS : "geno";
                     t.gID = isChrIS ? ref.s2g(t.iID) : "";

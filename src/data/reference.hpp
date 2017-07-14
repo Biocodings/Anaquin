@@ -49,24 +49,9 @@ namespace Anaquin
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
-        // Expected concentration
-        inline Concent concent(Mixture m = Mix_1, bool norm = false) const
-        {
-            return mixes.at(m) / (norm ? l.length() : 1);
-        }
-        
-        // Expected fold-change (only valid for two mixtures)
-        inline Fold fold() const
-        {
-            return concent(Mixture::Mix_2) / concent(Mixture::Mix_1);
-        }
-
         SequinID id;
 
         Locus l;
-
-        // Expected concentration (not available if no mixture provided)
-        std::map<Mixture, Concent> mixes;
     };
 
     /*
@@ -140,11 +125,6 @@ namespace Anaquin
         
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
             inline Chr2MInters mInters() const { return _r1->minters(); }
-
-            inline const Data *match(const SequinID &id) const
-            {
-                return _data.count(id) ? &_data.at(id) : nullptr;
-            }
 
             inline void finalize(Tool x, const UserReference &r)
             {
@@ -291,27 +271,27 @@ namespace Anaquin
                     A_ASSERT(!d.id.empty());
                 });
 
-                /*
-                 * Now, we have a list of validated sequins. Use those sequins to merge information.
-                 */
-            
-                for (const auto i : _mixes)
-                {
-                    // Eg: MixA, MixB etc
-                    const auto mix = i.first;
-                
-                    // For each of the sequin
-                    for (const auto j : i.second)
-                    {
-                        // Only if it's a validated sequin
-                        if (_data.count(j.second->id))
-                        {
-                            _data.at(j.second->id).mixes[mix] = j.second->abund;
-                        }
-                    }
-                }
-            
-                A_ASSERT(!_data.empty());
+//                /*
+//                 * Now, we have a list of validated sequins. Use those sequins to merge information.
+//                 */
+//            
+//                for (const auto i : _mixes)
+//                {
+//                    // Eg: MixA, MixB etc
+//                    const auto mix = i.first;
+//                
+//                    // For each of the sequin
+//                    for (const auto j : i.second)
+//                    {
+//                        // Only if it's a validated sequin
+//                        if (_data.count(j.second->id))
+//                        {
+//                            _data.at(j.second->id).mixes[mix] = j.second->abund;
+//                        }
+//                    }
+//                }
+//            
+//                A_ASSERT(!_data.empty());
                 
                 return diffs;
             }
@@ -451,15 +431,6 @@ namespace Anaquin
             Counts countTransSyn() const;
             Counts countTransGen() const;
         
-            // Concentration at the gene level
-            Concent concent(const GeneID &, Mixture m = Mix_1) const;
-
-            // Expected log-fold at the gene level
-            LogFold logFoldGene(const GeneID &) const;
-
-            // Expected log-fold at the sequin (isoform) level
-            LogFold logFoldSeq(const IsoformID &) const;
-
             GeneID s2g(const SequinID &) const;
         
             inline std::set<GeneID> geneIDs() const { return getGenes(ChrIS); }

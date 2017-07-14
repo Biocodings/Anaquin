@@ -83,18 +83,18 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
     {
         case Metrics::Gene:
         {
-            assert(!t.gID.empty());
-            const auto match = r.findGene(t.cID, t.gID);
-            
-            if (match)
-            {
-                stats.hist.at(t.cID).at(t.gID)++;
-                f(t.gID, r.logFoldGene(t.gID));
-            }
-            else
-            {
-                o.warn(t.gID + " not found");
-            }
+//            assert(!t.gID.empty());
+//      TODO      const auto match = r.findGene(t.cID, t.gID);
+//            
+//            if (match)
+//            {
+//                stats.hist.at(t.cID).at(t.gID)++;
+//                f(t.gID, r.logFoldGene(t.gID));
+//            }
+//            else
+//            {
+//                o.warn(t.gID + " not found");
+//            }
 
             break;
         }
@@ -102,12 +102,12 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
         case Metrics::Isoform:
         {
             assert(!t.iID.empty());
-            const auto match = r.match(t.iID);
+            const auto match = r.input1(t.iID); // r.match(t.iID);
             
             if (match)
             {
-                //stats.hist.at(t.cID).at(t.iID)++;
-                f(t.iID, r.logFoldSeq(t.iID));
+                // dont need this line stats.hist.at(t.cID).at(t.iID)++;
+                // TOODf(t.iID, r.logFoldSeq(t.iID));
             }
             else
             {
@@ -241,8 +241,8 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 stats.nSeqs++;
                 stats.data[i.first].obs = i.second;
-                stats.data[i.first].exp = r.logFoldGene(i.first);                
-                stats.add(i.first, i.second, r.logFoldGene(i.first));
+                stats.data[i.first].exp = r.input2(i.first);
+                stats.add(i.first, i.second, r.input2(i.first));
             }
         }
     });
@@ -285,14 +285,14 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         {
             case Metrics::Gene:
             {
-                fold = r.logFoldGene(id);
+                fold = r.input2(id);
                 l = r.findGene(ChrIS, id)->l;
                 break;
             }
 
             case Metrics::Isoform:
             {
-                fold = r.logFoldSeq(id);
+                // TODO fold = r.logFoldSeq(id);
                 l = r.findTrans(ChrIS, id)->l;
                 break;
             }

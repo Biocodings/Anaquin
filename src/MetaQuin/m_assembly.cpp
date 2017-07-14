@@ -55,7 +55,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                     i.add(Locus(j.l.start, j.l.end - 1));
                 }
                 
-                stats.add(s.first, r.match(s.first)->concent(), i.stats().covered());
+                // TODO stats.add(s.first, r.match(s.first)->concent(), i.stats().covered());
             }
             
             break;
@@ -85,13 +85,13 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             ParserQuast::parseGenome(Reader(genome), [&](const ParserQuast::GenomeData &x,
                                                          const ParserProgress &)
             {
-                const auto match = r.match(x.id);
-                
-                if (match)
-                {
-                    // Build a linear model between input concentration and sensitivity
-                    stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
-                }
+//           TODO     const auto match = r.match(x.id);
+//                
+//                if (match)
+//                {
+//                    // Build a linear model between input concentration and sensitivity
+//                    stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
+//                }
             });
             
             A_ASSERT(stats.c2l.empty());
@@ -253,17 +253,15 @@ Scripts MAssembly::generateQuins(const Stats &stats, const Options &o)
 {
     std::stringstream ss;
     
-    const auto &r = Standard::instance().r_meta;
+    //const auto &r = Standard::instance().r_meta;
     const auto format = "%1%\t%2%\t%3%\t%4%";
     
     ss << (boost::format(format) % "ID" % "Length" % "InputConcent" % "Sn").str() << std::endl;
     
     for (const auto &i : stats)
     {
-        const auto l = r.match(i.first)->l;
-        
         ss << ((boost::format(format) % i.first
-                                      % l.length()
+                                      % "????" //l.length()
                                       % i.second.x
                                       % i.second.y).str()) << std::endl;
     }

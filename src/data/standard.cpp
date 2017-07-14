@@ -116,12 +116,9 @@ Ladder Standard::addAF(const Reader &r)
 
 Ladder Standard::addMMix(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
-    
-    readLadder(Reader(r), r_meta, Mix_1, Name_X_Mix);
-    readLadder(Reader(r), r_meta, Mix_2, Name_X_Mix);
-    
-    throw "";
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three or more columns.");
+    auto l = readLadder(Reader(r), r_meta, Mix_1, Name_Mix);
+    return readLadder(Reader(r), r_meta, Mix_2, Name_X_Mix, l);
 }
 
 Ladder Standard::addIsoform(const Reader &r)
