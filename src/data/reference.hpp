@@ -115,10 +115,10 @@ namespace Anaquin
                 throw std::runtime_error("Region not found for " + id);
             }
         
-            inline Chr2DInters  regs1()  const { return _r1->inters();  }
-            inline Chr2DInters  regs2()  const { return _r2->inters();  }
-            inline Chr2MInters  mRegs1() const { return _r1->minters(); }
-            inline Chr2MInters  mRegs2() const { return _r2->minters(); }
+            inline Chr2DInters regs1()  const { return _r1->inters();  }
+            inline Chr2DInters regs2()  const { return _r2->inters();  }
+            inline Chr2MInters mRegs1() const { return _r1->minters(); }
+            inline Chr2MInters mRegs2() const { return _r2->minters(); }
         
             inline Counts nRegs() const { return _r1->count();  }
             inline Counts lRegs() const { return _r1->length(); }

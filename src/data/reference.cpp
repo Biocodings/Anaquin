@@ -440,7 +440,7 @@ void MetaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::MetaAbund:    { build(r.l1);       break; }
+        case Tool::MetaAbund:
         case Tool::MetaAssembly: { build(r.l1, r.r1); break; }
         default: { break; }
     }    

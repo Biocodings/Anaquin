@@ -1000,6 +1000,7 @@ void parse(int argc, char ** argv)
             {
                 case Tool::MetaAbund:
                 {
+                    readReg1(OPT_R_BED, r);
                     readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_MIXTURE, r);
                     break;
                 }

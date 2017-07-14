@@ -39,19 +39,6 @@ namespace Anaquin
             return at(cID).r2d.size();
         }
 
-        inline Counts lengthReg(const SequinID &rID) const
-        {
-            for (const auto &i : *this)
-            {
-                if (i.second.r2d.count(rID))
-                {
-                    return i.second.r2d.at(rID).l.length();
-                }
-            }
-            
-            A_THROW("Unable to find " + rID);
-        }
-
         inline Counts countBase(const ChrID &cID) const
         {
             Base b = 0;

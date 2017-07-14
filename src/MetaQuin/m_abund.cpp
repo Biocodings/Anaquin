@@ -162,23 +162,23 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
         }
     }
 
-    //const auto total = sum(stats.hist);
+    const auto total = sum(stats.hist);
     
     for (const auto &i : stats)
     {
-        const auto input = i.second.x;
-        const auto abund = i.second.y;
+        const auto loc = r.locus(i.first);
+        const auto exp = i.second.x;
+        const auto obs = i.second.y;
         
         // Normalized measurement
-        auto measured = abund;
+        auto measured = obs;
         
         switch (o.format)
         {
             case MAbund::Format::BAM:
             {
                 // Normalized FPKM
-                //measured = ((double)measured * pow(10, 9)) / (total * l.length());
-                measured = measured;
+                measured = ((double)measured * pow(10, 9)) / (total * loc.length());
 
                 break;
             }
@@ -191,9 +191,9 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
             case MAbund::Format::BAM:
             {
                 o.writer->write((boost::format(format) % i.first
-                                                       % "????" //l.length()
-                                                       % input
-                                                       % abund
+                                                       % loc.length()
+                                                       % exp
+                                                       % obs
                                                        % measured).str());
                 break;
             }
@@ -201,9 +201,9 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
             case MAbund::Format::RayMeta:
             {
                 o.writer->write((boost::format(format) % i.first
-                                                       % "????" //l.length()
-                                                       % input
-                                                       % abund).str());
+                                                       % loc.length()
+                                                       % exp
+                                                       % obs).str());
                 break;
             }
         }
