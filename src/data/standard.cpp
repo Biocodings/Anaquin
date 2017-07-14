@@ -20,7 +20,7 @@ using namespace Anaquin;
 enum MixtureFormat
 {
     Name_Mix,
-    Name_Len_Mix,
+    Name_X_Mix,
     Name_Len_X_Mix,
     NUMU,
     UNUM,
@@ -50,10 +50,8 @@ BedData Standard::readBED(const Reader &r, Base trim)
     return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o);
 }
 
-template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format)
+template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, Ladder x = Ladder())
 {
-    Ladder x;
-    
     auto parse = [&](const std::string &delim)
     {
         const auto t = Reader(r);
@@ -71,7 +69,7 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
                 case Name_Mix:       { x.add(d[0], m, stof(d[1])); break; }
                 case NUMU:           { x.add(d[0], m, stof(d[2])); break; }
                 case UNUM:           { x.add(d[1], m, stof(d[3])); break; }
-                case Name_Len_Mix:   { x.add(d[0], m, stof(d[2])); break; }
+                case Name_X_Mix:     { x.add(d[0], m, stof(d[2])); break; }
                 case Name_Len_X_Mix: { x.add(d[0], m, stof(d[3])); break; }
             }
         }, delim);
@@ -115,26 +113,52 @@ void Standard::addMDMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix);
-    readLadder(Reader(r), r_meta, Mix_2, Name_Len_Mix);
+    readLadder(Reader(r), r_meta, Mix_1, Name_X_Mix);
+    readLadder(Reader(r), r_meta, Mix_2, Name_X_Mix);
 }
 
 void Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    readLadder(Reader(r), r_meta, Mix_1, Name_Len_Mix);
+    readLadder(Reader(r), r_meta, Mix_1, Name_X_Mix);
 }
 
-void Standard::addRMix(const Reader &r)
+Ladder Standard::addIsoform(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
-    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix);
+    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns.");
+    auto l = readLadder(Reader(r), r_rna, Mix_1, Name_Mix);
+    return readLadder(Reader(r), r_rna, Mix_2, Name_X_Mix, l);
 }
 
-void Standard::addRDMix(const Reader &r)
+Ladder Standard::addGene(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
+    auto l = addIsoform(r);
     
-    readLadder(Reader(r), r_rna, Mix_1, Name_Len_Mix);
-    readLadder(Reader(r), r_rna, Mix_2, Name_Len_Mix);
+    // Ladder for genes
+    Ladder genes;
+    
+    auto aggregate = [&](Mixture m)
+    {
+        for (const auto &i : l.seqs)
+        {
+            const auto gene = isoform2Gene(i);
+            
+            if (genes.seqs.count(gene))
+            {
+                genes.add(gene, m, l.input(i, m) + genes.input(gene, m));
+            }
+            else
+            {
+                genes.add(gene, m, l.input(i, m));
+            }
+        }
+    };
+    
+    aggregate(Mix_1);
+    genes.seqs.clear();
+    aggregate(Mix_2);
+
+    return genes;
 }
+
+

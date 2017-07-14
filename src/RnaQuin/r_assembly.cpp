@@ -192,7 +192,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
         // Only required for sensitivity at individual sequins...
-        if (isRnaQuin(cID))
+        if (isRNARevChr(cID))
         {
             /*
              * Calculating sensitivty for each sequin. Unfortunately, there is no simpler way

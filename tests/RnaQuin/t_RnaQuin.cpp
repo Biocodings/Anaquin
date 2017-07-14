@@ -4,26 +4,26 @@
 
 using namespace Anaquin;
 
-TEST_CASE("isRnaQuin_1")
+TEST_CASE("isRNARevChr_1")
 {
-    REQUIRE(isRnaQuin("chrIS"));
-    REQUIRE(!isRnaQuin("chrT"));
-    REQUIRE(!isRnaQuin("chris"));
-    REQUIRE(!isRnaQuin("CHRT"));
-    REQUIRE(!isRnaQuin("chrt"));
-    REQUIRE(!isRnaQuin("Chris"));
-    REQUIRE(!isRnaQuin("CHRis"));
-    REQUIRE(!isRnaQuin("ChrT"));
+    REQUIRE(isRNARevChr("chrIS"));
+    REQUIRE(!isRNARevChr("chrT"));
+    REQUIRE(!isRNARevChr("chris"));
+    REQUIRE(!isRNARevChr("CHRT"));
+    REQUIRE(!isRNARevChr("chrt"));
+    REQUIRE(!isRNARevChr("Chris"));
+    REQUIRE(!isRNARevChr("CHRis"));
+    REQUIRE(!isRNARevChr("ChrT"));
 }
 
-TEST_CASE("isRnaQuin_2")
+TEST_CASE("isRNARevChr_2")
 {
-    REQUIRE(!isRnaQuin("chr1"));
-    REQUIRE(!isRnaQuin("chr2"));
-    REQUIRE(!isRnaQuin("chr3"));
-    REQUIRE(!isRnaQuin("chr4"));
-    REQUIRE(!isRnaQuin("chr5"));
-    REQUIRE(!isRnaQuin("chr6"));
-    REQUIRE(!isRnaQuin("chr7"));
-    REQUIRE(!isRnaQuin("chr8"));
+    REQUIRE(!isRNARevChr("chr1"));
+    REQUIRE(!isRNARevChr("chr2"));
+    REQUIRE(!isRNARevChr("chr3"));
+    REQUIRE(!isRNARevChr("chr4"));
+    REQUIRE(!isRNARevChr("chr5"));
+    REQUIRE(!isRNARevChr("chr6"));
+    REQUIRE(!isRNARevChr("chr7"));
+    REQUIRE(!isRNARevChr("chr8"));
 }

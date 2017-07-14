@@ -156,7 +156,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
          * Aggregating statistics for synthetic chromosomes and genomic chromosomes
          */
         
-        if (isRnaQuin(cID))
+        if (isRNARevChr(cID))
         {
             stats.sbm.tp() += btp;
             stats.sbm.fp() += bfp;
@@ -345,14 +345,14 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
                 if (x.mapped && x.cID != ChrIS)
                     __rWriter__ << x.name << "\n";
 #endif
-                stats.update(x, isRnaQuin);
+                stats.update(x, isRNARevChr);
             }
 
             if (!x.mapped)
             {
                 return;
             }
-            else if (isRnaQuin(x.cID) || Standard::isGenomic(x.cID))
+            else if (isRNARevChr(x.cID) || Standard::isGenomic(x.cID))
             {
                 match(stats, info, x);
             }
@@ -533,7 +533,7 @@ static void writeQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        if (isRnaQuin(cID))
+        if (isRNARevChr(cID))
         {
             std::map<GeneID, Confusion> bm, im;
 

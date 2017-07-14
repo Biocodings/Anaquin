@@ -20,7 +20,6 @@ namespace Anaquin
         {
             Gene,
             Isoform,
-            ERCC
         };
         
         enum class Format
@@ -38,7 +37,7 @@ namespace Anaquin
 
             // What mixture to analyze?
             Mixture mix = Mixture::Mix_1;
-            
+
             // Gene or isoform?
             Metrics metrs;
         };

@@ -43,8 +43,8 @@ namespace Anaquin
             // Add reference annotation for RnaQuin in GTF format
             inline void addRRef(const Reader &r) { r_rna.readRef(r); }
 
-            void addRMix(const Reader &);
-            void addRDMix(const Reader &);
+            Ladder addGene(const Reader &);
+            Ladder addIsoform(const Reader &);
 
             RnaRef r_rna;
 

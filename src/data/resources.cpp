@@ -23,10 +23,9 @@
 #include "resources/RnaExpression.txt"
 #include "resources/RnaFoldChange.txt"
 
+#include "resources/MetaAbund.txt"
 #include "resources/MetaSubsample.txt"
 #include "resources/MetaAssembly.txt"
-#include "resources/MetaAbund.txt"
-#include "resources/MetaFoldChange.txt"
 
 #include "resources/plotCNV.R"
 #include "resources/plotFold.R"
@@ -96,36 +95,9 @@ Scripts VarStructure()   { return ToString(data_manuals_VarStructure_txt); }
 Scripts MetaAbund()      { return ToString(data_manuals_MetaAbund_txt);      }
 Scripts MetaSubsample()  { return ToString(data_manuals_MetaSubsample_txt);  }
 Scripts MetaAssembly()   { return ToString(data_manuals_MetaAssembly_txt);   }
-Scripts MetaFoldChange() { return ToString(data_manuals_MetaFoldChange_txt); }
 
-/*
- * RnaSeq Resources
- */
-
-Scripts PlotTROC()
-{
-    return ToString(src_r_plotTROC_R);
-}
-
-Scripts PlotTLODR()
-{
-    return ToString(src_r_plotTLODR_R);
-}
-
-Scripts RnaStandGTF()
-{
-    return ToString(data_RnaQuin_A_R_1_gtf);
-}
-
-Scripts RnaDataMixA()
-{
-    return ToString(data_RnaQuin_MRN027_v001_csv);
-}
-
-Scripts RnaDataMixAB()
-{
-    return ToString(data_RnaQuin_MRN029_v001_csv);
-}
+Scripts PlotTROC()  { return ToString(src_r_plotTROC_R);  }
+Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
 
 /*
  * Variant Resources

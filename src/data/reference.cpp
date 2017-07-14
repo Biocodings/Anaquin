@@ -127,7 +127,7 @@ void RnaRef::readRef(const Reader &r)
 {
     for (const auto &i : (_impl->gData = gtfData(r)))
     {
-        if (!isRnaQuin(i.first))
+        if (!isRNARevChr(i.first))
         {
 //            Standard::addGenomic(i.first);
         }
@@ -150,7 +150,7 @@ Counts RnaRef::nGeneSeqs() const
     
     for (const auto &i : _data)
     {
-        gIDs.insert(Isoform2Gene(i.first));
+        gIDs.insert(isoform2Gene(i.first));
     }
     
     return gIDs.size();
@@ -181,7 +181,7 @@ Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
 {
     for (const auto &i : _impl->gData)
     {
-        if (isRnaQuin(i.first))
+        if (isRNARevChr(i.first))
         {
             A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
 
@@ -355,13 +355,21 @@ void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aID
     assert(!_data.empty());
 }
 
-void RnaRef::validate(Tool, const UserReference &r)
+void RnaRef::validate(Tool x, const UserReference &r)
 {
+    switch (x)
+    {
+        case Tool::RnaFoldChange: { build(r.l1, r.l2); break; }
+        case Tool::RnaExpress:    { build(r.l1, r.l2); break; }
+
+        default : { break; }
+    }
+
 //    auto iIDs = std::set<SequinID>();
 //    
 //    for (const auto &i : _impl->gData)
 //    {
-//        if (isRnaQuin(i.first))
+//        if (isRNARevChr(i.first))
 //        {
 //            iIDs = keys(_impl->gData.at(i.first).t2d);
 //            break;
@@ -402,7 +410,7 @@ void RnaRef::validate(Tool, const UserReference &r)
 //            
 //            t.cID = ChrIS;
 //            t.tID = i;
-//            t.gID = Isoform2Gene(i);
+//            t.gID = isoform2Gene(i);
 //            
 //            GeneData g;
 //            
@@ -569,11 +577,11 @@ template <typename F, typename T = VData> T parseVCF2(const Reader &r, F f)
     T t;
     
     ParserVCF::parse(r, [&](const Variant &x)
-                      {
-                          t[x.cID].b2v[x.l.start] = x;
-                          t[x.cID].m2v[x.type()].insert(x);
-                          f(x);
-                      });
+    {
+        t[x.cID].b2v[x.l.start] = x;
+        t[x.cID].m2v[x.type()].insert(x);
+        f(x);
+    });
     
     return t;
 }

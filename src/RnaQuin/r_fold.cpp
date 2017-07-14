@@ -124,7 +124,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
 {
     typedef DiffTest::Status Status;
     
-    if (isRnaQuin(x.cID))
+    if (isRNARevChr(x.cID))
     {
         classifySyn(stats, x, metrs, o);
     }

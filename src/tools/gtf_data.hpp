@@ -195,7 +195,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRnaQuin(cID) ? nGene(cID) : 0;
+                return isRNARevChr(cID) ? nGene(cID) : 0;
             });
         }
         
@@ -203,7 +203,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRnaQuin(cID) ? countTrans(cID) : 0;
+                return isRNARevChr(cID) ? countTrans(cID) : 0;
             });
         }
         
@@ -211,7 +211,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRnaQuin(cID) ? countUExon(cID) : 0;
+                return isRNARevChr(cID) ? countUExon(cID) : 0;
             });
         }
         
@@ -219,7 +219,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRnaQuin(cID) ? countUIntr(cID) : 0;
+                return isRNARevChr(cID) ? countUIntr(cID) : 0;
             });
         }
 
@@ -458,7 +458,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRnaQuin(cID) ? countLen(cID) : 0;
+                return isRNARevChr(cID) ? countLen(cID) : 0;
             });
         }
         
@@ -466,7 +466,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return !isRnaQuin(cID) ? countLen(cID) : 0;
+                return !isRNARevChr(cID) ? countLen(cID) : 0;
             });
         }
     };
@@ -607,7 +607,7 @@ namespace Anaquin
                                                                    % id.l.start
                                                                    % id.l.end).str();
                     
-                    if (isRnaQuin(i.first) || id.l.length() >= MIN_INTRON_LEN)
+                    if (isRNARevChr(i.first) || id.l.length() >= MIN_INTRON_LEN)
                     {
                         if (!m_intrs.count(key))
                         {

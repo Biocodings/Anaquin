@@ -37,8 +37,9 @@ template <typename T> void update(RExpress::Stats &stats,
                                   const RExpress::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
+    const auto &l = r.seqsL1();
     
-    if (isRnaQuin(x.cID))
+    if (isRNARevChr(x.cID))
     {
         SequinID id;
         Concent  exp = NAN;
@@ -46,17 +47,14 @@ template <typename T> void update(RExpress::Stats &stats,
 
         switch (metrs)
         {
-            case Metrics::ERCC:
             case Metrics::Isoform:
             {
-                const auto m = r.match(x.id);
-                
-                if (m)
+                if (l.count(x.id))
                 {
                     if (!isnan(x.abund) && x.abund)
                     {
-                        id  = m->id;
-                        exp = m->concent(o.mix);
+                        id  = x.id;
+                        exp = r.input1(x.id, o.mix);
                         obs = x.abund;
                     }
                     else
@@ -225,7 +223,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                     
                     switch (metrs = o.metrs)
                     {
-                        case Metrics::ERCC:
                         case Metrics::Isoform:
                         {
                             matched = x.type == RNAFeature::Transcript;
@@ -267,10 +264,8 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 
                 for (const auto &i : stats.isos)
                 {
-                    const auto m = r.findTrans(ChrIS, i.first);
-                    
-                    // Add up the isoform expression for each of the sequin gene
-                    express[m->gID] += i.second.y;
+                    // Add up the isoform expression for the sequin genes
+                    express[isoform2Gene(i.first)] += i.second.y;
                 }
                 
                 // Important, we'll need to reset counting for isoforms
@@ -281,7 +276,8 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 
                 for (const auto &i : express)
                 {
-                    const auto input = r.concent(i.first, o.mix);
+                    // Input concentration at the gene level
+                    const auto input = r.input2(i.first, o.mix);
                     
                     stats.nSeqs++;
                     stats.genes.add(i.first, input, i.second);
@@ -337,7 +333,6 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
         switch (metrs)
         {
             case Metrics::Gene:    { l = r.findGene(ChrIS, seq)->l;  break; }
-            case Metrics::ERCC:
             case Metrics::Isoform: { l = r.findTrans(ChrIS, seq)->l; break; }
         }
         
@@ -402,7 +397,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   const Units &units)
 {
     const auto files = path2file(tmp);
-//    const auto &r = Standard::instance().r_rna;
+    const auto &r = Standard::instance().r_rna;
     
     std::vector<SequinHist>   hists;
     std::vector<SequinStats>  lStats;
@@ -430,55 +425,50 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     
     assert(!isnan(limit.abund) && !limit.id.empty());
     
-//    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+    const auto ms    = multiStats(files, mStats, lStats);
+    const auto count = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.seqsL1().size() : r.seqsL2().size();
     
-    const auto ms = multiStats(files, mStats, lStats);
-
-    throw "Fix Later";
+    const auto format = "-------RnaExpression Output\n\n"
+                        "       Summary for input: %1%\n\n"
+                        "-------Reference Transcript Annotations\n\n"
+                        "       Synthetic: %2% %3%\n"
+                        "       Mixture file: %4%\n\n"
+                        "-------%5%\n\n"
+                        "       Sequin: %6%\n"
+                        "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                        "       Genome: %9%\n\n"
+                        "-------Linear regression (log2 scale)\n\n"
+                        "       Slope:       %10%\n"
+                        "       Correlation: %11%\n"
+                        "       R2:          %12%\n"
+                        "       F-statistic: %13%\n"
+                        "       P-value:     %14%\n"
+                        "       SSM:         %15%, DF: %16%\n"
+                        "       SSE:         %17%, DF: %18%\n"
+                        "       SST:         %19%, DF: %20%\n";
     
-//    // No reference coordinate annotation given here
-//    const auto rSyn = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.nGeneSeqs() : r.countSeqs();
-//    
-//    const auto format = "-------RnaExpression Output\n\n"
-//                        "       Summary for input: %1%\n\n"
-//                        "-------Reference Transcript Annotations\n\n"
-//                        "       Synthetic: %2% %3%\n"
-//                        "       Mixture file: %4%\n\n"
-//                        "-------%5%\n\n"
-//                        "       Synthetic: %6%\n"
-//                        "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-//                        "       Genome: %9%\n\n"
-//                        "-------Linear regression (log2 scale)\n\n"
-//                        "       Slope:       %10%\n"
-//                        "       Correlation: %11%\n"
-//                        "       R2:          %12%\n"
-//                        "       F-statistic: %13%\n"
-//                        "       P-value:     %14%\n"
-//                        "       SSM:         %15%, DF: %16%\n"
-//                        "       SSE:         %17%, DF: %18%\n"
-//                        "       SST:         %19%, DF: %20%\n";
-//    
-//    return (boost::format(format) % STRING(ms.files)       // 1
-//                                  % rSyn                   // 2
-//                                  % units                  // 3
-//                                  % MixRef()               // 4
-//                                  % title                  // 5
-//                                  % STRING(ms.nSeqs)       // 6
-//                                  % limit.abund            // 7
-//                                  % limit.id               // 8
-//                                  % STRING(ms.nEndo)       // 9
-//                                  % STRING(ms.stats.sl)    // 10
-//                                  % STRING(ms.stats.r)     // 11
-//                                  % STRING(ms.stats.R2)    // 12
-//                                  % STRING(ms.stats.F)     // 13
-//                                  % STRING(ms.stats.p)     // 14
-//                                  % STRING(ms.stats.SSM)   // 15
-//                                  % STRING(ms.stats.SSM_D) // 16
-//                                  % STRING(ms.stats.SSE)   // 17
-//                                  % STRING(ms.stats.SSE_D) // 18
-//                                  % STRING(ms.stats.SST)   // 19
-//                                  % STRING(ms.stats.SST_D) // 20
-//                     ).str();
+    return (boost::format(format) % STRING(ms.files)       // 1
+                                  % count                  // 2
+                                  % units                  // 3
+                                  % MixRef()               // 4
+                                  % title                  // 5
+                                  % STRING(ms.nSeqs)       // 6
+                                  % limit.abund            // 7
+                                  % limit.id               // 8
+                                  % STRING(ms.nEndo)       // 9
+                                  % STRING(ms.stats.sl)    // 10
+                                  % STRING(ms.stats.r)     // 11
+                                  % STRING(ms.stats.R2)    // 12
+                                  % STRING(ms.stats.F)     // 13
+                                  % STRING(ms.stats.p)     // 14
+                                  % STRING(ms.stats.SSM)   // 15
+                                  % STRING(ms.stats.SSM_D) // 16
+                                  % STRING(ms.stats.SSE)   // 17
+                                  % STRING(ms.stats.SSE_D) // 18
+                                  % STRING(ms.stats.SST)   // 19
+                                  % STRING(ms.stats.SST_D) // 20
+                     ).str();
 }
 
 void RExpress::writeSummary(const FileName &file,
@@ -547,40 +537,22 @@ void RExpress::writeRLinear(const FileName &file,
 
 Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
-    const auto &r = Standard::instance().r_rna;
-    
     if (stats.size() == 1)
     {
         std::stringstream ss;
         
-        const auto format = "%1%\t%2%\t%3%\t%4%\n";
+        const auto format = "%1%\t%2%\t%3%\n";
+        ss << (boost::format(format) % "ID" % "Input" % "Observed").str();
         
-        ss << (boost::format(format) % "ID"
-                                     % "Length"
-                                     % "InputConcent"
-                                     % "Observed").str();
+        auto &x = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
         
-        auto &ls = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
-        
-        for (const auto &i : ls)
+        for (const auto &i : x)
         {
-            Locus l;
-            
-            switch (o.metrs)
-            {
-                case Metrics::Gene:    { l = r.findGene(ChrIS, i.first)->l;  break; }
-                case Metrics::ERCC:
-                case Metrics::Isoform: { l = r.findTrans(ChrIS, i.first)->l; break; }
-            }
-            
-            assert(l.length() > 1);
-            
             ss << (boost::format(format) % i.first
-                                         % l.length()
                                          % i.second.x
                                          % i.second.y).str();
         }
-        
+
         return ss.str();
     }
     else
@@ -608,17 +580,11 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     switch (o.metrs)
     {
         case Metrics::Gene:    { o.info("Gene Expresssion");   break; }
-        case Metrics::ERCC:
         case Metrics::Isoform: { o.info("Isoform Expression"); break; }
     }
     
     const auto units = m.at(o.metrs);
     const auto stats = analyze(files, o);
-
-    for (const auto &i : stats)
-    {
-        o.logInfo("Genome: " + toString(i.gData.size()));
-    }
 
     /*
      * Generating RnaExpression_summary.stats

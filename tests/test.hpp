@@ -31,33 +31,6 @@ namespace Anaquin
         Standard::instance(true);
     }
 
-    /*
-     * RnaQuin analayis
-     */
-    
-    inline void transA()
-    {
-        clrTest();
-        Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
-        Standard::instance().addRMix(Reader(RnaDataMixA(), DataMode::String));
-        Standard::instance().r_rna.finalize(Tool::RnaAssembly, UserReference());
-    }
-
-    inline void RnaQuin_AB()
-    {
-        clrTest();
-        Standard::instance().addRRef(Reader(RnaStandGTF(), DataMode::String));
-        Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
-        Standard::instance().r_rna.finalize(Tool::RnaAssembly, UserReference());
-    }
-
-    inline void RnaFoldChange()
-    {
-        clrTest();
-        Standard::instance().addRDMix(Reader(RnaDataMixAB(), DataMode::String));
-        Standard::instance().r_rna.finalize(Tool::RnaAssembly, UserReference());
-    }
-    
     inline Test runTest(const std::string &cmd)
     {
         clrTest();

@@ -7,13 +7,10 @@ namespace Anaquin
 {
     const ChrID ChrIS = "chrIS";
 
-    inline bool isRnaQuin(const ChrID &id)
-    {
-        return id == ChrIS;
-    }
+    inline bool isRNARevChr(const ChrID &x) { return x == ChrIS; }
 
     // Eg: R1_1_1 to R1_1
-    inline SequinID Isoform2Gene(const SequinID &id)
+    inline SequinID isoform2Gene(const SequinID &id)
     {
         return id.substr(0, id.size()-2);
     }

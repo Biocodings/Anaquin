@@ -24,7 +24,6 @@
 #include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
-#include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_sample.hpp"
 #include "MetaQuin/m_assembly.hpp"
@@ -136,7 +135,6 @@ static std::map<Value, Tool> _tools =
     { "MetaAbund",      Tool::MetaAbund      },
     { "MetaAssembly",   Tool::MetaAssembly   },
     { "MetaSubsample",  Tool::MetaSubsample  },
-    { "MetaFoldChange", Tool::MetaFoldChange },
 };
 
 static std::map<Tool, std::set<Option>> _options =
@@ -145,11 +143,11 @@ static std::map<Tool, std::set<Option>> _options =
      * RnaQuin Analysis
      */
     
-    { Tool::RnaSubsample,  { OPT_U_FILES, OPT_METHOD } },
+    { Tool::RnaSubsample,  { OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaAssembly,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { Tool::RnaFoldChange, { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { Tool::RnaExpress,    { OPT_MIXTURE, OPT_U_FILES, OPT_METHOD } },
-    { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_FILES } },
+    { Tool::RnaFoldChange, { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::RnaExpress,    { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
 
     /*
      * VarQuin Analysis
@@ -170,9 +168,8 @@ static std::map<Tool, std::set<Option>> _options =
      * MetaQuin Analysis
      */
 
-    { Tool::MetaFoldChange, { OPT_U_FILES } },
-    { Tool::MetaAssembly,   { OPT_R_BED, OPT_U_FILES } },
-    { Tool::MetaSubsample,  { OPT_U_FILES, OPT_R_BED, OPT_METHOD } },
+    { Tool::MetaAssembly,   { OPT_R_BED, OPT_U_SEQS } },
+    { Tool::MetaSubsample,  { OPT_U_SEQS, OPT_R_BED, OPT_METHOD } },
 };
 
 /*
@@ -184,14 +181,11 @@ struct Parsing
     // The path that outputs are written
     std::string path = "output";
 
-    // Input files
-    std::vector<FileName> inputs;
+    // Input files for sequins (multiple inputs)
+    std::vector<FileName> seqs;
     
-    // Context specific options
+    // Specific options
     std::map<Option, std::string> opts;
-    
-    // Signifcance level
-    Probability sign;
     
     // How Anaquin is invoked
     std::string command;
@@ -303,16 +297,15 @@ static const struct option long_options[] =
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
 
-    { "usample", required_argument, 0, OPT_U_SAMPLE },
     { "usequin", required_argument, 0, OPT_U_SEQS  },
-    { "ufiles",  required_argument, 0, OPT_U_FILES },
+    { "usample", required_argument, 0, OPT_U_SAMPLE },
 
-    { "af",      required_argument, 0, OPT_L_AF   }, // Ladder for allele frequency
-    { "cnv",     required_argument, 0, OPT_L_CNV  }, // Ladder for copy number variation
-    { "con",     required_argument, 0, OPT_L_CON  }, // Ladder for conjoint k-mers
-    { "germ",    required_argument, 0, OPT_L_GERM }, // Ladder for germline mutations
-
-    { "m",       required_argument, 0, OPT_MIXTURE },
+    { "af",      required_argument, 0, OPT_L_AF   },  // Ladder for allele frequency
+    { "cnv",     required_argument, 0, OPT_L_CNV  },  // Ladder for copy number variation
+    { "con",     required_argument, 0, OPT_L_CON  },  // Ladder for conjoint k-mers
+    { "germ",    required_argument, 0, OPT_L_GERM },  // Ladder for germline mutations
+    { "m",       required_argument, 0, OPT_MIXTURE }, // Ladder for other than VarQuin
+    
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
     { "trim",    required_argument, 0, OPT_TRIM    },
@@ -375,7 +368,6 @@ static Scripts manual(Tool tool)
     extern Scripts MetaAbund();
     extern Scripts MetaAssembly();
     extern Scripts MetaSubsample();
-    extern Scripts MetaFoldChange();
     
     switch (tool)
     {
@@ -397,7 +389,6 @@ static Scripts manual(Tool tool)
         case Tool::MetaSubsample:  { return MetaAbund();      }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
         case Tool::MetaAbund:      { return MetaSubsample();  }
-        case Tool::MetaFoldChange: { return MetaFoldChange(); }
         default:                   { return ""; }
     }
 }
@@ -541,7 +532,7 @@ template < typename Analyzer> void analyze_n(typename Analyzer::Options o = type
 {
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::report(_p.inputs, o);
+        Analyzer::report(_p.seqs, o);
     }, o);
 }
 
@@ -731,8 +722,8 @@ void parse(int argc, char ** argv)
                     case Tool::VarStructure:
                     case Tool::RnaFoldChange: { _p.opts[opt] = val; break; }
 
-                    case Tool::MetaSubsample:
                     case Tool::RnaSubsample:
+                    case Tool::MetaSubsample:
                     {
                         parseDouble(_p.opts[opt] = val, _p.sampled);
                         
@@ -754,20 +745,6 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_U_FILES:
-            {
-                std::vector<FileName> temp;
-                Tokens::split(val, ",", temp);
-
-                for (auto i = 0; i < temp.size(); i++)
-                {
-                    checkFile(_p.opts[opt] = temp[i]);
-                    _p.inputs.push_back(temp[i]);
-                }
-                
-                break;
-            }
-
             case OPT_TRIM:
             case OPT_L_AF:
             case OPT_L_CNV:
@@ -782,6 +759,18 @@ void parse(int argc, char ** argv)
             case OPT_MIXTURE:
             case OPT_U_SAMPLE:
             {
+                if (opt == OPT_U_SEQS)
+                {
+                    std::vector<FileName> temp;
+                    Tokens::split(val, ",", temp);
+                    
+                    for (auto i = 0; i < temp.size(); i++)
+                    {
+                        checkFile(_p.opts[opt] = temp[i]);
+                        _p.seqs.push_back(temp[i]);
+                    }
+                }
+                
                 checkFile(_p.opts[opt] = val); break;
             }
 
@@ -869,25 +858,16 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::RnaFoldChange:
-                    {
-                        //applyMix(std::bind(&Standard::addRDMix, &s, std::placeholders::_1));
-                        break;
-                    }
-
                     case Tool::RnaExpress:
                     case Tool::RnaAssembly:
+                    case Tool::RnaFoldChange:
                     {
-                        //applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
+                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_MIXTURE, r);
                         break;
                     }
 
-                    default:
-                    {
-                        //addRef(std::bind(&Standard::addRRef, &s, std::placeholders::_1));
-                        //applyMix(std::bind(&Standard::addRMix, &s, std::placeholders::_1));
-                        break;
-                    }
+                    default: { break; }
                 }
 
                 s.r_rna.finalize(_p.tool, r);
@@ -917,7 +897,7 @@ void parse(int argc, char ** argv)
 
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
                     
-                    const auto &file = _p.inputs[0];
+                    const auto &file = _p.seqs[0];
                     
                     // Is this a GTF by extension?
                     const auto isGTF = file.find(".gtf") != std::string::npos;
@@ -954,7 +934,7 @@ void parse(int argc, char ** argv)
                     
                     o.metrs = _p.opts[OPT_METHOD] == "gene" ? RFold::Metrics::Gene : RFold::Metrics::Isoform;
                     
-                    const auto &file = _p.inputs[0];
+                    const auto &file = _p.seqs[0];
                     
                     if (ParserCDiff::isTracking(Reader(file)))
                     {
@@ -999,7 +979,6 @@ void parse(int argc, char ** argv)
         case Tool::MetaAbund:
         case Tool::MetaAssembly:
         case Tool::MetaSubsample:
-        case Tool::MetaFoldChange:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
@@ -1024,29 +1003,6 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case Tool::MetaFoldChange:
-                {
-//                    MDiff::Options o;
-//                    
-//                    if (_p.inputs.size() == 2 && ParserBAM::isBAM(Reader(_p.inputs[0]))
-//                                              && ParserBAM::isBAM(Reader(_p.inputs[1])))
-//                    {
-//                        o.format = MDiff::Format::BAM;
-//                    }
-//                    else if (_p.inputs.size() == 4)
-//                    {
-//                        // TODO: Please fix this
-//                        o.format = MDiff::Format::RayMeta;
-//                    }
-//                    else
-//                    {
-//                        throw UnknownFormatError();
-//                    }
-//
-//                    analyze_n<MDiff>(o);
-                    break;
-                }
-
                 case Tool::MetaAbund:
                 {
 //                    MAbund::Options o;
