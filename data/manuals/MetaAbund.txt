@@ -28,20 +28,21 @@
 <b>USAGE EXAMPLE</b>
      Measure abundance by alignment:
 
-         anaquin MetaAbund -m mixture.csv -ufiles align.bam
+         anaquin MetaAbund -rmix reference.csv -usequin align.bam
      
      Measure abundance by de-novo assembly:
 
-         anaquin MetaAbund -m mixture.csv -ufiles contigs.tsv -ufiles align.psl
+         anaquin MetaAbund -rmix reference.csv -usequin contigs.tsv -usequin align.psl
 
 <b>TOOL OPTIONS</b>
      Required:
-        -m           Reference mixture file in CSV format
-        -ufiles      The tool supports quantification by alignment or de novo assmebly. The usage example describes the
+        -rmix        Reference mixture file in CSV format
+        -usequin     The tool supports quantification by alignment or de novo assmebly. The usage example describes the
                      two scenarios. 
 
      Optional:
         -o = output  Directory in which output files are written to
+        -mix = A     Mixture A or B?
 
 <b>OUTPUTS</b>
      MetaAbund_summary.stats - gives the summary statistics

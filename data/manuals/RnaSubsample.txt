@@ -13,12 +13,12 @@
      Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
 
 <b>USAGE EXAMPLE</b>
-     anaquin RnaSubsample -method 0.01 –ufiles alignment.bam
+     anaquin RnaSubsample -method 0.01 –usequin alignment.bam
 
 <b>TOOL OPTIONS</b>
      Required:
         -method      Dilution fraction as a floating number. For example, 0.01 is 1% and 0.10 is 10% etc.
-        -ufiles      User-generated SAM/BAM alignment file
+        -usequin     User-generated SAM/BAM alignment file
 
      Optional:
         -o = output  Directory in which the output files are written to
@@ -27,6 +27,6 @@
      <b>IMPORTANT</b> - Subsampled alignments are directly written to the console. Users are recommended to pipe outputs to
      a new file. For example, the following command pipes the outputs to the BAM format:
         
-     anaquin RnaSubample anaquin RnaSubsample -method 0.01 –ufiles alignment.bam | samtools view -bS - > aligned.bam
+     anaquin RnaSubample anaquin RnaSubsample -method 0.01 –usequin alignment.bam | samtools view -bS - > aligned.bam
         
      RnaSubsample_summary.stats - reports summary statistics

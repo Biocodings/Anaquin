@@ -16,12 +16,12 @@
      Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
      
 <b>USAGE EXAMPLE</b>
-     anaquin MetaSubsample -method 0.01 -ufiles aligned.bam
+     anaquin MetaSubsample -method 0.01 -usequin aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
         -method      Dilution fraction as fraction number. For example, 0.01 is 1% and 0.10 is 10% etc.
-        -ufiles      User generated SAM/BAM alignment file
+        -usequin     User generated SAM/BAM alignment file
 
      Optional:
         -o = output  Directory in which output files are written to

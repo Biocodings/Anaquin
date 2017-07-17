@@ -42,21 +42,10 @@ data  = [ 'data/manuals/anaquin.txt',
     	  'src/r/plotLogistic.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',
-   	      'src/r/plotVLODR.R',
           'src/r/plotVGROC.R',
           'src/r/plotVCROC.R',
           'src/r/plotAllele.R',
           'src/r/plotKAllele.R',
-
-          # ---------- RnaQuin ----------
-
-          'data/RnaQuin/A.R.1.gtf',
-          'data/RnaQuin/MRN027_v001.csv',
-          'data/RnaQuin/MRN029_v001.csv',          
-
-          # ---------- VarQuin ----------
-
-          'data/VarQuin/AVA033_v001.bed',          
         ]
 tests = [ ]
 

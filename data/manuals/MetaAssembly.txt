@@ -17,16 +17,17 @@
     Any de novo assembler able to generate FASTA outputs. Alignment for the contigs must be done by Blat.
 
 <b>USAGE EXAMPLE</b>
-     anaquin MetaAssembly -m mixture.csv -rbed reference.bed -ufiles contigs.fasta -ufiles align.psl
+     anaquin MetaAssembly -rmix reference.csv -rbed reference.bed -usequin contigs.fasta -usequin align.psl
 
 <b>TOOL OPTIONS</b>
      Required:
         -rbed        Reference annotation file in BED format
-        -ufiles      Generated contigs in FASTA format
-        -ufiles      Generated Blat alignment in PSL format    
+        -usequin     Generated contigs in FASTA format
+        -usequin     Generated Blat alignment in PSL format    
 
      Optional:
         -o = output  Directory in which output files are written to
+        -mix = A     Mixture A or B?
 
 <b>OUTPUTS</b>
      MetaAssembly_summary.stats - gives the summary statistics

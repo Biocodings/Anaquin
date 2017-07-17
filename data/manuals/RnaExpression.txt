@@ -18,20 +18,21 @@
 
 <b>USAGE EXAMPLE</b>
      For single replicate:
-     anaquin RnaExpression –m mixture.csv -method gene –ufiles sample1.gtf
+     anaquin RnaExpression –rmix mixture.csv -method gene –usequin sample1.gtf
 
      For multiple replicates:
-     anaquin RnaExpression –m mixture.csv -method gene –ufiles sample1.gtf –ufiles sample2.gtf –ufiles sample3.gtf
+     anaquin RnaExpression –rmix mixture.csv -method gene –usequin sample1.gtf –usequin sample2.gtf –usequin sample3.gtf
 
 <b>TOOL OPTIONS</b>
      Required:
-        -m           Reference VarQuin mixture file in CSV format
+        -rmix        Reference VarQuin mixture file in CSV format
         -method      Whether the analysis should be performed at "gene" or "isoform" level.
-        -ufiles      User-generated expression file in GTF format or custom text format.
+        -usequin     User-generated expression file in GTF format or custom text format.
                      Please refer to users guide for details on custom text format.
 
      Optional:
         -o = output  Directory in which the output files are written to
+        -mix = A     Mixture A or B?
 
 <b>OUTPUTS</b>
      RnaExpression_summary.stats - provides global summary statistics for sequin expression

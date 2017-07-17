@@ -15,7 +15,7 @@
      Spliced-read aligner that generates a SAM/BAM alignment file. Common examples include TopHat2 and STAR.
 
 <b>USAGE EXAMPLE</b>
-     anaquin RnaAlign –rbed reference.bed –ufiles aligned.bam
+     anaquin RnaAlign –rbed reference.bed –usequin aligned.bam
 
 <b>ADDITIONAL INFORMATION</b>
      The runtime is linearly proportional to the number of alignments in the input file, with long run times expected for
@@ -24,7 +24,7 @@
 <b>TOOL OPTIONS</b>
      Required:
         -rgtf        Reference transcriptome annotation file in GTF format
-        -ufiles      User-generated alignment files in SAM/BAM format
+        -usequin     User-generated alignment files in SAM/BAM format
 
      Optional:
         -o = output  Directory in which the output files are written to

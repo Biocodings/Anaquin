@@ -13,16 +13,17 @@
      and StringTie. Assembled transcript models must be provided to Anaquin in GTF file format.
 
 <b>USAGE EXAMPLE</b>
-     anaquin RnaAssembly –rgtf reference.gtf -m mixture.csv –ufiles transcripts.gtf
+     anaquin RnaAssembly –rgtf reference.gtf -rmix reference.csv –usequin transcripts.gtf
 
 <b>TOOL OPPTIONS</b>
      Required:
         -rgtf      Reference annotation file in GTF format.
-        -m         Reference miture file in CSV format.
-        -ufiles    User-generated transcriptome in GTF format.
+        -rmix      Reference miture file in CSV format.
+        -usequin   User-generated transcriptome in GTF format.
 
      Optional:
         -o = output Directory in which the output files are written to.
+        -mix = A    Mixture A or B?
 
 <b>OUTPUTS</b>
     RnaAssembly_summary.stats - provides summary statistics to describe global transcript assembly
