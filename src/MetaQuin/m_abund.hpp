@@ -20,6 +20,7 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
+	    Options() {}
             Format format;
             Mixture mix = Mixture::Mix_1;
         };
