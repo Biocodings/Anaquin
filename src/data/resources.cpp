@@ -30,7 +30,6 @@
 #include "resources/plotCNV.R"
 #include "resources/plotFold.R"
 #include "resources/plotTROC.R"
-#include "resources/plotVLODR.R"
 #include "resources/plotVGROC.R"
 #include "resources/plotVCROC.R"
 #include "resources/plotTLODR.R"
@@ -39,20 +38,6 @@
 #include "resources/plotKAllele.R"
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
-
-/*
- * RnaQuin Resources
- */
-
-#include "resources/A.R.1.gtf"
-#include "resources/MRN027_v001.csv"
-#include "resources/MRN029_v001.csv"
-
-/*
- * VarQuin Resources
- */
-
-#include "resources/AVA033_v001.bed"
 
 typedef std::string Scripts;
 
@@ -103,22 +88,5 @@ Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
  * Variant Resources
  */
 
-Scripts PlotVLODR()
-{
-    return ToString(src_r_plotVLODR_R);
-}
-
-Scripts PlotVGROC()
-{
-    return ToString(src_r_plotVGROC_R);
-}
-
-Scripts PlotVCROC()
-{
-    return ToString(src_r_plotVCROC_R);
-}
-
-Scripts AVA033Bed()
-{
-    return ToString(data_VarQuin_AVA033_v001_bed);
-}
+Scripts PlotVGROC() { return ToString(src_r_plotVGROC_R); }
+Scripts PlotVCROC() { return ToString(src_r_plotVCROC_R); }
