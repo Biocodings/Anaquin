@@ -23,7 +23,4 @@ input <- %8%
 # Measured sensitivity (y-axis)
 sn <- %9%
 
-# Create Anaquin data for PlotLogistic
-anaquin <- AnaquinData(analysis='PlotLogistic', seqs=row.names(data), input=input, measured=sn)
-
-plotLogistic(anaquin, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)
+plotLogistic(row.names(data), input, sn, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)

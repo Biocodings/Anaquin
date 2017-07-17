@@ -129,14 +129,6 @@ namespace Anaquin
             inline void finalize(Tool x, const UserReference &r)
             {
                 validate(x, r);
-                
-                for (auto &i : _data)
-                {
-                    if (!i.second.l.length())
-                    {
-                        throw std::runtime_error("Validation failed. Zero length in data.");
-                    }
-                }
             }
 
         protected:
@@ -254,45 +246,23 @@ namespace Anaquin
                                       y.end(),
                                       std::back_inserter(inters));
 
-                /*
-                 * Construct a set of validated sequins. A valid sequin is one in which it's
-                 * defined in both mixture and annoation.
-                 */
-            
-                std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
-                {
-                    auto d = Data();
-                              
-                    d.id  = id;
-                    
-                    // Add a new entry for the validated sequin
-                    _data[id] = d;
-
-                    A_ASSERT(!d.id.empty());
-                });
-
 //                /*
-//                 * Now, we have a list of validated sequins. Use those sequins to merge information.
+//                 * Construct a set of validated sequins. A valid sequin is one in which it's
+//                 * defined in both mixture and annoation.
 //                 */
 //            
-//                for (const auto i : _mixes)
+//                std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
 //                {
-//                    // Eg: MixA, MixB etc
-//                    const auto mix = i.first;
-//                
-//                    // For each of the sequin
-//                    for (const auto j : i.second)
-//                    {
-//                        // Only if it's a validated sequin
-//                        if (_data.count(j.second->id))
-//                        {
-//                            _data.at(j.second->id).mixes[mix] = j.second->abund;
-//                        }
-//                    }
-//                }
-//            
-//                A_ASSERT(!_data.empty());
-                
+//                    auto d = Data();
+//                              
+//                    d.id  = id;
+//                    
+//                    // Add a new entry for the validated sequin
+//                    _data[id] = d;
+//
+//                    A_ASSERT(!d.id.empty());
+//                });
+
                 return diffs;
             }
         
@@ -320,11 +290,8 @@ namespace Anaquin
         
         
         
-            // Validated ladder
-            std::map<Mixture, std::map<SequinID, std::shared_ptr<MixtureData>>> _mixes;
-
             // Sequins
-            std::map<SequinID, Data> _data;
+           // std::map<SequinID, Data> _data;
     };
 
     /*
@@ -371,9 +338,6 @@ namespace Anaquin
         
             const Variant *findVar(const ChrID &, const Locus &) const;
 
-            // Returns the expected allele frequency
-            Proportion findAFreq(const SequinID &) const;
-
         protected:
 
             void validate(Tool, const UserReference &) override;
@@ -414,9 +378,6 @@ namespace Anaquin
             Chr2MInters mergedExons() const;
             MergedIntervals<> mergedExons(const ChrID &cID) const;
 
-            // Number of sequin genes from mixture
-            Counts nGeneSeqs() const;
-
             Counts countUExon(const ChrID &) const;
             Counts countUExonSyn() const;
             Counts countUExonGen() const;
@@ -431,21 +392,12 @@ namespace Anaquin
             Counts countTransSyn() const;
             Counts countTransGen() const;
         
-            GeneID s2g(const SequinID &) const;
-        
-            inline std::set<GeneID> geneIDs() const { return getGenes(ChrIS); }
-            inline std::set<IsoformID> isoformIDs() const { return getTrans(ChrIS); }
-
-            std::set<GeneID>  getGenes(const ChrID &) const;
-            std::set<TransID> getTrans(const ChrID &) const;
-
             const GeneData  *findGene (const ChrID &, const GeneID &) const;
             const TransData *findTrans(const ChrID &, const GeneID &) const;
 
         protected:
         
             void validate(Tool, const UserReference &) override;
-            void merge(const std::set<SequinID> &, const std::set<SequinID> &);
         
         private:
 

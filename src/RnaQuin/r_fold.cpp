@@ -273,7 +273,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
                                  % "Qval"
                                  % "Mean").str();
     
-    const auto ids = o.metrs == RFold::Metrics::Gene ? r.geneIDs() : r.isoformIDs();
+    const auto ids = o.metrs == RFold::Metrics::Gene ? r.seqsL2() : r.seqsL1();
 
     // For each sequin gene or isoform...
     for (const auto id : ids)

@@ -195,7 +195,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             
             stats.tps.push_back(m);
             
-            const auto exp = r.findAFreq(m.var->name);
+            const auto exp = 0.0; // TODO: Fix this we need ladder r.findAFreq(m.var->name);
             const auto obs = m.qry.allF;
             
             A_ASSERT(!isnan(exp));
@@ -370,7 +370,7 @@ static void writeQuins(const FileName &file,
                                                    % c.readR
                                                    % c.readV
                                                    % c.depth
-                                                   % r.findAFreq(i.name)
+                                                   % "????" // TODO: r.findAFreq(i.name)
                                                    % c.allF
                                                    % toString(c.qual)
                                                    % gt2str(sv.gt)
@@ -388,7 +388,7 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
-                                                   % r.findAFreq(i.name)
+                                                   % "????" // TODO: r.findAFreq(i.name)
                                                    % "-"
                                                    % "-"
                                                    % gt2str(sv.gt)
@@ -436,7 +436,7 @@ static void writeDetected(const FileName &file,
                                                    % i.qry.readR
                                                    % i.qry.readV
                                                    % i.qry.depth
-                                                   % (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
+                                                   % "????" // TODO: (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
                                                    % i.qry.allF
                                                    % toString(i.qry.qual)
                                                    % ctx

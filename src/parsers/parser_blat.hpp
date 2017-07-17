@@ -208,7 +208,7 @@ namespace Anaquin
                     l.qGapCount = stoi(toks[PSL_QGap_Count]);
                     l.tGapCount = stoi(toks[PSL_TGap_Count]);
                     
-                    f(l, p);
+                    f(l);
                 }
             });
         }

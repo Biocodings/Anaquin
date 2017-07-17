@@ -7,19 +7,21 @@ using namespace Anaquin;
 
 MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
 {
-//    const auto &r = Standard::instance().r_meta;
+    const auto &r = Standard::instance().r_meta;
     
     /*
      * Create data-structure for each of the sequin
      */
     
     SequinAlign m;
+    const auto r1 = r.regs1();
     
-//    for (const auto &i : r.data())
-//    {
-//        m[i.second.id] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
-//        m[i.second.id]->seq = &i.second;
-//    }
+    for (const auto &i : r.seqsL1())
+    {
+        m[i] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
+        m[i]->seq.id = i;
+        m[i]->seq.l  = Locus(1, r1.at(i).length());
+    }
     
     MBlat::Stats stats;
     
@@ -27,58 +29,56 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
      * Create data-structure for the alignments
      */
     
-    ParserBlat::parse(file, [&](const ParserBlat::Data &l, const ParserProgress &)
+    ParserBlat::parse(file, [&](const ParserBlat::Data &x)
     {
-        // Eg: M2_G, M10_G
-        const auto id = l.tName;
+        // Eg: MQ_16
+        const auto id = x.tName;
         
         if (m.count(id))
         {
             stats.nSeqs++;
             
-            AlignedContig contig;
+            AlignedContig c;
             
-            contig.id = l.qName;
-            contig.l  = Locus(l.tStart, l.tEnd);
+            c.id = x.qName;
             
-            contig.match    = l.match;
-            contig.mismatch = l.mismatch;
+            // (c.l != c.qSize) because a contig can be mapped to a sequin multiple times
+            c.l  = Locus(x.tStart, x.tEnd);
+
+            c.match    = x.match;
+            c.mismatch = x.mismatch;
             
-            contig.rGap   = l.tGap;
-            contig.rStart = l.tStart;
-            contig.rEnd   = l.tEnd;
-            contig.rSize  = l.tSize;
+            c.rGap   = x.tGap;
+            c.rStart = x.tStart;
+            c.rEnd   = x.tEnd;
+            c.rSize  = x.tSize;
             
-            contig.qGap   = l.qGap;
-            contig.qStart = l.qStart;
-            contig.qEnd   = l.qEnd;
-            contig.qSize  = l.qSize;
+            c.qGap   = x.qGap;
+            c.qStart = x.qStart;
+            c.qEnd   = x.qEnd;
+            c.qSize  = x.qSize;
             
-            contig.qGapCount = l.qGapCount;
-            contig.rGapCount = l.tGapCount;
+            c.qGapCount = x.qGapCount;
+            c.rGapCount = x.tGapCount;
             
             // That's because we might have multiple contigs aligned to a sequin
-            m.at(id)->contigs.push_back(contig);
+            m.at(id)->contigs.push_back(c);
             
-            A_ASSERT(contig.l.length());
+            A_ASSERT(c.l.length());
             
-            /*
-             * TODO: What about a contig being mapped to the same sequin multiple times?
-             */
-            
-            stats.t2l[l.tName] = l.tSize;
+            stats.t2l[x.tName] = x.tSize;
             
             /*
              * Building mappings for contigs
              */
             
             // Size of the contig
-            stats.c2l[contig.id] = contig.qSize;
+            stats.c2l[c.id] = c.qSize;
             
             // Size of the aligned contig (<= contig size)
-            stats.c2a[contig.id] = contig.l.length() - 1;
+            stats.c2a[c.id] = c.qSize; // c.l.length() - 1;
             
-            A_ASSERT(stats.c2a[contig.id] <= stats.c2l[contig.id]);
+            A_ASSERT(stats.c2a[c.id] <= stats.c2l[c.id]);
         }
         else
         {
@@ -141,9 +141,9 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             // Sequin length
             Base l;
             
-            if (align->seq->l.length() > 2)
+            if (align->seq.l.length() > 2)
             {
-                l = align->seq->l.length();
+                l = align->seq.l.length();
             }
             else if (stats.t2l.count(align->id()))
             {
@@ -186,7 +186,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             
             stats.oMatch += oMatch;
             stats.oMismatch += oMismatch;
-            stats.total     += align->seq->l.length();
+            stats.total     += align->seq.l.length();
             
             if (align->oRGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oRGaps).str());    }
             if (align->oQGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oQGaps).str());    }
@@ -199,12 +199,12 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             // Create an alignment for each contig that aligns to the MetaQuin
             for (const auto &i : align->contigs)
             {
-                stats.c2s[i.id] = align->seq->id;
+                stats.c2s[i.id] = align->seq.id;
                 stats.aligns[i.id] = align;
             }
         }
         
-        stats.metas[align->seq->id] = align;
+        stats.metas[align->seq.id] = align;
     }
     
     return stats;

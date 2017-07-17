@@ -12,7 +12,6 @@ namespace Anaquin
         enum class Format
         {
             Blat,
-            MetaQuast,
         };
 
         struct Stats : public SequinStats, public DAsssembly::DenoAssemblyImpl
@@ -65,6 +64,9 @@ namespace Anaquin
             Options() {}
             
             Format format;
+            
+            // Mixture A or mixture B?
+            Mixture mix = Mixture::Mix_1;
         };
 
         static Scripts generateQuins(const Stats &, const Options &);        

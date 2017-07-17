@@ -133,79 +133,6 @@ std::map<ChrID, Hist> RnaRef::histIsof() const
     return _impl->gData.histIsof();
 }
 
-Counts RnaRef::nGeneSeqs() const
-{
-    std::set<GeneID> gIDs;
-    
-    for (const auto &i : _data)
-    {
-        gIDs.insert(isoform2Gene(i.first));
-    }
-    
-    return gIDs.size();
-}
-
-//LogFold RnaRef::logFoldGene(const GeneID &gID) const
-//{
-//    const auto e1 = concent(gID, Mix_1);
-//    const auto e2 = concent(gID, Mix_2);
-//
-//    return log2(e2 / e1);
-//}
-
-//LogFold RnaRef::logFoldSeq(const IsoformID &iID) const
-//{
-//    const auto m = match(iID);
-//    
-//    // It's pre-condition that the sequin exists
-//    assert(m);
-//    
-//    const auto e1 = m->concent(Mix_1);
-//    const auto e2 = m->concent(Mix_2);
-//    
-//    return log2(e2 / e1);
-//}
-
-//Concent RnaRef::concent(const GeneID &gID, Mixture mix) const
-//{
-//    for (const auto &i : _impl->gData)
-//    {
-//        if (isRNARevChr(i.first))
-//        {
-//            A_CHECK(!i.second.t2g.empty(), "No transcript found in gene [" + gID + "]");
-//
-//            Concent r = 0;
-//
-//            for (const auto &j : i.second.t2g)
-//            {
-//                // Does this transcript belong to the gene?
-//                if (j.second == gID)
-//                {
-//                    // Add up the concentration
-//                    r += match(j.first)->mixes.at(mix);
-//                }
-//            }
-//
-//            if (!r)
-//            {
-//                A_THROW("Concentration is zero for gene [" + gID + "]");
-//            }
-//
-//            return r;
-//        }
-//    }
-//    
-//    A_THROW("Failed to find gene [" + gID + "]");
-//
-//    // Never executed
-//    return Concent();
-//}
-
-GeneID RnaRef::s2g(const SequinID &sID) const
-{
-    return _impl->gData.at(ChrIS).t2g.at(sID);
-}
-
 const TransData *RnaRef::findTrans(const ChrID &cID, const TransID &tID) const
 {
     if (!_impl->gData.count(cID))
@@ -226,30 +153,6 @@ const GeneData * RnaRef::findGene(const ChrID &cID, const GeneID &gID) const
     
     assert(!_impl->gData.at(cID).g2d.empty());
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
-}
-
-std::set<GeneID> RnaRef::getGenes(const ChrID &cID) const
-{
-    std::set<GeneID> ids;
-    
-    for (const auto &i : _impl->gData.at(cID).g2d)
-    {
-        ids.insert(i.first);
-    }
-    
-    return ids;
-}
-
-std::set<TransID> RnaRef::getTrans(const ChrID &cID) const
-{
-    std::set<GeneID> ids;
-    
-    for (const auto &i : _impl->gData.at(cID).t2d)
-    {
-        ids.insert(i.first);
-    }
-    
-    return ids;
 }
 
 MergedIntervals<> RnaRef::mergedExons(const ChrID &cID) const
@@ -277,73 +180,6 @@ Chr2MInters RnaRef::uiInters() const
     return _impl->gData.uiInters();
 }
 
-void RnaRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
-{
-    assert(!mIDs.empty() && !aIDs.empty());
-    
-    std::vector<SequinID> diffs, inters;
-    
-    /*
-     * Check for any sequin defined in mixture but not in annotation
-     */
-    
-    std::set_difference(mIDs.begin(),
-                        mIDs.end(),
-                        aIDs.begin(),
-                        aIDs.end(),
-                        std::back_inserter(diffs));
-    
-    /*
-     * Check for any sequin defined in both mixture and annotation
-     */
-    
-    std::set_intersection(mIDs.begin(),
-                          mIDs.end(),
-                          aIDs.begin(),
-                          aIDs.end(),
-                          std::back_inserter(inters));
-    
-    /*
-     * Construct a set of validated sequins. A valid sequin is one in which it's
-     * defined in both mixture and annoation.
-     */
-    
-    std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
-    {
-        auto data = SequinData();
-        
-        data.id = id;
-
-        // Add a new entry for the validated sequin
-        _data[id] = data;
-
-        assert(!id.empty());
-    });
-    
-    /*
-     * Now, we have a list of validated sequins. Use those sequins to combine information
-     * from mixtures and annotations.
-     */
-    
-//    for (const auto i : _mixes)
-//    {
-//        // Eg: MixA, MixB etc
-//        const auto mix = i.first;
-//        
-//        // For each of the sequin
-//        for (const auto j : i.second)
-//        {
-//            // Only if it's a validated sequin
-//            if (_data.count(j.second->id))
-//            {
-//                _data.at(j.first).mixes[mix] = j.second->abund;
-//            }
-//        }
-//    }
-
-    assert(!_data.empty());
-}
-
 void RnaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
@@ -351,78 +187,8 @@ void RnaRef::validate(Tool x, const UserReference &r)
         case Tool::RnaFoldChange: { build(r.l1, r.l2);       break; }
         case Tool::RnaExpress:    { build(r.l1, r.l2);       break; }
         case Tool::RnaAssembly:   { build(r.l1, r.l1, r.g1); break; }
-
-        default : { break; }
+        default:                  { break; }
     }
-
-//    auto iIDs = std::set<SequinID>();
-//    
-//    for (const auto &i : _impl->gData)
-//    {
-//        if (isRNARevChr(i.first))
-//        {
-//            iIDs = keys(_impl->gData.at(i.first).t2d);
-//            break;
-//        }
-//    }
-//    
-//    /*
-//     * Building rules:
-//     *
-//     *   1: Only annoation
-//     *   2: Only mixture
-//     *   3: Annotation and mixture
-//     */
-//    
-//    if (_rawMIDs.empty())
-//    {
-//        merge(iIDs, iIDs);         // Rule 1
-//    }
-//    else if (!iIDs.empty())
-//    {
-//        merge(_rawMIDs, iIDs);     // Rule 3
-//    }
-//    else
-//    {
-//        merge(_rawMIDs, _rawMIDs); // Rule 2
-//    }
-//    
-//    /*
-//     * Always prefer reference annotation be given. However, if this is not provided, we'll need to
-//     * work out the RNA structure ourself. Coordinates are not required.
-//     */
-//    
-//    if (_impl->gData.empty())
-//    {
-//        for (const auto &i : _rawMIDs)
-//        {
-//            TransData t;
-//            
-//            t.cID = ChrIS;
-//            t.tID = i;
-//            t.gID = isoform2Gene(i);
-//            
-//            GeneData g;
-//            
-//            g.cID = ChrIS;
-//            g.gID = t.gID;
-//            
-//            const auto mix = findMix(Mix_1, t.tID);
-//            assert(mix);
-//            
-//            g.l = _impl->gData[ChrIS].g2d[t.gID].l;
-//            t.l = Locus(1, mix->length);
-//
-//            // Merge the transcripts...
-//            g.l.merge(Locus(1, mix->length));
-//            
-//            assert(g.l.length() > 1);
-//            
-//            _impl->gData[ChrIS].g2d[t.gID] = g;
-//            _impl->gData[ChrIS].t2d[t.tID] = t;
-//            _impl->gData[ChrIS].t2g[t.tID] = t.gID;
-//        }
-//    }
 }
 
 /*
@@ -595,17 +361,11 @@ void VarRef::readVRef(const Reader &r)
             }
             
             _impl->sVars[x.key()] = s;
-            _mixes[Mix_1][x.name] = std::shared_ptr<MixtureData>(new MixtureData(x.name, 1000, af));
         };
         
         if (x.isSV()) { longVar();  }
         else          { shortVar(); }
     });
-}
-
-Proportion VarRef::findAFreq(const SequinID &x) const
-{
-    return _mixes.at(Mix_1).at(x)->abund;
 }
 
 /*

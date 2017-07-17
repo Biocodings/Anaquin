@@ -6,10 +6,6 @@
 
 namespace Anaquin
 {
-    /*
-     * Represents a contig that has been aligned.
-     */
-    
     struct AlignedContig
     {
         operator const Locus &() const { return l; }
@@ -56,15 +52,25 @@ namespace Anaquin
         Counts rGapCount;
     };
     
+    struct SequinData_
+    {
+        inline bool operator<(const SequinID &x)  const { return this->id < x;  }
+        inline bool operator==(const SequinID &x) const { return this->id == x; }
+        
+        SequinID id;
+        
+        Locus l;
+    };
+    
     /*
      * Represents contig alignments for a sequin
      */
     
     struct MetaAlignment
     {
-        inline const SequinID &id() const { return seq->id; }
+        inline const SequinID &id() const { return seq.id; }
         
-        const SequinData *seq;
+        SequinData_ seq;
         
         // Contigs aligned to this metaquin
         std::vector<AlignedContig> contigs;
@@ -93,8 +99,8 @@ namespace Anaquin
         // Average coverage depth across entire sequin
         Proportion depthSequin = 0.0; // TODO: ????
         
-        inline bool operator<(const MetaAlignment &x)  const { return seq->id < x.seq->id;  }
-        inline bool operator==(const MetaAlignment &x) const { return seq->id == x.seq->id; }
+        inline bool operator<(const MetaAlignment &x)  const { return seq.id < x.seq.id;  }
+        inline bool operator==(const MetaAlignment &x) const { return seq.id == x.seq.id; }
     };
     
     typedef std::map<SequinID, std::shared_ptr<MetaAlignment>> SequinAlign;

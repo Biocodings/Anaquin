@@ -10,7 +10,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     // Eg: Contigs.fasta
     const auto fasta = files[0];
     
-    // Eg: align.psl and alignments_Contigs.tsv
+    // Eg: align.psl or alignments_Contigs.tsv
     const auto align = files[1];
     
     const auto &r = Standard::instance().r_meta;
@@ -44,7 +44,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             for (auto &s : x.metas)
             {
                 // Length of the sequin
-                const auto l = s.second->seq->l;
+                const auto l = s.second->seq.l;
                 
                 // Required for detecting overlapping
                 DInter i(s.first, Locus(0, l.length()));
@@ -54,52 +54,13 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                     stats.s2c[s.first].push_back(j.id);
                     i.add(Locus(j.l.start, j.l.end - 1));
                 }
-                
-                // TODO stats.add(s.first, r.match(s.first)->concent(), i.stats().covered());
+
+                stats.add(s.first, r.input1(s.first, o.mix), i.stats().covered());
             }
             
             break;
         }
-            
-        case Format::MetaQuast:
-        {
-            ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
-                                                       const ParserProgress &)
-            {
-                for (const auto &c : x.contigs)
-                {
-                    // Contigs.fasta doesn't have "_"
-                    auto t = c;
-                    
-                    // Eg: contig-1056000000 2818 nucleotides
-                    boost::replace_all(t, "_", " ");
-                    
-                    stats.c2s[t] = x.id;
-                    stats.s2c[x.id].push_back(t);
-                }
-            });
-            
-            // Eg: genome_info.txt
-            const auto genome = files[2];
-            
-            ParserQuast::parseGenome(Reader(genome), [&](const ParserQuast::GenomeData &x,
-                                                         const ParserProgress &)
-            {
-//           TODO     const auto match = r.match(x.id);
-//                
-//                if (match)
-//                {
-//                    // Build a linear model between input concentration and sensitivity
-//                    stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
-//                }
-            });
-            
-            A_ASSERT(stats.c2l.empty());
-            A_ASSERT(stats.c2a.empty());
-            
-            break;
-        }
-            
+
         default : { throw "Not Implemented"; }
     }
     
@@ -110,32 +71,27 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     stats.dnovo = DAsssembly::analyze(fasta, &stats);
     
     /*
-     * Calculating the proportion being assembled (not available for MetaQuast)
+     * Calculating the proportion being assembled
      */
     
-//    for (const auto &seq : r.data())
-//    {
-//        if (stats.s2c.count(seq.first))
-//        {
-//            for (const auto &c : stats.s2c.at(seq.first))
-//            {
-//                switch (o.format)
-//                {
-//                    case Format::Blat:
-//                    {
-//                        stats.match += stats.c2a.at(c);
-//                        stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
-//                        break;
-//                    }
-//                        
-//                    case Format::MetaQuast:
-//                    {
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//    }
+    for (const auto &seq : r.seqsL1())
+    {
+        if (stats.s2c.count(seq))
+        {
+            for (const auto &c : stats.s2c.at(seq))
+            {
+                switch (o.format)
+                {
+                    case Format::Blat:
+                    {
+                        stats.match += stats.c2a.at(c);
+                        stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
+                        break;
+                    }
+                }
+            }
+        }
+    }
     
     return stats;
 }
@@ -143,8 +99,6 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
 static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
     extern FileName BedRef();
-    
-//    const auto &r = Standard::instance().r_meta;
     
     const auto summary = "-------MetaAssembly Output\n\n"
                          "       Summary for input: %1%\n\n"
@@ -178,7 +132,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                                    % dn.nEndo
                                    % (dn.nSeqs + dn.nEndo)
                                    % BedRef()
-                                   % "????" //r.data().size()
+                                   % Standard::instance().r_meta.seqsL1().size()
                                    % dn.N20
                                    % dn.N50
                                    % dn.N80
@@ -192,7 +146,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
 
 static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
-//    const auto &r = Standard::instance().r_meta;
+    const auto &r = Standard::instance().r_meta;
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
@@ -203,48 +157,32 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                                   % "Match"
                                   % "Mismatch")) << std::endl;
     
-//    for (const auto &seq : r.data())
-//    {
-//        if (stats.s2c.count(seq.first))
-//        {
-//            for (const auto &c : stats.s2c.at(seq.first))
-//            {
-//                switch (o.format)
-//                {
-//                    case MAssembly::Format::Blat:
-//                    {
-//                        const auto total = stats.c2l.at(c);
-//                        const auto align = stats.c2a.at(c);
-//                        
-//                        assert(total >= align);
-//                        
-//                        ss << ((boost::format(format) % seq.first
-//                                                      % seq.second.concent()
-//                                                      % c
-//                                                      % align
-//                                                      % (total - align)).str()) << std::endl;
-//                        break;
-//                    }
-//                        
-//                    case MAssembly::Format::MetaQuast:
-//                    {
-//                        /*
-//                         * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned
-//                         * to the sequin. Thus, it's not possible to give the information at the contig level.
-//                         */
-//                        
-//                        ss << ((boost::format(format) % seq.first
-//                                                      % seq.second.concent()
-//                                                      % c
-//                                                      % "-"
-//                                                      % "-").str()) << std::endl;
-//                        break;
-//                    }
-//                }
-//                
-//            }
-//        }
-//    }
+    for (const auto &seq : r.seqsL1())
+    {
+        if (stats.s2c.count(seq))
+        {
+            for (const auto &c : stats.s2c.at(seq))
+            {
+                switch (o.format)
+                {
+                    case MAssembly::Format::Blat:
+                    {
+                        const auto total = stats.c2l.at(c);
+                        const auto align = stats.c2a.at(c);
+                        
+                        assert(total >= align);
+                        
+                        ss << ((boost::format(format) % seq
+                                                      % r.input1(seq, o.mix)
+                                                      % c
+                                                      % align
+                                                      % (total - align)).str()) << std::endl;
+                        break;
+                    }
+                }
+            }
+        }
+    }
     
     return ss.str();
 }
@@ -253,15 +191,15 @@ Scripts MAssembly::generateQuins(const Stats &stats, const Options &o)
 {
     std::stringstream ss;
     
-    //const auto &r = Standard::instance().r_meta;
     const auto format = "%1%\t%2%\t%3%\t%4%";
+    ss << (boost::format(format) % "ID" % "Length" % "Input" % "Sn").str() << std::endl;
     
-    ss << (boost::format(format) % "ID" % "Length" % "InputConcent" % "Sn").str() << std::endl;
+    const auto r1 = Standard::instance().r_meta.regs1();
     
     for (const auto &i : stats)
     {
         ss << ((boost::format(format) % i.first
-                                      % "????" //l.length()
+                                      % r1.at(i.first).length()
                                       % i.second.x
                                       % i.second.y).str()) << std::endl;
     }
@@ -312,7 +250,7 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
                                             "Assembly Detection",
                                             "Input Concentration (log2)",
                                             "Sensitivity",
-                                            "InputConcent",
+                                            "Input",
                                             "Sn",
                                             true));
     o.writer->close();
