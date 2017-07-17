@@ -377,7 +377,7 @@ Scripts RFold::generateSummary(const FileName &src,
     return (boost::format(summary) % src         // 1
                                    % nSyn        // 2
                                    % units       // 3
-                                   % MixRef()    // 4
+                                   % LadRef()    // 4
                                    % title       // 5
                                    % stats.nSeqs // 6
                                    % stats.nEndo // 7

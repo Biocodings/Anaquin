@@ -98,9 +98,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
             
             for (const auto &i : s2c)
             {
-//TODO                 const auto m = r.match(i.first);
-                
-                const auto expected = 0; //TODO m->concent();
+                const auto expected = r.input1(i.first, o.mix);
                 auto measured = 0.0;
                 
                 auto x = 0.0;
@@ -247,7 +245,7 @@ static Scripts generateRLinear(const FileName &src, const MAbund::Stats &stats, 
 static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, const MAbund::Options &o)
 {
     // Defined in resources.cpp
-    extern FileName MixRef();
+    extern FileName LadRef();
 
     const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
@@ -274,7 +272,7 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
     
     return (boost::format(format) % src               // 1
                                   % r.seqsL1().size() // 2
-                                  % MixRef()          // 3
+                                  % LadRef()          // 3
                                   % stats.size()      // 4
                                   % limit.abund       // 5
                                   % limit.id          // 6

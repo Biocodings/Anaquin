@@ -68,11 +68,11 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF    804
 #define OPT_TRIM     805
 #define OPT_MIXTURE  806
-#define OPT_L_AF     807
-#define OPT_L_CON    808
-#define OPT_L_CNV    809
+#define OPT_R_AF     807
+#define OPT_R_CON    808
+#define OPT_R_CNV    809
 #define OPT_FUZZY    810
-#define OPT_R_IND    812
+#define OPT_R_LAD    811
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
 #define OPT_EDGE     817
@@ -142,9 +142,9 @@ static std::map<Tool, std::set<Option>> _options =
      */
     
     { Tool::RnaSubsample,  { OPT_U_SEQS, OPT_METHOD } },
-    { Tool::RnaAssembly,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_SEQS } },
-    { Tool::RnaFoldChange, { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
-    { Tool::RnaExpress,    { OPT_MIXTURE, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::RnaAssembly,   { OPT_R_GTF, OPT_R_LAD, OPT_U_SEQS } },
+    { Tool::RnaFoldChange, { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::RnaExpress,    { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
 
     /*
@@ -154,20 +154,20 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarFlip,      { OPT_U_SEQS } },
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKSomatic,  { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON, OPT_L_AF } },
+    { Tool::VarKSomatic,  { OPT_U_SEQS, OPT_R_CNV, OPT_R_CON, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarConjoint,  { OPT_L_CON } },
+    { Tool::VarConjoint,  { OPT_R_CON } },
 
     /*
      * MetaQuin Analysis
      */
 
-    { Tool::MetaAssembly,   { OPT_R_BED,  OPT_U_SEQS  } },
-    { Tool::MetaSubsample,  { OPT_METHOD, OPT_U_SEQS, } },
+    { Tool::MetaAssembly,   { OPT_R_BED,  OPT_R_LAD, OPT_U_SEQS } },
+    { Tool::MetaAbund,      { OPT_R_BED,  OPT_R_LAD, OPT_U_SEQS } }
 };
 
 /*
@@ -188,6 +188,9 @@ struct Parsing
     // How Anaquin is invoked
     std::string command;
 
+    // Mixture A or mixture B
+    Mixture mix = Mix_1;
+    
     Proportion sampled = NAN;
     
     Tool tool;
@@ -208,24 +211,10 @@ FileName GTFRef()
     return !__mockGTFRef__.empty() ? __mockGTFRef__ : _p.opts.at(OPT_R_GTF);
 }
 
-FileName MixRef()
-{
-    if (_p.opts.count(OPT_MIXTURE))
-    {
-        return _p.opts.at(OPT_MIXTURE);
-    }
-    else if (_p.opts.count(OPT_L_CNV))
-    {
-        return _p.opts.at(OPT_L_CNV);
-    }
-    else if (_p.opts.count(OPT_L_CON))
-    {
-        return _p.opts.at(OPT_L_CON);
-    }
-
-    return _p.opts.at(OPT_L_AF);
-}
-
+FileName LadRef() { return _p.opts.at(OPT_R_LAD); }
+FileName CNVRef() { return _p.opts.at(OPT_R_CNV); }
+FileName ConRef() { return _p.opts.at(OPT_R_CON); }
+FileName AFRef()  { return _p.opts.at(OPT_R_AF);  }
 FileName BedRef() { return _p.opts.at(OPT_R_BED); }
 FileName VCFRef() { return _p.opts.at(OPT_R_VCF); }
 
@@ -255,11 +244,6 @@ struct InvalidValueException : public std::exception
     InvalidValueException(const std::string &opt, const std::string &val) : opt(opt), val(val) {}
 
     const std::string opt, val;
-};
-
-struct NoValueError: public InvalidValueException
-{
-    NoValueError(const std::string &opt) : InvalidValueException(opt, "") {}
 };
 
 struct InvalidToolError : public InvalidValueException
@@ -298,19 +282,18 @@ static const struct option long_options[] =
     { "usequin", required_argument, 0, OPT_U_SEQS  },
     { "usample", required_argument, 0, OPT_U_SAMPLE },
 
-    { "af",      required_argument, 0, OPT_L_AF   },  // Ladder for allele frequency
-    { "cnv",     required_argument, 0, OPT_L_CNV  },  // Ladder for copy number variation
-    { "con",     required_argument, 0, OPT_L_CON  },  // Ladder for conjoint k-mers
-    { "m",       required_argument, 0, OPT_MIXTURE }, // Ladder for other than VarQuin
+    { "rbed",    required_argument, 0, OPT_R_BED  },
+    { "rgtf",    required_argument, 0, OPT_R_GTF  },
+    { "rvcf",    required_argument, 0, OPT_R_VCF  },
+    
+    { "raf",     required_argument, 0, OPT_R_AF   }, // Ladder for allele frequency
+    { "rcnv",    required_argument, 0, OPT_R_CNV  }, // Ladder for copy number variation
+    { "rcon",    required_argument, 0, OPT_R_CON  }, // Ladder for conjoint k-mers
+    { "rmix",    required_argument, 0, OPT_R_LAD  }, // Ladder for everything else (RnaQuin and MetaQuin)
     
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "method",  required_argument, 0, OPT_METHOD  },
     { "trim",    required_argument, 0, OPT_TRIM    },
-
-    { "rbed",    required_argument, 0, OPT_R_BED  },
-    { "rgtf",    required_argument, 0, OPT_R_GTF  },
-    { "rvcf",    required_argument, 0, OPT_R_VCF  },
-    { "rind",    required_argument, 0, OPT_R_IND  },
 
     { "edge",    required_argument, 0, OPT_EDGE   },
     { "fuzzy",   required_argument, 0, OPT_FUZZY  },
@@ -673,11 +656,7 @@ void parse(int argc, char ** argv)
 
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
-        if (next == ':')
-        {
-            throw NoValueError(argv[n]);
-        }
-        else if (next < OPT_TOOL)
+        if (next < OPT_TOOL)
         {
             throw InvalidOptionException(argv[n]);
         }
@@ -751,16 +730,23 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_TRIM:
-            case OPT_L_AF:
-            case OPT_L_CNV:
-            case OPT_L_CON: { _p.opts[opt] = val; break; }
+            case OPT_R_AF:
+            case OPT_R_CNV:
+            case OPT_R_LAD:
+            case OPT_R_CON: { _p.opts[opt] = val; break; }
 
-            case OPT_R_IND:
+            case OPT_MIXTURE:
+            {
+                if      (val == "A") { _p.mix = Mixture::Mix_1; }
+                else if (val == "B") { _p.mix = Mixture::Mix_2; }
+                else                 { throw InvalidValueException("-mix", val); }
+                break;
+            }
+
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
             case OPT_U_SEQS:
-            case OPT_MIXTURE:
             case OPT_U_SAMPLE:
             {
                 if (opt == OPT_U_SEQS)
@@ -865,16 +851,16 @@ void parse(int argc, char ** argv)
                     case Tool::RnaAssembly:
                     {
                         readGTF(std::bind(&Standard::readGTF, &s, std::placeholders::_1), OPT_R_GTF, r);
-                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_MIXTURE, r);
-                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;                        
                     }
                         
                     case Tool::RnaExpress:
                     case Tool::RnaFoldChange:
                     {
-                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_MIXTURE, r);
-                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;
                     }
 
@@ -998,14 +984,14 @@ void parse(int argc, char ** argv)
                 case Tool::MetaAbund:
                 {
                     readReg1(OPT_R_BED, r);
-                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
                 case Tool::MetaAssembly:
                 {
                     readReg1(OPT_R_BED, r);
-                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_MIXTURE, r);
+                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
@@ -1105,14 +1091,14 @@ void parse(int argc, char ** argv)
 
                     case Tool::VarConjoint:
                     {
-                        readLad1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON, r);
-                        readLad2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON, r);
+                        readLad1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readLad2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
                         break;
                     }
 
                     case Tool::VarCopy:
                     {
-                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_L_CNV, r);
+                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
@@ -1142,10 +1128,10 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKSomatic:
                     {
-                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_AF,   r);
-                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON,  r);
-                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON,  r);
-                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV,  r);
+                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_R_AF,  r);
+                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_R_CNV, r);
                         break;
                     }
 
@@ -1383,10 +1369,6 @@ extern int parse_options(int argc, char ** argv)
     {
         printError("Invalid file format: " + std::string(ex.what()));
     }
-    catch (const NoValueError &ex)
-    {
-        printError("Invalid command. Need to specify " + ex.opt + ".");
-    }
     catch (const UnknownFormatError &ex)
     {
         printError("Unknown format for the input file(s)");
@@ -1405,7 +1387,7 @@ extern int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("Invalid command. %1% not expected for -%2%.") % ex.val % ex.opt).str());
+        printError((boost::format("Invalid command. %1% not expected for %2%.") % ex.val % ex.opt).str());
     }
     catch (const MissingOptionError &ex)
     {

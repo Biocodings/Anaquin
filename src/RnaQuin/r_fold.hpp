@@ -21,7 +21,7 @@ extern Anaquin::Scripts PlotTROC();
 extern Anaquin::Scripts PlotTMA();
 
 // Defined in resources.cpp
-extern Anaquin::FileName MixRef();
+extern Anaquin::FileName LadRef();
 
 // Defined in resources.cpp
 extern Anaquin::FileName GTFRef();

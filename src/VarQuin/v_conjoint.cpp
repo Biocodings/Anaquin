@@ -58,7 +58,7 @@ static void writeSummary(const FileName &file,
                          const VConjoint::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    extern FileName MixRef();
+    extern FileName ConRef();
 
     const auto format = "-------VarConjoint Summary Statistics\n\n"
                         "-------VarConjoint Output Results\n\n"
@@ -72,7 +72,7 @@ static void writeSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % seqs                // 1
-                                           % MixRef()            // 2
+                                           % ConRef()            // 2
                                            % r.seqsL1().size()   // 3
                                            % nonZero(stats.data) // 4
             ).str());

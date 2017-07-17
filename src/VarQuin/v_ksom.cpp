@@ -60,8 +60,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKSo
 //    o.writer->write(generateSummary(file, stats, o));
 //    o.writer->close();
     
-//    extern FileName MixRef();
-//
 ////    const auto &r = Standard::instance().r_var;
 //    const auto ls = stats.linear();
 //

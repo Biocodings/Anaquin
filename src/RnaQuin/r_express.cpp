@@ -21,7 +21,7 @@ struct MultiStats
 };
 
 // Defined in resources.cpp
-extern FileName MixRef();
+extern FileName LadRef();
 
 typedef RExpress::Metrics Metrics;
 
@@ -439,7 +439,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     return (boost::format(format) % STRING(ms.files)       // 1
                                   % count                  // 2
                                   % units                  // 3
-                                  % MixRef()               // 4
+                                  % LadRef()               // 4
                                   % title                  // 5
                                   % STRING(ms.nSeqs)       // 6
                                   % limit.abund            // 7
