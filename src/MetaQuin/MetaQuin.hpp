@@ -9,32 +9,6 @@
 
 namespace Anaquin
 {
-    inline bool isMetaQuin(const SequinID &id)
-    {
-//        if (boost::starts_with(id, "GC_"))
-//        {
-//            return true;
-//        }
-//        else if (boost::starts_with(id, "M5_"))
-//        {
-//            return true;
-//        }
-//        else if (boost::starts_with(id, "MH_"))
-//        {
-//            return true;
-//        }
-//        else if (boost::starts_with(id, "MG_"))
-//        {
-//            return true;
-//        }
-//        else if (boost::starts_with(id, "M1"))
-//        {
-//            return true;
-//        }
-        
-        return true;
-    }
-
     struct DAsssembly
     {
         template <typename T> struct Stats : public MappingStats

@@ -1,5 +1,5 @@
 # Boost C++ library
-BOOST = /usr/local/Cellar/boost/1.60.0_1/include
+BOOST = /usr/local/include/boost_1_64_0
 
 # Linear-algebra library
 EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3

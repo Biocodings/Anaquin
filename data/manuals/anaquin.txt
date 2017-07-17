@@ -34,6 +34,5 @@ Version: 2.0
             VarConjoint   - Quantitative analysis of conjoint sequins
             VarSomatic    - Compare the identification of somatic variants from sequin- and sample-derived alignments
 
-            MetaAbund      - Quantitative analysis of sequin abundance
-            MetaAssembly   - Compares assembled contigs to sequin annotations in the in silico community
-            MetaSubsample  - Calibrate sequence coverage of sequins across multiple replicates
+            MetaAbund     - Quantitative analysis of sequin abundance
+            MetaAssembly  - Compares assembled contigs to sequin annotations in the in silico community

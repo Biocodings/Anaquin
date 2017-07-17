@@ -1012,6 +1012,12 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
+                case Tool::MetaSubsample:
+                {
+                    readReg1(OPT_R_BED, r);
+                    break;
+                }
+
                 default: { break; }
             }
             

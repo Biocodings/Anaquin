@@ -7,14 +7,23 @@ using namespace Anaquin;
 
 MSample::Stats MSample::analyze(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_meta;
+
+    // Cache for computational efficency
+    const auto regs = r.regs1();
+
     A_CHECK(!isnan(o.p), "Sampling probability must not be NAN");
     A_CHECK(o.p > 0 && o.p < 1.0, "Sampling probability must be (0:1)");
 
     MSample::Stats stats;
     
     o.info(file);
-    o.info("Sampling proportion: " + std::to_string(o.p));
-
+    
+    auto isMetaQuin = [&](const ChrID &x)
+    {
+        return regs.count(x);
+    };
+    
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
@@ -36,34 +45,17 @@ MSample::Stats MSample::analyze(const FileName &file, const Options &o)
         }
     });
 
-    o.info("Alignments mapped to the synthetic community (before subsampling): " + std::to_string(stats.before.syn));
-    o.info("Alignments mapped to the genome (before subsampling): " + std::to_string(stats.before.gen));
-    
-    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the in-silico community"); }
-    if (stats.before.gen == 0) { throw std::runtime_error("No alignment found on the microbes");   }
+    if (stats.before.syn == 0) { throw std::runtime_error("No alignment found on the metagenome sequins"); }
 
     o.info("Calculating the normalization factor");
     
-    const auto nTotal = stats.before.gen / (1.0 - o.p);
-    A_CHECK(nTotal >= stats.before.gen, "New total is less than number of genomic reads");
-    
-    // Number of synthetic reads after sampling (eg: 0.10101)
-    const auto nSyn = nTotal - stats.before.gen;
-
-    /*
-     * Make sure we only derive normalization factor if there're enough synthetic reads.
-     */
-    
-    stats.norm = nSyn < stats.before.syn ? static_cast<Proportion>(nSyn) / stats.before.syn : 1.0;
-
-    o.logInfo("New Total: "     + std::to_string(nTotal));
-    o.logInfo("New Synthetic: " + std::to_string(nSyn));
-    o.info("Normalization: "    + std::to_string(stats.norm));
+    // Normalization in MetaQuin is simple ...
+    stats.norm = o.p;
 
     // Perform subsampling
-    const auto r = Sampler::sample(file, stats.norm, o, [&](const ChrID &id) { return isMetaQuin(id); });
+    const auto x = Sampler::sample(file, stats.norm, o, [&](const ChrID &x) { return isMetaQuin(x); });
 
-    stats.after = r.after;
+    stats.after = x.after;
 
     return stats;
 }
