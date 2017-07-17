@@ -1,5 +1,5 @@
 #include "data/tokens.hpp"
-#include "VarQuin/v_kabund.hpp"
+#include "VarQuin/v_ksom.hpp"
 #include "parsers/parser_salmon.hpp"
 
 using namespace Anaquin;
@@ -8,7 +8,7 @@ extern Scripts PlotCNV();
 extern Scripts PlotKAllele();
 extern Scripts PlotConjoint();
 
-VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
+VarKSomatic::Stats VarKSomatic::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -18,37 +18,17 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
     // Ladder for conjoint (unit level)
     const auto l3 = r.seqsL3();
 
-    // Ladder for germline mutations
-    const auto l5 = r.seqsL5();
-    
     A_ASSERT(!l3.empty());
-    A_ASSERT(!l5.empty());
     
-    VKAbund::Stats stats;
+    VarKSomatic::Stats stats;
 
     ParserSalmon::parse(Reader(file), [&](const ParserSalmon::Data &x, const ParserProgress &)
     {
         /*
-         * Ladder for germline mutation (0 and 0.5)
-         */
-        
-        if (l5.count(noLast(x.name, "_")))
-        {
-            if (x.name[x.name.size() - 1] == 'R')
-            {
-                stats.germR[noLast(x.name, "_")] = x.abund;
-            }
-            else
-            {
-                stats.germV[noLast(x.name, "_")] = x.abund;
-            }
-        }
-        
-        /*
          * Ladder for conjoint sequins (unit level)
          */
         
-        else if (l3.count(x.name))
+        if (l3.count(x.name))
         {
             stats.con[x.name] = x.abund;
         }
@@ -73,10 +53,10 @@ VKAbund::Stats VKAbund::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VarKSomatic::Stats &stats, const VarKSomatic::Options &o)
 {
-//    o.generate("VarKAbund_summary.stats");
-//    o.writer->open("VarKAbund_summary.stats");
+//    o.generate("VarKSomatic_summary.stats");
+//    o.writer->open("VarKSomatic_summary.stats");
 //    o.writer->write(generateSummary(file, stats, o));
 //    o.writer->close();
     
@@ -85,7 +65,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VKAbun
 ////    const auto &r = Standard::instance().r_var;
 //    const auto ls = stats.linear();
 //
-//    const auto format = "-------VarKAbund Output Results\n\n"
+//    const auto format = "-------VarKSomatic Output Results\n\n"
 //                        "       Summary for input: %1%\n\n"
 //                        "-------Reference Annotations\n\n"
 //                        "       Synthetic: %2%\n"
@@ -124,12 +104,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VKAbun
 //            ).str();
 }
 
-static void writeConjoint(const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeConjoint(const VarKSomatic::Stats &stats, const VarKSomatic::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate("VarKAbund_conjoint.csv");
-    o.writer->open("VarKAbund_conjoint.csv");
+    o.generate("VarKSomatic_conjoint.csv");
+    o.writer->open("VarKSomatic_conjoint.csv");
     o.writer->write((boost::format(format) % "Name"
                                            % "Unit"
                                            % "Input"
@@ -149,12 +129,12 @@ static void writeConjoint(const VKAbund::Stats &stats, const VKAbund::Options &o
     
     o.writer->close();
 
-    o.generate("VarKAbund_conjoint.R");
-    o.writer->open("VarKAbund_conjoint.R");
+    o.generate("VarKSomatic_conjoint.R");
+    o.writer->open("VarKSomatic_conjoint.R");
     o.writer->write((boost::format(PlotConjoint()) % date()
                                                    % __full_command__
                                                    % o.work
-                                                   % "VarKAbund_conjoint.csv"
+                                                   % "VarKSomatic_conjoint.csv"
                                                    % "Expected Copy Number vs Observed Abundance"
                                                    % "Expected Copy Number (log2)"
                                                    % "Observed Abundance (log2)"
@@ -164,7 +144,7 @@ static void writeConjoint(const VKAbund::Stats &stats, const VKAbund::Options &o
     o.writer->close();
 }
 
-static void writeCNV(const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeCNV(const VarKSomatic::Stats &stats, const VarKSomatic::Options &o)
 {
 //    extern std::string __full_command__;
 //    
@@ -173,16 +153,16 @@ static void writeCNV(const VKAbund::Stats &stats, const VKAbund::Options &o)
 //    o.writer->write((boost::format(PlotCNV()) % date()
 //                                              % __full_command__
 //                                              % o.work
-//                                              % "VarKAbund_sequins.csv").str());
+//                                              % "VarKSomatic_sequins.csv").str());
 //    o.writer->close();
 }
 
-static void writeSomatic(const VKAbund::Stats &stats, const VKAbund::Options &o)
+static void writeSomatic(const VarKSomatic::Stats &stats, const VarKSomatic::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate("VarKAbund_somatic.csv");
-    o.writer->open("VarKAbund_somatic.csv");
+    o.generate("VarKSomatic_somatic.csv");
+    o.writer->open("VarKSomatic_somatic.csv");
     o.writer->write((boost::format(format) % "Name"
                                            % "ExpFreq"
                                            % "ObsRef"
@@ -207,84 +187,39 @@ static void writeSomatic(const VKAbund::Stats &stats, const VKAbund::Options &o)
 
     extern std::string __full_command__;
     
-    o.generate("VarKAbund_somatic.R");
-    o.writer->open("VarKAbund_somatic.R");
+    o.generate("VarKSomatic_somatic.R");
+    o.writer->open("VarKSomatic_somatic.R");
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKAbund_somatic.csv").str());
+                                                  % "VarKSomatic_somatic.csv").str());
     o.writer->close();
 }
 
-static void writeGerm(const VKAbund::Stats &stats, const VKAbund::Options &o)
-{
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    
-    o.generate("VarKAbund_germline.csv");
-    o.writer->open("VarKAbund_germline.csv");
-    o.writer->write((boost::format(format) % "Name"
-                                           % "ExpFreq"
-                                           % "ObsRef"
-                                           % "ObsVar"
-                                           % "ObsFreq").str());
-    
-    for (const auto &i : stats.germV)
-    {
-        const auto &r = Standard::instance().r_var;
-        
-        const auto obsR = (stats.germR.count(i.first) ? stats.germR.at(i.first) : 0);
-        const auto obsV =  stats.germV.at(i.first);
-        
-        o.writer->write((boost::format(format) % i.first
-                                               % r.input5(i.first)
-                                               % obsR
-                                               % obsV
-                                               % ((float) obsV / (obsR + obsV))).str());
-    }
-    
-    o.writer->close();
-    
-    extern std::string __full_command__;
-    
-    o.generate("VarKAbund_germline.R");
-    o.writer->open("VarKAbund_germline.R");
-    o.writer->write((boost::format(PlotKAllele()) % date()
-                                                  % __full_command__
-                                                  % o.work
-                                                  % "VarKAbund_germline.csv").str());
-    o.writer->close();
-}
-
-void VKAbund::report(const FileName &file, const Options &o)
+void VarKSomatic::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
     
     /*
-     * Generating VarKAbund_summary.stats
+     * Generating VarKSomatic_summary.stats
      */
     
-    writeSummary("VarKAbund_summary.stats", file, stats, o);
+    writeSummary("VarKSomatic_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKAbund_somatic.csv and VarKAbund_somatic.R
+     * Generating VarKSomatic_somatic.csv and VarKSomatic_somatic.R
      */
     
     writeSomatic(stats, o);
 
     /*
-     * Generating VarKAbund_germline.csv and VarKAbund_germline.R
-     */
-    
-    writeGerm(stats, o);
-    
-    /*
-     * Generating VarKAbund_CNV.csv and VarKAbund_CNV.R
+     * Generating VarKSomatic_CNV.csv and VarKSomatic_CNV.R
      */
     
     writeCNV(stats, o);
 
     /*
-     * Generating VarKAbund_conjoint.csv and VarKAbund_conjoint.R
+     * Generating VarKSomatic_conjoint.csv and VarKSomatic_conjoint.R
      */
 
     writeConjoint(stats, o);

@@ -1,11 +1,11 @@
-#ifndef V_KABUND_HPP
-#define V_KABUND_HPP
+#ifndef V_KSOMATIC_HPP
+#define V_KSOMATIC_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VKAbund
+    struct VarKSomatic
     {
         struct Stats
         {

@@ -16,9 +16,9 @@
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
+#include "VarQuin/v_ksom.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_detect.hpp"
-#include "VarQuin/v_kabund.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_conjoint.hpp"
@@ -72,7 +72,6 @@ typedef std::set<Value> Range;
 #define OPT_L_CON    808
 #define OPT_L_CNV    809
 #define OPT_FUZZY    810
-#define OPT_L_GERM   811
 #define OPT_R_IND    812
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
@@ -129,7 +128,7 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
-    { "VarKAbund",      Tool::VarKAbund      },
+    { "VarKSomatic",    Tool::VarKSomatic    },
 
     { "MetaAbund",      Tool::MetaAbund      },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -158,7 +157,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarCopy,      { OPT_L_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKAbund,    { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON, OPT_L_GERM } },
+    { Tool::VarKSomatic,  { OPT_U_SEQS, OPT_L_CNV, OPT_L_CON, OPT_L_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_L_CON } },
@@ -302,7 +301,6 @@ static const struct option long_options[] =
     { "af",      required_argument, 0, OPT_L_AF   },  // Ladder for allele frequency
     { "cnv",     required_argument, 0, OPT_L_CNV  },  // Ladder for copy number variation
     { "con",     required_argument, 0, OPT_L_CON  },  // Ladder for conjoint k-mers
-    { "germ",    required_argument, 0, OPT_L_GERM },  // Ladder for germline mutations
     { "m",       required_argument, 0, OPT_MIXTURE }, // Ladder for other than VarQuin
     
     { "mix",     required_argument, 0, OPT_MIXTURE },
@@ -381,7 +379,7 @@ static Scripts manual(Tool tool)
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarSample:      { return VarSample();      }
-        case Tool::VarKAbund:      { return VarKAbund();      }
+        case Tool::VarKSomatic:    { return VarKAbund();      }
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
@@ -755,8 +753,7 @@ void parse(int argc, char ** argv)
             case OPT_TRIM:
             case OPT_L_AF:
             case OPT_L_CNV:
-            case OPT_L_CON:
-            case OPT_L_GERM: { _p.opts[opt] = val; break; }
+            case OPT_L_CON: { _p.opts[opt] = val; break; }
 
             case OPT_R_IND:
             case OPT_R_VCF:
@@ -1077,8 +1074,8 @@ void parse(int argc, char ** argv)
         case Tool::VarAlign:
         case Tool::VarDetect:
         case Tool::VarSample:
-        case Tool::VarKAbund:
         case Tool::VarSomatic:
+        case Tool::VarKSomatic:
         case Tool::VarConjoint:
         case Tool::VarStructure:
         {
@@ -1143,13 +1140,12 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case Tool::VarKAbund:
+                    case Tool::VarKSomatic:
                     {
                         readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_AF,   r);
                         readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_L_CON,  r);
                         readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_L_CON,  r);
                         readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_L_CNV,  r);
-                        readLad5(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_L_GERM, r);
                         break;
                     }
 
@@ -1162,7 +1158,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);                break; }
-                case Tool::VarKAbund:   { analyze_1<VKAbund>(OPT_U_SEQS);              break; }
+                case Tool::VarKSomatic: { analyze_1<VarKSomatic>(OPT_U_SEQS);          break; }
                 case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS);            break; }
                 case Tool::VarAlign:    { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 

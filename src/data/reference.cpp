@@ -414,7 +414,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::VarKAbund:
+        case Tool::VarKSomatic:
         {
             build(r.l1, r.l2, r.l3, r.l4, r.l5);
             break;

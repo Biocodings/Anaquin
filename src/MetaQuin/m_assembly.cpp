@@ -151,8 +151,8 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     std::stringstream ss;
-    ss << ((boost::format(format) % "ID"
-                                  % "InputContent"
+    ss << ((boost::format(format) % "Name"
+                                  % "Input"
                                   % "Contig"
                                   % "Match"
                                   % "Mismatch")) << std::endl;
@@ -192,7 +192,7 @@ Scripts MAssembly::generateQuins(const Stats &stats, const Options &o)
     std::stringstream ss;
     
     const auto format = "%1%\t%2%\t%3%\t%4%";
-    ss << (boost::format(format) % "ID" % "Length" % "Input" % "Sn").str() << std::endl;
+    ss << (boost::format(format) % "Name" % "Length" % "Input" % "Sn").str() << std::endl;
     
     const auto r1 = Standard::instance().r_meta.regs1();
     

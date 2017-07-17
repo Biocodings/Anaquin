@@ -31,7 +31,7 @@ namespace Anaquin
         VarSample,
         VarTrim,
         VarFlip,
-        VarKAbund,
+        VarKSomatic,
         VarStructure,
         VarConjoint,
         
