@@ -366,9 +366,8 @@ static Scripts manual(Tool tool)
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
-        case Tool::MetaSubsample:  { return MetaAbund();      }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
-        case Tool::MetaAbund:      { return MetaSubsample();  }
+        case Tool::MetaAbund:      { return MetaAbund();      }
         default:                   { return ""; }
     }
 }

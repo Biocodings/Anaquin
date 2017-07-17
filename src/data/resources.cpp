@@ -48,11 +48,7 @@ Scripts Manual()
     return ToString(data_manuals_anaquin_txt);
 }
 
-Scripts PlotFold()
-{
-    return ToString(src_r_plotFold_R);
-}
-
+Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }
 Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
 Scripts PlotConjoint() { return ToString(src_r_plotConjoint_R); }
@@ -74,7 +70,7 @@ Scripts VarKAbund()      { return ToString(data_manuals_VarKAbund_txt);    }
 Scripts VarSample()      { return ToString(data_manuals_VarSubsample_txt); }
 Scripts VarDetect()      { return ToString(data_manuals_VarDetect_txt);    }
 Scripts VarSomatic()     { return ToString(data_manuals_VarSomatic_txt);   }
-Scripts VarConjoint()    { return ToString(data_manuals_VarConjoint_txt); }
+Scripts VarConjoint()    { return ToString(data_manuals_VarConjoint_txt);  }
 Scripts VarStructure()   { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaAbund()      { return ToString(data_manuals_MetaAbund_txt);      }
@@ -83,10 +79,6 @@ Scripts MetaAssembly()   { return ToString(data_manuals_MetaAssembly_txt);   }
 
 Scripts PlotTROC()  { return ToString(src_r_plotTROC_R);  }
 Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
-
-/*
- * Variant Resources
- */
 
 Scripts PlotVGROC() { return ToString(src_r_plotVGROC_R); }
 Scripts PlotVCROC() { return ToString(src_r_plotVCROC_R); }

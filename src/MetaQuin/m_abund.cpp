@@ -148,14 +148,14 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
         case MAbund::Format::BAM:
         {
             format ="%1%\t%2%\t%3%\t%4%\t%5%";
-            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund" % "FPKM").str());
+            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed" % "FPKM").str());
             break;
         }
 
         case MAbund::Format::RayMeta:
         {
             format = "%1%\t%2%\t%3%\t%4%";
-            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Abund").str());
+            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed").str());
             break;
         }
     }
