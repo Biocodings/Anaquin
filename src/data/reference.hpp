@@ -41,20 +41,6 @@ namespace Anaquin
     };
     
     /*
-     * Generic template for a sequin. Specalized definitions expected to derive from this class.
-     */
-    
-    struct SequinData
-    {
-        inline bool operator<(const SequinID &x)  const { return this->id < x;  }
-        inline bool operator==(const SequinID &x) const { return this->id == x; }
-
-        SequinID id;
-
-        Locus l;
-    };
-
-    /*
      * Different rules how two positions can be compared
      */
 
@@ -82,7 +68,7 @@ namespace Anaquin
         std::shared_ptr<GTFData> g1;
     };
     
-    template <typename Data = SequinData> class Reference
+    class Reference
     {
         public:
 
@@ -92,8 +78,6 @@ namespace Anaquin
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
             inline SequinIDs seqsL3() const { return _l3->seqs; }
-            inline SequinIDs seqsL4() const { return _l4->seqs; }
-            inline SequinIDs seqsL5() const { return _l5->seqs; }
 
             inline Concent input1(const SequinID &x, Mixture m = Mix_1) const { return _l1->input(x, m); }
             inline Concent input2(const SequinID &x, Mixture m = Mix_1) const { return _l2->input(x, m); }
@@ -195,26 +179,6 @@ namespace Anaquin
 
             virtual void validate(Tool, const UserReference &) = 0;
 
-            struct MixtureData
-            {
-                MixtureData(const SequinID &id, Base length, Concent abund)
-                        : id(id), length(length), abund(abund) {}
-
-                inline bool operator<(const SequinID &id)  const { return this->id < id;  }
-                inline bool operator==(const SequinID &id) const { return this->id == id; }
-                
-                inline bool operator<(const MixtureData &x)  const { return id < x.id;  }
-                inline bool operator==(const MixtureData &x) const { return id == x.id; }
-
-                SequinID id;
-
-                // Length of the sequin
-                Base length;
-
-                // Amount of spiked-in abundance
-                Concent abund;
-            };
-
             template <typename T> std::vector<SequinID> merge(const std::set<T> &t1, const std::set<T> &t2)
             {
                 std::set<SequinID> x, y;
@@ -246,23 +210,6 @@ namespace Anaquin
                                       y.end(),
                                       std::back_inserter(inters));
 
-//                /*
-//                 * Construct a set of validated sequins. A valid sequin is one in which it's
-//                 * defined in both mixture and annoation.
-//                 */
-//            
-//                std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
-//                {
-//                    auto d = Data();
-//                              
-//                    d.id  = id;
-//                    
-//                    // Add a new entry for the validated sequin
-//                    _data[id] = d;
-//
-//                    A_ASSERT(!d.id.empty());
-//                });
-
                 return diffs;
             }
         
@@ -282,23 +229,13 @@ namespace Anaquin
         
             // Sequin ladder
             std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5;
-
-        
-        
-        
-        
-        
-        
-        
-            // Sequins
-           // std::map<SequinID, Data> _data;
     };
 
     /*
      * -------------------- Metagenomic Reference --------------------
      */
     
-    class MetaRef : public Reference<>
+    class MetaRef : public Reference
     {
         public:
             MetaRef();
@@ -317,7 +254,7 @@ namespace Anaquin
      * -------------------- Variant Reference --------------------
      */
     
-    class VarRef : public Reference<>
+    class VarRef : public Reference
     {
         public:
 
@@ -357,7 +294,7 @@ namespace Anaquin
     struct GeneData;
     struct TransData;
     
-    class RnaRef : public Reference<>
+    class RnaRef : public Reference
     {
         public:
 
