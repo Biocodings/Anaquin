@@ -75,7 +75,7 @@ namespace Anaquin
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : "geno";
+//           TODO:         t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : "geno";
                     
                     /*
                      * Eg: ENSG00000000003.14,0,NA,NA,NA,NA,NA

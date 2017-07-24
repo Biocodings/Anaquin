@@ -98,7 +98,9 @@ namespace Anaquin
                 
                 throw std::runtime_error("Region not found for " + id);
             }
-        
+
+            inline std::shared_ptr<GTFData> gtf() const { return _g1; }
+
             inline Chr2DInters regs1()  const { return _r1->inters();  }
             inline Chr2DInters regs2()  const { return _r2->inters();  }
             inline Chr2MInters mRegs1() const { return _r1->minters(); }
@@ -140,6 +142,11 @@ namespace Anaquin
                 _l2 = l2;
             }
 
+            inline void build(std::shared_ptr<GTFData> g1)
+            {
+                _g1 = g1;
+            }
+        
             inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<Ladder> l2, std::shared_ptr<GTFData> g1)
             {
                 _g1 = g1;
@@ -301,36 +308,6 @@ namespace Anaquin
             RnaRef();
 
             void readRef(const Reader &);
-
-            std::map<ChrID, Hist> histGene() const;
-            std::map<ChrID, Hist> histIsof() const;
-
-            Chr2MInters meInters(Strand str) const;
-            Chr2MInters ueInters() const;
-            Chr2MInters uiInters() const;
-
-            Base countLenSyn() const;
-            Base countLenGen() const;
-
-            Chr2MInters mergedExons() const;
-            MergedIntervals<> mergedExons(const ChrID &cID) const;
-
-            Counts countUExon(const ChrID &) const;
-            Counts countUExonSyn() const;
-            Counts countUExonGen() const;
-
-            Counts countUIntr(const ChrID &) const;
-            Counts countUIntrSyn() const;
-            Counts countUIntrGen() const;
-
-            Counts nGeneSyn() const;
-            Counts nGeneGen() const;
-
-            Counts countTransSyn() const;
-            Counts countTransGen() const;
-        
-            const GeneData  *findGene (const ChrID &, const GeneID &) const;
-            const TransData *findTrans(const ChrID &, const GeneID &) const;
 
         protected:
         

@@ -305,7 +305,7 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = __RData__;
-
+    
     const auto hasGen = __hasGen__;
     const auto sData  = stats.data.at(ChrIS);
     const auto gData  = hasGen ? stats.data.at("geno") : RAssembly::Stats::Data();

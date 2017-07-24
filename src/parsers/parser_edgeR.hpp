@@ -63,14 +63,14 @@ namespace Anaquin
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    if (s.findGene(ChrIS, t.gID))
-                    {
-                        t.cID = ChrIS;
-                    }
-                    else
-                    {
-                        t.cID = "geno";
-                    }
+//          TODO:          if (s.findGene(ChrIS, t.gID))
+//                    {
+//                        t.cID = ChrIS;
+//                    }
+//                    else
+//                    {
+//                        t.cID = "geno";
+//                    }
                     
                     if (toks[Field::PValue] == "NA" || toks[Field::LogFC] == "NA")
                     {

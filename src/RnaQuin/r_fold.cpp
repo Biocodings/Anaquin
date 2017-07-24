@@ -140,8 +140,8 @@ template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Func
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.hist = r.histGene(); break; }
-        case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
+        case Metrics::Gene:    { stats.hist = r.gtf()->histGene(); break; }
+        case Metrics::Isoform: { stats.hist = r.gtf()->histIsof(); break; }
     }
 
     assert(!stats.hist.empty());
@@ -226,12 +226,12 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : stats.data)
             {
-                const auto m = r.findTrans(ChrIS, i.first);
-                
-                // We should always find the gene identifier
-                A_ASSERT(m);
-                
-                g2f[m->gID] += i.second.obs;
+//   TODO: Fix             const auto m = r.findTrans(ChrIS, i.first);
+//                
+//                // We should always find the gene identifier
+//                A_ASSERT(m);
+//                
+//                g2f[m->gID] += i.second.obs;
             }
             
             stats = RFold::Stats();
@@ -285,14 +285,14 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
             case Metrics::Gene:
             {
                 fold = r.input2(id);
-                l = r.findGene(ChrIS, id)->l;
+//      TODO: Fix          l = r.findGene(ChrIS, id)->l;
                 break;
             }
 
             case Metrics::Isoform:
             {
                 fold = r.input1(id);
-                l = r.findTrans(ChrIS, id)->l;
+//      TODO: Fix          l = r.findTrans(ChrIS, id)->l;
                 break;
             }
         }

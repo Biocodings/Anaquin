@@ -93,14 +93,14 @@ namespace Anaquin
                     
                     if (x.cID == "-")
                     {
-                        if (r.findGene(ChrIS, x.gID) || r.findTrans(ChrIS, x.iID))
-                        {
-                            x.cID = ChrIS;
-                        }
-                        else
-                        {
-                            x.cID = "geno";
-                        }
+//            TODO: Fix this            if (r.findGene(ChrIS, x.gID) || r.findTrans(ChrIS, x.iID))
+//                        {
+//                            x.cID = ChrIS;
+//                        }
+//                        else
+//                        {
+//                            x.cID = "geno";
+//                        }
                     }
 
                     f(x, p);

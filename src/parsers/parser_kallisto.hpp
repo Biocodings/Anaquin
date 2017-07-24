@@ -79,15 +79,15 @@ namespace Anaquin
                     
                     d.id = toks[TargetID];
                     
-                    if (r.findTrans(ChrIS, d.id))
-                    {
-                        d.cID = ChrIS;
-                    }
-                    else
-                    {
-                        // We don't know exactly where it is...
-                        d.cID = "geno";
-                    }
+//       TODO:             if (r.findTrans(ChrIS, d.id))
+//                    {
+//                        d.cID = ChrIS;
+//                    }
+//                    else
+//                    {
+//                        // We don't know exactly where it is...
+//                        d.cID = "geno";
+//                    }
 
                     d.abund = s2d(toks[TPM]);
                     

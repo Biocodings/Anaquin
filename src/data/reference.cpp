@@ -54,136 +54,16 @@ template <typename T> IntersectResults intersect(const std::set<T> &t1, const st
 
 struct RnaRef::RnaRefImpl
 {
-    // Includes synthetic and genome
-    GTFData gData;
-    
-    // Intervals for the genes
-    std::map<ChrID, DIntervals<>> gInters;
+    // Empty Implementation
 };
 
 RnaRef::RnaRef() : _impl(new RnaRefImpl()) {}
-
-Counts RnaRef::countLenSyn() const
-{
-    return _impl->gData.countLenSyn();
-}
-
-Counts RnaRef::countLenGen() const
-{
-    return _impl->gData.countLenGen();
-}
-
-Counts RnaRef::countUExon(const ChrID &cID) const
-{
-    return _impl->gData.countUExon(cID);
-}
-
-Counts RnaRef::countUExonSyn() const
-{
-    return _impl->gData.countUExonSyn();
-}
-
-Counts RnaRef::countUExonGen() const
-{
-    return _impl->gData.countUExonGen();
-}
-
-Counts RnaRef::countUIntr(const ChrID &cID) const
-{
-    return _impl->gData.countUIntr(cID);
-}
-
-Counts RnaRef::countUIntrSyn() const
-{
-    return _impl->gData.countUIntrSyn();
-}
-
-Counts RnaRef::countUIntrGen() const
-{
-    return _impl->gData.countUIntrGen();
-}
-
-Counts RnaRef::nGeneSyn() const
-{
-    return _impl->gData.nGeneSyn();
-}
-
-Counts RnaRef::nGeneGen() const
-{
-    return _impl->gData.nGeneGen();
-}
-
-Counts RnaRef::countTransSyn() const
-{
-    return _impl->gData.countTransSyn();
-}
-
-Counts RnaRef::countTransGen() const
-{
-    return _impl->gData.countTransGen();
-}
-
-std::map<ChrID, Hist> RnaRef::histGene() const
-{
-    return _impl->gData.histGene();
-}
-
-std::map<ChrID, Hist> RnaRef::histIsof() const
-{
-    return _impl->gData.histIsof();
-}
-
-const TransData *RnaRef::findTrans(const ChrID &cID, const TransID &tID) const
-{
-    if (!_impl->gData.count(cID))
-    {
-        return nullptr;
-    }
-    
-    assert(!_impl->gData.at(cID).t2d.empty());
-    return _impl->gData.at(cID).t2d.count(tID) ? &(_impl->gData.at(cID).t2d[tID]) : nullptr;
-}
-
-const GeneData * RnaRef::findGene(const ChrID &cID, const GeneID &gID) const
-{
-    if (!_impl->gData.count(cID))
-    {
-        return nullptr;
-    }
-    
-    assert(!_impl->gData.at(cID).g2d.empty());
-    return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
-}
-
-MergedIntervals<> RnaRef::mergedExons(const ChrID &cID) const
-{
-    return _impl->gData.mergedExons(cID);
-}
-
-Chr2MInters RnaRef::mergedExons() const
-{
-    return _impl->gData.mergedExons();
-}
-
-Chr2MInters RnaRef::meInters(Strand str) const
-{
-    return _impl->gData.meInters(str);
-}
-
-Chr2MInters RnaRef::ueInters() const
-{
-    return _impl->gData.ueInters();
-}
-
-Chr2MInters RnaRef::uiInters() const
-{
-    return _impl->gData.uiInters();
-}
 
 void RnaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
+        case Tool::RnaAlign:      { build(r.g1);             break; }
         case Tool::RnaFoldChange: { build(r.l1, r.l2);       break; }
         case Tool::RnaExpress:    { build(r.l1, r.l2);       break; }
         case Tool::RnaAssembly:   { build(r.l1, r.l1, r.g1); break; }

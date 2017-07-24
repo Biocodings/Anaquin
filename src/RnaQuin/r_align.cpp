@@ -32,10 +32,11 @@ static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 static RAlign::Stats init()
 {
     const auto &r = Standard::instance().r_rna;
+    auto gtf = r.gtf();
 
     RAlign::Stats stats;
 
-    stats.iInters = r.uiInters();
+    stats.iInters = gtf->uiInters();
 
     /*
      * It's important to use meInters() rather than ueInters(). Due to alternative splicing, two
@@ -48,7 +49,7 @@ static RAlign::Stats init()
      * The exon intervals are actually merged intervals.
      */
 
-    stats.eInters = r.meInters(Strand::Either);
+    stats.eInters = gtf->meInters(Strand::Either);
 
     A_CHECK(stats.eInters.size(), "stats.eInters.size()");
     A_CHECK(stats.iInters.size(), "stats.iInters.size()");
@@ -59,10 +60,10 @@ static RAlign::Stats init()
         const auto &cID = i.first;
         
         // Number of unique reference exons
-        stats.data[cID].eLvl.nr() = r.countUExon(cID);
+        stats.data[cID].eLvl.nr() = gtf->countUExon(cID);
         
         // Number of unique reference introns
-        stats.data[cID].iLvl.m.nr() = r.countUIntr(cID);
+        stats.data[cID].iLvl.m.nr() = gtf->countUIntr(cID);
 
         /*
          * We'd like to know the length of the chromosome but we don't have the information.
@@ -83,7 +84,8 @@ static RAlign::Stats init()
 RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::Stats &)> f)
 {
     const auto &r = Standard::instance().r_rna;
-
+    auto gtf = r.gtf();
+    
     auto stats = init();
 
 #ifdef ANAQUIN_DEBUG
@@ -166,7 +168,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
             stats.sam.fp() += afp;
 
             stats.sem.tp() += x.eLvl.tp();
-            stats.sem.fn() += (r.countUExon(cID) - x.eLvl.tp());
+            stats.sem.fn() += (gtf->countUExon(cID) - x.eLvl.tp());
             
             stats.sim.fp() += ifp;
             stats.sim.tp() += itp;
@@ -185,7 +187,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
             stats.gam.fp() += afp;
 
             stats.gem.tp() += x.eLvl.tp();
-            stats.gem.fn() += (r.countUExon(cID) - x.eLvl.tp());
+            stats.gem.fn() += (gtf->countUExon(cID) - x.eLvl.tp());
 
             stats.gim.fp() += ifp;
             stats.gim.tp() += itp;
@@ -196,8 +198,8 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
         }
     }
     
-    stats.sem.fn() = r.countUExonSyn();
-    stats.gem.fn() = r.countUExonGen();
+    stats.sem.fn() = gtf->countUExonSyn();
+    stats.gem.fn() = gtf->countUExonGen();
 
     return stats;
 }
@@ -409,7 +411,8 @@ static void generateSummary(const FileName &file,
                             const RAlign::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
-    
+    auto gtf = r.gtf();
+
     o.logInfo("stats.gim.sn(): " + std::to_string(stats.gim.sn()));
     o.logInfo("stats.gbm.sn(): " + std::to_string(stats.gbm.sn()));
     
@@ -417,30 +420,30 @@ static void generateSummary(const FileName &file,
     #define S(x) (stats.data.count(ChrIS) ? toString(x) : "-")
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary()) % src                  // 1
-                                              % GTFRef()             // 2
-                                              % stats.nSeqs           // 3
-                                              % stats.nEndo           // 4
-                                              % stats.dilution()     // 5
-                                              % stats.nNA            // 6
-                                              % r.countUExonSyn()    // 7
-                                              % r.countUIntrSyn()    // 8
-                                              % r.countLenSyn()      // 9
-                                              % G(r.countUExonGen()) // 10
-                                              % G(r.countUIntrGen()) // 11
-                                              % G(r.countLenGen())   // 12
-                                              % stats.sn             // 13
-                                              % stats.ss             // 14
-                                              % G(stats.gn)          // 15
-                                              % G(stats.gs)          // 16
-                                              % S(stats.sim.sn())    // 17
-                                              % S(stats.sim.pc())    // 18
-                                              % S(stats.sbm.sn())    // 19
-                                              % S(stats.sbm.pc())    // 20
-                                              % G(stats.gim.sn())    // 21
-                                              % G(stats.gim.pc())    // 22
-                                              % G(stats.gbm.sn())    // 23
-                                              % G(stats.gbm.pc())    // 24
+    o.writer->write((boost::format(summary()) % src                     // 1
+                                              % GTFRef()                // 2
+                                              % stats.nSeqs             // 3
+                                              % stats.nEndo             // 4
+                                              % stats.dilution()        // 5
+                                              % stats.nNA               // 6
+                                              % gtf->countUExonSyn()    // 7
+                                              % gtf->countUIntrSyn()    // 8
+                                              % gtf->countLenSyn()      // 9
+                                              % G(gtf->countUExonGen()) // 10
+                                              % G(gtf->countUIntrGen()) // 11
+                                              % G(gtf->countLenGen())   // 12
+                                              % stats.sn                // 13
+                                              % stats.ss                // 14
+                                              % G(stats.gn)             // 15
+                                              % G(stats.gs)             // 16
+                                              % S(stats.sim.sn())       // 17
+                                              % S(stats.sim.pc())       // 18
+                                              % S(stats.sbm.sn())       // 19
+                                              % S(stats.sbm.pc())       // 20
+                                              % G(stats.gim.sn())       // 21
+                                              % G(stats.gim.pc())       // 22
+                                              % G(stats.gbm.sn())       // 23
+                                              % G(stats.gbm.pc())       // 24
                      ).str());
     o.writer->close();
 }
@@ -519,7 +522,8 @@ static void writeQuins(const FileName &file,
 {
     const auto &r = Standard::instance().r_rna;
 
-    const auto h2g = r.histGene();
+//    const auto h2g = r.histGene();
+    const auto h2g = r.gtf()->histGene();
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     o.writer->open(file);
@@ -617,7 +621,7 @@ static void writeQuins(const FileName &file,
                 const auto isn = im.count(gID) ? std::to_string(im.at(gID).sn()) : "-";
                 
                 o.writer->write((boost::format(format) % gID
-                                                       % r.findGene(cID, gID)->l.length()
+                                                       % "????" //r.findGene(cID, gID)->l.length()
                                                        % reads
                                                        % isn
                                                        % bm.at(gID).sn()).str());
