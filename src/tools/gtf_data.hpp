@@ -195,7 +195,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRNARevChr(cID) ? nGene(cID) : 0;
+                return isChrIS(cID) ? nGene(cID) : 0;
             });
         }
         
@@ -203,7 +203,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRNARevChr(cID) ? countTrans(cID) : 0;
+                return isChrIS(cID) ? countTrans(cID) : 0;
             });
         }
         
@@ -211,7 +211,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRNARevChr(cID) ? countUExon(cID) : 0;
+                return isChrIS(cID) ? countUExon(cID) : 0;
             });
         }
         
@@ -219,7 +219,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRNARevChr(cID) ? countUIntr(cID) : 0;
+                return isChrIS(cID) ? countUIntr(cID) : 0;
             });
         }
 
@@ -458,7 +458,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return isRNARevChr(cID) ? countLen(cID) : 0;
+                return isChrIS(cID) ? countLen(cID) : 0;
             });
         }
         
@@ -466,7 +466,7 @@ namespace Anaquin
         {
             return countMap(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return !isRNARevChr(cID) ? countLen(cID) : 0;
+                return !isChrIS(cID) ? countLen(cID) : 0;
             });
         }
     };
@@ -607,7 +607,7 @@ namespace Anaquin
                                                                    % id.l.start
                                                                    % id.l.end).str();
                     
-                    if (isRNARevChr(i.first) || id.l.length() >= MIN_INTRON_LEN)
+                    if (isChrIS(i.first) || id.l.length() >= MIN_INTRON_LEN)
                     {
                         if (!m_intrs.count(key))
                         {

@@ -32,7 +32,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
         // Don't count for multiple alignments
         if (x.isPrimary && x.isAligned)
         {
-            if (isRNARevChr(x.cID))
+            if (isChrIS(x.cID))
             {
                 stats.before.syn++;
             }
@@ -76,7 +76,7 @@ RSample::Stats RSample::stats(const FileName &file, const Options &o)
     o.info("Normalization: "    + std::to_string(stats.norm));
 
     // Perform subsampling
-    const auto r = Sampler::sample(file, stats.norm, o, [&](const ChrID &id) { return isRNARevChr(id); });
+    const auto r = Sampler::sample(file, stats.norm, o, [&](const ChrID &id) { return isChrIS(id); });
 
     stats.after = r.after;
 

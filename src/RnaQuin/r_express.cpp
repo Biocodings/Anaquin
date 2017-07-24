@@ -39,7 +39,7 @@ template <typename T> void update(RExpress::Stats &stats,
     const auto &r = Standard::instance().r_rna;
     const auto &l = r.seqsL1();
     
-    if (isRNARevChr(x.cID))
+    if (isChrIS(x.cID))
     {
         SequinID id;
         Concent  exp = NAN;
