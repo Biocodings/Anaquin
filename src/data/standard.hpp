@@ -28,8 +28,8 @@ namespace Anaquin
             static BedData readBED(const Reader &, Base trim = 0);
 
             // Add sequin regions in GTF format
-            static GTFData readGTF(const Reader &);
-        
+            static std::shared_ptr<GTFData> readGTF(const Reader &);
+
            /*
              * ---------------- RnaQuin analysis ----------------
              */

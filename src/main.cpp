@@ -371,11 +371,11 @@ static Scripts manual(Tool tool)
     }
 }
 
-template <typename F> void readGTF(F f, Option key, UserReference &r)
+static void readGTF(Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
-      //  r.g1 = std::shared_ptr<GTFData>(new GTFData(f(Reader(_p.opts[key]))));
+        r.g1 = Standard::readGTF(Reader(_p.opts[key]));
     }
 }
 
@@ -842,13 +842,13 @@ void parse(int argc, char ** argv)
                 {
                     case Tool::RnaAlign:
                     {
-                        readGTF(std::bind(&Standard::readGTF, &s, std::placeholders::_1), OPT_R_GTF, r);
+                        readGTF(OPT_R_GTF, r);
                         break;
                     }
 
                     case Tool::RnaAssembly:
                     {
-                        readGTF(std::bind(&Standard::readGTF, &s, std::placeholders::_1), OPT_R_GTF, r);
+                        readGTF(OPT_R_GTF, r);
                         readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
                         readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;                        

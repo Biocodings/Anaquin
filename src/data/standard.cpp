@@ -50,9 +50,9 @@ BedData Standard::readBED(const Reader &r, Base trim)
     return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o);
 }
 
-GTFData Standard::readGTF(const Reader &r)
+std::shared_ptr<GTFData> Standard::readGTF(const Reader &r)
 {
-    return gtfData(r);
+    return std::shared_ptr<GTFData>(new GTFData(gtfData(r)));
 }
 
 template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, Ladder x = Ladder())

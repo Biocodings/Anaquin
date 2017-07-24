@@ -1,13 +1,13 @@
 <b>Anaquin Manual</b>
 
 <b>NAME</b>
-    MetaAbund - Quantitative analysis of sequin abundance.
+    MetaCoverage - Quantitative analysis of sequin abundance.
 
 <b>DESCRIPTION</b>
-    MetaAbund can be used for analyzing sequin abundance within a library. Comparing the measured abundance
+    MetaCoverage can be used for analyzing sequin abundance within a library. Comparing the measured abundance
     relative to the known input concentrations provides an indication of the quantitative accuracy for measuring species.
     
-    Specifically, MetaAbund builds a linear model regressing the measured expression (dependent variable) with the input
+    Specifically, MetaCoverage builds a linear model regressing the measured expression (dependent variable) with the input
     concentration (independent variable; defined by the mixture). Singular Value Decomposition (SVD) is used to estimate
     the regression parameters, including:
     
@@ -16,7 +16,7 @@
        Coefficient of determination (R2) – indicates the amount of variation that can be accounted for by the linear model.
 
 <b>SUPPORT SOFTWARE</b>
-     MetaAbund is compatible with short-read aligners, including: BWA and Bowtie. In addition, the tool can be used in R
+     MetaCoverage is compatible with short-read aligners, including: BWA and Bowtie. In addition, the tool can be used in R
      for data visualization.
      
      Furthermore, the tool can be used for quantifying k-mer abundance. The current release supports RayMeta, future
@@ -28,11 +28,11 @@
 <b>USAGE EXAMPLE</b>
      Measure abundance by alignment:
 
-         anaquin MetaAbund -rmix reference.csv -usequin align.bam
+         anaquin MetaCoverage -rmix reference.csv -usequin align.bam
      
      Measure abundance by de-novo assembly:
 
-         anaquin MetaAbund -rmix reference.csv -usequin contigs.tsv -usequin align.psl
+         anaquin MetaCoverage -rmix reference.csv -usequin contigs.tsv -usequin align.psl
 
 <b>TOOL OPTIONS</b>
      Required:
@@ -45,5 +45,5 @@
         -mix = A     Mixture A or B?
 
 <b>OUTPUTS</b>
-     MetaAbund_summary.stats - gives the summary statistics
-     MetaAbund_sequins.csv   - gives detailed statistics for each sequin
+     MetaCoverage_summary.stats - gives the summary statistics
+     MetaCoverage_sequins.csv   - gives detailed statistics for each sequin
