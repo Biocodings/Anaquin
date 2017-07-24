@@ -28,7 +28,6 @@ static bool shouldAggregate(const RFold::Options &o)
 std::vector<std::string> RFold::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
-    
     std::vector<std::string> r;
     
     for (auto i = 0; i < qs.size(); i++)

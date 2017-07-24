@@ -206,7 +206,7 @@ void MetaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::MetaAbund:
+        case Tool::MetaCoverage:
         case Tool::MetaAssembly:  { build(r.l1, r.r1); break; }
         case Tool::MetaSubsample: { build(r.r1);       break; }
         default: { break; }

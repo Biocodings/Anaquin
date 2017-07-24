@@ -1,11 +1,11 @@
-#ifndef M_ABUND_HPP
-#define M_ABUND_HPP
+#ifndef M_COVERAGE_HPP
+#define M_COVERAGE_HPP
 
 #include "MetaQuin/MetaQuin.hpp"
 
 namespace Anaquin
 {
-    struct MAbund
+    struct MCoverage
     {
         struct Stats : public SequinStats, public AlignmentStats, public HistStats
         {
@@ -20,7 +20,7 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
-	    Options() {}
+            Options() {}
             Format format;
             Mixture mix = Mixture::Mix_1;
         };

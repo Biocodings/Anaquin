@@ -24,8 +24,7 @@
 #include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
-#include "MetaQuin/m_abund.hpp"
-#include "MetaQuin/m_sample.hpp"
+#include "MetaQuin/m_coverage.hpp"
 #include "MetaQuin/m_assembly.hpp"
 
 #include "parsers/parser_vcf.hpp"
@@ -130,7 +129,7 @@ static std::map<Value, Tool> _tools =
     { "VarFlip",        Tool::VarFlip        },
     { "VarKSomatic",    Tool::VarKSomatic    },
 
-    { "MetaAbund",      Tool::MetaAbund      },
+    { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
     { "MetaSubsample",  Tool::MetaSubsample  },
 };
@@ -166,8 +165,8 @@ static std::map<Tool, std::set<Option>> _options =
      * MetaQuin Analysis
      */
 
-    { Tool::MetaAssembly,   { OPT_R_BED,  OPT_R_LAD, OPT_U_SEQS } },
-    { Tool::MetaAbund,      { OPT_R_BED,  OPT_R_LAD, OPT_U_SEQS } }
+    { Tool::MetaAssembly, { OPT_R_BED, OPT_R_LAD, OPT_U_SEQS } },
+    { Tool::MetaCoverage, { OPT_R_BED, OPT_R_LAD, OPT_U_SEQS } }
 };
 
 /*
@@ -345,7 +344,7 @@ static Scripts manual(Tool tool)
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
     extern Scripts RnaFoldChange();
-    extern Scripts MetaAbund();
+    extern Scripts MetaCoverage();
     extern Scripts MetaAssembly();
     extern Scripts MetaSubsample();
     
@@ -367,7 +366,7 @@ static Scripts manual(Tool tool)
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
-        case Tool::MetaAbund:      { return MetaAbund();      }
+        case Tool::MetaCoverage:   { return MetaCoverage();   }
         default:                   { return ""; }
     }
 }
@@ -972,7 +971,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case Tool::MetaAbund:
+        case Tool::MetaCoverage:
         case Tool::MetaAssembly:
         case Tool::MetaSubsample:
         {
@@ -980,7 +979,7 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case Tool::MetaAbund:
+                case Tool::MetaCoverage:
                 {
                     readReg1(OPT_R_BED, r);
                     readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
@@ -1007,34 +1006,34 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case Tool::MetaAbund:
+                case Tool::MetaCoverage:
                 {
-                    MAbund::Options o;
+                    MCoverage::Options o;
                     
                     if (_p.seqs.size() == 1)
                     {
-                        o.format = MAbund::Format::BAM;
+                        o.format = MCoverage::Format::BAM;
                     }
                     else if (_p.seqs.size() == 2)
                     {
-                        o.format = MAbund::Format::RayMeta;
+                        o.format = MCoverage::Format::RayMeta;
                     }
                     else
                     {
                         throw UnknownFormatError();
                     }
                     
-                    analyze_n<MAbund>(o);
+                    analyze_n<MCoverage>(o);
                     break;
                 }
 
-                case Tool::MetaSubsample:
-                {
-                    MSample::Options o;
-                    o.p = _p.sampled;
-                    analyze_1<MSample>(OPT_U_SEQS, o);
-                    break;
-                }
+//                case Tool::MetaSubsample:
+//                {
+//                    MSample::Options o;
+//                    o.p = _p.sampled;
+//                    analyze_1<MSample>(OPT_U_SEQS, o);
+//                    break;
+//                }
 
                 case Tool::MetaAssembly:
                 {

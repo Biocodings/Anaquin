@@ -35,7 +35,7 @@ namespace Anaquin
         VarStructure,
         VarConjoint,
         
-        MetaAbund,
+        MetaCoverage,
         MetaAssembly,
         MetaSubsample,
     };

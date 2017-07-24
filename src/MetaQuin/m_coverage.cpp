@@ -1,14 +1,14 @@
 #include "data/standard.hpp"
-#include "MetaQuin/m_abund.hpp"
 #include "parsers/parser_bam.hpp"
+#include "MetaQuin/m_coverage.hpp"
 
 using namespace Anaquin;
 
-MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::Options &o)
+MCoverage::Stats MCoverage::analyze(const std::vector<FileName> &files, const Options &o)
 {
     const auto &r = Standard::instance().r_meta;
  
-    MAbund::Stats stats;
+    MCoverage::Stats stats;
     
     for (const auto &i : r.seqsL1())
     {
@@ -134,7 +134,7 @@ MAbund::Stats MAbund::analyze(const std::vector<FileName> &files, const MAbund::
     return stats;
 }
 
-static void writeQuins(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
+static void writeQuins(const FileName &file, const MCoverage::Stats &stats, const MCoverage::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
@@ -145,14 +145,14 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
     
     switch (o.format)
     {
-        case MAbund::Format::BAM:
+        case MCoverage::Format::BAM:
         {
             format ="%1%\t%2%\t%3%\t%4%\t%5%";
             o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed" % "FPKM").str());
             break;
         }
 
-        case MAbund::Format::RayMeta:
+        case MCoverage::Format::RayMeta:
         {
             format = "%1%\t%2%\t%3%\t%4%";
             o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed").str());
@@ -173,7 +173,7 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
         
         switch (o.format)
         {
-            case MAbund::Format::BAM:
+            case MCoverage::Format::BAM:
             {
                 // Normalized FPKM
                 measured = ((double)measured * pow(10, 9)) / (total * loc.length());
@@ -186,7 +186,7 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
         
         switch (o.format)
         {
-            case MAbund::Format::BAM:
+            case MCoverage::Format::BAM:
             {
                 o.writer->write((boost::format(format) % i.first
                                                        % loc.length()
@@ -196,7 +196,7 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
                 break;
             }
 
-            case MAbund::Format::RayMeta:
+            case MCoverage::Format::RayMeta:
             {
                 o.writer->write((boost::format(format) % i.first
                                                        % loc.length()
@@ -210,11 +210,11 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
     o.writer->close();
 }
 
-static Scripts generateRLinear(const FileName &src, const MAbund::Stats &stats, const MAbund::Options &o)
+static Scripts generateRLinear(const FileName &src, const MCoverage::Stats &stats, const MCoverage::Options &o)
 {
     switch (o.format)
     {
-        case MAbund::Format::BAM:
+        case MCoverage::Format::BAM:
         {
             return RWriter::createRLinear(src,
                                           o.work,
@@ -227,7 +227,7 @@ static Scripts generateRLinear(const FileName &src, const MAbund::Stats &stats, 
                                           true);
         }
 
-        case MAbund::Format::RayMeta:
+        case MCoverage::Format::RayMeta:
         {
             return RWriter::createRLinear(src,
                                           o.work,
@@ -242,7 +242,7 @@ static Scripts generateRLinear(const FileName &src, const MAbund::Stats &stats, 
     }
 }
 
-static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, const MAbund::Options &o)
+static Scripts generateSummary(const FileName &src, const MCoverage::Stats &stats, const MCoverage::Options &o)
 {
     // Defined in resources.cpp
     extern FileName LadRef();
@@ -250,7 +250,7 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
     const auto &r = Standard::instance().r_meta;
     const auto ls = stats.linear();
     
-    const auto format = "-------MetaAbund Output\n\n"
+    const auto format = "-------MetaCoverage Output\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference MetaQuin Annotations\n\n"
                         "       Synthetic: %2%\n"
@@ -290,36 +290,36 @@ static Scripts generateSummary(const FileName &src, const MAbund::Stats &stats, 
             ).str();
 }
 
-static void writeRLinear(const FileName &src, const MAbund::Stats &stats, const MAbund::Options &o)
+static void writeRLinear(const FileName &src, const MCoverage::Stats &stats, const MCoverage::Options &o)
 {
-    o.generate("MetaAbund_linear.R");
-    o.writer->open("MetaAbund_linear.R");
+    o.generate("MetaCoverage_linear.R");
+    o.writer->open("MetaCoverage_linear.R");
     o.writer->write(generateRLinear(src, stats, o));
     o.writer->close();
 }
 
-void MAbund::report(const std::vector<FileName> &files, const MAbund::Options &o)
+void MCoverage::report(const std::vector<FileName> &files, const MCoverage::Options &o)
 {
-    const auto stats = MAbund::analyze(files, o);
+    const auto stats = MCoverage::analyze(files, o);
     
     /*
-     * Generating MetaAbund_summary.stats
+     * Generating MetaCoverage_summary.stats
      */
     
-    o.generate("MetaAbund_summary.stats");
-    o.writer->open("MetaAbund_summary.stats");
+    o.generate("MetaCoverage_summary.stats");
+    o.writer->open("MetaCoverage_summary.stats");
     o.writer->write(generateSummary(files[0], stats, o));
     o.writer->close();
     
     /*
-     * Generating MetaAbund_sequins.csv
+     * Generating MetaCoverage_sequins.csv
      */
     
-    writeQuins("MetaAbund_sequins.csv", stats, o);
+    writeQuins("MetaCoverage_sequins.csv", stats, o);
     
     /*
-     * Generating MetaAbund_linear.R
+     * Generating MetaCoverage_linear.R
      */
     
-    writeRLinear("MetaAbund_sequins.csv", stats, o);
+    writeRLinear("MetaCoverage_sequins.csv", stats, o);
 }
