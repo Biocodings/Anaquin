@@ -395,14 +395,7 @@ static Scripts summary()
            "        Precision:   %18$.2f\n\n"
            "       *Base level\n"
            "        Sensitivity: %19$.2f\n"
-           "        Precision:   %20$.2f\n\n"
-           "-------Comparison of alignments to reference annotation (Genome)\n\n"
-           "       *Intron level\n"
-           "        Sensitivity: %21$.2f\n"
-           "        Precision:   %22$.2f\n\n"
-           "       *Base level\n"
-           "        Sensitivity: %23$.2f\n"
-           "        Precision:   %24$.2f\n";
+           "        Precision:   %20$.2f\n";
 }
 
 static void generateSummary(const FileName &file,
@@ -440,10 +433,6 @@ static void generateSummary(const FileName &file,
                                               % S(stats.sim.pc())       // 18
                                               % S(stats.sbm.sn())       // 19
                                               % S(stats.sbm.pc())       // 20
-                                              % G(stats.gim.sn())       // 21
-                                              % G(stats.gim.pc())       // 22
-                                              % G(stats.gbm.sn())       // 23
-                                              % G(stats.gbm.pc())       // 24
                      ).str());
     o.writer->close();
 }
