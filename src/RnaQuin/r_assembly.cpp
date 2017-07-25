@@ -281,7 +281,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void generateQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
+static void writeQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
     const auto format = "%1%\t%2%\t%3%";
@@ -302,7 +302,7 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
     o.writer->close();
 }   
 
-static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
+static void writeSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = __RData__;
     
@@ -436,13 +436,13 @@ void RAssembly::report(const FileName &file, const Options &o)
      * Generating RnaAssembly_summary.stats
      */
     
-    generateSummary(file, stats, o);
+    writeSummary(file, stats, o);
     
     /*
      * Generating RnaAssembly_quins.stats
      */
 
-    generateQuins("RnaAssembly_sequins.csv", stats, o);
+    writeQuins("RnaAssembly_sequins.csv", stats, o);
     
     /*
      * Generating RnaAssembly_assembly.R
@@ -454,7 +454,7 @@ void RAssembly::report(const FileName &file, const Options &o)
                                             "Assembly Detection",
                                             "Input Concentration (log2)",
                                             "Sensitivity",
-                                            "InputConcent",
+                                            "Input",
                                             "Sn",
                                             true));
     o.writer->close();

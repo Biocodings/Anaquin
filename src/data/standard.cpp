@@ -19,11 +19,10 @@ using namespace Anaquin;
 
 enum MixtureFormat
 {
-    Name_Mix,
-    Name_X_Mix,
-    Name_Len_X_Mix,
-    NUMU,
-    UNUM,
+    X_M,
+    X_X_M,
+    X_X_X_M,
+    X_M_X_M,
 };
 
 static unsigned countColumns(const Reader &r)
@@ -71,11 +70,10 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
             
             switch (format)
             {
-                case Name_Mix:       { x.add(d[0], m, stof(d[1])); break; }
-                case NUMU:           { x.add(d[0], m, stof(d[2])); break; }
-                case UNUM:           { x.add(d[1], m, stof(d[3])); break; }
-                case Name_X_Mix:     { x.add(d[0], m, stof(d[2])); break; }
-                case Name_Len_X_Mix: { x.add(d[0], m, stof(d[3])); break; }
+                case X_M:     { x.add(d[0], m, stof(d[1])); break; }
+                case X_M_X_M: { x.add(d[1], m, stof(d[3])); break; }
+                case X_X_M:   { x.add(d[0], m, stof(d[2])); break; }
+                case X_X_X_M: { x.add(d[0], m, stof(d[3])); break; }
             }
         }, delim);
         
@@ -93,39 +91,39 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
 Ladder Standard::addCNV(const Reader &r)
 {
     A_CHECK(countColumns(r) == 2, "Invalid mixture file for CNV ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Mix);
+    return readLadder(Reader(r), r_var, Mix_1, X_M);
 }
 
 Ladder Standard::addCon1(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, NUMU);
+    return readLadder(Reader(r), r_var, Mix_1, X_X_M);
 }
 
 Ladder Standard::addCon2(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, UNUM);
+    return readLadder(Reader(r), r_var, Mix_1, X_M_X_M);
 }
 
 Ladder Standard::addAF(const Reader &r)
 {
     A_CHECK(countColumns(r) == 2, "Invalid mixture file for allele frequnecy ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, Name_Mix);
+    return readLadder(Reader(r), r_var, Mix_1, X_M);
 }
 
 Ladder Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three or more columns.");
-    auto l = readLadder(Reader(r), r_meta, Mix_1, Name_Mix);
-    return readLadder(Reader(r), r_meta, Mix_2, Name_X_Mix, l);
+    auto l = readLadder(Reader(r), r_meta, Mix_1, X_M);
+    return readLadder(Reader(r), r_meta, Mix_2, X_X_M, l);
 }
 
 Ladder Standard::addIsoform(const Reader &r)
 {
-    A_CHECK(countColumns(r) == 3, "Invalid mixture file. Expected three columns.");
-    auto l = readLadder(Reader(r), r_rna, Mix_1, Name_Mix);
-    return readLadder(Reader(r), r_rna, Mix_2, Name_X_Mix, l);
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three columns.");
+    auto l = readLadder(Reader(r), r_rna, Mix_1, X_X_M);
+    return readLadder(Reader(r), r_rna, Mix_2, X_X_X_M, l);
 }
 
 Ladder Standard::addGene(const Reader &r)
