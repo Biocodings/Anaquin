@@ -38,6 +38,10 @@ namespace Anaquin
 
             Ladder readGene(const Reader &);
             Ladder readIsoform(const Reader &);
+
+            Ladder readGDiff(const Reader &);
+            Ladder readIDiff(const Reader &);
+
             Ladder readGeneL(const Reader &);
         
             RnaRef r_rna;

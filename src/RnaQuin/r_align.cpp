@@ -511,7 +511,6 @@ static void writeQuins(const FileName &file,
 {
     const auto &r = Standard::instance().r_rna;
 
-//    const auto h2g = r.histGene();
     const auto h2g = r.gtf()->histGene();
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 

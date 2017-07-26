@@ -132,6 +132,34 @@ Ladder Standard::readIsoform(const Reader &r)
     return readLadder(Reader(r), r_rna, Mix_2, X_X_X_M, l);
 }
 
+Ladder Standard::readIDiff(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three columns.");
+    auto l = readIsoform(r);
+    Ladder f;
+    
+    for (const auto &i : l.seqs)
+    {
+        f.add(i, Mix_1, log2(l.input(i, Mix_2) / l.input(i, Mix_1)));
+    }
+    
+    return f;
+}
+
+Ladder Standard::readGDiff(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three columns.");
+    auto l = readGene(r);
+    Ladder f;
+    
+    for (const auto &i : l.seqs)
+    {
+        f.add(i, Mix_1, log2(l.input(i, Mix_2) / l.input(i, Mix_1)));
+    }
+    
+    return f;
+}
+
 Ladder Standard::readGeneL(const Reader &r)
 {
     auto l = readLength(r);
@@ -190,5 +218,3 @@ Ladder Standard::readGene(const Reader &r)
 
     return genes;
 }
-
-

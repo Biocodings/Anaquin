@@ -75,9 +75,6 @@ namespace Anaquin
                 Probability q = NAN;
             };
             
-            // Histogram
-            std::map<ChrID, Hist> hist;
-            
             std::map<SequinID, Data> data;
             
             /*

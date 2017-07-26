@@ -56,7 +56,7 @@ namespace Anaquin
 
     struct UserReference
     {
-        std::shared_ptr<Ladder> l1, l2, l3, l4, l5;
+        std::shared_ptr<Ladder> l1, l2, l3, l4, l5, l6;
 
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;
@@ -84,6 +84,7 @@ namespace Anaquin
             inline Concent input3(const SequinID &x, Mixture m = Mix_1) const { return _l3->input(x, m); }
             inline Concent input4(const SequinID &x, Mixture m = Mix_1) const { return _l4->input(x, m); }
             inline Concent input5(const SequinID &x, Mixture m = Mix_1) const { return _l5->input(x, m); }
+            inline Concent input6(const SequinID &x, Mixture m = Mix_1) const { return _l6->input(x, m); }
         
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
@@ -145,12 +146,16 @@ namespace Anaquin
             inline void build(std::shared_ptr<Ladder> l1,
                               std::shared_ptr<Ladder> l2,
                               std::shared_ptr<Ladder> l3,
-                              std::shared_ptr<Ladder> l4)
+                              std::shared_ptr<Ladder> l4,
+                              std::shared_ptr<Ladder> l5,
+                              std::shared_ptr<Ladder> l6)
             {
                 _l1 = l1;
                 _l2 = l2;
                 _l3 = l3;
                 _l4 = l4;
+                _l5 = l5;
+                _l6 = l6;
             }
 
             inline void build(std::shared_ptr<GTFData> g1)
@@ -162,6 +167,8 @@ namespace Anaquin
                               std::shared_ptr<Ladder>  l2,
                               std::shared_ptr<Ladder>  l3,
                               std::shared_ptr<Ladder>  l4,
+                              std::shared_ptr<Ladder>  l5,
+                              std::shared_ptr<Ladder>  l6,
                               std::shared_ptr<GTFData> g1)
             {
                 _g1 = g1;
@@ -169,6 +176,8 @@ namespace Anaquin
                 _l2 = l2;
                 _l3 = l3;
                 _l4 = l4;
+                _l5 = l5;
+                _l6 = l6;
             }
         
             inline void build(std::shared_ptr<Ladder> l1,
@@ -251,8 +260,8 @@ namespace Anaquin
             // Sequin regions
             std::shared_ptr<GTFData> _g1;
         
-            // Sequin ladder
-            std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5;
+            // Sequin ladders
+            std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5, _l6;
     };
 
     /*

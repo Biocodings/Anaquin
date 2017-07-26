@@ -48,7 +48,7 @@ std::vector<std::string> RFold::classify(const std::vector<double> &qs, const st
     return r;
 }
 
-template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics metrs, const RFold::Options &o)
+template <typename T> void classify(RFold::Stats &stats, const T &t, Metrics metrs, const RFold::Options &o)
 {
     if (t.status == DiffTest::Status::NotTested)
     {
@@ -80,37 +80,33 @@ template <typename T> void classifySyn(RFold::Stats &stats, const T &t, Metrics 
     
     switch (metrs)
     {
-        case Metrics::Gene:
-        {
-//            assert(!t.gID.empty());
-//      TODO      const auto match = r.findGene(t.cID, t.gID);
-//            
-//            if (match)
-//            {
-//                stats.hist.at(t.cID).at(t.gID)++;
-//                f(t.gID, r.logFoldGene(t.gID));
-//            }
-//            else
-//            {
-//                o.warn(t.gID + " not found");
-//            }
-
-            break;
-        }
-
         case Metrics::Isoform:
         {
             assert(!t.iID.empty());
-            const auto match = r.input1(t.iID); // r.match(t.iID);
             
-            if (match)
+            if (r.seqsL1().count(t.gID))
             {
-                // dont need this line stats.hist.at(t.cID).at(t.iID)++;
-                // TOODf(t.iID, r.logFoldSeq(t.iID));
+                f(t.iID, r.input5(t.iID));
             }
             else
             {
                 o.warn(t.iID + " not found");
+            }
+            
+            break;
+        }
+            
+        case Metrics::Gene:
+        {
+            assert(!t.gID.empty());
+            
+            if (r.seqsL2().count(t.gID))
+            {
+                f(t.gID, r.input6(t.gID));
+            }
+            else
+            {
+                o.warn(t.gID + " not found");
             }
             
             break;
@@ -124,7 +120,7 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
     
     if (isChrIS(x.cID))
     {
-        classifySyn(stats, x, metrs, o);
+        classify(stats, x, metrs, o);
     }
     else
     {
@@ -134,20 +130,8 @@ template <typename T> void update(RFold::Stats &stats, const T &x, Metrics metrs
 
 template <typename Functor> RFold::Stats calculate(const RFold::Options &o, Functor f)
 {
-    const auto &r = Standard::instance().r_rna;
-
     RFold::Stats stats;
-
-    switch (o.metrs)
-    {
-        case Metrics::Gene:    { stats.hist = r.gtf()->histGene(); break; }
-        case Metrics::Isoform: { stats.hist = r.gtf()->histIsof(); break; }
-    }
-
-    assert(!stats.hist.empty());
-
-    f(stats);
-    
+    f(stats);    
     return stats;
 }
 
@@ -226,12 +210,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : stats.data)
             {
-//   TODO: Fix             const auto m = r.findTrans(ChrIS, i.first);
-//                
-//                // We should always find the gene identifier
-//                A_ASSERT(m);
-//                
-//                g2f[m->gID] += i.second.obs;
+                g2f[isoform2Gene(i.first)] += i.second.obs;
             }
             
             stats = RFold::Stats();
@@ -270,29 +249,29 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
                                  % "SD"
                                  % "Pval"
                                  % "Qval"
-                                 % "Mean").str();
+                                 % "Mean").str() << std::endl;
     
     const auto ids = o.metrs == RFold::Metrics::Gene ? r.seqsL2() : r.seqsL1();
 
     // For each sequin gene or isoform...
     for (const auto id : ids)
     {
-        Locus l;
+        Base l;
         LogFold fold;
 
         switch (o.metrs)
         {
-            case Metrics::Gene:
-            {
-                fold = r.input2(id);
-//      TODO: Fix          l = r.findGene(ChrIS, id)->l;
-                break;
-            }
-
             case Metrics::Isoform:
             {
-                fold = r.input1(id);
-//      TODO: Fix          l = r.findTrans(ChrIS, id)->l;
+                fold = r.input5(id);
+                l = r.input3(id);
+                break;
+            }
+                
+            case Metrics::Gene:
+            {
+                fold = r.input6(id);
+                l = r.input4(id);
                 break;
             }
         }
@@ -301,7 +280,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         if (!stats.data.count(id) || isnan(stats.data.at(id).obs))
         {
             ss << (boost::format(format) % id
-                                         % l.length()
+                                         % l
                                          % "NA"
                                          % "NA"
                                          % toString(fold)
@@ -317,7 +296,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         A_ASSERT(fold == x.exp);
         
         ss << (boost::format(format) % id
-                                     % l.length()
+                                     % l
                                      % toString(x.samp1)
                                      % toString(x.samp2)
                                      % toString(fold)
@@ -396,9 +375,6 @@ Scripts RFold::generateSummary(const FileName &src,
 
 Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, const RFold::Options &o)
 {
-    //const auto extra = o.format == Format::DESeq2 ? ", std=data$SD" : "";
-    const auto extra = o.format == Format::DESeq2 ? "" : "";
-
     return RWriter::createFold(csv,
                                o.work,
                                o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
@@ -406,8 +382,7 @@ Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, con
                                "Measured fold change (log2)",
                                "ExpLFC",
                                "ObsLFC",
-                               false,
-                               extra);
+                               false);
 }
 
 void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)

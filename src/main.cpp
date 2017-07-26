@@ -379,7 +379,7 @@ static void readGTF(Option key, UserReference &r)
     }
 }
 
-template <typename F> void readLad1(F f, Option key, UserReference &r)
+template <typename F> void readL1(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
@@ -387,7 +387,7 @@ template <typename F> void readLad1(F f, Option key, UserReference &r)
     }
 }
 
-template <typename F> void readLad2(F f, Option key, UserReference &r)
+template <typename F> void readL2(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
@@ -395,7 +395,7 @@ template <typename F> void readLad2(F f, Option key, UserReference &r)
     }
 }
 
-template <typename F> void readLad3(F f, Option key, UserReference &r)
+template <typename F> void readL3(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
@@ -403,7 +403,7 @@ template <typename F> void readLad3(F f, Option key, UserReference &r)
     }
 }
 
-template <typename F> void readLad4(F f, Option key, UserReference &r)
+template <typename F> void readL4(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
@@ -411,11 +411,19 @@ template <typename F> void readLad4(F f, Option key, UserReference &r)
     }
 }
 
-template <typename F> void readLad5(F f, Option key, UserReference &r)
+template <typename F> void readL5(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
     {
         r.l5 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
+    }
+}
+
+template <typename F> void readL6(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.l6 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
     }
 }
 
@@ -849,20 +857,24 @@ void parse(int argc, char ** argv)
                     case Tool::RnaAssembly:
                     {
                         readGTF(OPT_R_GTF, r);
-                        readLad1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL5(std::bind(&Standard::readIDiff,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL6(std::bind(&Standard::readGDiff,   &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;
                     }
 
                     case Tool::RnaExpress:
                     case Tool::RnaFoldChange:
                     {
-                        readLad1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL5(std::bind(&Standard::readIDiff,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readL6(std::bind(&Standard::readGDiff,   &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;
                     }
 
@@ -986,14 +998,14 @@ void parse(int argc, char ** argv)
                 case Tool::MetaCoverage:
                 {
                     readReg1(OPT_R_BED, r);
-                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
+                    readL1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
                 case Tool::MetaAssembly:
                 {
                     readReg1(OPT_R_BED, r);
-                    readLad1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
+                    readL1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
@@ -1093,14 +1105,14 @@ void parse(int argc, char ** argv)
 
                     case Tool::VarConjoint:
                     {
-                        readLad1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readLad2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readL1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readL2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
                         break;
                     }
 
                     case Tool::VarCopy:
                     {
-                        readLad1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
+                        readL1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                         break;
@@ -1130,10 +1142,10 @@ void parse(int argc, char ** argv)
                         
                     case Tool::VarKSomatic:
                     {
-                        readLad1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_R_AF,  r);
-                        readLad2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readLad3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readLad4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_R_CNV, r);
+                        readL1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_R_AF,  r);
+                        readL2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readL3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readL4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_R_CNV, r);
                         break;
                     }
 

@@ -18,9 +18,6 @@ ylab  <- '%7%'
 expected <- %8%
 
 # Measured log-fold (y-axis)
-measured <- %9%
+measured <- %9%%11%
 
-# Create Anaquin data for PlotLinear
-anaquin <- AnaquinData(analysis='PlotLinear', seqs=row.names(data), input=expected, measured=measured%11%)
-
-plotLinear(anaquin, title=title, xlab=xlab, ylab=ylab, showAxis=%10%, showLOQ=FALSE)
+plotLinear(row.names(data), expected, measured, title=title, xlab=xlab, ylab=ylab, showAxis=%10%, showLOQ=FALSE)

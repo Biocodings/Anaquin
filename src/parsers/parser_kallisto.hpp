@@ -60,8 +60,6 @@ namespace Anaquin
         {
             protectParse("Kallisto format", [&]()
             {
-                const auto &r = Standard::instance().r_rna;
-
                 Data d;
                 ParserProgress p;
                 
@@ -77,18 +75,8 @@ namespace Anaquin
                     
                     Tokens::split(line, "\t", toks);
                     
-                    d.id = toks[TargetID];
-                    
-//       TODO:             if (r.findTrans(ChrIS, d.id))
-//                    {
-//                        d.cID = ChrIS;
-//                    }
-//                    else
-//                    {
-//                        // We don't know exactly where it is...
-//                        d.cID = "geno";
-//                    }
-
+                    d.id    = toks[TargetID];
+                    d.cID   = Standard::instance().r_rna.seqsL1().count(d.id) ? ChrIS : "endo";
                     d.abund = s2d(toks[TPM]);
                     
                     f(d, p);

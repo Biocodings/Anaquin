@@ -57,9 +57,6 @@ namespace Anaquin
             std::string line;
             std::vector<std::string> toks;
             
-            // We'll need it for checking sequin genes
-            const auto &s = Standard::instance().r_rna;
-            
             while (r.nextLine(line))
             {
                 Tokens::split(line, ",", toks);
@@ -69,13 +66,7 @@ namespace Anaquin
                 if (p.i)
                 {
                     t.gID = toks[Field::Name];
-                    
-                    /*
-                     * DESeq2 wouldn't give the chromosomes, only the gene names.
-                     * We have to consult the reference annotation to make a decision.
-                     */
-                    
-//           TODO:         t.cID = s.findGene(ChrIS, t.gID) ? ChrIS : "geno";
+                    t.cID = Standard::instance().r_rna.seqsL2().count(t.gID) ? ChrIS : "endo";
                     
                     /*
                      * Eg: ENSG00000000003.14,0,NA,NA,NA,NA,NA

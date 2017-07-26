@@ -11,11 +11,6 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Classify sequins against the negative controls (LFC 0)
-data$label <- ifelse(abs(data$ExpLFC) <= 0, '0', '1')
+data$Label <- ifelse(abs(data$ExpLFC) <= 0, 'FP', 'TP')
 
-title <- 'ROC Plot'
-
-# Create Anaquin data for PlotROC
-anaquin <- AnaquinData(analysis='PlotROC', seqs=row.names(data), ratio=data$ExpLFC, measured=data$ObsLFC, score=1-data$Pval, label=data$label)
-
-plotROC(anaquin, title=title, refRats=0)
+plotROC(row.names(data), 1-data$Pval, abs(data$ExpLFC), data$Label, refGroup=0, title='ROC Plot')
