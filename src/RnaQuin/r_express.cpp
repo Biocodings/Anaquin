@@ -98,7 +98,7 @@ template <typename T> void update(RExpress::Stats &stats,
         }
 
         /*
-         * A sequin that has zero or invalid measurement is equivalenet being undetected.
+         * Sequin that has zero or invalid measurement is equivalenet being undetected.
          */
         
         if (!isnan(exp))
@@ -472,7 +472,7 @@ void RExpress::writeSummary(const FileName &file,
     o.writer->close();
 }
 
-Scripts RExpress::generateRLinear(const FileName &csv,
+Scripts RExpress::generateRLinear(const FileName &file,
                                   const std::vector<RExpress::Stats> &stats,
                                   const RExpress::Options &o)
 {
@@ -489,19 +489,19 @@ Scripts RExpress::generateRLinear(const FileName &csv,
 
     if (stats.size() == 1)
     {
-        return RWriter::createRLinear(csv,
+        return RWriter::createRLinear(file,
                                       o.work,
                                       title,
                                       "Input Concentration (log2)",
                                        measured + " (log2)",
                                       "log2(data$Input)",
-                                      "log2(data[,3:ncol(data)])",
+                                      "log2(data$Observed)",
                                       "input",
                                        true);
     }
     else
     {
-        return RWriter::createRLinear(csv,
+        return RWriter::createRLinear(file,
                                       o.work,
                                       title,
                                       "Input Concentration (log2)",

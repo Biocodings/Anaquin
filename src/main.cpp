@@ -114,7 +114,7 @@ static std::map<Value, Tool> _tools =
 
     { "RnaAlign",       Tool::RnaAlign       },
     { "RnaAssembly",    Tool::RnaAssembly    },
-    { "RnaExpress",     Tool::RnaExpress     },
+    { "RnaExpression",  Tool::RnaExpress     },
     { "RnaFoldChange",  Tool::RnaFoldChange  },
     { "RnaSubsample",   Tool::RnaSubsample   },
 
