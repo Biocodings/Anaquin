@@ -88,6 +88,12 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
     return x;
 }
 
+Ladder Standard::readLength(const Reader &r)
+{
+    A_CHECK(countColumns(r) >= 2, "Invalid mixture file. Expected two or more columns.");
+    return readLadder(Reader(r), r_rna, Mix_1, X_M);
+}
+
 Ladder Standard::addCNV(const Reader &r)
 {
     A_CHECK(countColumns(r) == 2, "Invalid mixture file for CNV ladder.");
@@ -119,16 +125,44 @@ Ladder Standard::addMMix(const Reader &r)
     return readLadder(Reader(r), r_meta, Mix_2, X_X_M, l);
 }
 
-Ladder Standard::addIsoform(const Reader &r)
+Ladder Standard::readIsoform(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three columns.");
     auto l = readLadder(Reader(r), r_rna, Mix_1, X_X_M);
     return readLadder(Reader(r), r_rna, Mix_2, X_X_X_M, l);
 }
 
-Ladder Standard::addGene(const Reader &r)
+Ladder Standard::readGeneL(const Reader &r)
 {
-    auto l = addIsoform(r);
+    auto l = readLength(r);
+    
+    // Ladder for genes
+    Ladder genes;
+    
+    auto aggregate = [&](Mixture m)
+    {
+        for (const auto &i : l.seqs)
+        {
+            const auto gene = isoform2Gene(i);
+            
+            if (genes.seqs.count(gene))
+            {
+                genes.add(gene, m, std::max(l.input(i, Mix_1), genes.input(gene, m)));
+            }
+            else
+            {
+                genes.add(gene, m, l.input(i, Mix_1));
+            }
+        }
+    };
+    
+    aggregate(Mix_1);
+    return genes;
+}
+
+Ladder Standard::readGene(const Reader &r)
+{
+    auto l = readIsoform(r);
     
     // Ladder for genes
     Ladder genes;

@@ -63,10 +63,10 @@ void RnaRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::RnaAlign:      { build(r.g1);             break; }
-        case Tool::RnaFoldChange: { build(r.l1, r.l2);       break; }
-        case Tool::RnaExpress:    { build(r.l1, r.l2);       break; }
-        case Tool::RnaAssembly:   { build(r.l1, r.l1, r.g1); break; }
+        case Tool::RnaAlign:      { build(r.g1); break; }
+        case Tool::RnaFoldChange:
+        case Tool::RnaExpress:    { build(r.l1, r.l2, r.l3, r.l4);       break; }
+        case Tool::RnaAssembly:   { build(r.l1, r.l2, r.l3, r.l4, r.g1); break; }
         default:                  { break; }
     }
 }

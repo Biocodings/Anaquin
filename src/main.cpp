@@ -849,16 +849,20 @@ void parse(int argc, char ** argv)
                     case Tool::RnaAssembly:
                     {
                         readGTF(OPT_R_GTF, r);
-                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_R_LAD, r);
-                        break;                        
+                        readLad1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
+                        break;
                     }
-                        
+
                     case Tool::RnaExpress:
                     case Tool::RnaFoldChange:
                     {
-                        readLad1(std::bind(&Standard::addIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
-                        readLad2(std::bind(&Standard::addGene, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad1(std::bind(&Standard::readIsoform, &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad2(std::bind(&Standard::readGene,    &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad3(std::bind(&Standard::readLength,  &s, std::placeholders::_1), OPT_R_LAD, r);
+                        readLad4(std::bind(&Standard::readGeneL,   &s, std::placeholders::_1), OPT_R_LAD, r);
                         break;
                     }
 

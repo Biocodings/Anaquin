@@ -30,13 +30,16 @@ namespace Anaquin
             // Add sequin regions in GTF format
             static std::shared_ptr<GTFData> readGTF(const Reader &);
 
+            Ladder readLength(const Reader &);
+        
            /*
              * ---------------- RnaQuin analysis ----------------
              */
 
-            Ladder addGene(const Reader &);
-            Ladder addIsoform(const Reader &);
-
+            Ladder readGene(const Reader &);
+            Ladder readIsoform(const Reader &);
+            Ladder readGeneL(const Reader &);
+        
             RnaRef r_rna;
 
             /*

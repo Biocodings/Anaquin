@@ -142,16 +142,33 @@ namespace Anaquin
                 _l2 = l2;
             }
 
+            inline void build(std::shared_ptr<Ladder> l1,
+                              std::shared_ptr<Ladder> l2,
+                              std::shared_ptr<Ladder> l3,
+                              std::shared_ptr<Ladder> l4)
+            {
+                _l1 = l1;
+                _l2 = l2;
+                _l3 = l3;
+                _l4 = l4;
+            }
+
             inline void build(std::shared_ptr<GTFData> g1)
             {
                 _g1 = g1;
             }
         
-            inline void build(std::shared_ptr<Ladder> l1, std::shared_ptr<Ladder> l2, std::shared_ptr<GTFData> g1)
+            inline void build(std::shared_ptr<Ladder>  l1,
+                              std::shared_ptr<Ladder>  l2,
+                              std::shared_ptr<Ladder>  l3,
+                              std::shared_ptr<Ladder>  l4,
+                              std::shared_ptr<GTFData> g1)
             {
                 _g1 = g1;
                 _l1 = l1;
                 _l2 = l2;
+                _l3 = l3;
+                _l4 = l4;
             }
         
             inline void build(std::shared_ptr<Ladder> l1,

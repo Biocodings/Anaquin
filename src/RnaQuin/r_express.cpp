@@ -296,6 +296,8 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
 
 static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics metrs)
 {
+    const auto &r = Standard::instance().r_rna;
+    
     std::set<SequinID> seqs;
     
     // This is the data structure that will be useful
@@ -305,7 +307,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     std::map<SequinID, Concent> expect;
     
     std::stringstream ss;
-    ss << "ID\tInput";
+    ss << "ID\tInput\tLength";
     
     for (auto i = 0; i < stats.size(); i++)
     {
@@ -327,7 +329,10 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats, Metrics me
     
     for (const auto &seq : seqs)
     {
-        ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
+        ss << ((boost::format("%1%\t%2%\t%3%") % seq
+                                               % expect.at(seq)
+                                               % (metrs == Metrics::Isoform ? r.input3(seq) : r.input4(seq))
+                ).str());
         
         for (auto i = 0; i < stats.size(); i++)
         {
@@ -526,18 +531,21 @@ void RExpress::writeRLinear(const FileName &file,
 
 Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
 {
+    const auto &r = Standard::instance().r_rna;
+    
     if (stats.size() == 1)
     {
         std::stringstream ss;
         
-        const auto format = "%1%\t%2%\t%3%\n";
-        ss << (boost::format(format) % "ID" % "Input" % "Observed").str();
+        const auto format = "%1%\t%2%\t%3%\t%4%\n";
+        ss << (boost::format(format) % "ID" % "Length" % "Input" % "Observed").str();
         
-        auto &x = o.metrs == RExpress::Metrics::Isoform ? stats[0].isos : stats[0].genes;
+        auto &x = o.metrs == Metrics::Isoform ? stats[0].isos : stats[0].genes;
         
         for (const auto &i : x)
         {
             ss << (boost::format(format) % i.first
+                                         % (o.metrs == Metrics::Isoform ? r.input3(i.first) : r.input4(i.first))
                                          % i.second.x
                                          % i.second.y).str();
         }
