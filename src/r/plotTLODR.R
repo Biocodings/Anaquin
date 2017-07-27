@@ -29,7 +29,4 @@ ratio <- data$ExpLFC
 # Measured p-value
 pval <- data$Pval
 
-# Measured q-value
-qval <- data$Qval
-
-plotLODR(measured, pval, abs(ratio), qval=qval, xlab=xlab, ylab=ylab, title=title, FDR=FDR, legTitle='LFC')
+plotLOD(measured, pval, abs(ratio), xlab=xlab, ylab=ylab, title=title, FDR=FDR, legTitle='LFC')
