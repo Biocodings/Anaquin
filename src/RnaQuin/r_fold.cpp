@@ -281,14 +281,14 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
         {
             ss << (boost::format(format) % id
                                          % l
-                                         % "NA"
-                                         % "NA"
+                                         % "-"
+                                         % "-"
                                          % toString(fold)
-                                         % "NA"
-                                         % "NA"
-                                         % "NA"
-                                         % "NA"
-                                         % "NA").str() << std::endl;
+                                         % "-"
+                                         % "-"
+                                         % "-"
+                                         % "-"
+                                         % "-").str() << std::endl;
             continue;
         }
         
