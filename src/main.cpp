@@ -1032,6 +1032,7 @@ void parse(int argc, char ** argv)
                 case Tool::MetaCoverage:
                 {
                     MCoverage::Options o;
+                    o.mix = _p.mix;
                     
                     if (_p.seqs.size() == 1)
                     {
@@ -1050,18 +1051,11 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-//                case Tool::MetaSubsample:
-//                {
-//                    MSample::Options o;
-//                    o.p = _p.sampled;
-//                    analyze_1<MSample>(OPT_U_SEQS, o);
-//                    break;
-//                }
-
                 case Tool::MetaAssembly:
                 {
                     MAssembly::Options o;
-
+                    o.mix = _p.mix;
+                    
                     // This is the only supporting format
                     o.format = MAssembly::Format::Blat;
 

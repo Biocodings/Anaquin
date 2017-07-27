@@ -22,6 +22,8 @@ namespace Anaquin
         {
             Options() {}
             Format format;
+
+            // Mixture A or mixture B?
             Mixture mix = Mixture::Mix_1;
         };
 
