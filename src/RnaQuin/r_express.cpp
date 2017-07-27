@@ -73,7 +73,6 @@ template <typename T> void update(RExpress::Stats &stats,
             case Metrics::Gene:
             {
                 const auto m = r.seqsL1().count(x.id);
-                //const auto m = r.findGene(x.cID, x.id);
                 
                 if (m)
                 {

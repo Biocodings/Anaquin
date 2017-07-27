@@ -295,7 +295,7 @@ static void writeQuins(const FileName &file, const RAssembly::Stats &stats, cons
     for (const auto &i : stats.tSPs)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % r.input1(i.first)
+                                               % r.input1(i.first, o.mix)
                                                % (stats.tSPs.at(i.first) / 100.0)).str());
     }
     

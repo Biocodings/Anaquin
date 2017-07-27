@@ -13,7 +13,10 @@ namespace Anaquin
 {
     struct RAssembly : Analyzer
     {
-        typedef FuzzyOptions Options;
+        struct Options : FuzzyOptions
+        {
+            Mixture mix = Mixture::Mix_1;
+        };
         
         struct Stats
         {

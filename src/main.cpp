@@ -887,7 +887,13 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_SEQS);    break; }
-                case Tool::RnaAssembly: { analyze_1<RAssembly>(OPT_U_SEQS); break; }
+                case Tool::RnaAssembly:
+                {
+                    RAssembly::Options o;
+                    o.mix = _p.mix;
+                    analyze_1<RAssembly>(OPT_U_SEQS, o);                    
+                    break;
+                }
 
                 case Tool::RnaSubsample:
                 {
@@ -900,6 +906,7 @@ void parse(int argc, char ** argv)
                 case Tool::RnaExpress:
                 {
                     RExpress::Options o;
+                    o.mix = _p.mix;
                     
                     if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
                     {
