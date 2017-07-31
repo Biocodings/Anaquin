@@ -842,6 +842,7 @@ void parse(int argc, char ** argv)
         }
 
         case Tool::RnaAlign:
+        case Tool::RnaReport:
         case Tool::RnaExpress:
         case Tool::RnaAssembly:
         case Tool::RnaSubsample:
