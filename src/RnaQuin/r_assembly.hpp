@@ -15,6 +15,7 @@ namespace Anaquin
     {
         struct Options : FuzzyOptions
         {
+            Options() {}
             Mixture mix = Mixture::Mix_1;
         };
         
