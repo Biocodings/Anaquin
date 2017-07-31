@@ -84,7 +84,7 @@ template <typename T> void classify(RFold::Stats &stats, const T &t, Metrics met
         {
             assert(!t.iID.empty());
             
-            if (r.seqsL1().count(t.gID))
+            if (r.seqsL1().count(t.iID))
             {
                 f(t.iID, r.input5(t.iID));
             }
@@ -219,8 +219,8 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
             {
                 stats.nSeqs++;
                 stats.data[i.first].obs = i.second;
-                stats.data[i.first].exp = r.input2(i.first);
-                stats.add(i.first, i.second, r.input2(i.first));
+                stats.data[i.first].exp = r.input6(i.first);
+                stats.add(i.first, i.second, r.input6(i.first));
             }
         }
     });
