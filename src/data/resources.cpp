@@ -18,6 +18,7 @@
 #include "resources/VarSubsample.txt"
 
 #include "resources/RnaAlign.txt"
+#include "resources/RnaReport.txt"
 #include "resources/RnaAssembly.txt"
 #include "resources/RnaSubsample.txt"
 #include "resources/RnaExpression.txt"
@@ -39,6 +40,8 @@
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
 
+#include "resources/report.py"
+
 typedef std::string Scripts;
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
@@ -57,6 +60,7 @@ Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
 Scripts RnaAlign()      { return ToString(data_manuals_RnaAlign_txt);      }
+Scripts RnaReport()     { return ToString(data_manuals_RnaReport_txt);     }
 Scripts RnaSubsample()  { return ToString(data_manuals_RnaSubsample_txt);  }
 Scripts RnaAssembly()   { return ToString(data_manuals_RnaAssembly_txt);   }
 Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
@@ -82,3 +86,5 @@ Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
 
 Scripts PlotVGROC() { return ToString(src_r_plotVGROC_R); }
 Scripts PlotVCROC() { return ToString(src_r_plotVCROC_R); }
+
+Scripts PythonReport() { return ToString(scripts_report_py); }

@@ -23,6 +23,7 @@ namespace Anaquin
         RnaExpress,
         RnaFoldChange,
         RnaSubsample,
+        RnaReport,
         
         VarCopy,
         VarAlign,

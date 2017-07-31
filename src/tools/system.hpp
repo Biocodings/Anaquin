@@ -16,6 +16,7 @@ namespace Anaquin
         static bool isEmpty(const FileName& file);
 
         static void runCmd(const std::string &);
+        static void runScript(const std::string &, const std::string &);
         
         static FileName tmpFile();
 

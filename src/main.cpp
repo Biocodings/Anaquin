@@ -9,6 +9,7 @@
 
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
+#include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
@@ -72,6 +73,7 @@ typedef std::set<Value> Range;
 #define OPT_R_CNV    809
 #define OPT_FUZZY    810
 #define OPT_R_LAD    811
+#define OPT_R_IND    812
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
 #define OPT_EDGE     817
@@ -114,6 +116,7 @@ static std::map<Value, Tool> _tools =
 
     { "RnaAlign",       Tool::RnaAlign       },
     { "RnaAssembly",    Tool::RnaAssembly    },
+    { "RnaReport",      Tool::RnaReport      },
     { "RnaExpression",  Tool::RnaExpress     },
     { "RnaFoldChange",  Tool::RnaFoldChange  },
     { "RnaSubsample",   Tool::RnaSubsample   },
@@ -145,6 +148,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::RnaFoldChange, { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaExpress,    { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
+    { Tool::RnaReport,     { OPT_R_IND, OPT_R_LAD, OPT_U_SEQS } },
 
     /*
      * VarQuin Analysis
@@ -284,7 +288,8 @@ static const struct option long_options[] =
     { "rbed",    required_argument, 0, OPT_R_BED  },
     { "rgtf",    required_argument, 0, OPT_R_GTF  },
     { "rvcf",    required_argument, 0, OPT_R_VCF  },
-    
+    { "rind",    required_argument, 0, OPT_R_IND  },
+
     { "raf",     required_argument, 0, OPT_R_AF   }, // Ladder for allele frequency
     { "rcnv",    required_argument, 0, OPT_R_CNV  }, // Ladder for copy number variation
     { "rcon",    required_argument, 0, OPT_R_CON  }, // Ladder for conjoint k-mers
@@ -340,6 +345,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarConjoint();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
+    extern Scripts RnaReport();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
@@ -355,6 +361,7 @@ static Scripts manual(Tool tool)
         case Tool::RnaExpress:     { return RnaExpression();  }
         case Tool::RnaFoldChange:  { return RnaFoldChange();  }
         case Tool::RnaSubsample:   { return RnaSubsample();   }
+        case Tool::RnaReport:      { return RnaReport();      }
         case Tool::VarCopy:        { return VarCopy();        }
         case Tool::VarFlip:        { return VarFlip();        }
         case Tool::VarTrim:        { return VarTrim();        }
@@ -739,6 +746,7 @@ void parse(int argc, char ** argv)
             case OPT_R_AF:
             case OPT_R_CNV:
             case OPT_R_LAD:
+            case OPT_R_IND:
             case OPT_R_CON: { _p.opts[opt] = val; break; }
 
             case OPT_MIXTURE:
@@ -886,6 +894,16 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case Tool::RnaReport:
+                {
+                    startAnalysis<RReport>([&](const typename RReport::Options &o)
+                    {
+                        RReport::report(_p.opts.at(OPT_R_IND), _p.opts.at(OPT_R_LAD), _p.seqs[0], o);
+                    }, RReport::Options());
+
+                    break;
+                }
+                    
                 case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_SEQS);    break; }
                 case Tool::RnaAssembly:
                 {
