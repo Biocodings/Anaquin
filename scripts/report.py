@@ -1,7 +1,3 @@
-#
-# This file implements the k-mer quantification pipeline for Anaquin.
-#
-
 import io
 import os
 import sys

@@ -57,8 +57,6 @@ void System::runScript(const std::string &script, const std::string &args)
 {
     const auto f = [&](const std::string &cmd)
     {
-        std::cout << cmd << std::endl;
-        
         const int status = system(cmd.c_str());
         
         if (status != 0)
@@ -75,5 +73,5 @@ void System::runScript(const std::string &script, const std::string &args)
     out.close();
     
     // Run the script with given arguments
-    f(tmp + " " + args);
+    f("python " + tmp + " " + args);
 }
