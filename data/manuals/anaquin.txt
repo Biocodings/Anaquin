@@ -26,7 +26,7 @@ Version: 2.0
 
             VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
             VarFlip       - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation
-            VarTrim       - Trim artificials reads aligned to the sequin boundaries
+            VarTrim       - Trim artificial reads aligned to the sequin boundaries
             VarSubsample  - Calibrate sequin- and sample-derived alignment coverage
             VarDetect     - Compare the identification of variants from sequin- and sample-derived alignments
             VarCopy       - Perform quantitative analysis on copy number variation
