@@ -420,7 +420,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     
     const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
     const auto ms    = multiStats(files, mStats, lStats);
-    const auto count = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.seqsL1().size() : r.seqsL2().size();
+    const auto count = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.seqsL2().size() : r.seqsL1().size();
     
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"
