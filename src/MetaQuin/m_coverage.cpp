@@ -148,14 +148,14 @@ static void writeQuins(const FileName &file, const MCoverage::Stats &stats, cons
         case MCoverage::Format::BAM:
         {
             format ="%1%\t%2%\t%3%\t%4%\t%5%";
-            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed" % "FPKM").str());
+            o.writer->write((boost::format(format) % "Name" % "Length" % "Input" % "Observed" % "FPKM").str());
             break;
         }
 
         case MCoverage::Format::RayMeta:
         {
             format = "%1%\t%2%\t%3%\t%4%";
-            o.writer->write((boost::format(format) % "ID" % "Length" % "Input" % "Observed").str());
+            o.writer->write((boost::format(format) % "Name" % "Length" % "Input" % "Observed").str());
             break;
         }
     }

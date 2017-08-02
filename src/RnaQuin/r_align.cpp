@@ -515,7 +515,7 @@ static void writeQuins(const FileName &file,
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
+    o.writer->write((boost::format(format) % "Name"
                                            % "Length"
                                            % "Reads"
                                            % "SnIntron"

@@ -418,7 +418,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     
     assert(!isnan(limit.abund) && !limit.id.empty());
     
-    const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+    const auto title = (o.metrs == Metrics::Gene ? "Detected Genes" : "Detected Isoforms");
     const auto ms    = multiStats(files, mStats, lStats);
     const auto count = o.metrs == Metrics::Gene || shouldAggregate(o) ? r.seqsL2().size() : r.seqsL1().size();
     
@@ -537,7 +537,7 @@ Scripts RExpress::generateCSV(const std::vector<RExpress::Stats> &stats, const R
         std::stringstream ss;
         
         const auto format = "%1%\t%2%\t%3%\t%4%\n";
-        ss << (boost::format(format) % "ID" % "Length" % "Input" % "Observed").str();
+        ss << (boost::format(format) % "Name" % "Length" % "Input" % "Observed").str();
         
         auto &x = o.metrs == Metrics::Isoform ? stats[0].isos : stats[0].genes;
         

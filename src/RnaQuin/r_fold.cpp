@@ -240,7 +240,7 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
     std::stringstream ss;
-    ss << (boost::format(format) % "ID"
+    ss << (boost::format(format) % "Name"
                                  % "Length"
                                  % "Sample1"
                                  % "Sample2"
