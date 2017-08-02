@@ -48,7 +48,7 @@ static RAlign::Stats init()
      * It's important to note exon sensitivity is not possible here (again, due to alternative splicing).
      * The exon intervals are actually merged intervals.
      */
-
+    
     stats.eInters = gtf->meInters(Strand::Either);
 
     A_CHECK(stats.eInters.size(), "stats.eInters.size()");
@@ -510,8 +510,8 @@ static void writeQuins(const FileName &file,
                        const RAlign::Options &o)
 {
     const auto &r = Standard::instance().r_rna;
-
-    const auto h2g = r.gtf()->histGene();
+    auto gtf = r.gtf();
+    
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     o.writer->open(file);
@@ -594,13 +594,12 @@ static void writeQuins(const FileName &file,
                 bm[gID].fn() += bs.length - bs.nonZeros;
             }
             
+            const auto inters = gtf->gIntervals();
+            
             // For every gene in the reference
-            for (const auto &j : h2g.at(cID))
+            for (const auto &gID : gtf->genes(cID))
             {
                 const auto &data = i.second;
-                
-                // Eg: R1_1
-                const auto &gID = j.first;
                 
                 // Number of reads aligned
                 const auto reads = data.g2r.count(gID) ? data.g2r.at(gID) : 0;
@@ -609,7 +608,7 @@ static void writeQuins(const FileName &file,
                 const auto isn = im.count(gID) ? std::to_string(im.at(gID).sn()) : "-";
                 
                 o.writer->write((boost::format(format) % gID
-                                                       % "????" //r.findGene(cID, gID)->l.length()
+                                                       % inters.at(ChrIS).find(gID)->l().length()
                                                        % reads
                                                        % isn
                                                        % bm.at(gID).sn()).str());

@@ -105,20 +105,29 @@ namespace Anaquin
     
     struct GTFData : public std::map<ChrID, ChrData>
     {
-        inline Hist histGene(const ChrID &cID) const
+        // Genes for a chromosome
+        inline std::set<GeneID> genes(const ChrID &x) const
         {
-            return createHist(at(cID).g2d);
+            std::set<GeneID> r;
+            
+            for (const auto &i : at(x).g2d)
+            {
+                r.insert(i.first);
+            }
+            
+            return r;
         }
-
-        inline std::map<ChrID, Hist> histGene() const
+        
+        // Genes for all chromosome
+        inline std::map<ChrID, std::set<GeneID>> genes() const
         {
-            std::map<ChrID, Hist> r;
+            std::map<ChrID, std::set<GeneID>> r;
             
             for (const auto &i : *this)
             {
-                r[i.first] = histGene(i.first);
+                r[i.first] = genes(i.first);
             }
-
+            
             return r;
         }
         
