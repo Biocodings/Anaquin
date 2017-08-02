@@ -1,14 +1,9 @@
 import io
 import os
 import sys
-import numpy
-import pandas
 import tempfile
 import subprocess
 from multiprocessing.dummy import Pool as ThreadPool 
-
-# Where the temporary files are saved
-TEMP_PATH = tempfile.gettempdir()
 
 # Global variable
 __mode__ = None
@@ -153,12 +148,14 @@ class Chapter:
         self.items.append({ 'type': 'page', 'value': None })
     
     def addTextFile(self, title, file):
+        assert len(file) > 0
         self.items.append({ 'type': 'textFile', 'title': title, 'value': file })
         
     def addImage(self, title, file):
         self.items.append({ 'type': 'image', 'title': title, 'value': file })
 
     def addRCode(self, title, file, description, nPlots, height=None):
+        assert len(file) > 0
         self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'nPlots': nPlots, 'description': description, 'height': height })
         
     def generate(self, file, output):
@@ -227,153 +224,6 @@ toc_depth: 2\n\
             for i in range(0, len(self.chapters)):
                 self.chapters[i].generate(file, output)
 
-def VarQuin(config, output):
-    
-    r = Report()
-    
-    # Eg: A1,A2,A3,B1,B2,B3
-    names = getNames(config)
-
-    #########################################
-    #                                       #
-    #       1. Generating alignments        #
-    #                                       #
-    #########################################
-    
-    print ('----------------------- Variant Alignment -----------------------\n')
-    
-    #
-    # Generate a request for genome coverage. For example:
-    #
-    #    anaquin -t VarAlign -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
-    #
-
-    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
-
-    req = ' -ufiles ' + files
-    
-    # Execute the command
-    rVarQuin('VarAlign', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (Genome Alignment)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarAlign_summary.stats', )
-
-    r.endChapter()
-
-    ########################################
-    #                                      #
-    #      2. Generating subsampling       #
-    #                                      #
-    ########################################
-
-    print ('----------------------- Variant Subsampling -----------------------\n')
-
-    #
-    # Generate a request for genome coverage. For example:
-    #
-    #    anaquin -t VarSubsample -rbed data/VARQuin/AVA017.v032.bed -rexp chr21.bed -ufiles realigned.bam
-    #
-
-    files = get(config, 'COV_FILE', EXPECT_FILES)
-
-    req = ' -ufiles ' + files
-    
-    # Execute the command
-    rVarQuin('VarSubsampling', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (Genome Subsampling)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarSubsample_summary.stats', )
-
-    r.endChapter()
-
-    #########################################
-    #                                       #
-    #    3. Generating variant discovery    #
-    #                                       #
-    #########################################
-
-    print ('----------------------- Variant Discovery -----------------------\n')
-
-    files = get(config, 'VAR_FILE', EXPECT_FILES)
-    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', 'FreeBayes' })
-
-    # File name of the standards
-    stand  = get(config, 'STAND_FILE', EXPECT_FILES)
-
-    #
-    # Generate a request for allele frequency. For example:
-    #
-    #    anaquin -t VarDiscover -rvcf data/VARQuin/AVA009.v032.vcf -rbed data/VARQuin/AVA017.v032.bed -m data/VARQuin/MVA011.v013.csv -soft VarScan -ufiles varscan.tab
-    #
-    
-    req = ' -rbed ' + stand + ' -soft ' + soft + ' -ufiles ' + files
-    
-    # Execute the command
-    rVarQuin('VarDiscover', req, config)
-
-    r.startChapter('Statistics (Variant Discovery)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarDiscover_summary.stats', )
-        r.addRCode('ROC Curve', 'VarDiscover_ROC.R', '', height=770)
-        r.addRCode('LODR for SNP and Indel', 'VarDiscover_LODR.R', '')
-
-    r.endChapter()
-
-    ########################################
-    #                                      #
-    #    4. Generating allele frequency    #
-    #                                      #
-    ########################################
-
-    print ('----------------------- Allele Frequency -----------------------\n')
-
-    #
-    # Generate a request for allele frequency. For example:
-    #
-    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA011.v013.csv -soft VarScan -ufiles varscan.tab 
-    #
-
-    req = ' -soft ' + soft + ' -ufiles ' + files
-    
-    # Execute the command
-    rVarQuin('VarAllele', req, config)
-
-    r.startChapter('Statistics (Allele Frequency)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarAllele_summary.stats', )
-        r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=2) # TOOD: Fix this, should be 3 for indels
-        r.addRCode('Coverage plot for SNP and Indel', 'VarAllele_coverage.R', '')
-
-    r.endChapter()
-
-    ##############################################
-    #                                            #
-    #           5. Generating Apprendix          #
-    #                                            #
-    ##############################################
-
-    r.startChapter('Apprendix: Allele frequency')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Allele frequency statistics for: ' + names[i], 'VarAllele_quins.csv', )
-
-    r.endChapter()
-
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('report.Rmd', output)
-
-#################################
-#                               #
-#       Parsing functions       #
-#                               #
-#################################
-
 def parse(file):
     print ('Parsing: ' + file)
     
@@ -434,20 +284,25 @@ def report2PDF(r, path, pdf):
     print('PDF generated. Please check: ' + pdf)
 
 # Create a PDF report for RnaQuin
-def createRNReport(path, kals, sleuth, pdf):    
+def createReport(path, files, pdf):    
     r = Report()
     
     r.startChapter('Kallisto')
-    for i in range(0, len(kals)):
-        kal = kals[i]
-        r.addRCode('Isoform Expression', kal['path'] + '/RnaExpression_linear.R', '')
-        r.addTextFile('Summary Statistics', kal['path'] + '/RnaExpression_summary.stats')
-    r.endChapter()   
+    for file in files:
+        if file['tool'] == 'RnaExpression':
+            if file['type'] == 'T':
+                r.addTextFile(file['name'], file['path'])
+            else:
+                r.addRCode(file['name'], file['path'], '')
+    r.endChapter()
 
     r.startChapter('Sleuth')
-    if sleuth is not None:
-        r.addRCode('Gene Fold Change', path + '/RnaFoldChange_fold.R', '')
-        r.addTextFile('Summary Statistics', path + '/RnaFoldChange_summary.stats')
+    for file in files:
+        if file['tool'] == 'RnaFoldChange':
+            if file['type'] == 'T':
+                r.addTextFile(file['name'], file['path'])
+            else:
+                r.addRCode(file['name'], file['path'], '')
     r.endChapter()   
 
     report2PDF(r, path, pdf)
@@ -509,18 +364,26 @@ def RnaReport(index, output, A, B, pdf):
     # For each replicate for mixture A...
     for i in range(len(A)):
         info = A[i]        
-        samps.append('A' + str(i+1))
+        
+        # Eg: A1 (original file name might be too long)
+        name = 'A' + str(i+1)
+        
+        samps.append(name)
         conds.append('0')
         cmds.append(output + '/A' + str(i+1) + ' ' + info[0] + ' ' + info[1])
-        kals.append({ 'path': output + '/A' + str(i+1), 'mix': 'A' })
+        kals.append({ 'path': output + '/A' + str(i+1), 'mix': 'A', 'name': name })
 
     # For each replicate for mixture B...
     for i in range(len(B)):
         info = B[i]
-        samps.append('B' + str(i+1))
+
+        # Eg: B1 (original file name might be too long)
+        name = 'B' + str(i+1)
+
+        samps.append(name)
         conds.append('1')
         cmds.append(output + '/B' + str(i+1) + ' ' + info[0] + ' ' + info[1])
-        kals.append({ 'path': output + '/B' + str(i+1), 'mix': 'B' })
+        kals.append({ 'path': output + '/B' + str(i+1), 'mix': 'B', 'name': name })
 
     p = ThreadPool(len(cmds))
     p.map(runKallisto, cmds)
@@ -582,19 +445,66 @@ def RnaReport(index, output, A, B, pdf):
     # Run anaquin for the generated files
     #
     
+    A = ''
+    B = ''
+    
+    # All files generated by Anaquin
+    files = []
+    
     for i in kals:
-        cmd = 'anaquin RnaExpression -method isoform -rmix ' + rMix + ' -usequin ' + i['path'] + '/abundance.tsv -o ' + i['path']
-        run(cmd)
-    
-    #
-    # Create a PDF report based on the Anaquin results
-    #
-    
-    if sleuth is not None:
-        cmd = 'anaquin RnaFoldChange -method gene -rmix ' + rMix + ' -usequin ' + sleuth['file'] + ' -o ' + sleuth['path']
+        # Isoform expression analysis
+        cmd = 'anaquin RnaExpression -method isoform -mix ' + i['mix'] + ' -rmix ' + rMix + ' -usequin ' + i['path'] + '/abundance.tsv -o ' + i['path'] + '/I'
         run(cmd)
         
-    createRNReport(output, kals, sleuth, pdf)
+
+        # Gene expression analysis
+        cmd = 'anaquin RnaExpression -method gene -mix ' + i['mix'] + ' -rmix ' + rMix + ' -usequin ' + i['path'] + '/abundance.tsv -o ' + i['path'] + '/G'
+        run(cmd)
+        
+        files.append({ 'tool': 'RnaExpression', 'type': 'R', 'path': i['path'] + '/I/RnaExpression_linear.R',      'name': 'Isoform expression (' + i['name'] + ')' })
+        files.append({ 'tool': 'RnaExpression', 'type': 'T', 'path': i['path'] + '/I/RnaExpression_summary.stats', 'name': 'Summary statistics (' + i['name'] + ')' })        
+        files.append({ 'tool': 'RnaExpression', 'type': 'R', 'path': i['path'] + '/G/RnaExpression_linear.R',      'name': 'Gene expression (' + i['name'] + ')' })
+        files.append({ 'tool': 'RnaExpression', 'type': 'T', 'path': i['path'] + '/G/RnaExpression_summary.stats', 'name': 'Summary statistics (' + i['name'] + ')' })
+
+        if i['mix'] == 'A':
+            A = A + ' -usequin ' + i['path'] + '/abundance.tsv'
+        else:
+            B = B + ' -usequin ' + i['path'] + '/abundance.tsv'
+        
+    def combined(x, mix):
+        if x is '':
+            return
+        
+        # Combined isoform expression analysis
+        run('anaquin RnaExpression -method isoform -mix ' + mix + ' -rmix ' + rMix + ' ' + x + ' -o ' + output + '/CI' + mix)
+        
+        # Combined gene expression analysis
+        run('anaquin RnaExpression -method gene -mix ' + mix + ' -rmix ' + rMix + ' ' + x + ' -o ' + output + '/CG' + mix)
+
+        files.append({ 'tool': 'RnaExpression', 'type': 'R', 'path': output + '/CI' + mix + '/RnaExpression_linear.R',      'name': 'Combined isoform expression (' + mix + ')' })
+        files.append({ 'tool': 'RnaExpression', 'type': 'T', 'path': output + '/CI' + mix + '/RnaExpression_summary.stats', 'name': 'Summary statistics' })
+        files.append({ 'tool': 'RnaExpression', 'type': 'R', 'path': output + '/CG' + mix + '/RnaExpression_linear.R',      'name': 'Combined gene expression (' + mix + ')' })
+        files.append({ 'tool': 'RnaExpression', 'type': 'T', 'path': output + '/CG' + mix + '/RnaExpression_summary.stats', 'name': 'Summary statistics' })
+        
+    combined(A, 'A')
+    combined(B, 'B')
+        
+    if sleuth is not None:
+        cmd = 'anaquin RnaFoldChange -method isoform -rmix ' + rMix + ' -usequin ' + sleuth['file'] + ' -o ' + sleuth['path'] + '/I'
+        run(cmd)
+        
+        cmd = 'anaquin RnaFoldChange -method gene -rmix ' + rMix + ' -usequin ' + sleuth['file'] + ' -o ' + sleuth['path'] + '/G'
+        run(cmd)
+
+        files.append({ 'tool': 'RnaFoldChange', 'type': 'R', 'path': output + '/I/RnaFoldChange_fold.R',        'name': 'Isoform differential analysis' })
+        files.append({ 'tool': 'RnaFoldChange', 'type': 'T', 'path': output + '/I/RnaFoldChange_summary.stats', 'name': 'Summary statistics' })
+        files.append({ 'tool': 'RnaFoldChange', 'type': 'R', 'path': output + '/G/RnaFoldChange_fold.R',        'name': 'Gene differential analysis' })
+        files.append({ 'tool': 'RnaFoldChange', 'type': 'T', 'path': output + '/G/RnaFoldChange_summary.stats', 'name': 'Summary statistics' })
+
+    #print(files)
+
+    # Create a PDF report based on the Anaquin results
+    createReport(output, files, pdf)
 
 def readMeta(file):
     A = []
