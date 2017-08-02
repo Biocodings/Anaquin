@@ -9,7 +9,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 __mode__ = None
 
 def execute(cmd):
-    print(cmd)
     os.system(cmd)
 
 def checkRInstall(pack):
@@ -352,7 +351,7 @@ def RnaReport(index, output, A, B, pdf):
     def runKallisto(cmd):
         # Command for Kallisto
         quant = 'kallisto quant -b 500 -i ' + index + ' -o ' + cmd
-        print(quant)
+
         # Quantify the replicate
         run(quant)
 
@@ -548,4 +547,4 @@ if __name__ == '__main__':
         os.makedirs(tmp)
 
     if __mode__ == 'RnaReport':
-        RnaReport(rIndex, tmp, A, B, out)
+        RnaReport(rIndex, tmp, A, B, out) 
