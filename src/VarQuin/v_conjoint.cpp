@@ -37,14 +37,13 @@ static void writeQuins(const FileName &file,
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Sequin" % "Unit" % "Stoichiometry" % "CNV" % "Observed").str());
+    o.writer->write((boost::format(format) % "Name" % "Unit" % "Stoichiometry" % "CNV" % "Observed").str());
 
     for (const auto &i : stats.data)
     {
-        const auto seq = noLast(i.first, "_");
-        o.writer->write((boost::format(format) % seq
+        o.writer->write((boost::format(format) % r.t2(i.first)
                                                % i.first
-                                               % r.input1(seq)
+                                               % r.input1(r.t2(i.first))
                                                % r.input2(i.first)
                                                % i.second).str());
     }
@@ -83,16 +82,14 @@ static void writeConjointR(const FileName &file, const VConjoint::Stats &stats, 
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRLinear("VarConjoint_sequins.csv",
-                                           o.work,
-                                           "Expected CNV vs Observed Abundance",
-                                           "Expected CNV",
-                                           "Observed Abundance (log2)",
-                                           "log2(data$Stoichiometry * data$CNV)",
-                                           "log2(data$Observed)",
-                                           "input",
-                                           true,
-                                           PlotConjoint()));
+    o.writer->write(RWriter::createRConjoint("VarConjoint_sequins.csv",
+                                             PlotConjoint(),
+                                             o.work,
+                                             "Expected CNV vs Observed Abundance",
+                                             "Expected CNV",
+                                             "Observed Abundance (log2)",
+                                             "log2(data$Stoichiometry * data$CNV)",
+                                             "log2(data$Observed)"));
     o.writer->close();
 }
 

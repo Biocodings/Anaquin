@@ -90,6 +90,26 @@ Scripts RWriter::createMultiLinear(const FileName    &file,
                                          % extra).str();
 }
 
+Scripts RWriter::createRConjoint(const FileName    &file,
+                                 const Scripts     &script,
+                                 const Path        &path,
+                                 const std::string &title,
+                                 const std::string &xlab,
+                                 const std::string &ylab,
+                                 const std::string &x,
+                                 const std::string &y)
+{
+    return (boost::format(script) % date()
+                                  % __full_command__
+                                  % path
+                                  % file
+                                  % title
+                                  % xlab
+                                  % ylab
+                                  % x
+                                  % y).str();
+}
+
 Scripts RWriter::createRLinear(const FileName    &file,
                                const Path        &path,
                                const std::string &title,

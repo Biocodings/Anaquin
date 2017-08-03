@@ -11,9 +11,9 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=2, sep='\t')
 
 # Expected copy number (x-axis)
-input <- %8%
+x <- %8%
 
 # Measured expression (y-axis)
-measured <- %9%
+y <- %9%
 
-plotConjoint(data$Name, row.names(data), input, measured, title='%5%', xlab='%6%', ylab='%7%')
+plotConjoint(data$Name, row.names(data), x, y, title='%5%', xlab='%6%', ylab='%7%')

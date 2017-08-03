@@ -66,6 +66,9 @@ namespace Anaquin
             Ladder addCon1(const Reader &);
             Ladder addCon2(const Reader &);
         
+            Translate addSeq2Unit(const Reader &);
+            Translate addUnit2Seq(const Reader &);
+
             VarRef r_var;
 
         private:

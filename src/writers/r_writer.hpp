@@ -60,6 +60,15 @@ namespace Anaquin
                                      bool showLOQ,
                                      const std::string &script = "");
 
+        static Scripts createRConjoint(const FileName    &,
+                                       const Scripts     &,
+                                       const Path        &,
+                                       const std::string &,
+                                       const std::string &,
+                                       const std::string &,
+                                       const std::string &,
+                                       const std::string &);
+        
         static Scripts createScript(const FileName &, const Scripts &);
         static Scripts createScript(const FileName &, const Scripts &, const std::string &);
     };

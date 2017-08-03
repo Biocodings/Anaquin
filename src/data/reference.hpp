@@ -59,6 +59,9 @@ namespace Anaquin
     {
         std::shared_ptr<Ladder> l1, l2, l3, l4, l5, l6;
 
+        // Translation
+        std::shared_ptr<Translate> t1, t2;
+
         // First bed regions (not trimmed)
         std::shared_ptr<BedData> r1;
 
@@ -79,6 +82,9 @@ namespace Anaquin
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
             inline SequinIDs seqsL3() const { return _l3->seqs; }
+
+            inline Name t1(const Name &x) const { return _t1->translate(x); }
+            inline Name t2(const Name &x) const { return _t2->translate(x); }
 
             inline Concent input1(const SequinID &x, Mixture m = Mix_1) const { return _l1->input(x, m); }
             inline Concent input2(const SequinID &x, Mixture m = Mix_1) const { return _l2->input(x, m); }
@@ -144,6 +150,17 @@ namespace Anaquin
                 _l2 = l2;
             }
 
+            inline void build(std::shared_ptr<Ladder>    l1,
+                              std::shared_ptr<Ladder>    l2,
+                              std::shared_ptr<Translate> t1,
+                              std::shared_ptr<Translate> t2)
+            {
+                _l1 = l1;
+                _l2 = l2;
+                _t1 = t1;
+                _t2 = t2;
+            }
+        
             inline void build(std::shared_ptr<Ladder> l1,
                               std::shared_ptr<Ladder> l2,
                               std::shared_ptr<Ladder> l3,
@@ -263,6 +280,9 @@ namespace Anaquin
         
             // Sequin ladders
             std::shared_ptr<Ladder> _l1, _l2, _l3, _l4, _l5, _l6;
+
+            // Translation
+            std::shared_ptr<Translate> _t1, _t2;
     };
 
     /*

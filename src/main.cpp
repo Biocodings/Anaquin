@@ -386,6 +386,22 @@ static void readGTF(Option key, UserReference &r)
     }
 }
 
+template <typename F> void readT1(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.t1 = std::shared_ptr<Translate>(new Translate(f(Reader(_p.opts[key]))));
+    }
+}
+
+template <typename F> void readT2(F f, Option key, UserReference &r)
+{
+    if (_p.opts.count(key))
+    {
+        r.t2 = std::shared_ptr<Translate>(new Translate(f(Reader(_p.opts[key]))));
+    }
+}
+
 template <typename F> void readL1(F f, Option key, UserReference &r)
 {
     if (_p.opts.count(key))
@@ -1127,6 +1143,8 @@ void parse(int argc, char ** argv)
                     {
                         readL1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
                         readL2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readT1(std::bind(&Standard::addSeq2Unit, &s, std::placeholders::_1), OPT_R_CON, r);
+                        readT2(std::bind(&Standard::addUnit2Seq, &s, std::placeholders::_1), OPT_R_CON, r);
                         break;
                     }
 

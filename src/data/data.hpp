@@ -31,6 +31,7 @@ namespace Anaquin
     typedef double Proportion;
     typedef long double Probability;
     
+    typedef std::string Name;
     typedef std::string ChrID;
     typedef std::string GeneID;
     typedef std::string TransID;

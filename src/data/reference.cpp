@@ -331,7 +331,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 
         case Tool::VarConjoint:
         {
-            build(r.l1, r.l2);
+            build(r.l1, r.l2, r.t1, r.t2);
             break;
         }
 

@@ -7,6 +7,26 @@
 
 namespace Anaquin
 {
+    class Translate
+    {
+        public:
+        
+            inline void add(const Name &from, const Name &to)
+            {
+                x[from] = to;
+            }
+        
+            inline Name translate(const Name &from)
+            {
+                return x.at(from);
+            }
+
+            inline std::size_t size() const { return x.size(); }
+
+        private:
+            std::map<Name, Name> x;
+    };
+    
     struct Ladder
     {
         inline void add(const SequinID &id, Mixture m, Concent c)

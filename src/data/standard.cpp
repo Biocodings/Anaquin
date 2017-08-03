@@ -20,9 +20,15 @@ using namespace Anaquin;
 enum MixtureFormat
 {
     X_M,
-    X_X_M,
+    M_X_M,
     X_X_X_M,
     X_M_X_M,
+};
+
+enum TranslateFormat
+{
+    F_T,
+    T_F
 };
 
 static unsigned countColumns(const Reader &r)
@@ -54,6 +60,38 @@ std::shared_ptr<GTFData> Standard::readGTF(const Reader &r)
     return std::shared_ptr<GTFData>(new GTFData(gtfData(r)));
 }
 
+template <typename Reference> Translate readTranslate(const Reader &r, Reference &ref, TranslateFormat format, Translate x = Translate())
+{
+    auto parse = [&](const std::string &delim)
+    {
+        const auto t = Reader(r);
+        
+        ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
+        {
+            // Don't bother if this is the first line or an invalid line
+            if (p.i == 0 || d.size() <= 1)
+            {
+                return;
+            }
+            
+            switch (format)
+            {
+                case F_T: { x.add(d[0], d[1]); break; }
+                case T_F: { x.add(d[1], d[0]); break; }
+            }
+        }, delim);
+        
+        return x.size();
+    };
+    
+    if (!parse("\t") && !parse(","))
+    {
+        throw std::runtime_error("No sequin found in the reference file. Please check and try again.");
+    }
+    
+    return x;
+}
+
 template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, Ladder x = Ladder())
 {
     auto parse = [&](const std::string &delim)
@@ -72,7 +110,7 @@ template <typename Reference> Ladder readLadder(const Reader &r, Reference &ref,
             {
                 case X_M:     { x.add(d[0], m, stof(d[1])); break; }
                 case X_M_X_M: { x.add(d[1], m, stof(d[3])); break; }
-                case X_X_M:   { x.add(d[0], m, stof(d[2])); break; }
+                case M_X_M:   { x.add(d[0], m, stof(d[2])); break; }
                 case X_X_X_M: { x.add(d[0], m, stof(d[3])); break; }
             }
         }, delim);
@@ -103,13 +141,25 @@ Ladder Standard::addCNV(const Reader &r)
 Ladder Standard::addCon1(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
-    return readLadder(Reader(r), r_var, Mix_1, X_X_M);
+    return readLadder(Reader(r), r_var, Mix_1, M_X_M);
 }
 
 Ladder Standard::addCon2(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
     return readLadder(Reader(r), r_var, Mix_1, X_M_X_M);
+}
+
+Translate Standard::addSeq2Unit(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
+    return readTranslate(Reader(r), r_var, F_T);
+}
+
+Translate Standard::addUnit2Seq(const Reader &r)
+{
+    A_CHECK(countColumns(r) == 4, "Invalid mixture file for conjoint ladder.");
+    return readTranslate(Reader(r), r_var, T_F);
 }
 
 Ladder Standard::addAF(const Reader &r)
@@ -122,13 +172,13 @@ Ladder Standard::addMMix(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three or more columns.");
     auto l = readLadder(Reader(r), r_meta, Mix_1, X_M);
-    return readLadder(Reader(r), r_meta, Mix_2, X_X_M, l);
+    return readLadder(Reader(r), r_meta, Mix_2, M_X_M, l);
 }
 
 Ladder Standard::readIsoform(const Reader &r)
 {
     A_CHECK(countColumns(r) == 4, "Invalid mixture file. Expected three columns.");
-    auto l = readLadder(Reader(r), r_rna, Mix_1, X_X_M);
+    auto l = readLadder(Reader(r), r_rna, Mix_1, M_X_M);
     return readLadder(Reader(r), r_rna, Mix_2, X_X_X_M, l);
 }
 
