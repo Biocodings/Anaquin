@@ -148,7 +148,7 @@ static void writeQuins(const FileName &file, const MCoverage::Stats &stats, cons
         case MCoverage::Format::BAM:
         {
             format ="%1%\t%2%\t%3%\t%4%\t%5%";
-            o.writer->write((boost::format(format) % "Name" % "Length" % "Input" % "Observed" % "FPKM").str());
+            o.writer->write((boost::format(format) % "Name" % "Length" % "Input" % "Observed" % "Fold").str());
             break;
         }
 
@@ -175,7 +175,7 @@ static void writeQuins(const FileName &file, const MCoverage::Stats &stats, cons
         {
             case MCoverage::Format::BAM:
             {
-                // Normalized FPKM
+                // Normalized Fold
                 measured = ((double)measured * pow(10, 9)) / (total * loc.length());
 
                 break;
@@ -218,11 +218,11 @@ static Scripts generateRLinear(const FileName &src, const MCoverage::Stats &stat
         {
             return RWriter::createRLinear(src,
                                           o.work,
-                                          "FPKM",
+                                          "Fold Coverage",
                                           "Input Concentration (log2)",
-                                          "Measured FPKM (log2)",
+                                          "Measured Fold (log2)",
                                           "log2(data$Input)",
-                                          "log2(data$FPKM)",
+                                          "log2(data$Fold)",
                                           "input",
                                           true);
         }
