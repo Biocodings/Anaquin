@@ -17,15 +17,5 @@ data <- data[data$Name != '-',]
 # Construct unique identifiers for the variants
 data$Unique <- paste(paste(data$Name, data$Pos, sep='_'), data$Type, sep='_')
 
-#
-# ROC for all sequin TP and FP 
-#
-
-plotROC(data$Unique, score, data$Label, data$Label, title='ROC (ranked by VCF Depth)', legTitle='Sequins', refGroup=%6%)
-
-#
-# ROC by genotype
-#
-
-data$FreqGrp <- as.factor(data$ExpFreq)
-plotROC(data$Unique, %5%, data$FreqGrp, data$Label, title='ROC (ranked by VCF Depth)', legTitle='Allele Frequency', refGroup=%6%)
+data$FreqGrp <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.000000'='Heterozygous', '-'='FP'))
+plotROC(data$Unique, data$Depth, data$FreqGrp, data$Label, title='ROC (ranked by VCF Depth)', legTitle='Allele Frequency', refGroup='FP')
