@@ -51,8 +51,7 @@ namespace Anaquin
             virtual SequinID findSeq(const ContigID &) const = 0;
         };
         
-        template <typename T = DAsssembly::Stats<Contig>> static T analyze
-        (const FileName &file, DenoAssemblyImpl *impl)
+        template <typename T = DAsssembly::Stats<Contig>> static T analyze(const FileName &file, DenoAssemblyImpl *impl)
         {
             T stats;
             Histogram hist;
@@ -68,7 +67,7 @@ namespace Anaquin
                 {
                     stats.nEndo++;
                     
-                    // Don't bother if the contig isn't part of MetaQuins...
+                    // Don't bother if the contig doesn't come from sequins...
                     return;
                 }
                 else
@@ -76,7 +75,7 @@ namespace Anaquin
                     stats.nSeqs++;
                 }
                 
-                // Size of the config
+                // Size of the config (but not alignment size)
                 c.len = x.seq.size();
                 
                 // The histogram needs the size of the sequence
@@ -112,7 +111,6 @@ namespace Anaquin
             stats.mean  = hist.expectedValue();
             stats.N80   = hist.weightedPercentile(1 - 0.8);
             stats.N20   = hist.weightedPercentile(1 - 0.2);
-            stats.sum   = hist.sum();
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
                                           [&](int sum, const std::pair<std::string, Contig> &p)
             {

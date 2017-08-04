@@ -56,7 +56,7 @@ namespace Anaquin
             std::map<ContigID, Base> c2a;
             
             // Statistics for de-novo assembly
-            DAsssembly::Stats<DAsssembly::Contig> dnovo;
+            DAsssembly::Stats<DAsssembly::Contig> dn;
         };
         
         struct Options : public AnalyzerOptions

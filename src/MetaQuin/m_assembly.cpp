@@ -67,8 +67,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     A_ASSERT(!stats.c2s.empty());
     A_ASSERT(!stats.s2c.empty());
     
-    // Calculate statistics such as N50 and proportion asssembled
-    stats.dnovo = DAsssembly::analyze(fasta, &stats);
+    stats.dn = DAsssembly::analyze(fasta, &stats);
     
     /*
      * Calculating the proportion being assembled
@@ -118,14 +117,11 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                          "       Min:  %10%\n"
                          "       Mean: %11%\n"
                          "       Max:  %12%\n\n"
-                         "       ***\n"
-                         "       *** The following overlapping statistics are computed as proportion\n"
-                         "       ***\n\n"
                          "       Match:       %13%\n"
                          "       Mismatch:    %14%\n"
                          "       Sensitivity: %15%\n";
 
-    const auto &dn = stats.dnovo;
+    const auto &dn = stats.dn;
     
     return (boost::format(summary) % src
                                    % dn.nSeqs
