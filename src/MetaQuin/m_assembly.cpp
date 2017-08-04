@@ -37,25 +37,40 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             A_ASSERT(!stats.c2l.empty());
             A_ASSERT(!stats.c2a.empty());
             
-            /*
-             * Building mapping for sequins
-             */
-            
+            // For each sequin...
             for (auto &s : x.metas)
             {
+                // Sequin name
+                const auto &id = s.first;
+                
                 // Length of the sequin
                 const auto l = s.second->seq.l;
                 
                 // Required for detecting overlapping
                 DInter i(s.first, Locus(0, l.length()));
                 
+                /*
+                 * For each contig aligned to the sequin, we calculate where exactly it aligns.
+                 */
+                
                 for (auto &j : s.second->contigs)
                 {
                     stats.s2c[s.first].push_back(j.id);
                     i.add(Locus(j.l.start, j.l.end - 1));
                 }
+                
+                // Statistics after accounting for all mapping contigs
+                const auto si = i.stats();
 
-                stats.add(s.first, r.input1(s.first, o.mix), i.stats().covered());
+                assert(si.nonZeros + si.zeros == si.length);
+                
+                stats.z  += si.zeros;
+                stats.nz += si.nonZeros;
+                
+                // Number of bases with coverage for the squin
+                stats.s2nz[id] = si.nonZeros;
+                
+                stats.add(id, r.input1(id, o.mix), si.covered());
             }
             
             break;
@@ -68,10 +83,6 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     A_ASSERT(!stats.s2c.empty());
     
     stats.dn = DAsssembly::analyze(fasta, &stats);
-    
-    /*
-     * Calculating the proportion being assembled
-     */
     
     for (const auto &seq : r.seqsL1())
     {
@@ -90,8 +101,12 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                 }
             }
         }
+        else
+        {
+            o.warn(seq + " not assembled");
+        }
     }
-    
+
     return stats;
 }
 
@@ -119,9 +134,14 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                          "       Max:  %12%\n\n"
                          "       Match:       %13%\n"
                          "       Mismatch:    %14%\n"
-                         "       Sensitivity: %15%\n";
+                         "       Covered:     %15% bases\n"
+                         "       Not covered: %16% bases\n"
+                         "       Sensitivity: %17%\n";
 
     const auto &dn = stats.dn;
+    
+    // Overall sensitivity
+    const auto sn = (Proportion) stats.nz / (stats.z + stats.nz);
     
     return (boost::format(summary) % src
                                    % dn.nSeqs
@@ -137,7 +157,9 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                                    % dn.max
                                    % stats.match
                                    % stats.mismatch
-                                   % stats.covered()).str();
+                                   % stats.z
+                                   % stats.nz
+                                   % sn).str();
 }
 
 static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Options &o)
@@ -187,16 +209,22 @@ Scripts MAssembly::generateQuins(const Stats &stats, const Options &o)
 {
     std::stringstream ss;
     
-    const auto format = "%1%\t%2%\t%3%\t%4%";
-    ss << (boost::format(format) % "Name" % "Length" % "Input" % "Sn").str() << std::endl;
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    ss << (boost::format(format) % "Name"
+                                 % "Length"
+                                 % "Input"
+                                 % "Covered"
+                                 % "Sn").str() << std::endl;
     
     const auto r1 = Standard::instance().r_meta.regs1();
     
     for (const auto &i : stats)
     {
-        ss << ((boost::format(format) % i.first
-                                      % r1.at(i.first).length()
+        const auto &id = i.first;
+        ss << ((boost::format(format) % id
+                                      % r1.at(id).length()
                                       % i.second.x
+                                      % (stats.s2nz.count(id) ? stats.s2nz.at(id) : 0)
                                       % i.second.y).str()) << std::endl;
     }
     

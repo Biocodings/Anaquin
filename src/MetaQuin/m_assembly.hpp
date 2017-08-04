@@ -32,11 +32,12 @@ namespace Anaquin
                 
                 return c2s.count(x) ? c2s.at(x) : "";
             }
+
+            // Total number of bases with zero coverage for all sequins
+            Base z = 0;
             
-            inline Proportion covered() const
-            {
-                return static_cast<Proportion>(match) / (match + mismatch);
-            }
+            // Total number of bases with non-zero coverage for all sequins
+            Base nz = 0;
             
             // Total mismatching bases
             Base mismatch = 0;
@@ -57,6 +58,9 @@ namespace Anaquin
             
             // Statistics for de-novo assembly
             DAsssembly::Stats<DAsssembly::Contig> dn;
+            
+            // Mapping from sequins to number of bases with non-zero coverage
+            std::map<SequinID, Base> s2nz;
         };
         
         struct Options : public AnalyzerOptions
