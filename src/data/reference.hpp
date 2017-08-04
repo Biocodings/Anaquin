@@ -8,11 +8,46 @@
 #include "data/minters.hpp"
 #include "data/dinters.hpp"
 #include "tools/gtf_data.hpp"
-#include "RnaQuin/RnaQuin.hpp"
-#include "VarQuin/VarQuin.hpp"
+//#include "RnaQuin/RnaQuin.hpp"
+//#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
+    struct SequinVariant
+    {
+        enum class Context
+        {
+            Common,
+            VeryLowGC,
+            LowGC,
+            HighGC,
+            VeryHighGC,
+            ShortDinRep,  // Dinucleotide repeats
+            LongDinRep,   // Dinucleotide repeats
+            ShortHompo,
+            LongHompo,
+            ShortQuadRep, // Quad-nucleotide repeats
+            LongQuadRep,  // Quad-nucleotide repeats
+            ShortTrinRep, // Trinucleotide repeats
+            LongTrinRep,  // Trinucleotide repeats
+            Cancer,
+        } ctx;
+        
+        Genotype gt;
+        
+        // Copy number
+        unsigned copy = 1;
+    };
+
+    struct VCFLadder
+    {
+        VCFData data;
+        
+        Ladder af;
+        std::set<SequinID> vIDs;
+        std::map<VarKey, SequinVariant> sVars;
+    };
+
     enum class Tool
     {
         Test,
@@ -45,20 +80,24 @@ namespace Anaquin
      * Different rules how two positions can be compared
      */
 
-    enum MatchRule
-    {
-        Exact,
-        Overlap,
-        Contains,
-    };
+//    enum MatchRule
+//    {
+//        Exact,
+//        Overlap,
+//        Contains,
+//    };
     
-    class Ladder;
-    class GTFData;
+    class  Ladder;
+    class  GTFData;
+    struct VCFLadder;
 
     struct UserReference
     {
         std::shared_ptr<Ladder> l1, l2, l3, l4, l5, l6;
 
+        // Ladder for VCF references and allele frequency
+        std::shared_ptr<VCFLadder> vcf;
+        
         // Translation
         std::shared_ptr<Translate> t1, t2;
 
@@ -92,7 +131,10 @@ namespace Anaquin
             inline Concent input4(const SequinID &x, Mixture m = Mix_1) const { return _l4->input(x, m); }
             inline Concent input5(const SequinID &x, Mixture m = Mix_1) const { return _l5->input(x, m); }
             inline Concent input6(const SequinID &x, Mixture m = Mix_1) const { return _l6->input(x, m); }
-        
+
+            // Allele frequency from VCF reference (not from mixture file)
+            inline Proportion af(const SequinID &x) const { return _vcf->af.input(x, Mix_1); }
+
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
             {
@@ -132,6 +174,15 @@ namespace Anaquin
                 _r1 = r1;
             }
 
+            inline void build(std::shared_ptr<BedData> r1,
+                              std::shared_ptr<BedData> r2,
+                              std::shared_ptr<VCFLadder> vcf)
+            {
+                _r1  = r1;
+                _r2  = r2;
+                _vcf = vcf;
+            }
+        
             inline void build(std::shared_ptr<BedData> r1, std::shared_ptr<BedData> r2)
             {
                 _r1 = r1;
@@ -275,6 +326,9 @@ namespace Anaquin
             // Sequin regions
             std::shared_ptr<BedData> _r1, _r2;
 
+            // VCF references and allele frequency ladder
+            std::shared_ptr<VCFLadder> _vcf;
+        
             // Sequin regions
             std::shared_ptr<GTFData> _g1;
         
@@ -314,9 +368,6 @@ namespace Anaquin
 
             VarRef();
 
-            void readVRef(const Reader &);
-            void readBRef(const Reader &, Base trim = 0);
-
             Counts nCNV(int)  const;
             Counts nGeno(Genotype)  const;
             Counts nType(Variation) const;
@@ -336,7 +387,6 @@ namespace Anaquin
         private:
 
             struct VarRefImpl;
-            struct VariantPair;
 
             std::shared_ptr<VarRefImpl> _impl;
     };

@@ -1,3 +1,4 @@
+#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_vcf.hpp"
 #include "VarQuin/v_structure.hpp"
 

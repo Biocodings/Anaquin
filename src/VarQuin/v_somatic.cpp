@@ -215,8 +215,8 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             
             stats.tps.push_back(m);
             
-            const auto exp = 0; // TODO: we need a ladder r.findAFreq(m.var->name);
-            const auto obs = m.qry.allF;
+            const auto exp = r.af(m.var->name);
+            const auto obs = x.ff.at("AF_2"); // Allele frequency for tumor
             
             A_ASSERT(!isnan(exp));
             
@@ -440,7 +440,7 @@ static void writeQuins(const FileName &file,
                                                    % FORMAT_I("AD_2_2")
                                                    % FORMAT_I("DP_1")
                                                    % FORMAT_I("DP_2")
-                                                   % "????" // TODO: we need a ladder r.findAFreq(i.name)
+                                                   % r.af(i.name)
                                                    % FORMAT_F("AF_1")
                                                    % FORMAT_F("AF_2")                             
                                                    % toString(c.qual)
@@ -462,7 +462,7 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
-                                                   % "????" // TODO: we need a ladder r.findAFreq(i.name)r.findAFreq(i.name)
+                                                   % r.af(i.name)
                                                    % "-"
                                                    % "-"
                                                    % "-"
@@ -524,7 +524,7 @@ static void writeDetected(const FileName &file,
                                                    % _FI_("AD_2_2")
                                                    % _FI_("DP_1")
                                                    % _FI_("DP_2")
-                                                   % "????" // TODO: we need a ladder r.findAFreq(i.name)(sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
+                                                   % (sID != "-" ? std::to_string(r.af(sID)) : "-")
                                                    % _FF_("AF_1")
                                                    % _FF_("AF_2")
                                                    % toString(i.qry.qual)

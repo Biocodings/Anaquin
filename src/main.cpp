@@ -450,6 +450,14 @@ template <typename F> void readL6(F f, Option key, UserReference &r)
     }
 }
 
+static void readVCF(Option opt, UserReference &r, Base trim = 0)
+{
+    if (!_p.opts[opt].empty())
+    {
+        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]))));
+    }
+}
+
 static void readReg1(Option opt, UserReference &r, Base trim = 0)
 {
     if (!_p.opts[opt].empty())
@@ -1135,7 +1143,7 @@ void parse(int argc, char ** argv)
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        readVCF(OPT_R_VCF, r);
                         break;
                     }
 
@@ -1174,7 +1182,7 @@ void parse(int argc, char ** argv)
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        readVCF(OPT_R_VCF, r);
                         break;
                     }
                         

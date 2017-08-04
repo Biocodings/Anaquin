@@ -195,7 +195,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
             
             stats.tps.push_back(m);
             
-            const auto exp = 0.0; // TODO: Fix this we need ladder r.findAFreq(m.var->name);
+            const auto exp = r.af(m.var->name);
             const auto obs = m.qry.allF;
             
             A_ASSERT(!isnan(exp));
@@ -370,7 +370,7 @@ static void writeQuins(const FileName &file,
                                                    % c.readR
                                                    % c.readV
                                                    % c.depth
-                                                   % "????" // TODO: r.findAFreq(i.name)
+                                                   % r.af(i.name)
                                                    % c.allF
                                                    % toString(c.qual)
                                                    % gt2str(sv.gt)
@@ -388,7 +388,7 @@ static void writeQuins(const FileName &file,
                                                    % "-"
                                                    % "-"
                                                    % "-"
-                                                   % "????" // TODO: r.findAFreq(i.name)
+                                                   % r.af(i.name)
                                                    % "-"
                                                    % "-"
                                                    % gt2str(sv.gt)
@@ -436,7 +436,7 @@ static void writeDetected(const FileName &file,
                                                    % i.qry.readR
                                                    % i.qry.readV
                                                    % i.qry.depth
-                                                   % "????" // TODO: (sID != "-" ? std::to_string(r.findAFreq(sID)) : "-")
+                                                   % (sID != "-" ? std::to_string(r.af(sID)) : "-")
                                                    % i.qry.allF
                                                    % toString(i.qry.qual)
                                                    % ctx

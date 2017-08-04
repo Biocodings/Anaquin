@@ -1,6 +1,7 @@
 #ifndef STANDARD_HPP
 #define STANDARD_HPP
 
+#include "data/vData.hpp"
 #include "data/ladder.hpp"
 #include "data/reader.hpp"
 #include "data/reference.hpp"
@@ -58,13 +59,12 @@ namespace Anaquin
              * ---------------- VarQuin analysis ----------------
              */
 
-            // Add reference variants in VCF format
-            inline void addVVar(const Reader &r) { r_var.readVRef(r); }
+            static VCFLadder addVCF(const Reader &r);
 
-            Ladder addAF(const Reader &);
-            Ladder addCNV(const Reader &);
-            Ladder addCon1(const Reader &);
-            Ladder addCon2(const Reader &);
+            Ladder addAF(const Reader &);   // From mixture file
+            Ladder addCNV(const Reader &);  // From mixture file
+            Ladder addCon1(const Reader &); // From mixture file
+            Ladder addCon2(const Reader &); // From mixture file
         
             Translate addSeq2Unit(const Reader &);
             Translate addUnit2Seq(const Reader &);

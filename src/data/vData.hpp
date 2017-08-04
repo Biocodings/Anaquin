@@ -1,8 +1,8 @@
-#ifndef V_DATA_HPP
-#define V_DATA_HPP
+#ifndef VCF_DATA_HPP
+#define VCF_DATA_HPP
 
 #include "tools/tools.hpp"
-#include "data/standard.hpp"
+//#include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 
 namespace Anaquin
@@ -15,7 +15,7 @@ namespace Anaquin
         std::map<Variation, std::set<Variant>> m2v;
     };
 
-    struct VData : public std::map<ChrID, VDataData>
+    struct VCFData : public std::map<ChrID, VDataData>
     {
         inline std::set<Variant> vars() const
         {
@@ -63,9 +63,9 @@ namespace Anaquin
         }
     };
 
-    template <typename F> VData readVFile(const Reader &r, F f)
+    template <typename F> VCFData readVFile(const Reader &r, F f)
     {
-        VData c2d;
+        VCFData c2d;
         
         ParserVCF::parse(r, [&](const Variant &x)
         {
@@ -77,7 +77,7 @@ namespace Anaquin
         return c2d;
     }
     
-    inline VData readVFile(const Reader &r)
+    inline VCFData readVFile(const Reader &r)
     {
         return readVFile(r, [](const Variant &) {});
     }

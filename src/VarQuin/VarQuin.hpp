@@ -6,32 +6,6 @@
 
 namespace Anaquin
 {
-    struct SequinVariant
-    {
-        enum class Context
-        {
-            Common,
-            VeryLowGC,
-            LowGC,
-            HighGC,
-            VeryHighGC,
-            ShortDinRep,  // Dinucleotide repeats
-            LongDinRep,   // Dinucleotide repeats
-            ShortHompo,
-            LongHompo,
-            ShortQuadRep, // Quad-nucleotide repeats
-            LongQuadRep,  // Quad-nucleotide repeats
-            ShortTrinRep, // Trinucleotide repeats
-            LongTrinRep,  // Trinucleotide repeats
-            Cancer,
-        } ctx;
-        
-        Genotype gt;
-        
-        // Copy number
-        unsigned copy = 1;
-    };
-
     inline std::string gt2str(Genotype x)
     {
         switch (x)
