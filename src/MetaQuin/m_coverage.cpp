@@ -235,7 +235,7 @@ static Scripts generateRLinear(const FileName &src, const MCoverage::Stats &stat
                                           "Input Concentration (log2)",
                                           "Measured K-mer coverage (log2)",
                                           "log2(data$Input)",
-                                          "log2(data$Abund)",
+                                          "log2(data$Observed)",
                                           "input",
                                           true);
         }
