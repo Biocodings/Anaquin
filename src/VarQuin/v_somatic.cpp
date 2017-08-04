@@ -41,18 +41,18 @@ static void writeAllele(const VSomatic::Options &o)
                                            "log2(data$ExpFreq)",
                                            "log2(data$ObsFreq)",
                                            "input",
-                                           true,
+                                           false,
                                            PlotAllele()));
     o.writer->close();
 }
 
 static Scripts createROC(const FileName &file, const std::string &score, const std::string &refRat)
 {
-    extern Scripts PlotVGROC();
+    extern Scripts PlotVCROC();
     extern Path __output__;
     extern std::string __full_command__;
     
-    return (boost::format(PlotVGROC()) % date()
+    return (boost::format(PlotVCROC()) % date()
                                        % __full_command__
                                        % __output__
                                        % file
@@ -554,10 +554,10 @@ static void writeSummary(const FileName &file,
     
     const auto summary = "-------VarSomatic Summary Statistics\n\n"
                          "-------VarSomatic Output Results\n\n"
-                         "       Reference variant annotation:      %1%\n"
-                         "       Reference sequin regions:          %2%\n\n"
-                         "       Variants identified in sample:     %3%\n"
-                         "       Variants identified in sequins:    %4%\n\n"
+                         "       Reference variant annotation: %1%\n"
+                         "       Reference sequin regions:     %2%\n\n"
+                         "       Sample variant file:          %3%\n"
+                         "       Sequins variant file:         %4%\n\n"
                          "       Number of sample variants (within regions): %5%\n"
                          "       Number of sequin variants (sequin regions): %6%\n\n"
                          "-------Diagnostic performance by variant\n\n"
@@ -619,8 +619,8 @@ static void writeSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(summary) % VCFRef()                             // 1
                                             % BedRef()                             // 2
-                                            % seqs                                 // 3
-                                            % (endo.empty() ? "-" : endo)          // 4
+                                            % (endo.empty() ? "-" : endo)          // 3
+                                            % seqs                                 // 4
                                             % E3()                                 // 5
                                             % (c_nSNP + c_nDel + c_nIns)           // 6
                                             % (r.nType(Variation::SNP) +
