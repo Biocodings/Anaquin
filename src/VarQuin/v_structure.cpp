@@ -433,6 +433,10 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
     const auto es = analyzeE(endo, o);
     const auto ss = analyzeS(seqs, o);
     
+    o.info("TP: " + std::to_string(ss.oc.tp()));
+    o.info("FP: " + std::to_string(ss.oc.fp()));
+    o.info("FN: " + std::to_string(ss.oc.fn()));
+    
     /*
      * Generating VarStructure_summary.stats
      */
