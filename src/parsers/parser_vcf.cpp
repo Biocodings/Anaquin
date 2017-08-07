@@ -47,7 +47,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
         x.qual   = line->qual;
         x.filter = (bcf_has_filter(hdr, line, pass) == 1) ? Filter::Pass : Filter::NotFilted;
 
-        auto info1 = [&](const std::string &key)
+        auto infos = [&](const std::string &key)
         {
             if (bcf_get_info_string(hdr, line, key.c_str(), &ps, &c) > 0)
             {
@@ -55,7 +55,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
             }
         };
         
-        auto info2 = [&](const std::string &key)
+        auto infof = [&](const std::string &key)
         {
             if (bcf_get_info_float(hdr, line, key.c_str(), &pf, &c) > 0)
             {
@@ -63,7 +63,7 @@ void ParserVCF::parse(const Reader &r, Functor f)
             }
         };
 
-        auto info3 = [&](const std::string &key)
+        auto infoi = [&](const std::string &key)
         {
             if (bcf_get_info_int32(hdr, line, key.c_str(), &pi, &c) > 0)
             {
@@ -71,17 +71,18 @@ void ParserVCF::parse(const Reader &r, Functor f)
             }
         };
         
-        info1("CS");
-        info1("CX");
-        info1("GN");
-        info1("GT");
-        info2("AF");
-        info2("CP");
-        info3("DP");
+        infos("CS");
+        infos("CX");
+        infos("GN");
+        infos("GT");
+        infof("AF");
+        infof("CP");
+        infoi("DP");
+        infoi("SVLEN");
         
-        info3("QSI");        // Strelka
-        info3("QSS");        // Strelka        
-        info2("SomaticEVS"); // Strelka
+        infoi("QSI");        // Strelka
+        infoi("QSS");        // Strelka
+        infof("SomaticEVS"); // Strelka
         
         if (x.iff.count("AF")) { x.allF  = x.iff.at("AF"); }
         if (x.ifi.count("DP")) { x.depth = x.ifi.at("DP"); }
