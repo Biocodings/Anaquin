@@ -47,6 +47,11 @@ void ParserVCF::parse(const Reader &r, Functor f)
         x.qual   = line->qual;
         x.filter = (bcf_has_filter(hdr, line, pass) == 1) ? Filter::Pass : Filter::NotFilted;
 
+        if (x.alt == "." || x.alt == "")
+        {
+            continue;
+        }
+        
         auto infos = [&](const std::string &key)
         {
             if (bcf_get_info_string(hdr, line, key.c_str(), &ps, &c) > 0)
@@ -117,12 +122,39 @@ void ParserVCF::parse(const Reader &r, Functor f)
                 x.ff[to] = *(pf+i);
             }
         };
+
+        fi("TAR", "TAR_1_1", 0);
+        fi("TAR", "TAR_1_2", 1);
+        fi("TAR", "TAR_2_1", 2);
+        fi("TAR", "TAR_2_2", 3);
         
+        fi("TIR", "TIR_1_1", 0);
+        fi("TIR", "TIR_1_2", 1);
+        fi("TIR", "TIR_2_1", 2);
+        fi("TIR", "TIR_2_2", 3);
+
         fi("DP", "DP_1", 0);
         fi("DP", "DP_2", 1);
         ff("AF", "AF_1", 0);
         ff("AF", "AF_2", 1);
         
+        fi("AU", "AU_1_1", 0);
+        fi("AU", "AU_1_2", 1);
+        fi("AU", "AU_2_1", 2); // Tumor Tier-1
+        fi("AU", "AU_2_2", 3);
+        fi("CU", "CU_1_1", 0);
+        fi("CU", "CU_1_2", 1);
+        fi("CU", "CU_2_1", 2); // Tumor Tier-1
+        fi("CU", "CU_2_2", 3);
+        fi("GU", "GU_1_1", 0);
+        fi("GU", "GU_1_2", 1);
+        fi("GU", "GU_2_1", 2); // Tumor Tier-1
+        fi("GU", "GU_2_2", 3);
+        fi("TU", "TU_1_1", 0);
+        fi("TU", "TU_1_2", 1);
+        fi("TU", "TU_2_1", 2); // Tumor Tier-1
+        fi("TU", "TU_2_2", 3);
+
         /*
          * Eg: "AD_1_1" -> first value in the first sample
          *     "AD_2_1" -> firsr value in the second sample

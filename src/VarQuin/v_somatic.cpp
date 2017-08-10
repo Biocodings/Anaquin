@@ -93,6 +93,173 @@ VSomatic::EStats VSomatic::analyzeE(const FileName &file, const Options &o)
     return stats;
 }
 
+/*
+ * Strelka implementation
+ */
+
+static bool isStrelka(const Variant &x)
+{
+    auto isSNP = [&]()
+    {
+        return x.fi.count("AU_2_1") &&
+               x.fi.count("CU_2_1") &&
+               x.fi.count("GU_2_1") &&
+               x.fi.count("TU_2_1") &&
+               x.fi.count("AU_2_2") &&
+               x.fi.count("CU_2_2") &&
+               x.fi.count("GU_2_2") &&
+               x.fi.count("TU_2_2");
+    };
+    
+    auto isInd = [&]()
+    {
+        return x.fi.count("TAR_1_1") &&
+               x.fi.count("TAR_1_2") &&
+               x.fi.count("TAR_2_1") &&
+               x.fi.count("TAR_2_2") &&
+               x.fi.count("TIR_1_1") &&
+               x.fi.count("TIR_1_2") &&
+               x.fi.count("TIR_2_1") &&
+               x.fi.count("TIR_2_2");
+    };
+
+    assert(isSNP() || isInd());
+    return isSNP() || isInd();
+}
+
+static Counts strelkaNormalT(const Variant &x, const Sequence &a)
+{
+    switch (x.type())
+    {
+        case SNP:
+        {
+            if (a == "A") { return x.fi.at("AU_1_1"); }
+            if (a == "C") { return x.fi.at("CU_1_1"); }
+            if (a == "G") { return x.fi.at("GU_1_1"); }
+            else          { return x.fi.at("TU_1_1"); }
+            break;
+        }
+
+        case Deletion:
+        case Insertion:
+        {
+            if (a == x.ref)      { return x.fi.at("TAR_1_1"); }
+            else if (a == x.alt) { return x.fi.at("TIR_1_1"); }
+            else { throw std::runtime_error("Unknown: " + a); }
+        }
+
+        default:        { return NAN; }
+    }
+}
+
+static Counts strelkaTumorT(const Variant &x, const Sequence &a)
+{
+    switch (x.type())
+    {
+        case SNP:
+        {
+            if (a == "A") { return x.fi.at("AU_2_1"); }
+            if (a == "C") { return x.fi.at("CU_2_1"); }
+            if (a == "G") { return x.fi.at("GU_2_1"); }
+            else          { return x.fi.at("TU_2_1"); }
+            break;
+        }
+            
+        case Deletion:
+        case Insertion:
+        {
+            if (a == x.ref)      { return x.fi.at("TAR_2_1"); }
+            else if (a == x.alt) { return x.fi.at("TIR_2_1"); }
+            else { throw std::runtime_error("Unknown: " + a); }
+        }
+
+        default: { return NAN; }
+    }
+}
+
+// Depth for reference allele in normal sample
+static Counts strelkaNormalDPR(const Variant &x)
+{
+    return strelkaNormalT(x, x.ref);
+}
+
+// Depth for variant allele in normal sample
+static Counts strelkaNormalDPV(const Variant &x)
+{
+    return strelkaNormalT(x, x.alt);
+}
+
+// Depth for reference allele in tumor sample
+static Counts strelkaTumorDPR(const Variant &x)
+{
+    return strelkaTumorT(x, x.ref);
+}
+
+// Depth for variant allele in tumor sample
+static Counts strelkaTumorDPV(const Variant &x)
+{
+    return strelkaTumorT(x, x.alt);
+}
+
+static Proportion strelkaNormalAF(const Variant &x)
+{
+    const auto r = strelkaNormalDPR(x);
+    const auto v = strelkaNormalDPV(x);
+    return ((Proportion) v) / (r + v);
+}
+
+static Proportion strelkaTumorAF(const Variant &x)
+{
+    const auto r = strelkaTumorDPR(x);
+    const auto v = strelkaTumorDPV(x);
+    return ((Proportion) v) / (r + v);
+}
+
+// Depth for reference allele in normal sample
+static Proportion normalDPR(const Variant &x)
+{
+    if (isStrelka(x)) { return strelkaNormalDPR(x); }
+    else              { return NAN; }
+}
+
+// Depth for variant allele in normal sample
+static Proportion normalDPV(const Variant &x)
+{
+    if (isStrelka(x)) { return strelkaNormalDPV(x); }
+    else              { return NAN; }
+}
+
+// Depth for reference allele in tumor sample
+static Proportion tumorDPR(const Variant &x)
+{
+    if (isStrelka(x)) { return strelkaTumorDPR(x); }
+    else              { return NAN; }
+}
+
+// Depth for variant allele in tumor sample
+static Proportion tumorDPV(const Variant &x)
+{
+    if (isStrelka(x)) { return strelkaTumorDPV(x); }
+    else              { return NAN; }
+}
+
+// Measured allele frequency for normal
+static Proportion normalAF(const Variant &x)
+{
+    if (x.ff.count("AF_1"))    { return x.ff.at("AF_1");    }
+    else if (isStrelka(x))     { return strelkaNormalAF(x); }
+    else                       { return NAN; }
+}
+
+// Measured allele frequency for tumor
+static Proportion tumorAF(const Variant &x)
+{
+    if (x.ff.count("AF_2"))    { return x.ff.at("AF_2");   }
+    else if (x.ff.count("AF")) { return x.ff.at("AF");     }
+    else if (isStrelka(x))     { return strelkaTumorAF(x); }
+    else                       { return NAN; }
+}
+
 VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -215,10 +382,11 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             
             stats.tps.push_back(m);
             
+            // Expected allele frequency for tumor
             const auto exp = r.af(m.var->name);
-            const auto obs = x.ff.at("AF_2"); // Allele frequency for tumor
-            
-            A_ASSERT(!isnan(exp));
+
+            // Measured allele frequency for tumor
+            auto obs = tumorAF(x);
             
             // Eg: 2821292107
             const auto id = toString(key);
@@ -393,7 +561,7 @@ static void writeQuins(const FileName &file,
                        const VSomatic::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%%17%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13$.2f\t%14$.2f\t%15%\t%16%%17%";
     
     o.generate(file);
     o.writer->open(file);
@@ -434,15 +602,15 @@ static void writeQuins(const FileName &file,
                                                    % i.cID
                                                    % i.l.start
                                                    % "TP"
-                                                   % FORMAT_I("AD_1_1")
-                                                   % FORMAT_I("AD_1_2")
-                                                   % FORMAT_I("AD_2_1")
-                                                   % FORMAT_I("AD_2_2")
+                                                   % normalDPR(c)
+                                                   % normalDPV(c)
+                                                   % tumorDPR(c)
+                                                   % tumorDPV(c)
                                                    % FORMAT_I("DP_1")
                                                    % FORMAT_I("DP_2")
                                                    % r.af(i.name)
-                                                   % FORMAT_F("AF_1")
-                                                   % FORMAT_F("AF_2")                             
+                                                   % normalAF(c)
+                                                   % tumorAF(c)
                                                    % toString(c.qual)
                                                    % ctx2Str(sv.ctx)
                                                    % var2str(i.type())
@@ -518,15 +686,15 @@ static void writeDetected(const FileName &file,
                                                    % i.qry.cID
                                                    % i.qry.l.start
                                                    % label
-                                                   % _FI_("AD_1_1")
-                                                   % _FI_("AD_1_2")
-                                                   % _FI_("AD_2_1")
-                                                   % _FI_("AD_2_2")
+                                                   % normalDPR(i.qry)
+                                                   % normalDPV(i.qry)
+                                                   % tumorDPR(i.qry)
+                                                   % tumorDPV(i.qry)
                                                    % _FI_("DP_1")
                                                    % _FI_("DP_2")
                                                    % (sID != "-" ? std::to_string(r.af(sID)) : "-")
-                                                   % _FF_("AF_1")
-                                                   % _FF_("AF_2")
+                                                   % normalAF(i.qry)
+                                                   % tumorAF(i.qry)
                                                    % toString(i.qry.qual)
                                                    % ctx
                                                    % var2str(i.qry.type())
