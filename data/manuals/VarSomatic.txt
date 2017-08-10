@@ -30,12 +30,14 @@
      Required:
         -rvcf        Reference variant annotation file in VCF format
         -rbed        Reference <i>in silico</i> coordinate annotation file in BED format
-        -usample     User-generated somatic variants for sample-derived in VCF format
         -usequin     User-generated somatic variants for sequin-derived in VCF format
 
      Optional:
-        -o = output  Directory in which the output files are written to
-
+        -o = output    Directory in which the output files are written to
+        -edge = 0      Edge effects width in nucleotide bases
+        -usample       User-generated somatic variants for sample-derived in VCF format
+        -method = all  Should only the filtered variants ("PASS" in VCF) be considered? Possible values are "pass" and "all".
+        
 <b>OUTPUTS</b>
     VarSomatic_summary.stats - gives the summary statistics
     VarSomatic_sequins.csv   - gives detailed statistics for each sequin
