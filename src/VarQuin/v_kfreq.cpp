@@ -100,7 +100,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
                         "       Synthetic: %2%\n"
                         "       Mixture file: %3%\n\n"
                         "-------Detected sequins\n\n"
-                        "       Synthetic: %4%\n"
+                        "       Synthetic: %4%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
                         "       Slope:       %7%\n"
                         "       Correlation: %8%\n"
