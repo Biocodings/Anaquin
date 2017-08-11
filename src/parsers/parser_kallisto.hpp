@@ -23,9 +23,9 @@ namespace Anaquin
 
         struct Data
         {
-            ChrID cID;
+            ChrID cID; // TODO: Fix this
             
-            // Eg: R1_101_1
+            // Eg: Target ID
             IsoformID id;
 
             // Estimated abundance
@@ -76,7 +76,6 @@ namespace Anaquin
                     Tokens::split(line, "\t", toks);
                     
                     d.id    = toks[TargetID];
-                    d.cID   = Standard::instance().r_rna.seqsL1().count(d.id) ? ChrIS : "endo";
                     d.abund = s2d(toks[TPM]);
                     
                     f(d, p);

@@ -39,7 +39,13 @@ template <typename T> void update(RExpress::Stats &stats,
     const auto &r = Standard::instance().r_rna;
     const auto &l = r.seqsL1();
     
-    if (isChrIS(x.cID))
+    auto cID = x.cID;
+    if (cID == "") // TODO: Quick fix for Kallisto
+    {
+        cID = r.seqsL1().count(x.id) ? ChrIS : "endo";
+    }
+    
+    if (isChrIS(cID))
     {
         SequinID id;
         Concent  exp = NAN;

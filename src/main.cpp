@@ -17,7 +17,7 @@
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
-#include "VarQuin/v_ksom.hpp"
+#include "VarQuin/v_kfreq.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_sample.hpp"
@@ -130,7 +130,7 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   Tool::VarSample      },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
-    { "VarKSomatic",    Tool::VarKSomatic    },
+    { "VarKFreq",       Tool::VarKFreq       },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -160,7 +160,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKSomatic,  { OPT_U_SEQS, OPT_R_CNV, OPT_R_CON, OPT_R_AF } },
+    { Tool::VarKFreq,     { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_R_CON } },
@@ -340,7 +340,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarTrim();
     extern Scripts VarAlign();
     extern Scripts VarSomatic();
-    extern Scripts VarKAbund();
+    extern Scripts VarKFreq();
     extern Scripts VarSample();
     extern Scripts VarConjoint();
     extern Scripts VarStructure();
@@ -368,7 +368,7 @@ static Scripts manual(Tool tool)
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarSample:      { return VarSample();      }
-        case Tool::VarKSomatic:    { return VarKAbund();      }
+        case Tool::VarKFreq:       { return VarKFreq();       }
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
@@ -526,10 +526,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.logger->close();
 #endif
 }
-
-/*
- * Template functions for analyzing
- */
 
 template <typename Analyzer, typename Files> void analyze(const Files &files, typename Analyzer::Options o = typename Analyzer::Options())
 {
@@ -1115,11 +1111,11 @@ void parse(int argc, char ** argv)
         case Tool::VarCopy:
         case Tool::VarFlip:
         case Tool::VarTrim:
+        case Tool::VarKFreq:
         case Tool::VarAlign:
         case Tool::VarDetect:
         case Tool::VarSample:
         case Tool::VarSomatic:
-        case Tool::VarKSomatic:
         case Tool::VarConjoint:
         case Tool::VarStructure:
         {
@@ -1186,12 +1182,9 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case Tool::VarKSomatic:
+                    case Tool::VarKFreq:
                     {
-                        readL1(std::bind(&Standard::addAF,   &s, std::placeholders::_1), OPT_R_AF,  r);
-                        readL2(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readL3(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readL4(std::bind(&Standard::addCNV,  &s, std::placeholders::_1), OPT_R_CNV, r);
+                        readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
                         break;
                     }
 
@@ -1204,7 +1197,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);                break; }
-                case Tool::VarKSomatic: { analyze_1<VarKSomatic>(OPT_U_SEQS);          break; }
+                case Tool::VarKFreq:    { analyze_1<VarKFreq>(OPT_U_SEQS);             break; }
                 case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS);            break; }
                 case Tool::VarAlign:    { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
 

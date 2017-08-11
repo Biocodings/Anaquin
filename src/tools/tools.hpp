@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace Anaquin
 {
@@ -32,11 +33,9 @@ namespace Anaquin
         return boost::algorithm::join(x, d);
     }
     
-    inline bool isStarted(const Tok &x, const Tok &y)
+    inline bool isEnded(const Tok &x, const Tok &y)
     {
-        return std::equal(x.begin(),
-                          x.begin() + std::min(x.size(), y.size()),
-                          y.begin() );
+        return boost::algorithm::ends_with(x, y);
     }
     
     // Eg: "C_12_D" to "C_12"

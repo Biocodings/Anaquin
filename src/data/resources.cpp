@@ -1,17 +1,13 @@
 #include <string>
 #include <algorithm>
 
-/*
- * Manuals
- */
-
 #include "resources/VarCopy.txt"
-#include "resources/VarDetect.txt"
 #include "resources/anaquin.txt"
 #include "resources/VarFlip.txt"
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
-#include "resources/VarKAbund.txt"
+#include "resources/VarKFreq.txt"
+#include "resources/VarDetect.txt"
 #include "resources/VarSomatic.txt"
 #include "resources/VarConjoint.txt"
 #include "resources/VarStructure.txt"
@@ -70,7 +66,7 @@ Scripts VarTrim()       { return ToString(data_manuals_VarTrim_txt);      }
 Scripts VarFlip()       { return ToString(data_manuals_VarFlip_txt);      }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
-Scripts VarKAbund()     { return ToString(data_manuals_VarKAbund_txt);    }
+Scripts VarKFreq()      { return ToString(data_manuals_VarKFreq_txt);     }
 Scripts VarSample()     { return ToString(data_manuals_VarSubsample_txt); }
 Scripts VarDetect()     { return ToString(data_manuals_VarDetect_txt);    }
 Scripts VarSomatic()    { return ToString(data_manuals_VarSomatic_txt);   }
