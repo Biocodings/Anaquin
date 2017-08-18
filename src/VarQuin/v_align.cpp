@@ -340,8 +340,8 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     A_ASSERT(isnan(x->base.pc()) || (x->base.pc() >= 0.0 && x->base.pc() <= 1.0));
     A_ASSERT(isnan(x->base.sn()) || (x->base.sn() >= 0.0 && x->base.sn() <= 1.0));
 
-    A_ASSERT(y->base.pc() >= 0.0 && y->base.pc() <= 1.0);
-    A_ASSERT(y->base.sn() >= 0.0 && y->base.sn() <= 1.0);
+//    A_ASSERT(y->base.pc() >= 0.0 && y->base.pc() <= 1.0);
+//    A_ASSERT(y->base.sn() >= 0.0 && y->base.sn() <= 1.0);
 
     return stats;
 }

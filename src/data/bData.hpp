@@ -183,7 +183,10 @@ namespace Anaquin
             // Name of the region? Locus of the region if not specified.
             const auto rkey = !x.name.empty() ? x.name : x.l.key();
             
-            A_ASSERT(!c2d[x.cID].r2d.count(rkey));
+            if (c2d[x.cID].r2d.count(rkey))
+            {
+                throw std::runtime_error("Duplicate. " + x.cID + " " + toString(x.l.start-1) + "-" + toString(x.l.end));
+            }
             
             // Eg: chr1 0 248956422 chr1
             c2d[x.cID].r2d[rkey] = x;
