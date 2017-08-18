@@ -185,7 +185,7 @@ namespace Anaquin
             
             if (c2d[x.cID].r2d.count(rkey))
             {
-                throw std::runtime_error("Duplicate. " + x.cID + " " + toString(x.l.start-1) + "-" + toString(x.l.end));
+                throw std::runtime_error("Duplicate in input reference annoation file. " + x.cID + " " + toString(x.l.start-1) + "-" + toString(x.l.end));
             }
             
             // Eg: chr1 0 248956422 chr1
