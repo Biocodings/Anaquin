@@ -95,7 +95,7 @@ namespace Anaquin
                 return (Proportion) endo->nMap / (endo->nMap + seqs->nMap);
             }
             
-            // Proportion of alignments for endogenous
+            // Proportion of alignments for sequins
             inline Proportion pSeqs() const
             {
                 return 1.0 - pEndo();
