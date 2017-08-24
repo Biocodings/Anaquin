@@ -20,7 +20,7 @@ Limit SequinStats::limitQuant() const
     return limit;
 }
 
-SequinStats::Data SequinStats::data(bool shouldLog) const
+SequinStats::Data SequinStats::data(bool shouldLog, bool ignoreZero) const
 {
     Data r;
     
@@ -33,24 +33,27 @@ SequinStats::Data SequinStats::data(bool shouldLog) const
     {
         if (!isnan(p.second.x) && !isnan(p.second.y))
         {
-            const auto x = f(p.second.x);
-            const auto y = f(p.second.y);
-            
-            r.x.push_back(x);
-            r.y.push_back(y);
-            r.ids.push_back(p.first);
-            
-            r.id2x[p.first] = x;
-            r.id2y[p.first] = y;
+            if (!ignoreZero || p.second.y != 0.0)
+            {
+                const auto x = f(p.second.x);
+                const auto y = f(p.second.y);
+                
+                r.x.push_back(x);
+                r.y.push_back(y);
+                r.ids.push_back(p.first);
+                
+                r.id2x[p.first] = x;
+                r.id2y[p.first] = y;                
+            }
         }
     }
     
     return r;
 }
 
-LinearModel SequinStats::linear(bool shouldLog) const
+LinearModel SequinStats::linear(bool shouldLog, bool ignoreZero) const
 {
-    const auto d = data(shouldLog);
+    const auto d = data(shouldLog, ignoreZero);
     
     LinearModel lm;
     
@@ -58,7 +61,7 @@ LinearModel SequinStats::linear(bool shouldLog) const
     {
         A_CHECK(!d.x.empty() && !d.y.empty(), "Failed to perform linear regression. Empty inputs.");
         A_CHECK(std::adjacent_find(d.x.begin(), d.x.end(), std::not_equal_to<double>()) != d.x.end(),
-                        "Failed to perform linear regression. Flat mixture.");
+                        "Failed to perform linear regression. Flat mixture?");
 
         const auto m = SS::linearModel(d.y, d.x);
 

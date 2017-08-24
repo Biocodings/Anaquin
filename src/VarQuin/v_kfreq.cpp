@@ -92,7 +92,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
     o.writer->open("VarKFreq_summary.stats");
     
     const auto &r = Standard::instance().r_var;
-    const auto ls = stats.linear();
+    
+    // Log2 and skip zeros to keep results consistent with R
+    const auto ls = stats.linear(true, true);
 
     const auto format = "-------VarKFreq Output Results\n\n"
                         "       Summary for input: %1%\n\n"
@@ -106,14 +108,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
                         "       Correlation: %8%\n"
                         "       R2:          %9%\n"
                         "       F-statistic: %10%\n"
-                        "       P-value:     %11%\n"
-                        "       SSM:         %12%, DF: %13%\n"
-                        "       SSE:         %14%, DF: %15%\n"
-                        "       SST:         %16%, DF: %17%\n";
+                        "       P-value:     %11%\n";
     
     const auto limit = stats.limitQuant();
 
-    o.writer->write((boost::format(format) % src              // 1
+    o.writer->write((boost::format(format) % src               // 1
                                            % r.seqsL1().size() // 2
                                            % AFRef()           // 3
                                            % stats.size()      // 4
@@ -124,12 +123,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
                                            % ls.R2             // 9
                                            % ls.F              // 10
                                            % ls.p              // 11
-                                           % ls.SSM            // 12
-                                           % ls.SSM_D          // 13
-                                           % ls.SSE            // 14
-                                           % ls.SSE_D          // 15
-                                           % ls.SST            // 16
-                                           % ls.SST_D          // 17
                     ).str());
     o.writer->close();
 }

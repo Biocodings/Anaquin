@@ -93,11 +93,10 @@ namespace Anaquin
 
         Limit limitQuant() const;
         
-        // Return the x-values and y-values after filtering
-        Data data(bool shouldLog) const;
+        // Return the values after filtering
+        Data data(bool shouldLog, bool ignoreZero) const;
         
-        // Compute a simple linear regression model. By default, this function assumes log-transformation.
-        LinearModel linear(bool shouldLog = true) const;
+        LinearModel linear(bool shouldLog = true, bool ignoreZero = false) const;
     };
 }
 

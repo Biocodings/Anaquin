@@ -522,7 +522,7 @@ def readMeta(file):
 #
 #   Eg: python kReport.py RnaReport <Kallisto index> <meta file> <reference mixture> <output PDF>
 #
-# Note: please give full path
+# Note: please give full path. The software only spports RNA-Seq for now.
 #
 if __name__ == '__main__':
     # Which sequin?
