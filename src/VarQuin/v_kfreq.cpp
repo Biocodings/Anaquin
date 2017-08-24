@@ -114,23 +114,22 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
     const auto limit = stats.limitQuant();
 
     o.writer->write((boost::format(format) % src              // 1
-                                          % r.seqsL1().size() // 2
-                                          % AFRef()           // 3
-                                          % stats.size()      // 4
-                                          % limit.abund       // 5
-                                          % limit.id          // 6
-                                          % ls.m              // 7
-                                          % ls.r              // 8
-                                          % ls.R2             // 9
-                                          % ls.F              // 10
-                                          % ls.p              // 11
-                                          % ls.SSM            // 12
-                                          % ls.SSM_D          // 13
-                                          % ls.SSE            // 14
-                                          % ls.SSE_D          // 15
-                                          % ls.SST            // 16
-                                          % ls.SST_D          // 17
-                     // 17
+                                           % r.seqsL1().size() // 2
+                                           % AFRef()           // 3
+                                           % stats.size()      // 4
+                                           % limit.abund       // 5
+                                           % limit.id          // 6
+                                           % ls.m              // 7
+                                           % ls.r              // 8
+                                           % ls.R2             // 9
+                                           % ls.F              // 10
+                                           % ls.p              // 11
+                                           % ls.SSM            // 12
+                                           % ls.SSM_D          // 13
+                                           % ls.SSE            // 14
+                                           % ls.SSE_D          // 15
+                                           % ls.SST            // 16
+                                           % ls.SST_D          // 17
                     ).str());
     o.writer->close();
 }
