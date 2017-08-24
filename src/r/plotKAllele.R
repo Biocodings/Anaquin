@@ -16,4 +16,4 @@ input <- log2(data$ExpFreq)
 # Measured allele frequency (y-axis)
 measured <- log2(data$ObsFreq)
 
-plotLinear(row.names(data), input, measured, title='Allele Frequency', xlab='Expected Allele Frequency (log2)', ylab='Observed Allele Frequency (log2)', showLOQ=TRUE)
+plotLinear(row.names(data), input, measured, title='Allele Frequency', xlab='Expected Allele Frequency (log2)', ylab='Observed Allele Frequency (log2)', showLOQ=FALSE)
