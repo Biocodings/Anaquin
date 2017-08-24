@@ -1,0 +1,28 @@
+<b>ANAQUIN MANUAL</b>
+
+<b>NAME</b>
+    VarKFreq - Quantitative k-mer analysis for sequin allele frequnecy.
+
+<b>DESCRIPTION</b>
+     VarKFreq can be used for analyzing allele frequency without read alignments, useful
+     for quick troubleshooting.
+
+<b>SUPPORT SOFTWARE</b>
+     Kallisto (https://pachterlab.github.io/kallisto)
+     
+<b>USAGE EXAMPLE</b>
+     anaquin VarKFreq –raf reference.csv -usequin abundance.tsv
+
+<b>TOOL OPTIONS</b>
+     Required:
+        -raf                    Reference mixture for sequin allele frequency
+        -usequin                Generated Kallisto quantification file
+
+     Optional:
+        -o = output             Directory in which output files are written to
+
+<b>OUTPUTS</b>
+     VarCopy_summary.stats    - provides global summary statistics for sequin abundance
+     VarCopy_sequins.csv      - provides detailed statistics for each individual sequin
+     VarCopy_linear.R         - provides R-script for plotting a linear model between measured abundance (dependent variable)
+                                and input concentration (independent variable) on the logarithm scale
