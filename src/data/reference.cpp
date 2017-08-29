@@ -186,7 +186,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::VarKFreq:
+        case Tool::VarKmer:
         {
             build(r.l1);
             break;

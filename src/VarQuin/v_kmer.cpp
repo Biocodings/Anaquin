@@ -1,4 +1,4 @@
-#include "VarQuin/v_kfreq.hpp"
+#include "VarQuin/v_kmer.hpp"
 #include "parsers/parser_salmon.hpp"
 #include "parsers/parser_kallisto.hpp"
 
@@ -12,14 +12,14 @@ static bool isKallisto(const FileName &file)
     return isEnded(file, "abundance.tsv");
 }
 
-VarKFreq::Stats VarKFreq::analyze(const FileName &file, const Options &o)
+VarKmer::Stats VarKmer::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     // Ladder for allele frequency
     const auto l1 = r.seqsL1();
 
-    VarKFreq::Stats stats;
+    VarKmer::Stats stats;
 
     if (isKallisto(file))
     {
@@ -86,17 +86,17 @@ VarKFreq::Stats VarKFreq::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VarKFreq::Stats &stats, const VarKFreq::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VarKmer::Stats &stats, const VarKmer::Options &o)
 {
-    o.generate("VarKFreq_summary.stats");
-    o.writer->open("VarKFreq_summary.stats");
+    o.generate("VarKmer_summary.stats");
+    o.writer->open("VarKmer_summary.stats");
     
     const auto &r = Standard::instance().r_var;
     
     // Log2 and skip zeros to keep results consistent with R
     const auto ls = stats.linear(true, true);
 
-    const auto format = "-------VarKFreq Output Results\n\n"
+    const auto format = "-------VarKmer Output Results\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference Annotations\n\n"
                         "       Synthetic: %2%\n"
@@ -127,12 +127,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKFr
     o.writer->close();
 }
 
-static void writeQuins(const VarKFreq::Stats &stats, const VarKFreq::Options &o)
+static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate("VarKFreq_quins.csv");
-    o.writer->open("VarKFreq_quins.csv");
+    o.generate("VarKmer_quins.csv");
+    o.writer->open("VarKmer_quins.csv");
     o.writer->write((boost::format(format) % "Name"
                                            % "ObsRef"
                                            % "ObsVar"
@@ -155,27 +155,27 @@ static void writeQuins(const VarKFreq::Stats &stats, const VarKFreq::Options &o)
 
     extern std::string __full_command__;
     
-    o.generate("VarKFreq_linear.R");
-    o.writer->open("VarKFreq_linear.R");
+    o.generate("VarKmer_linear.R");
+    o.writer->open("VarKmer_linear.R");
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKFreq_quins.csv").str());
+                                                  % "VarKmer_quins.csv").str());
     o.writer->close();
 }
 
-void VarKFreq::report(const FileName &file, const Options &o)
+void VarKmer::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
     
     /*
-     * Generating VarKFreq_summary.stats
+     * Generating VarKmer_summary.stats
      */
     
-    writeSummary("VarKFreq_summary.stats", file, stats, o);
+    writeSummary("VarKmer_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKFreq_quins.csv and VarKFreq_linear.R
+     * Generating VarKmer_quins.csv and VarKmer_linear.R
      */
     
     writeQuins(stats, o);

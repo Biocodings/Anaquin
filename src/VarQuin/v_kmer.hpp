@@ -1,11 +1,11 @@
-#ifndef V_KFREQ_HPP
-#define V_KFREQ_HPP
+#ifndef V_KMER_HPP
+#define V_KMER_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VarKFreq
+    struct VarKmer
     {
         struct Stats : public SequinStats
         {

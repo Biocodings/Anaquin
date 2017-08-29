@@ -67,7 +67,7 @@ namespace Anaquin
         VarSample,
         VarTrim,
         VarFlip,
-        VarKFreq,
+        VarKmer,
         VarStructure,
         VarConjoint,
         
