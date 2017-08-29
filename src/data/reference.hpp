@@ -68,6 +68,7 @@ namespace Anaquin
         VarTrim,
         VarFlip,
         VarKmer,
+        VarSplit,
         VarStructure,
         VarConjoint,
         

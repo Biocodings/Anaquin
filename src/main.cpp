@@ -18,6 +18,7 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
+#include "VarQuin/v_split.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_calibrate.hpp"
@@ -131,6 +132,7 @@ static std::map<Value, Tool> _tools =
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
     { "VarKmer",        Tool::VarKmer        },
+    { "VarSplit",       Tool::VarSplit       },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -158,11 +160,12 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarCalibrate,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarCalibrate, { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
-    { Tool::VarKmer,     { OPT_U_SEQS, OPT_R_AF } },
+    { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarSplit,     { OPT_U_SEQS } },
     { Tool::VarConjoint,  { OPT_R_CON } },
 
     /*
@@ -1112,11 +1115,12 @@ void parse(int argc, char ** argv)
         case Tool::VarFlip:
         case Tool::VarTrim:
         case Tool::VarKmer:
+        case Tool::VarSplit:
         case Tool::VarAlign:
         case Tool::VarDetect:
-        case Tool::VarCalibrate:
         case Tool::VarSomatic:
         case Tool::VarConjoint:
+        case Tool::VarCalibrate:
         case Tool::VarStructure:
         {
             if (__showInfo__)
@@ -1128,6 +1132,11 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case Tool::VarSplit:
+                    {
+                        break;
+                    }
+                        
                     case Tool::VarAlign:
                     {
                         readReg1(OPT_R_BED, r);
@@ -1197,10 +1206,10 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);                break; }
-                case Tool::VarKmer:    { analyze_1<VarKmer>(OPT_U_SEQS);             break; }
+                case Tool::VarKmer:     { analyze_1<VarKmer>(OPT_U_SEQS);              break; }
                 case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS);            break; }
                 case Tool::VarAlign:    { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
-
+                case Tool::VarSplit:    { analyze_1<VSplit>(OPT_U_SEQS);               break; }                    
                 case Tool::VarTrim:
                 {
                     VTrim::Options o;

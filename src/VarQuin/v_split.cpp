@@ -5,16 +5,16 @@
 
 using namespace Anaquin;
 
-void VSplit::analyze(const FileName &file, const Options &o)
+void VSplit::report(const FileName &file, const Options &o)
 {
     o.info("Generating sample-derived alignments");
     o.info("Generating sequin-derived alignments");
     o.info("Generating sample-derived regional alignments");
     
     BAMWriter w1, w2, w3;
-    w1.open("A.bam");
-    w2.open("B.bam");
-    w3.open("C.bam");
+    w1.open(o.work + "/VarFlip_sample.bam");
+    w2.open(o.work + "/VarFlip_sample_regions.bam");
+    w3.open(o.work + "/VarFlip_sequins.bam");
     
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
@@ -24,7 +24,7 @@ void VSplit::analyze(const FileName &file, const Options &o)
         }
         
         /*
-         * Eg: samtools view -h -L hg38.bed normal.bam | grep -v chrev | samtools view -bS > sample_normal.bam
+         * Eg: samtools view -h -L hg38.bed alignments.bam | grep -v chrev | samtools view -bS > sample.bam
          */
         
         // Sample-derived reads
@@ -34,15 +34,24 @@ void VSplit::analyze(const FileName &file, const Options &o)
         }
         
         /*
-         * Eg: samtools view -b -L hg38rev.bed normal.bam > sequin_normal_reverse.bam
+         * Eg: samtools view -b -h -L sequin_regions.hg38.bed sample_normal.bam > sample_normal_regions.bam
+         */
+        
+        // Sample-derived regional reads
+        if (!isRevChr(x.cID) && !isRevChr(x.rnext))
+        {
+            // ....
+        }
+        
+        /*
+         * Eg: samtools view -b -L hg38rev.bed alignments.bam > sequins.bam
          */
         
         // Sequin-derived reads
         if (isRevChr(x.cID))
         {
             w3.write(x);
-        }
-        
+        }        
     }, true);
 
     w1.close();

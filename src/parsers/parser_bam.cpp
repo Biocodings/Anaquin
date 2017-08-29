@@ -137,21 +137,6 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
         
         const auto hasCID = t->core.tid >= 0;
         
-        if (details)
-        {
-            align.seq    = bam2seq(t);
-            align.qual   = bam2qual(t);
-            align.cigar  = hasCID ? bam2cigar(t) : "*";
-            align.tlen   = hasCID ? t->core.isize : 0;
-            align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
-            align.rnext  = hasCID ? bam2rnext(h, t) : "*";
-            
-            if (align.rnext == "=")
-            {
-                align.rnext = align.cID;
-            }
-        }
-
         #define isPairedEnd(b)    (((b)->core.flag&0x1)   != 0)
         #define isAllAligned(b)   (((b)->core.flag&0x2)   != 0)
         #define isUnmapped(b)     (((b)->core.flag&0x4)   != 0)
@@ -189,6 +174,21 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
             align.cID = "*";
             align.l.start = 0;
             align.l.end = 0;
+        }
+
+        if (details)
+        {
+            align.seq    = bam2seq(t);
+            align.qual   = bam2qual(t);
+            align.cigar  = hasCID ? bam2cigar(t) : "*";
+            align.tlen   = hasCID ? t->core.isize : 0;
+            align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
+            align.rnext  = hasCID ? bam2rnext(h, t) : "*";
+            
+            if (align.rnext == "=")
+            {
+                align.rnext = align.cID;
+            }
         }
 
         align.mapped = hasCID && !(t->core.flag & BAM_FUNMAP);

@@ -9,7 +9,7 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
 
-        static void analyze(const FileName &, const Options &);
+        static void report(const FileName &, const Options &);
     };
 }
 
