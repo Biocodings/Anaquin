@@ -726,7 +726,7 @@ static void writeSummary(const FileName &file,
                          "       Reference sequin regions:     %2%\n\n"
                          "       Sample variant file:          %3%\n"
                          "       Sequins variant file:         %4%\n\n"
-                         "       Number of sample variants (within regions): %5%\n"
+                         "       Number of sample variants (sequin regions): %5%\n"
                          "       Number of sequin variants (sequin regions): %6%\n\n"
                          "-------Diagnostic performance by variant\n\n"
                          "      *All variants\n"
