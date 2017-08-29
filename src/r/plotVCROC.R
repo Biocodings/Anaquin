@@ -22,6 +22,6 @@ data <- data[data$Context == 'Cancer' | data$Context == '-',]
 score <- %5%
 
 # Unique identifiers for the variants
-data$Unique <- paste(paste(data$Name, data$Pos, sep='_'), data$Type, sep='_')
+data$Unique <- paste(paste(data$Name, data$Pos, sep='_'), data$Mutation, sep='_')
 
 plotROC(data$Unique, score, data$ExpFreq, data$Label, title='ROC Plot (ranked by Allele Frequency)', legTitle='Allele Frequency', refGroup=%6%)
