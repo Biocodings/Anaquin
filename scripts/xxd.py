@@ -30,7 +30,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarSomatic.txt',
           'data/manuals/VarConjoint.txt',                    
           'data/manuals/VarStructure.txt',
-          'data/manuals/VarSubsample.txt',
+          'data/manuals/VarCalibrate.txt',
 
           'data/manuals/MetaCoverage.txt',
           'data/manuals/MetaSubsample.txt',

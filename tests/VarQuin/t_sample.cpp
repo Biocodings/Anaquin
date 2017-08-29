@@ -1,6 +1,6 @@
 //#include <catch.hpp>
 //#include "test.hpp"
-//#include "VarQuin/v_sample.hpp"
+//#include "VarQuin/v_calibrate.hpp"
 //
 //using namespace Anaquin;
 //
@@ -12,11 +12,11 @@
 //    clrTest();
 //    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 //    
-//    VSample::Options o;
-//    o.meth  = VSample::Method::Reads;
+//    VCalibrate::Options o;
+//    o.meth  = VCalibrate::Method::Reads;
 //    o.reads = 10;
 //    
-//    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+//    auto r = VCalibrate::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
 //    
 //    REQUIRE(r.count    == 4);
 //    
@@ -64,11 +64,11 @@
 //    
 //    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 //    
-//    VSample::Options o;
-//    o.meth = VSample::Method::Prop;
+//    VCalibrate::Options o;
+//    o.meth = VCalibrate::Method::Prop;
 //    o.p = 0;
 //    
-//    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+//    auto r = VCalibrate::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
 //    
 //    REQUIRE(r.count      == 4);
 //    REQUIRE(r.afterEndo  == Approx(7.30675));
@@ -114,10 +114,10 @@
 //    clrTest();
 //    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 //    
-//    VSample::Options o;
-//    o.meth = VSample::Method::Median;
+//    VCalibrate::Options o;
+//    o.meth = VCalibrate::Method::Median;
 //    
-//    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+//    auto r = VCalibrate::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
 //    
 //    REQUIRE(r.count      == 4);
 //    REQUIRE(r.afterEndo  == Approx(7.0));
@@ -163,10 +163,10 @@
 //    clrTest();
 //    Standard::instance().addVRef(Reader(AVA033Bed(), DataMode::String));
 //
-//    VSample::Options o;
-//    o.meth = VSample::Method::Mean;
+//    VCalibrate::Options o;
+//    o.meth = VCalibrate::Method::Mean;
 //    
-//    auto r = VSample::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
+//    auto r = VCalibrate::analyze("tests/data/genome.bam", "tests/data/sequins.bam", o);
 //    
 //    REQUIRE(r.count      == 4);
 //    REQUIRE(r.afterEndo  == Approx(7.30675));
@@ -213,13 +213,13 @@
 //    
 //    clrTest();
 //    Standard::instance().addVRef(Reader("tests/data/test2.bed"));
-//    auto r1 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", VSample::Options());
+//    auto r1 = VCalibrate::analyze("tests/data/test3.bam", "tests/data/test2.bam", VCalibrate::Options());
 //
 //    clrTest();
-//    VSample::Options o;
+//    VCalibrate::Options o;
 //    o.edge = 300;
 //    Standard::instance().addVRef(Reader("tests/data/test2.bed"), o.edge);
-//    auto r2 = VSample::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
+//    auto r2 = VCalibrate::analyze("tests/data/test3.bam", "tests/data/test2.bam", o);
 //    
 //    REQUIRE(r1.beforeEndo == Approx(62.600445186421815));
 //    REQUIRE(r1.beforeSeqs == Approx(973.71007234279352));

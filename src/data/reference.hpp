@@ -64,7 +64,7 @@ namespace Anaquin
         VarAlign,
         VarDetect,
         VarSomatic,
-        VarSample,
+        VarCalibrate,
         VarTrim,
         VarFlip,
         VarKmer,

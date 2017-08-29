@@ -2,7 +2,7 @@
 #define V_COPY_HPP
 
 #include "stats/analyzer.hpp"
-#include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_calibrate.hpp"
 
 namespace Anaquin
 {
@@ -10,7 +10,7 @@ namespace Anaquin
     {
         typedef unsigned CopyNumber;
         
-        struct Options : public VSample::Options
+        struct Options : public VCalibrate::Options
         {
             Options() {}
             
@@ -23,7 +23,7 @@ namespace Anaquin
             // Estimated normalization (genome)
             Proportion gNorm;
             
-            VSample::CalibrateStats before;
+            VCalibrate::CalibrateStats before;
             ParserBAMBED::Stats after;
             
             // Average coverage for the genome (2n)

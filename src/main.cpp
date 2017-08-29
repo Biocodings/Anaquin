@@ -20,7 +20,7 @@
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_detect.hpp"
-#include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_calibrate.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
@@ -127,10 +127,10 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       Tool::VarAlign       },
     { "VarDetect",      Tool::VarDetect      },
     { "VarSomatic",     Tool::VarSomatic     },
-    { "VarSubsample",   Tool::VarSample      },
+    { "VarCalibrate",   Tool::VarCalibrate   },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
-    { "VarKmer",       Tool::VarKmer       },
+    { "VarKmer",        Tool::VarKmer        },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -158,7 +158,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarSample,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
+    { Tool::VarCalibrate,    { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKmer,     { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
@@ -341,7 +341,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarSomatic();
     extern Scripts VarKmer();
-    extern Scripts VarSample();
+    extern Scripts VarCalibrate();
     extern Scripts VarConjoint();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
@@ -367,7 +367,7 @@ static Scripts manual(Tool tool)
         case Tool::VarTrim:        { return VarTrim();        }
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
-        case Tool::VarSample:      { return VarSample();      }
+        case Tool::VarCalibrate:      { return VarCalibrate();      }
         case Tool::VarKmer:       { return VarKmer();       }
         case Tool::VarDetect:      { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
@@ -667,7 +667,7 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
-    if (_p.tool == Tool::VarSample || _p.tool == Tool::RnaSubsample || _p.tool == Tool::VarTrim || _p.tool == Tool::VarCopy)
+    if (_p.tool == Tool::VarCalibrate || _p.tool == Tool::RnaSubsample || _p.tool == Tool::VarTrim || _p.tool == Tool::VarCopy)
     {
         __showInfo__ = false;
     }
@@ -732,7 +732,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case Tool::VarCopy:
-                    case Tool::VarSample:
+                    case Tool::VarCalibrate:
                     case Tool::VarDetect:
                     case Tool::VarSomatic:
                     case Tool::RnaExpress:
@@ -1114,7 +1114,7 @@ void parse(int argc, char ** argv)
         case Tool::VarKmer:
         case Tool::VarAlign:
         case Tool::VarDetect:
-        case Tool::VarSample:
+        case Tool::VarCalibrate:
         case Tool::VarSomatic:
         case Tool::VarConjoint:
         case Tool::VarStructure:
@@ -1160,7 +1160,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::VarSample:
+                    case Tool::VarCalibrate:
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
@@ -1290,20 +1290,20 @@ void parse(int argc, char ** argv)
                     
                     if (meth == "mean")
                     {
-                        o.meth = VSample::Method::Mean;
+                        o.meth = VCalibrate::Method::Mean;
                     }
                     else if (meth == "median")
                     {
-                        o.meth = VSample::Method::Median;
+                        o.meth = VCalibrate::Method::Median;
                     }
                     else if (meth == "reads")
                     {
-                        o.meth = VSample::Method::Reads;
+                        o.meth = VCalibrate::Method::Reads;
                     }
                     else if (isFloat())
                     {
                         o.p = stod(meth);
-                        o.meth = VSample::Method::Prop;
+                        o.meth = VCalibrate::Method::Prop;
                         
                         if (o.p <= 0.0)
                         {
@@ -1328,9 +1328,9 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarSample:
+                case Tool::VarCalibrate:
                 {
-                    VSample::Options o;
+                    VCalibrate::Options o;
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];
@@ -1345,20 +1345,20 @@ void parse(int argc, char ** argv)
                     
                     if (meth == "mean")
                     {
-                        o.meth = VSample::Method::Mean;
+                        o.meth = VCalibrate::Method::Mean;
                     }
                     else if (meth == "median")
                     {
-                        o.meth = VSample::Method::Median;
+                        o.meth = VCalibrate::Method::Median;
                     }
                     else if (meth == "reads")
                     {
-                        o.meth = VSample::Method::Reads;
+                        o.meth = VCalibrate::Method::Reads;
                     }
                     else if (isFloat())
                     {
                         o.p = stod(meth);
-                        o.meth = VSample::Method::Prop;
+                        o.meth = VCalibrate::Method::Prop;
                         
                         if (o.p <= 0.0)
                         {
@@ -1379,7 +1379,7 @@ void parse(int argc, char ** argv)
                         o.edge = stoi(_p.opts[OPT_EDGE]);
                     }
 
-                    analyze_2<VSample>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    analyze_2<VCalibrate>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }
 

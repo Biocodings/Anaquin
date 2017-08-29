@@ -109,8 +109,8 @@ static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.generate("VarKmer_quins.csv");
-    o.writer->open("VarKmer_quins.csv");
+    o.generate("VarKmer_quins.tsv");
+    o.writer->open("VarKmer_quins.tsv");
     o.writer->write((boost::format(format) % "Name"
                                            % "ObsRef"
                                            % "ObsVar"
@@ -138,7 +138,7 @@ static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
-                                                  % "VarKmer_quins.csv").str());
+                                                  % "VarKmer_quins.tsv").str());
     o.writer->close();
 }
 
@@ -153,7 +153,7 @@ void VarKmer::report(const FileName &file, const Options &o)
     writeSummary("VarKmer_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKmer_quins.csv and VarKmer_ladder.R
+     * Generating VarKmer_quins.tsv and VarKmer_ladder.R
      */
     
     writeQuins(stats, o);

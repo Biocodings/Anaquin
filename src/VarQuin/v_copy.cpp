@@ -27,7 +27,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     const auto r2 = r.regs2();
 
     // Check calibration statistics
-    stats.before = VSample::check(endo, seqs, r2, r1, o);
+    stats.before = VCalibrate::check(endo, seqs, r2, r1, o);
 
     /*
      * Average coverage on those genomic sequins (ignore others)
@@ -74,14 +74,14 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     }
     
     // Perform calibration by subsampling
-    stats.after = VSample::sample(seqs, stats.before.norms, r1, r2, o);
+    stats.after = VCalibrate::sample(seqs, stats.before.norms, r1, r2, o);
     
     /*
      * Genomic coverage for sequins and genome
      */
 
     std::set<double> cEndo, bSeqs, aSeqs;
-    VSample::afterSeqsC(r2, stats.before.c2v, o);
+    VCalibrate::afterSeqsC(r2, stats.before.c2v, o);
     
     for (const auto &i : stats.before.c2v)
     {
@@ -118,7 +118,7 @@ VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Op
     return stats;
 }
 
-static void writeQuins(const FileName &file, const VCopy::Stats &stats, const VSample::Options &o)
+static void writeQuins(const FileName &file, const VCopy::Stats &stats, const VCalibrate::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 

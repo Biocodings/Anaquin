@@ -11,7 +11,7 @@
 #include "resources/VarSomatic.txt"
 #include "resources/VarConjoint.txt"
 #include "resources/VarStructure.txt"
-#include "resources/VarSubsample.txt"
+#include "resources/VarCalibrate.txt"
 
 #include "resources/RnaAlign.txt"
 #include "resources/RnaReport.txt"
@@ -67,7 +67,7 @@ Scripts VarFlip()       { return ToString(data_manuals_VarFlip_txt);      }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
 Scripts VarKmer()      { return ToString(data_manuals_VarKmer_txt);     }
-Scripts VarSample()     { return ToString(data_manuals_VarSubsample_txt); }
+Scripts VarCalibrate()     { return ToString(data_manuals_VarCalibrate_txt); }
 Scripts VarDetect()     { return ToString(data_manuals_VarDetect_txt);    }
 Scripts VarSomatic()    { return ToString(data_manuals_VarSomatic_txt);   }
 Scripts VarConjoint()   { return ToString(data_manuals_VarConjoint_txt);  }
