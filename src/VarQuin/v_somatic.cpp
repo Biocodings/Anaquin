@@ -31,8 +31,8 @@ static void writeAllele(const VSomatic::Options &o)
 {
     extern Scripts PlotAllele();
     
-    o.generate("VarSomatic_allele.R");
-    o.writer->open("VarSomatic_allele.R");
+    o.generate("VarSomatic_ladder.R");
+    o.writer->open("VarSomatic_ladder.R");
     o.writer->write(RWriter::createRLinear("VarSomatic_sequins.csv",
                                            o.work,
                                            "Tumor Sample",
@@ -882,7 +882,7 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     o.writer->close();
     
     /*
-     * Generating VarSomatic_allele.R
+     * Generating VarSomatic_ladder.R
      */
     
     writeAllele(o);

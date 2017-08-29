@@ -231,7 +231,7 @@ void VFlip::report(const FileName &file, const Options &o)
             f2->close();
         }
         
-        bool isReverse(const ChrID &cID) { return isReverseChr(cID); }
+        bool isReverse(const ChrID &cID) { return isRevChr(cID); }
 
         void process(const ParserBAM::Data &x, const ParserBAM::Data &y, VFlip::Status status)
         {

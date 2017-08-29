@@ -29,7 +29,7 @@ namespace Anaquin
     }
     
     // Eg: chrev1, chrev10 etc...
-    inline bool isReverseChr(const ChrID &x)
+    inline bool isRevChr(const ChrID &x)
     {
         A_ASSERT(!x.empty());
         return x.find("rev") != std::string::npos;

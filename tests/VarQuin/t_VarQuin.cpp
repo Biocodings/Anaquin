@@ -4,25 +4,25 @@
 
 using namespace Anaquin;
 
-TEST_CASE("isReverseChr")
+TEST_CASE("isRevChr")
 {
-    REQUIRE(isReverseChr("chrev1"));
-    REQUIRE(isReverseChr("chrev2"));
-    REQUIRE(isReverseChr("chrev3"));
-    REQUIRE(isReverseChr("chrevX"));
+    REQUIRE(isRevChr("chrev1"));
+    REQUIRE(isRevChr("chrev2"));
+    REQUIRE(isRevChr("chrev3"));
+    REQUIRE(isRevChr("chrevX"));
     
-    REQUIRE(isReverseChr("rev1"));
-    REQUIRE(isReverseChr("rev2"));
-    REQUIRE(isReverseChr("rev3"));
-    REQUIRE(isReverseChr("revX"));
+    REQUIRE(isRevChr("rev1"));
+    REQUIRE(isRevChr("rev2"));
+    REQUIRE(isRevChr("rev3"));
+    REQUIRE(isRevChr("revX"));
     
-    REQUIRE(!isReverseChr("chr1"));
-    REQUIRE(!isReverseChr("chr2"));
-    REQUIRE(!isReverseChr("chr3"));
-    REQUIRE(!isReverseChr("chrX"));
+    REQUIRE(!isRevChr("chr1"));
+    REQUIRE(!isRevChr("chr2"));
+    REQUIRE(!isRevChr("chr3"));
+    REQUIRE(!isRevChr("chrX"));
 
-    REQUIRE(!isReverseChr("1"));
-    REQUIRE(!isReverseChr("2"));
-    REQUIRE(!isReverseChr("3"));
-    REQUIRE(!isReverseChr("X"));
+    REQUIRE(!isRevChr("1"));
+    REQUIRE(!isRevChr("2"));
+    REQUIRE(!isRevChr("3"));
+    REQUIRE(!isRevChr("X"));
 }
