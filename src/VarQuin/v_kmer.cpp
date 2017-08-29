@@ -25,6 +25,12 @@ VarKmer::Stats VarKmer::analyze(const FileName &file, const Options &o)
     {
         ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &x, const ParserProgress &)
         {
+            /*
+             * The input file might have other sequins (e.g. strucutral variation). This tool only deals
+             * with
+             *
+             */
+            
             if (l1.count(noLast(x.id, "_")))
             {
                 if (x.id[x.id.size() - 1] == 'R')
@@ -54,34 +60,6 @@ VarKmer::Stats VarKmer::analyze(const FileName &file, const Options &o)
             stats.add(i.first, r.input1(i.first), 1.0);
         }
     }
-    
-//    ParserSalmon::parse(Reader(file), [&](const ParserSalmon::Data &x, const ParserProgress &)
-//    {
-//        /*
-//         * Ladder for conjoint sequins (unit level)
-//         */
-//        
-//        if (l3.count(x.name))
-//        {
-//            stats.con[x.name] = x.abund;
-//        }
-//        
-//        /*
-//         * Ladder for allele frequency
-//         */
-//
-//        else if (l1.count(noLast(x.name, "_")))
-//        {
-//            if (x.name[x.name.size() - 1] == 'R')
-//            {
-//                stats.canR[noLast(x.name, "_")] = x.abund;
-//            }
-//            else
-//            {
-//                stats.canV[noLast(x.name, "_")] = x.abund;
-//            }
-//        }
-//    });
 
     return stats;
 }
@@ -141,12 +119,12 @@ static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
     
     for (const auto &i : stats)
     {
-        const auto obsR = (stats.r.count(i.first) ? stats.r.at(i.first) : 0);
-        const auto obsV =  stats.v.at(i.first);
+        const auto R = (stats.r.count(i.first) ? stats.r.at(i.first) : 0);
+        const auto V =  stats.v.at(i.first);
         
         o.writer->write((boost::format(format) % i.first
-                                               % obsR
-                                               % obsV
+                                               % R
+                                               % V
                                                % i.second.x
                                                % i.second.y).str());
     }
@@ -155,8 +133,8 @@ static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
 
     extern std::string __full_command__;
     
-    o.generate("VarKmer_linear.R");
-    o.writer->open("VarKmer_linear.R");
+    o.generate("VarKmer_ladder.R");
+    o.writer->open("VarKmer_ladder.R");
     o.writer->write((boost::format(PlotKAllele()) % date()
                                                   % __full_command__
                                                   % o.work
@@ -175,7 +153,7 @@ void VarKmer::report(const FileName &file, const Options &o)
     writeSummary("VarKmer_summary.stats", file, stats, o);
 
     /*
-     * Generating VarKmer_quins.csv and VarKmer_linear.R
+     * Generating VarKmer_quins.csv and VarKmer_ladder.R
      */
     
     writeQuins(stats, o);
