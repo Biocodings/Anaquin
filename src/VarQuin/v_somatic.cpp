@@ -33,7 +33,7 @@ static void writeAllele(const VSomatic::Options &o)
     
     o.generate("VarSomatic_ladder.R");
     o.writer->open("VarSomatic_ladder.R");
-    o.writer->write(RWriter::createRLinear("VarSomatic_sequins.csv",
+    o.writer->write(RWriter::createRLinear("VarSomatic_sequins.tsv",
                                            o.work,
                                            "Tumor Sample",
                                            "Expected Allele Frequency (log2)",
@@ -861,16 +861,16 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     writeSummary("VarSomatic_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarSomatic_detected.csv
+     * Generating VarSomatic_detected.tsv
      */
     
-    writeDetected("VarSomatic_detected.csv", ss, o);
+    writeDetected("VarSomatic_detected.tsv", ss, o);
     
     /*
-     * Generating VarSomatic_sequins.csv
+     * Generating VarSomatic_sequins.tsv
      */
     
-    writeQuins("VarSomatic_sequins.csv", ss, o);
+    writeQuins("VarSomatic_sequins.tsv", ss, o);
     
     /*
      * Generating VarSomatic_ROC.R
@@ -878,7 +878,7 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     
     o.generate("VarSomatic_ROC.R");
     o.writer->open("VarSomatic_ROC.R");
-    o.writer->write(createROC("VarSomatic_detected.csv", "data$Depth_Somatic", "'-'"));
+    o.writer->write(createROC("VarSomatic_detected.tsv", "data$Depth_Somatic", "'-'"));
     o.writer->close();
     
     /*
