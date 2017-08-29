@@ -24,7 +24,7 @@ void VSplit::report(const FileName &file, const Options &o)
         }
         
         /*
-         * Eg: samtools view -h -L hg38.bed alignments.bam | grep -v chrev | samtools view -bS > sample.bam
+         * Eg: samtools view -h -L hg38.bed test.bam | grep -v chrev | samtools view -bS > sample.bam
          */
         
         // Sample-derived reads
@@ -44,7 +44,7 @@ void VSplit::report(const FileName &file, const Options &o)
         }
         
         /*
-         * Eg: samtools view -b -L hg38rev.bed alignments.bam > sequins.bam
+         * Eg: samtools view -b -L hg38rev.bed normal.bam > sequins.bam
          */
         
         // Sequin-derived reads

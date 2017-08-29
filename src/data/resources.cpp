@@ -66,8 +66,8 @@ Scripts VarTrim()       { return ToString(data_manuals_VarTrim_txt);      }
 Scripts VarFlip()       { return ToString(data_manuals_VarFlip_txt);      }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
-Scripts VarKmer()      { return ToString(data_manuals_VarKmer_txt);     }
-Scripts VarCalibrate()     { return ToString(data_manuals_VarCalibrate_txt); }
+Scripts VarKmer()       { return ToString(data_manuals_VarKmer_txt);      }
+Scripts VarCalibrate()  { return ToString(data_manuals_VarCalibrate_txt); }
 Scripts VarDetect()     { return ToString(data_manuals_VarDetect_txt);    }
 Scripts VarSomatic()    { return ToString(data_manuals_VarSomatic_txt);   }
 Scripts VarConjoint()   { return ToString(data_manuals_VarConjoint_txt);  }

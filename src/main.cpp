@@ -126,7 +126,7 @@ static std::map<Value, Tool> _tools =
     { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
-    { "VarDetect",      Tool::VarDetect      },
+    { "VarGermline",      Tool::VarGermline      },
     { "VarSomatic",     Tool::VarSomatic     },
     { "VarCalibrate",   Tool::VarCalibrate   },
     { "VarTrim",        Tool::VarTrim        },
@@ -161,7 +161,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarCalibrate, { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarDetect,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
+    { Tool::VarGermline,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
@@ -370,9 +370,9 @@ static Scripts manual(Tool tool)
         case Tool::VarTrim:        { return VarTrim();        }
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
-        case Tool::VarCalibrate:      { return VarCalibrate();      }
-        case Tool::VarKmer:       { return VarKmer();       }
-        case Tool::VarDetect:      { return VarDetect();      }
+        case Tool::VarCalibrate:   { return VarCalibrate();   }
+        case Tool::VarKmer:        { return VarKmer();        }
+        case Tool::VarGermline:    { return VarDetect();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
@@ -736,7 +736,7 @@ void parse(int argc, char ** argv)
                 {
                     case Tool::VarCopy:
                     case Tool::VarCalibrate:
-                    case Tool::VarDetect:
+                    case Tool::VarGermline:
                     case Tool::VarSomatic:
                     case Tool::RnaExpress:
                     case Tool::VarStructure:
@@ -1117,7 +1117,7 @@ void parse(int argc, char ** argv)
         case Tool::VarKmer:
         case Tool::VarSplit:
         case Tool::VarAlign:
-        case Tool::VarDetect:
+        case Tool::VarGermline:
         case Tool::VarSomatic:
         case Tool::VarConjoint:
         case Tool::VarCalibrate:
@@ -1182,7 +1182,7 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::VarDetect:
+                    case Tool::VarGermline:
                     case Tool::VarSomatic:
                     {
                         readReg1(OPT_R_BED, r);
@@ -1248,7 +1248,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case Tool::VarDetect:
+                case Tool::VarGermline:
                 {
                     VDetect::Options o;
                     

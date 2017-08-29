@@ -120,8 +120,8 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
 
-    auto wTP = VCFWriter(); wTP.open(o.work + "/VarDetect_TP.vcf");
-    auto wFP = VCFWriter(); wFP.open(o.work + "/VarDetect_FP.vcf");
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarGermline_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarGermline_FP.vcf");
     
     ParserVCF::parse(file, [&](const Variant &x)
     {
@@ -462,8 +462,8 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName BedRef();
 
-    const auto summary = "-------VarDetect Summary Statistics\n\n"
-                         "-------VarDetect Output Results\n\n"
+    const auto summary = "-------VarGermline Summary Statistics\n\n"
+                         "-------VarGermline Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
                          "       Reference sequin regions:          %2%\n\n"
                          "       Variants identified in sample:      %3%\n"
@@ -658,35 +658,35 @@ void VDetect::report(const FileName &endo, const FileName &seqs, const Options &
     o.info("Generating statistics");
 
     /*
-     * Generating VarDetect_sequins.csv
+     * Generating VarGermline_sequins.csv
      */
     
-    writeQuins("VarDetect_sequins.csv", ss, o);
+    writeQuins("VarGermline_sequins.csv", ss, o);
 
     /*
-     * Generating VarDetect_summary.stats
+     * Generating VarGermline_summary.stats
      */
     
-    writeSummary("VarDetect_summary.stats", endo, seqs, es, ss, o);
+    writeSummary("VarGermline_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarDetect_detected.csv
+     * Generating VarGermline_detected.csv
      */
     
-    writeDetected("VarDetect_detected.csv", ss, o);
+    writeDetected("VarGermline_detected.csv", ss, o);
     
     /*
-     * Generating VarDetect_ROC.R
+     * Generating VarGermline_ROC.R
      */
     
-    o.generate("VarDetect_ROC.R");
-    o.writer->open("VarDetect_ROC.R");
-    o.writer->write(createROC("VarDetect_detected.csv", "data$Depth", "'FP'"));
+    o.generate("VarGermline_ROC.R");
+    o.writer->open("VarGermline_ROC.R");
+    o.writer->write(createROC("VarGermline_detected.csv", "data$Depth", "'FP'"));
     o.writer->close();
 
     /*
-     * Generating VarDetect_FN.vcf
+     * Generating VarGermline_FN.vcf
      */
 
-    writeFN("VarDetect_FN.vcf", ss.fns, o, true);
+    writeFN("VarGermline_FN.vcf", ss.fns, o, true);
 }
