@@ -7,7 +7,7 @@
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
 #include "resources/VarKmer.txt"
-#include "resources/VarDetect.txt"
+#include "resources/VarGermline.txt"
 #include "resources/VarSomatic.txt"
 #include "resources/VarConjoint.txt"
 #include "resources/VarStructure.txt"
@@ -68,7 +68,7 @@ Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
 Scripts VarKmer()       { return ToString(data_manuals_VarKmer_txt);      }
 Scripts VarCalibrate()  { return ToString(data_manuals_VarCalibrate_txt); }
-Scripts VarDetect()     { return ToString(data_manuals_VarDetect_txt);    }
+Scripts VarGermline()     { return ToString(data_manuals_VarGermline_txt);    }
 Scripts VarSomatic()    { return ToString(data_manuals_VarSomatic_txt);   }
 Scripts VarConjoint()   { return ToString(data_manuals_VarConjoint_txt);  }
 Scripts VarStructure()  { return ToString(data_manuals_VarStructure_txt); }

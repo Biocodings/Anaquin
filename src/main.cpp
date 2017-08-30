@@ -338,7 +338,7 @@ static void printUsage()
 static Scripts manual(Tool tool)
 {
     extern Scripts VarCopy();
-    extern Scripts VarDetect();
+    extern Scripts VarGermline();
     extern Scripts VarFlip();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
@@ -372,7 +372,7 @@ static Scripts manual(Tool tool)
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarCalibrate:   { return VarCalibrate();   }
         case Tool::VarKmer:        { return VarKmer();        }
-        case Tool::VarGermline:    { return VarDetect();      }
+        case Tool::VarGermline:    { return VarGermline();      }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
