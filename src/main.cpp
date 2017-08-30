@@ -1132,11 +1132,8 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case Tool::VarSplit:
-                    {
-                        break;
-                    }
-                        
+                    case Tool::VarSplit: { readReg1(OPT_R_BED, r); break; }
+
                     case Tool::VarAlign:
                     {
                         readReg1(OPT_R_BED, r);
@@ -1182,8 +1179,8 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-                    case Tool::VarGermline:
                     case Tool::VarSomatic:
+                    case Tool::VarGermline:
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);

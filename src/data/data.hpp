@@ -51,7 +51,6 @@ namespace Anaquin
     typedef long long Base;
     typedef long long Depth;
     typedef long long Counts;
-    typedef long long Quality;
     
     typedef std::map<SequinID, Counts> Hist;
 

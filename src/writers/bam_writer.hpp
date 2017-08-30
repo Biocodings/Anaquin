@@ -31,17 +31,20 @@ namespace Anaquin
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
 
-//                if (!_header)
-//                {
-//                    std::cout << std::string(h->text);
-//                }
+                if (!_header)
+                {
+                    if (sam_hdr_write(_fp, h) == -1)
+                    {
+                        throw std::runtime_error("sam_hdr_write failed");
+                    }
+                }
                 
                 if (sam_write1(_fp, h, b) == -1)
                 {
-                    throw std::runtime_error("Failed to SAM record");
+                    throw std::runtime_error("sam_write1 failed");
                 }
                 
-//                _header = true;
+                _header = true;
             }
 
             inline void create(const std::string &) override
