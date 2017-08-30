@@ -6,10 +6,6 @@
 #    %2%
 #
 
-#
-# Construct ROC curves for somatic mutation. This is a template, feel free to modify it.
-#
-
 library(plyr)
 library(Anaquin)
 

@@ -878,7 +878,7 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     
     o.generate("VarSomatic_ROC.R");
     o.writer->open("VarSomatic_ROC.R");
-    o.writer->write(createROC("VarSomatic_detected.tsv", "data$Depth_Somatic", "'-'"));
+    o.writer->write(createROC("VarSomatic_detected.tsv", "data$ObsFreq_Tumor", "'-'"));
     o.writer->close();
     
     /*
