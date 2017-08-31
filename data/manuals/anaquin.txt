@@ -28,7 +28,7 @@ Version: 2.0
             VarFlip       - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation
             VarTrim       - Trim artificial reads aligned to the sequin boundaries
             VarCalibrate  - Calibrate sequin- and sample-derived alignment coverage
-            VarGermline     - Compare the identification of variants from sequin- and sample-derived alignments
+            VarGermline   - Compare the identification of germline variants from sequin- and sample-derived alignments
             VarCopy       - Perform quantitative analysis on copy number variation
             VarStructure  - Compare the identification of structural variants from sequin- and sample-derived alignments
             VarConjoint   - Quantitative analysis of conjoint sequins
