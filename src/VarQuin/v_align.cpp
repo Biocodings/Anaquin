@@ -260,10 +260,10 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
                 p.length[rID]  = rs.length;
                 p.covered[rID] = rs.nonZeros;
                 
-                A_ASSERT(p.length.at(rID) >= o.edge);
+                A_ASSERT(p.length.at(rID) >= 2.0 * o.edge);
                 
                 // Sensitivty for the region
-                p.r2s[rID] = static_cast<Proportion>(p.covered.at(rID)) / (p.length.at(rID) - o.edge);
+                p.r2s[rID] = static_cast<Proportion>(p.covered.at(rID)) / (p.length.at(rID) - 2.0 * o.edge);
                 
                 A_ASSERT(p.covered[rID] <= p.length[rID]);
                 
@@ -323,7 +323,7 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
             
             p.base.tp() += ts.nonZeros;
             p.base.fp() += fs.nonZeros;
-            p.base.fn() += ts.length - ts.nonZeros;
+            p.base.fn() += (ts.length - (p.inters.at(cID).size() * 2.0 * o.edge)) - ts.nonZeros;
         }
         
         //A_ASSERT(!p.g2r.empty());
