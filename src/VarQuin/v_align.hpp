@@ -10,7 +10,8 @@ namespace Anaquin
     {
         struct Options : public AnalyzerOptions
         {
-            Base edge = 0;
+            Options() : edge(0) {}
+            Base edge;
         };
         
         struct Performance
