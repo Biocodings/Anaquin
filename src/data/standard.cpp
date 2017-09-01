@@ -215,15 +215,17 @@ template <typename F, typename T = VCFData> T parseVCF2(const Reader &r, F f)
     
     ParserVCF::parse(r, [&](const Variant &x)
     {
-        t[x.cID].b2v[x.l.start] = x;
-        t[x.cID].m2v[x.type()].insert(x);
-        f(x);
+        if (f(x))
+        {
+            t[x.cID].b2v[x.l.start] = x;
+            t[x.cID].m2v[x.type()].insert(x);
+        }
     });
     
     return t;
 }
 
-VCFLadder Standard::addVCF(const Reader &r)
+VCFLadder Standard::addVCF(const Reader &r, const std::set<SequinVariant::Context> &f)
 {
     typedef SequinVariant::Context Context;
     
@@ -242,6 +244,8 @@ VCFLadder Standard::addVCF(const Reader &r)
             
             v.vIDs.insert(x.name);
             v.sVars[x.key()] = s;
+            
+            return true;
         };
         
         auto shortVar = [&]()
@@ -292,6 +296,11 @@ VCFLadder Standard::addVCF(const Reader &r)
             s.ctx  = m1.at(x.ifs.at("CX"));
             s.copy = x.iff.at("CP");
             
+            if (f.count(s.ctx))
+            {
+                return false;
+            }
+            
             v.vIDs.insert(x.name);
             
             Concent af;
@@ -303,14 +312,16 @@ VCFLadder Standard::addVCF(const Reader &r)
                 case Genotype::Heterzygous: { af = 0.5;    break; }
             }
             
-            // Update the allele frequency ladder
+            // Update allele frequency ladder
             v.af.add(x.name, Mix_1, af);
             
             v.sVars[x.key()] = s;
+            
+            return true;
         };
         
-        if (x.isSV()) { longVar();  }
-        else          { shortVar(); }
+        if (x.isSV()) { return longVar();  }
+        else          { return shortVar(); }
     });
     
     return v;

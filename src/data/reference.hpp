@@ -8,8 +8,6 @@
 #include "data/minters.hpp"
 #include "data/dinters.hpp"
 #include "tools/gtf_data.hpp"
-//#include "RnaQuin/RnaQuin.hpp"
-//#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {

@@ -59,7 +59,7 @@ namespace Anaquin
              * ---------------- VarQuin analysis ----------------
              */
 
-            static VCFLadder addVCF(const Reader &r);
+            static VCFLadder addVCF(const Reader &, const std::set<SequinVariant::Context> &);
 
             Ladder addAF(const Reader &);   // From mixture file
             Ladder addCNV(const Reader &);  // From mixture file

@@ -100,7 +100,6 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     {
         Context::LowGC,
         Context::HighGC,
-        Context::Cancer,
         Context::Common,
         Context::LongHompo,
         Context::VeryLowGC,

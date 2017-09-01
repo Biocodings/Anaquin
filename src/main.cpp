@@ -453,11 +453,40 @@ template <typename F> void readL6(F f, Option key, UserReference &r)
     }
 }
 
-static void readVCF(Option opt, UserReference &r, Base trim = 0)
+static void readVCFOnlyCancer(Option opt, UserReference &r, Base trim = 0)
 {
+    typedef SequinVariant::Context Context;
+    
     if (!_p.opts[opt].empty())
     {
-        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]))));
+        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
+            std::set<Context>
+            {
+                Context::Common,
+                Context::VeryLowGC,
+                Context::LowGC,
+                Context::HighGC,
+                Context::VeryHighGC,
+                Context::ShortDinRep,
+                Context::LongDinRep,
+                Context::ShortHompo,
+                Context::LongHompo,
+                Context::ShortQuadRep,
+                Context::LongQuadRep,
+                Context::ShortTrinRep,
+                Context::LongTrinRep,
+            })));
+    }
+}
+
+static void readVCFNoCancer(Option opt, UserReference &r, Base trim = 0)
+{
+    typedef SequinVariant::Context Context;
+
+    if (!_p.opts[opt].empty())
+    {
+        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
+                    std::set<Context> { Context::Cancer })));
     }
 }
 
@@ -1145,7 +1174,7 @@ void parse(int argc, char ** argv)
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCF(OPT_R_VCF, r);
+                        readVCFNoCancer(OPT_R_VCF, r);
                         break;
                     }
 
@@ -1180,11 +1209,18 @@ void parse(int argc, char ** argv)
                     }
 
                     case Tool::VarSomatic:
+                    {
+                        readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                        readVCFOnlyCancer(OPT_R_VCF, r);
+                        break;
+                    }
+                        
                     case Tool::VarGermline:
                     {
                         readReg1(OPT_R_BED, r);
                         readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCF(OPT_R_VCF, r);
+                        readVCFNoCancer(OPT_R_VCF, r);
                         break;
                     }
                         
