@@ -8,7 +8,10 @@ namespace Anaquin
 {
     struct VAlign
     {
-        typedef AnalyzerOptions Options;
+        struct Options : public AnalyzerOptions
+        {
+            Base edge = 0;
+        };
         
         struct Performance
         {

@@ -131,23 +131,24 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
 
     VAlign::Stats stats;
     
-    auto initPerf = [&](Performance &p)
+    auto initP = [&](Performance &p)
     {
         p.inters = r.mInters();
         A_ASSERT(!p.inters.empty());
         
+        // For each chromosome...
         for (const auto &i : p.inters)
         {
             const auto &cID = i.first;
             
             /*
              * We'd like to know the length of the chromosome but we don't have the information.
-             * It doesn't matter because we can simply initalize it to the the maximum possible.
+             * It doesn't matter because we can initalize it to the the maximum possible.
              * The data structure in MergedInterval will be efficient not to waste memory.
              */
             
-            MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
-            p.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
+            p.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(
+                    new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max())));
         }
         
         return stats;
@@ -156,8 +157,8 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     stats.endo = std::shared_ptr<Performance>(new Performance());
     stats.seqs = std::shared_ptr<Performance>(new Performance());
     
-    initPerf(*(stats.endo));
-    initPerf(*(stats.seqs));
+    initP(*(stats.endo));
+    initP(*(stats.seqs));
     
 #ifdef DEBUG_VALIGN
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
@@ -236,7 +237,7 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
         Base tp = 0;
         Base fp = 0;
         
-        o.info("Analyzing " + std::to_string(p.inters.size()) + " regions");
+        o.info("Analyzing " + std::to_string(p.inters.size()) + " chromosomes");
         
         // For each chromosome...
         for (const auto &i : p.inters)
@@ -256,11 +257,13 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
                 
                 A_CHECK(rs.length, "Empty region: " + rID);
                 
-                p.length[rID] = rs.length;
+                p.length[rID]  = rs.length;
                 p.covered[rID] = rs.nonZeros;
                 
+                A_ASSERT(p.length.at(rID) >= o.edge);
+                
                 // Sensitivty for the region
-                p.r2s[rID] = static_cast<Proportion>(p.covered.at(rID)) / p.length.at(rID);
+                p.r2s[rID] = static_cast<Proportion>(p.covered.at(rID)) / (p.length.at(rID) - o.edge);
                 
                 A_ASSERT(p.covered[rID] <= p.length[rID]);
                 
@@ -585,10 +588,10 @@ void VAlign::report(const FileName &endo, const FileName &seqs, const Options &o
     writeSummary("VarAlign_summary.stats", endo, seqs, stats, o);
 
     /*
-     * Generating VarAlign_sequins.csv
+     * Generating VarAlign_sequins.tsv
      */
     
-    writeQuins("VarAlign_sequins.csv", stats, o);
+    writeQuins("VarAlign_sequins.tsv", stats, o);
 
     /*
      * Generating VarAlign_queries.stats (for debugging)

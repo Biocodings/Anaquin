@@ -1202,11 +1202,24 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);                break; }
-                case Tool::VarKmer:     { analyze_1<VarKmer>(OPT_U_SEQS);              break; }
-                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS);            break; }
-                case Tool::VarAlign:    { analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS); break; }
-                case Tool::VarSplit:    { analyze_1<VSplit>(OPT_U_SEQS);               break; }                    
+                case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);     break; }
+                case Tool::VarKmer:     { analyze_1<VarKmer>(OPT_U_SEQS);   break; }
+                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
+                case Tool::VarSplit:    { analyze_1<VSplit>(OPT_U_SEQS);    break; }
+
+                case Tool::VarAlign:
+                {
+                    VAlign::Options o;
+                    
+                    if (_p.opts.count(OPT_EDGE))
+                    {
+                        o.edge = stoi(_p.opts[OPT_EDGE]);
+                    }
+
+                    analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
+
                 case Tool::VarTrim:
                 {
                     VTrim::Options o;
