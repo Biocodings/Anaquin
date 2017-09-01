@@ -6,8 +6,6 @@ using namespace Anaquin;
 
 extern FileName BedRef();
 
-#define DEBUG_VALIGN
-
 #ifdef DEBUG_VALIGN
 #include <fstream>
 static std::ofstream __bWriter__;
