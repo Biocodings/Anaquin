@@ -658,10 +658,10 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarGermline_sequins.csv
+     * Generating VarGermline_sequins.tsv
      */
     
-    writeQuins("VarGermline_sequins.csv", ss, o);
+    writeQuins("VarGermline_sequins.tsv", ss, o);
 
     /*
      * Generating VarGermline_summary.stats
@@ -670,10 +670,10 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
     writeSummary("VarGermline_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarGermline_detected.csv
+     * Generating VarGermline_detected.tsv
      */
     
-    writeDetected("VarGermline_detected.csv", ss, o);
+    writeDetected("VarGermline_detected.tsv", ss, o);
     
     /*
      * Generating VarGermline_ROC.R
@@ -681,7 +681,7 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
     
     o.generate("VarGermline_ROC.R");
     o.writer->open("VarGermline_ROC.R");
-    o.writer->write(createROC("VarGermline_detected.csv", "data$Depth", "'FP'"));
+    o.writer->write(createROC("VarGermline_detected.tsv", "data$Depth", "'FP'"));
     o.writer->close();
 
     /*
