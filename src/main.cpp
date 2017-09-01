@@ -14,13 +14,13 @@
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
+#include "VarQuin/v_germ.hpp"
 #include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_split.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_detect.hpp"
 #include "VarQuin/v_calibrate.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_conjoint.hpp"
@@ -1247,18 +1247,18 @@ void parse(int argc, char ** argv)
                     
                 case Tool::VarGermline:
                 {
-                    VDetect::Options o;
+                    VGerm::Options o;
                     
                     if (_p.opts.count(OPT_METHOD))
                     {
                         const auto &x = _p.opts.at(OPT_METHOD);
                         
-                        if (x == "pass")     { o.meth = VDetect::Method::Passed;       }
-                        else if (x == "all") { o.meth = VDetect::Method::NotFiltered;  }
+                        if (x == "pass")     { o.meth = VGerm::Method::Passed;      }
+                        else if (x == "all") { o.meth = VGerm::Method::NotFiltered; }
                         else                 { throw InvalidValueException("-method", x); }
                     }
                     
-                    analyze_2<VDetect>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    analyze_2<VGerm>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }
                 

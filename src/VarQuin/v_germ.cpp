@@ -1,4 +1,4 @@
-#include "VarQuin/v_detect.hpp"
+#include "VarQuin/v_germ.hpp"
 #include "writers/vcf_writer.hpp"
 #include "parsers/parser_vcf.hpp"
 
@@ -41,11 +41,11 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
                                        % refRat).str();
 }
 
-VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
+VGerm::EStats VGerm::analyzeE(const FileName &file, const Options &o)
 {
     const auto r2 = Standard::instance().r_var.regs2();
     
-    VDetect::EStats stats;
+    VGerm::EStats stats;
 
     stats.g2c[Genotype::Homozygous];
     stats.g2c[Genotype::Heterzygous];
@@ -59,7 +59,7 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
     {
         ParserVCF::parse(file, [&](const Variant &x)
         {
-            if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
+            if (o.meth == VGerm::Method::Passed && x.filter != Filter::Pass)
             {
                 return;
             }
@@ -74,12 +74,12 @@ VDetect::EStats VDetect::analyzeE(const FileName &file, const Options &o)
     return stats;
 }
 
-VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
+VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto r2 = Standard::instance().r_var.regs2();
 
-    VDetect::SStats stats;
+    VGerm::SStats stats;
     
     typedef SequinVariant::Context Context;
     
@@ -125,7 +125,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     
     ParserVCF::parse(file, [&](const Variant &x)
     {
-        if (o.meth == VDetect::Method::Passed && x.filter != Filter::Pass)
+        if (o.meth == VGerm::Method::Passed && x.filter != Filter::Pass)
         {
             return;
         }
@@ -315,7 +315,7 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
     {
         if (!stats.findTP(i.name))
         {
-            VDetect::Match m;
+            VGerm::Match m;
             
             m.var = r.findVar(i.cID, i.l);
             m.rID = i.name;
@@ -329,8 +329,8 @@ VDetect::SStats VDetect::analyzeS(const FileName &file, const Options &o)
 }
 
 static void writeQuins(const FileName &file,
-                       const VDetect::SStats &ss,
-                       const VDetect::Options &o)
+                       const VGerm::SStats &ss,
+                       const VGerm::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
@@ -401,8 +401,8 @@ static void writeQuins(const FileName &file,
 }
 
 static void writeDetected(const FileName &file,
-                          const VDetect::SStats &ss,
-                          const VDetect::Options &o)
+                          const VGerm::SStats &ss,
+                          const VGerm::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
@@ -422,7 +422,7 @@ static void writeDetected(const FileName &file,
                                            % "Context"
                                            % "Mutation").str());
 
-    auto f = [&](const std::vector<VDetect::Match> &x, const std::string &label)
+    auto f = [&](const std::vector<VGerm::Match> &x, const std::string &label)
     {
         for (const auto &i : x)
         {
@@ -453,9 +453,9 @@ static void writeDetected(const FileName &file,
 static void writeSummary(const FileName &file,
                          const FileName &endo,
                          const FileName &seqs,
-                         const VDetect::EStats &es,
-                         const VDetect::SStats &ss,
-                         const VDetect::Options &o)
+                         const VGerm::EStats &es,
+                         const VGerm::SStats &ss,
+                         const VGerm::Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -646,7 +646,7 @@ template <typename T, typename O> void writeFN(const FileName &file, const T &x,
     wFN.close();
 }
 
-void VDetect::report(const FileName &endo, const FileName &seqs, const Options &o)
+void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
     const auto es = analyzeE(endo, o);
     const auto ss = analyzeS(seqs, o);

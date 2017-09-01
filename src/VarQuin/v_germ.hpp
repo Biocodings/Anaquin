@@ -1,5 +1,5 @@
-#ifndef V_DETECT_HPP
-#define V_DETECT_HPP
+#ifndef V_GERM_HPP
+#define V_GERM_HPP
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
@@ -11,7 +11,7 @@ namespace Anaquin
     
     typedef std::map<VarHashKey, Counts> VarHashTable;
 
-    struct VDetect
+    struct VGerm
     {
         struct Match
         {
