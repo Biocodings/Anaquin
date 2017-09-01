@@ -6,7 +6,10 @@ using namespace Anaquin;
 
 extern FileName BedRef();
 
+#define DEBUG_VALIGN
+
 #ifdef DEBUG_VALIGN
+#include <fstream>
 static std::ofstream __bWriter__;
 #endif
 
@@ -479,12 +482,12 @@ void VAlign::writeBQuins(const FileName &file,
     o.writer->write((boost::format(format) % "Chrom" % "Position" % "Label").str());
     
     // For each chromosome...
-    for (const auto &i : stats.data)
+    for (const auto &i : stats.seqs->data)
     {
         const auto &cID = i.first;
         
         // For each region in the chromosome...
-        for (const auto &j : stats.inters.at(cID).data())
+        for (const auto &j : stats.seqs->inters.at(cID).data())
         {
             // For each mapped fragment in the region...
             for (const auto &k : j.second._data)
@@ -559,7 +562,7 @@ void VAlign::writeQueries(const FileName &file, const VAlign::Stats &stats, cons
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "Reads" % "Label").str());
 
-    for (const auto &i : stats.data)
+    for (const auto &i : stats.seqs->data)
     {
         for (const auto &j : i.second.afp)
         {
