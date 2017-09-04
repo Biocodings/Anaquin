@@ -10,9 +10,9 @@ namespace Anaquin
     {
         switch (x)
         {
-            case Genotype::Somatic:     { return "Somatic";     }
-            case Genotype::Homozygous:  { return "Homozygous";  }
-            case Genotype::Heterzygous: { return "Heterzygous"; }
+            case Genotype::Somatic:     { return "Somatic";      }
+            case Genotype::Homozygous:  { return "Homozygous";   }
+            case Genotype::Heterzygous: { return "Heterozygous"; }
         }
     }
 
