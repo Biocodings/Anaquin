@@ -206,9 +206,16 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
+        case Tool::VarFlip:
+        case Tool::VarSplit:
+        {
+            merge(r.r1->seqs());
+            build(r.r1);
+            break;
+        }
+            
         case Tool::VarTrim:
         case Tool::VarAlign:
-        case Tool::VarSplit:
         {
             merge(r.r1->seqs());
             build(r.r1, r.r2);

@@ -15,8 +15,13 @@ static const FileName AMBIG_2   = "VarFlip_ambiguous_2.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
+    VSplit::Options o2;
+    
+    o2.work   = o.work;
+    o2.logger = o.logger;
+    
     // Generate derived alignment files
-    VSplit::report(file, VSplit::Options());
+    VSplit::report(file, o2);
 
     Stats stats;
 

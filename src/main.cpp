@@ -1157,84 +1157,82 @@ void parse(int argc, char ** argv)
                 std::cout << "[INFO]: Variant Analysis" << std::endl;
             }
 
-            if (_p.tool != Tool::VarFlip)
+            switch (_p.tool)
             {
-                switch (_p.tool)
+                case Tool::VarFlip:  { readReg1(OPT_R_BED, r); break; }
+                case Tool::VarSplit: { readReg1(OPT_R_BED, r); break; }
+                    
+                case Tool::VarAlign:
                 {
-                    case Tool::VarSplit: { readReg1(OPT_R_BED, r); break; }
-
-                    case Tool::VarAlign:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        break;
-                    }
-
-                    case Tool::VarStructure:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCFNoCancer(OPT_R_VCF, r);
-                        break;
-                    }
-
-                    case Tool::VarConjoint:
-                    {
-                        readL1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readL2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readT1(std::bind(&Standard::addSeq2Unit, &s, std::placeholders::_1), OPT_R_CON, r);
-                        readT2(std::bind(&Standard::addUnit2Seq, &s, std::placeholders::_1), OPT_R_CON, r);
-                        break;
-                    }
-
-                    case Tool::VarCopy:
-                    {
-                        readL1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        break;
-                    }
-
-                    case Tool::VarCalibrate:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        break;
-                    }
-
-                    case Tool::VarTrim:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        break;
-                    }
-
-                    case Tool::VarSomatic:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCFOnlyCancer(OPT_R_VCF, r);
-                        break;
-                    }
-                        
-                    case Tool::VarGermline:
-                    {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCFNoCancer(OPT_R_VCF, r);
-                        break;
-                    }
-                        
-                    case Tool::VarKmer:
-                    {
-                        readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
-                        break;
-                    }
-
-                    default: { break; }
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    break;
                 }
-
-                Standard::instance().r_var.finalize(_p.tool, r);
+                    
+                case Tool::VarStructure:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readVCFNoCancer(OPT_R_VCF, r);
+                    break;
+                }
+                    
+                case Tool::VarConjoint:
+                {
+                    readL1(std::bind(&Standard::addCon1, &s, std::placeholders::_1), OPT_R_CON, r);
+                    readL2(std::bind(&Standard::addCon2, &s, std::placeholders::_1), OPT_R_CON, r);
+                    readT1(std::bind(&Standard::addSeq2Unit, &s, std::placeholders::_1), OPT_R_CON, r);
+                    readT2(std::bind(&Standard::addUnit2Seq, &s, std::placeholders::_1), OPT_R_CON, r);
+                    break;
+                }
+                    
+                case Tool::VarCopy:
+                {
+                    readL1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    break;
+                }
+                    
+                case Tool::VarCalibrate:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    break;
+                }
+                    
+                case Tool::VarTrim:
+                {
+                    readReg1(OPT_R_BED, r);
+                    break;
+                }
+                    
+                case Tool::VarSomatic:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readVCFOnlyCancer(OPT_R_VCF, r);
+                    break;
+                }
+                    
+                case Tool::VarGermline:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readVCFNoCancer(OPT_R_VCF, r);
+                    break;
+                }
+                    
+                case Tool::VarKmer:
+                {
+                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
+                    break;
+                }
+                    
+                default: { break; }
             }
+            
+            Standard::instance().r_var.finalize(_p.tool, r);
 
             switch (_p.tool)
             {
