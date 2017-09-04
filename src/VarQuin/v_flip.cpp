@@ -2,6 +2,7 @@
 #include "data/biology.hpp"
 #include "tools/errors.hpp"
 #include "VarQuin/v_flip.hpp"
+#include "VarQuin/v_split.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
@@ -14,6 +15,9 @@ static const FileName AMBIG_2   = "VarFlip_ambiguous_2.fq";
 
 VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
 {
+    // Generate derived alignment files
+    VSplit::report(file, VSplit::Options());
+
     Stats stats;
 
     stats.counts[Status::RevHang]            = 0;
@@ -28,7 +32,9 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
-    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &info)
+    o.logInfo("Parsing: " + o.work + "/VarFlip_sequins.bam");
+    
+    ParserBAM::parse(o.work + "/VarFlip_sequins.bam", [&](ParserBAM::Data &x, const ParserBAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
