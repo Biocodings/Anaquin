@@ -373,6 +373,7 @@ void VAlign::writeSummary(const FileName &file,
                           "       Reference annotation file: %1%\n"
                           "       Sample alignment file: %2%\n"
                           "       Sequin alignment file: %3%\n\n"
+                          "       Trimmed: %24% bases per region\n\n"
                           "-------Alignments\n\n"
                           "       Sample: %4% (%5%%%)\n"
                           "       Sequin: %6% (%7%%%)\n"
@@ -402,6 +403,7 @@ void VAlign::writeSummary(const FileName &file,
     const auto summary2 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
                           "       Sequin alignment file: %2%\n\n"
+                          "       Trimmed: %15% bases per region\n\n"
                           "-------Alignments\n\n"
                           "       Synthetic: %3% \n\n"
                           "-------Reference regions\n\n"
@@ -448,6 +450,7 @@ void VAlign::writeSummary(const FileName &file,
                                                  % endo->base.fn()       // 21
                                                  % (endo->base.tp() + endo->base.fn()) // 22
                                                  % endo->base.sn()       // 23
+                                                 % (2 * o.edge)          // 24
                          ).str());
     }
     else
@@ -466,6 +469,7 @@ void VAlign::writeSummary(const FileName &file,
                                                  % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 12
                                                  % seqs->base.sn()       // 13
                                                  % seqs->base.pc()       // 14
+                                                 % (2 * o.edge)          // 15
                          ).str());
     }
 
