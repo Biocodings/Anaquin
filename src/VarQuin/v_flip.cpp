@@ -1,5 +1,5 @@
+#include <thread>
 #include <algorithm>
-#include "data/biology.hpp"
 #include "tools/errors.hpp"
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_split.hpp"
@@ -13,7 +13,13 @@ static const FileName FLIPPED_2 = "VarFlip_flipped_2.fq";
 static const FileName AMBIG_1   = "VarFlip_ambiguous_1.fq";
 static const FileName AMBIG_2   = "VarFlip_ambiguous_2.fq";
 
-VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
+// Multi-threading...
+static VFlip::Impl *__impl__;
+
+// Multi-threading...
+VFlip::Stats __stats__;
+
+static void VarSplit(const FileName &file, const VFlip::Options &o)
 {
     VSplit::Options o2;
     
@@ -22,43 +28,47 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
     
     // Generate derived alignment files
     VSplit::report(file, o2);
+}
 
-    Stats stats;
-
-    stats.counts[Status::RevHang]            = 0;
-    stats.counts[Status::ForHang]            = 0;
-    stats.counts[Status::ReverseReverse]     = 0;
-    stats.counts[Status::ForwardForward]     = 0;
-    stats.counts[Status::ForwardReverse]     = 0;
-    stats.counts[Status::ReverseNotMapped]   = 0;
-    stats.counts[Status::ForwardNotMapped]   = 0;
-    stats.counts[Status::NotMappedNotMapped] = 0;
+static void VarFlip(const FileName &file, const VFlip::Options &o)
+{
+    typedef VFlip::Stats Stats;
+    typedef VFlip::Status Status;
+    
+    __stats__.counts[Status::RevHang]            = 0;
+    __stats__.counts[Status::ForHang]            = 0;
+    __stats__.counts[Status::ReverseReverse]     = 0;
+    __stats__.counts[Status::ForwardForward]     = 0;
+    __stats__.counts[Status::ForwardReverse]     = 0;
+    __stats__.counts[Status::ReverseNotMapped]   = 0;
+    __stats__.counts[Status::ForwardNotMapped]   = 0;
+    __stats__.counts[Status::NotMappedNotMapped] = 0;
     
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
     o.logInfo("Parsing: " + o.work + "/VarFlip_sequins.bam");
     
-    ParserBAM::parse(o.work + "/VarFlip_sequins.bam", [&](ParserBAM::Data &x, const ParserBAM::Info &info)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &i)
     {
-        if (info.p.i && !(info.p.i % 1000000))
+        if (i.p.i && !(i.p.i % 1000000))
         {
-            o.wait(std::to_string(info.p.i));
+            o.wait(std::to_string(i.p.i));
         }
-
+        
         if (!x.mapped)
         {
-            stats.nNA++;
+            __stats__.nNA++;
         }
-        else if (impl.isReverse(x.cID))
+        else if (__impl__->isReverse(x.cID))
         {
-            stats.nSeqs++;
+            __stats__.nSeqs++; // Reverse genome
         }
         else
         {
-            stats.nEndo++;
+            __stats__.nEndo++; // Forward genome
         }
-
+        
         if (!x.isPassed || x.isSecondary || x.isSupplement)
         {
             return;
@@ -80,7 +90,7 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
              * Only complement reads aligned to the reverse genome
              */
             
-            if (impl.isReverse(first->cID))
+            if (__impl__->isReverse(first->cID))
             {
                 if (first->isForward)
                 {
@@ -92,7 +102,7 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
                 }
             }
             
-            if (impl.isReverse(second->cID))
+            if (__impl__->isReverse(second->cID))
             {
                 if (second->isForward)
                 {
@@ -104,10 +114,10 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
                 }
             }
             
-            const auto bothRev =  impl.isReverse(first->cID) && impl.isReverse(second->cID);
-            const auto bothFor = !impl.isReverse(first->cID) && !impl.isReverse(second->cID);
-            const auto anyRev  =  impl.isReverse(first->cID) || impl.isReverse(second->cID);
-            const auto anyFor  = !impl.isReverse(first->cID) || !impl.isReverse(second->cID);
+            const auto bothRev =  __impl__->isReverse(first->cID) && __impl__->isReverse(second->cID);
+            const auto bothFor = !__impl__->isReverse(first->cID) && !__impl__->isReverse(second->cID);
+            const auto anyRev  =  __impl__->isReverse(first->cID) || __impl__->isReverse(second->cID);
+            const auto anyFor  = !__impl__->isReverse(first->cID) || !__impl__->isReverse(second->cID);
             const auto anyMap  =  first->mapped ||  second->mapped;
             const auto anyNMap = !first->mapped || !second->mapped;
             
@@ -138,12 +148,12 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
                 status = Status::NotMappedNotMapped;
             }
             
-            stats.counts[status]++;
-            impl.process(*first, *second, Status::ReverseReverse);
+            __stats__.counts[status]++;
+            __impl__->process(*first, *second, status);
             seenMates.erase(x.name);
         }
     }, true);
-
+    
     o.logInfo("Found: " + std::to_string(seenMates.size()) + " unpaired mates.");
     
     for (auto &i: seenMates)
@@ -152,20 +162,30 @@ VFlip::Stats VFlip::analyze(const FileName &file, const Options &o, Impl &impl)
         
         // Compute the complement (but not reverse)
         complement(i.second.seq);
-
-        if (impl.isReverse(i.second.cID))
+        
+        if (__impl__->isReverse(i.second.cID))
         {
-            stats.counts[Status::RevHang]++;
-            impl.process(i.second, i.second, Status::RevHang);
+            __stats__.counts[Status::RevHang]++;
+            __impl__->process(i.second, i.second, Status::RevHang);
         }
         else
         {
-            stats.counts[Status::ForHang]++;
-            impl.process(i.second, i.second, Status::ForHang);
+            __stats__.counts[Status::ForHang]++;
+            __impl__->process(i.second, i.second, Status::ForHang);
         }
     }
+}
 
-    return stats;
+VFlip::Stats VFlip::analyze(const FileName &file, const Options &o)
+{
+    std::thread t1(VarFlip, file, o);
+    std::thread t2(VarSplit, file, o);
+    
+    t1.join();
+    t2.join();
+
+    // Generated by flipping
+    return __stats__;
 }
 
 static void writeSummary(const FileName &file,
@@ -310,8 +330,9 @@ void VFlip::report(const FileName &file, const Options &o)
     };
     
     Impl impl(o);
+    __impl__ = &impl;
 
-    const auto stats = analyze(file, o, impl);
+    const auto stats = analyze(file, o);
     
     /*
      * Generating VarFlip_summary.stats

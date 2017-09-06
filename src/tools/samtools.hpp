@@ -12,11 +12,6 @@ namespace Anaquin
 {
     typedef std::string CigarStr;
     
-    // Avoid excessive heap allocation...
-    static std::stringstream __buf__;
-    
-    #define CLEAR_HTSLIB() { __buf__.str(""); }
-    
     static std::map<int, char> bam2char =
     {
         { BAM_CMATCH,     'M'  },
@@ -69,40 +64,40 @@ namespace Anaquin
     
     inline std::string bam2qual(bam1_t *x)
     {
-        CLEAR_HTSLIB();
+        std::stringstream buf;
         
         for (auto i = 0; i < x->core.l_qseq; ++i)
         {
-            __buf__ << (char) (bam_get_qual(x)[i] + 33);
+            buf << (char) (bam_get_qual(x)[i] + 33);
         }
         
-        return __buf__.str();
+        return buf.str();
     }
     
     inline std::string bam2seq(bam1_t *x)
     {
-        CLEAR_HTSLIB();
+        std::stringstream buf;
 
         for (auto i = 0; i < x->core.l_qseq; ++i)
         {
-            __buf__ << seq_nt16_str[bam_seqi(bam_get_seq(x),i)];
+            buf << seq_nt16_str[bam_seqi(bam_get_seq(x),i)];
         }
 
-        return __buf__.str();
+        return buf.str();
     }
     
     inline CigarStr bam2cigar(bam1_t *x)
     {
-        CLEAR_HTSLIB();
+        std::stringstream buf;
         const auto t = bam_get_cigar(x);
 
         for (auto i = 0; i < x->core.n_cigar; i++)
         {
-            __buf__ << std::to_string(bam_cigar_oplen(t[i]));
-            __buf__ << bam2char.at(bam_cigar_op(t[i]));
+            buf << std::to_string(bam_cigar_oplen(t[i]));
+            buf << bam2char.at(bam_cigar_op(t[i]));
         }
         
-        return __buf__.str();
+        return buf.str();
     }
 
     inline std::vector<int> bam2delta(bam1_t *x)
@@ -149,16 +144,16 @@ namespace Anaquin
 
     inline CigarStr bam2rcigar(bam1_t *x)
     {
-        CLEAR_HTSLIB();
+        std::stringstream buf;        
         const auto t = bam_get_cigar(x);
 
         for (int i = x->core.n_cigar - 1; i >= 0; i--)
         {
-            __buf__ << std::to_string(bam_cigar_oplen(t[i]));
-            __buf__ << bam2char.at(bam_cigar_op(t[i]));
+            buf << std::to_string(bam_cigar_oplen(t[i]));
+            buf << bam2char.at(bam_cigar_op(t[i]));
         }
         
-        return __buf__.str();
+        return buf.str();
     }
 
 #ifdef REVERSE_ALIGNMENT

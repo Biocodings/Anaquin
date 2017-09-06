@@ -36,7 +36,7 @@ namespace Anaquin
             virtual void process(const ParserBAM::Data &, const ParserBAM::Data &, Status) = 0;
         };
 
-        static Stats analyze(const FileName &, const Options &, Impl &);
+        static Stats analyze(const FileName &, const Options &);
         static void  report (const FileName &, const Options &o = Options());
     };
 }
