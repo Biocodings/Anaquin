@@ -75,7 +75,7 @@ TEST_CASE("VFlip_1")
 
     Impl impl;
     
-    const auto r = VFlip::analyze("tests/data/genome.bam", VFlip::Options(), impl);
+    const auto r = VFlip::analyze("tests/data/genome.bam", VFlip::Options());
 
     REQUIRE(impl.rever1.size()  == 112);
     REQUIRE(impl.rever2.size()  == 112);
