@@ -307,9 +307,9 @@ void VFlip::report(const FileName &file, const Options &o)
                 }
 
                 case Status::ForwardReverse:
-                case Status::ForwardForward:
-                case Status::ForwardNotMapped:
-                case Status::NotMappedNotMapped:
+                //case Status::ForwardForward:
+                //case Status::ForwardNotMapped:
+                //case Status::NotMappedNotMapped:
                 {
                     writePaired(a1, a2);
                     break;
@@ -321,6 +321,8 @@ void VFlip::report(const FileName &file, const Options &o)
                     writeSingle(h1);
                     break;
                 }
+                    
+                default: { break; }
             }
         }
 
