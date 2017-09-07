@@ -1,5 +1,6 @@
 #include <ss/stats.hpp>
 #include "tools/random.hpp"
+#include "VarQuin/v_trim.hpp"
 #include "VarQuin/v_calibrate.hpp"
 #include "writers/sam_writer.hpp"
 
@@ -263,13 +264,26 @@ VCalibrate::CalibrateStats VCalibrate::check(const FileName &endo,
 
 VCalibrate::Stats VCalibrate::analyze(const FileName &endo, const FileName &seqs, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+    
     o.analyze(endo);
     o.analyze(seqs);
 
     o.logInfo("Edge: " + std::to_string(o.edge));
     
-    const auto &r = Standard::instance().r_var;
+    if (o.trim)
+    {
+        VTrim::Options o2;
+        
+        o2.work   = o.work;
+        o2.logger = o.logger;
+        
+        // Generated trimmed alignment file
+        VTrim::analyze(seqs, o2);
+    }
     
+    const auto trimmed = o.trim ? o.work + "/VarTrim_trimmed.bam" : seqs;
+
     VCalibrate::Stats stats;
     
     // Regions to subsample after trimming
@@ -279,7 +293,7 @@ VCalibrate::Stats VCalibrate::analyze(const FileName &endo, const FileName &seqs
     const auto regs = r.regs1();
     
     // Check calibration statistics
-    stats.cStats = check(endo, seqs, tRegs, regs, o);
+    stats.cStats = check(endo, trimmed, tRegs, regs, o);
     
     const auto norms = stats.cStats.norms;
     stats.c2v = stats.cStats.c2v;
@@ -288,7 +302,7 @@ VCalibrate::Stats VCalibrate::analyze(const FileName &endo, const FileName &seqs
     const auto allBeforeSeqsC = stats.cStats.allBeforeSeqsC;
     
     // We have the normalization factors so we can proceed with subsampling.
-    const auto after = VCalibrate::sample(seqs, norms, regs, tRegs, o);
+    const auto after = VCalibrate::sample(trimmed, norms, regs, tRegs, o);
     
     stats.afterSeqs = VCalibrate::afterSeqsC(tRegs, stats.c2v, o);
     

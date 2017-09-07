@@ -19,7 +19,6 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
-#include "VarQuin/v_split.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_calibrate.hpp"
 #include "VarQuin/v_somatic.hpp"
@@ -126,7 +125,7 @@ static std::map<Value, Tool> _tools =
     { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
-    { "VarGermline",      Tool::VarGermline      },
+    { "VarGermline",    Tool::VarGermline    },
     { "VarSomatic",     Tool::VarSomatic     },
     { "VarCalibrate",   Tool::VarCalibrate   },
     { "VarTrim",        Tool::VarTrim        },
@@ -161,7 +160,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarCalibrate, { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarGermline,    { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
+    { Tool::VarGermline,  { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
@@ -367,12 +366,11 @@ static Scripts manual(Tool tool)
         case Tool::RnaReport:      { return RnaReport();      }
         case Tool::VarCopy:        { return VarCopy();        }
         case Tool::VarFlip:        { return VarFlip();        }
-        case Tool::VarTrim:        { return VarTrim();        }
         case Tool::VarSomatic:     { return VarSomatic();     }
         case Tool::VarAlign:       { return VarAlign();       }
         case Tool::VarCalibrate:   { return VarCalibrate();   }
         case Tool::VarKmer:        { return VarKmer();        }
-        case Tool::VarGermline:    { return VarGermline();      }
+        case Tool::VarGermline:    { return VarGermline();    }
         case Tool::VarConjoint:    { return VarConjoint();    }
         case Tool::VarStructure:   { return VarStructure();   }
         case Tool::MetaAssembly:   { return MetaAssembly();   }
@@ -1200,7 +1198,7 @@ void parse(int argc, char ** argv)
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     break;
                 }
-                    
+
                 case Tool::VarTrim:
                 {
                     readReg1(OPT_R_BED, r);
@@ -1239,7 +1237,6 @@ void parse(int argc, char ** argv)
                 case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);     break; }
                 case Tool::VarKmer:     { analyze_1<VarKmer>(OPT_U_SEQS);   break; }
                 case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
-                case Tool::VarSplit:    { analyze_1<VSplit>(OPT_U_SEQS);    break; }
 
                 case Tool::VarAlign:
                 {
@@ -1384,6 +1381,13 @@ void parse(int argc, char ** argv)
                 case Tool::VarCalibrate:
                 {
                     VCalibrate::Options o;
+                    
+                    if (_p.opts.count(OPT_TRIM))
+                    {
+                        if      (_p.opts[OPT_TRIM] == "both") { o.trim = true;  }
+                        else if (_p.opts[OPT_TRIM] == "none") { o.trim = false; }
+                        else { throw InvalidOptionException(_p.opts[OPT_TRIM]); }
+                    }
                     
                     // Eg: "mean", "median", "reads", "0.75"
                     const auto meth = _p.opts[OPT_METHOD];

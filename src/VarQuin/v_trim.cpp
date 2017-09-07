@@ -1,6 +1,7 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_trim.hpp"
-#include "writers/sam_writer.hpp"
+#include "writers/bam_writer.hpp"
+//#include "writers/sam_writer.hpp"
 #include "parsers/parser_bambed.hpp"
 
 extern Anaquin::FileName BedRef();
@@ -57,8 +58,10 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     stats.left  = stats.lTrim.size();
     stats.right = stats.rTrim.size();
     
-    SAMWriter writer;
-    writer.open("");
+    //SAMWriter w;
+    //w.open("");
+    BAMWriter w;
+    w.open(o.work + "/VarTrim_trimmed.bam");
     
     // Triming away the paired reads ...
     ParserBAMBED::parse(file, regs, [&](ParserBAM::Data &x, const ParserBAM::Info &info, const DInter *inter)
@@ -71,7 +74,7 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
         if (!stats.lTrim.count(x.name) && !stats.rTrim.count(x.name))
         {
             stats.after++;
-            writer.write(x);
+            w.write(x);
         }
         
         return ParserBAMBED::Response::OK;
@@ -81,7 +84,8 @@ VTrim::Stats VTrim::analyze(const FileName &file, const Options &o)
     {
         return x.size();
     });
-
+    
+    w.close();
     return stats;
 }
 

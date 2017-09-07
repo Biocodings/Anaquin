@@ -4,7 +4,6 @@
 #include <htslib/vcf.h>
 #include "VarQuin.hpp"
 #include "VarQuin/v_split.hpp"
-#include "writers/bam_writer.hpp"
 #include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;

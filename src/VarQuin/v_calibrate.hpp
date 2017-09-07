@@ -113,6 +113,9 @@ namespace Anaquin
             
             // Defined only if meth==Reads
             Counts reads = NAN;
+            
+            // Should we trim alignments before calibration?
+            bool trim = false;
         };
 
         static GenomeSequins tBefore(const CalibrateStats &, const ParserBAMBED::Stats &);
