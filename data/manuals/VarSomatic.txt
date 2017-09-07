@@ -43,5 +43,5 @@
     VarSomatic_sequins.csv   - gives detailed statistics for each sequin
     VarSomatic_detected.csv  - gives detailed statistics for detected variants
     VarSomatic_ROC.R         – R script that plots a ROC curve and report AUC statistics
-    VarSomatic_allele.R      - R script that plots linear model relating observed allele frequency (dependent variable)
+    VarSomatic_ladder.R      - R script that plots linear model relating observed allele frequency (dependent variable)
                                to expected allele frequency (independent variable) defined by reference variant file

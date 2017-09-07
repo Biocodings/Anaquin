@@ -13,19 +13,22 @@
      VarFlip supports the standard SAM/BAM file.
      
 <b>USAGE EXAMPLE</b>
-     anaquin VarFlip –usequin aligned.bam
+     anaquin VarFlip -rbed reference.bed –usequin aligned.bam
 
 <b>TOOL OPTIONS</b>
      Required:
+        -rbed        Annotation file (BED format) of sequin regions
         -usequin     Generated forward/reverse alignment file in SAM/BAM format
 
      Optional:
         -o = output  Directory in which output files are written to
 
 <b>OUTPUTS</b>
-     VarFlip_summary.stats  - provides the summary statistics
-     VarFlip_flipped_1.fq   - is the first paired-end sequence file for flipped reads
-     VarFlip_flipped_2.fq   - is the second paired-end for VarFlip_flipped_1.fq
-     VarFlip_ambiguous_1.fq - is the first paired-end sequence file for ambiguous reads
-     VarFlip_ambiguous_2.fq - is the second paired-end for VarFlip_ambig_1.fq
-     VarFlip_hanging.fq     - is the sequence file for hanging reads    
+     VarFlip_summary.stats      - provides the summary statistics
+     VarFlip_flipped_1.fq       - is the first paired-end sequence file for flipped reads
+     VarFlip_flipped_2.fq       - is the second paired-end for VarFlip_flipped_1.fq
+     VarFlip_ambiguous_1.fq     - is the first paired-end sequence file for ambiguous reads
+     VarFlip_ambiguous_2.fq     - is the second paired-end for VarFlip_ambig_1.fq
+     VarFlip_hanging.fq         - is the sequence file for hanging reads
+     VarFlip_sample.bam         - is the sample derived alignment file
+     VarFlip_sample_regions.bam - is the sample derived alignment file, filtered to sequin regions
