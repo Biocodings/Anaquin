@@ -101,43 +101,92 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Counts VarRef::nCNV(int c) const
+Counts VarRef::nCNV1(int c) const
 {
-    return countMap(_vcf->sVars, [&](VarKey, const SequinVariant &x)
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.copy == c ? 1 : 0;
     });
 }
 
-Counts VarRef::nGeno(Genotype g) const
+Counts VarRef::nGeno1(Genotype g) const
 {
-    return countMap(_vcf->sVars, [&](VarKey, const SequinVariant &x)
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.gt == g ? 1 : 0;
     });
 }
 
-Counts VarRef::nType(Variation x) const
+Counts VarRef::nType1(Variation x) const
 {
-    return _vcf->data.count_(x);
+    return _v1->data.count_(x);
 }
 
-Counts VarRef::nContext(SequinVariant::Context c) const
+SequinVariant::Context VarRef::ctx1(const Variant &x) const
 {
-    return countMap(_vcf->sVars, [&](VarKey, const SequinVariant &x)
+    return _v1->sVars.at(x.key()).ctx;
+}
+
+Counts VarRef::nCtx1(SequinVariant::Context c) const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
         return x.ctx == c ? 1 : 0;
     });
 }
 
-std::set<Variant> VarRef::vars() const
+std::set<Variant> VarRef::v1() const
 {
-    return _vcf->data.vars();
+    return _v1->data.vars();
 }
 
-const SequinVariant & VarRef::findSeqVar(long key) const
+const SequinVariant & VarRef::findSeqVar1(long key) const
 {
-    return _vcf->sVars.at(key);
+    return _v1->sVars.at(key);
+}
+
+Counts VarRef::nCNV2(int c) const
+{
+    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
+                    {
+                        return x.copy == c ? 1 : 0;
+                    });
+}
+
+Counts VarRef::nGeno2(Genotype g) const
+{
+    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
+                    {
+                        return x.gt == g ? 1 : 0;
+                    });
+}
+
+Counts VarRef::nType2(Variation x) const
+{
+    return _v2->data.count_(x);
+}
+
+SequinVariant::Context VarRef::ctx2(const Variant &x) const
+{
+    return _v2->sVars.at(x.key()).ctx;
+}
+
+Counts VarRef::nCtx2(SequinVariant::Context c) const
+{
+    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.ctx == c ? 1 : 0;
+    });
+}
+
+std::set<Variant> VarRef::v2() const
+{
+    return _v2->data.vars();
+}
+
+const SequinVariant & VarRef::findSeqVar2(long key) const
+{
+    return _v2->sVars.at(key);
 }
 
 /*
@@ -235,12 +284,12 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
-        case Tool::VarGermline:
         case Tool::VarSomatic:
+        case Tool::VarGermline:
         case Tool::VarStructure:
         {
-            merge(r.vcf->vIDs);
-            build(r.r1, r.r2, r.vcf);
+            merge(r.v1->vIDs);
+            build(r.r1, r.r2, r.v1, r.v2);
             break;
         }
 
@@ -248,7 +297,12 @@ void VarRef::validate(Tool x, const UserReference &r)
     }
 }
 
-const Variant * VarRef::findVar(const ChrID &id, const Locus &l) const
+const Variant * VarRef::findV1(const ChrID &id, const Locus &l) const
 {
-    return _vcf->data.findVar(id, l);
+    return _v1->data.findVar(id, l);
+}
+
+const Variant * VarRef::findV2(const ChrID &id, const Locus &l) const
+{
+    return _v2->data.findVar(id, l);
 }

@@ -321,7 +321,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             m.var = nullptr;
             
             // Can we match by position?
-            if ((m.var = r.findVar(query.cID, query.l)))
+            if ((m.var = r.findV1(query.cID, query.l)))
             {
                 // Match by reference allele?
                 m.ref = m.var->ref == query.ref;
@@ -439,7 +439,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         for (auto &i : stats.tps)
         {
             // This shouldn't fail...
-            const auto &sv = r.findSeqVar(i.var->key());
+            const auto &sv = r.findSeqVar1(i.var->key());
             
             // Overall performance
             stats.oc.tp()++;
@@ -475,10 +475,10 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     for (auto &mut : muts)
     {
-        stats.v2c[mut].nr() = r.nType(mut);
+        stats.v2c[mut].nr() = r.nType1(mut);
         stats.v2c[mut].nq() = stats.v2c[mut].tp() + stats.v2c[mut].fp();
         stats.v2c[mut].fn() = stats.v2c[mut].nr() - stats.v2c[mut].tp();
-        stats.oc.nr() += r.nType(mut);
+        stats.oc.nr() += r.nType1(mut);
     }
     
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
@@ -489,7 +489,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     for (auto &i : ctx)
     {
-        stats.c2c[i].nr() = r.nContext(i);
+        stats.c2c[i].nr() = r.nCtx1(i);
         stats.c2c[i].nq() = stats.c2c[i].tp() + stats.c2c[i].fp();
         stats.c2c[i].fn() = stats.c2c[i].nr() - stats.c2c[i].tp();
     }
@@ -500,20 +500,20 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     for (auto &i : gts)
     {
-        stats.g2c[i].nr() = r.nGeno(i);
+        stats.g2c[i].nr() = r.nGeno1(i);
         stats.g2c[i].nq() = stats.g2c[i].tp() + stats.g2c[i].fp();
         stats.g2c[i].fn() = stats.g2c[i].nr() - stats.g2c[i].tp();
     }
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
     
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
         if (!stats.findTP(i.name))
         {
             VSomatic::Match m;
             
-            m.var = r.findVar(i.cID, i.l);
+            m.var = r.findV1(i.cID, i.l);
             m.rID = i.name;
             A_ASSERT(m.var);
             
@@ -582,13 +582,13 @@ static void writeQuins(const FileName &file,
                                            % "Context"
                                            % "Mutation"
                                            % head(ss)).str());
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
         // Can we find this sequin?
         const auto isTP = ss.findTP(i.name);
         
         // This shouldn't fail...
-        const auto &sv = r.findSeqVar(i.key());
+        const auto &sv = r.findSeqVar1(i.key());
         
         #define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
         #define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
@@ -675,7 +675,7 @@ static void writeDetected(const FileName &file,
         for (const auto &i : x)
         {
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
-            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
+            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar1(i.var->key()).ctx) : "-";
             
             #define _FI_(x) (i.qry.fi.count(x) ? toString(i.qry.fi.at(x)) : "-")
             #define _FF_(x) (i.qry.ff.count(x) ? toString(i.qry.ff.at(x)) : "-")
@@ -791,9 +791,9 @@ static void writeSummary(const FileName &file,
                                             % seqs                                 // 4
                                             % E3()                                 // 5
                                             % (c_nSNP + c_nDel + c_nIns)           // 6
-                                            % (r.nType(Variation::SNP) +
-                                               r.nType(Variation::Insertion) +
-                                               r.nType(Variation::Deletion))       // 7
+                                            % (r.nType1(Variation::SNP) +
+                                               r.nType1(Variation::Insertion) +
+                                               r.nType1(Variation::Deletion))       // 7
                                             % D(ss.oc.tp())                        // 8
                                             % D(ss.oc.fp())                        // 9
                                             % D(ss.oc.fn())                        // 10
@@ -801,7 +801,7 @@ static void writeSummary(const FileName &file,
                                             % D(ss.oc.pc())                        // 12
                                             % D(ss.oc.F1())                        // 13
                                             % D(1-ss.oc.pc())                      // 14
-                                            % r.nType(Variation::SNP)              // 15
+                                            % r.nType1(Variation::SNP)              // 15
                                             % D(snp.tp())                          // 16
                                             % D(snp.fp())                          // 17
                                             % D(snp.fn())                          // 18
@@ -809,8 +809,8 @@ static void writeSummary(const FileName &file,
                                             % D(snp.pc())                          // 20
                                             % D(snp.F1())                          // 21
                                             % D(1 - snp.pc())                      // 22
-                                            % (r.nType(Variation::Insertion) +
-                                               r.nType(Variation::Deletion))       // 23
+                                            % (r.nType1(Variation::Insertion) +
+                                               r.nType1(Variation::Deletion))      // 23
                                             % D(ind.tp())                          // 24
                                             % D(ind.fp())                          // 25
                                             % D(ind.fn())                          // 26

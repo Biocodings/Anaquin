@@ -77,7 +77,7 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
             m.var = nullptr;
             
             // Can we match by position?
-            if ((m.var = r.findVar(qry.cID, qry.l)))
+            if ((m.var = r.findV1(qry.cID, qry.l)))
             {
                 m.rID = m.var->name;
             }
@@ -152,23 +152,23 @@ VStructure::SStats VStructure::analyzeS(const FileName &file, const Options &o)
     
     for (auto &var : vars)
     {
-        stats.v2c[var].nr() = r.nType(var);
+        stats.v2c[var].nr() = r.nType1(var);
         stats.v2c[var].nq() = stats.v2c[var].tp() + stats.v2c[var].fp();
         stats.v2c[var].fn() = stats.v2c[var].nr() - stats.v2c[var].tp();
-        stats.oc.nr() += r.nType(var);
+        stats.oc.nr() += r.nType1(var);
     }
     
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
     
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
     
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
         if (!stats.findTP(i.name))
         {
             Match m;
             
-            m.var = r.findVar(i.cID, i.l);
+            m.var = r.findV1(i.cID, i.l);
             m.rID = i.name;
             A_ASSERT(m.var);
             
@@ -359,7 +359,7 @@ template <typename Stats, typename Options> void writeQuins(const FileName &file
                                            % "Label"
                                            % "Mutation").str());
     
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
         // Can we find this sequin?
         const auto isTP = stats.findTP(i.name);

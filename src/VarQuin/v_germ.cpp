@@ -6,6 +6,11 @@ using namespace Anaquin;
 
 typedef SequinVariant::Context Context;
 
+inline bool isGerm(const Variant &x)
+{
+    return Standard::instance().r_var.ctx2(x) != Context::Cancer;
+}
+
 inline std::string ctx2Str(Context x)
 {
     switch (x)
@@ -141,7 +146,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
             m.var = nullptr;
 
             // Can we match by position?
-            if ((m.var = r.findVar(query.cID, query.l)))
+            if ((m.var = r.findV1(query.cID, query.l)))
             {
                 // Match by reference allele?
                 m.ref = m.var->ref == query.ref;
@@ -188,40 +193,44 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
-            wTP.write(x.hdr, x.line);
-            
-            const auto key = m.var->key();
-            
-            stats.tps.push_back(m);
-            
-            const auto exp = r.af(m.var->name);
-            const auto obs = m.qry.allF;
-            
-            A_ASSERT(!isnan(exp));
-            
-            // Eg: 2821292107
-            const auto id = toString(key);
-            
-            // Add for all variants
-            stats.oa.add(id, exp, obs);
-            
-            // Add for mutation type
-            stats.m2a[m.qry.type()].add(id, exp, obs);
+            if (isGerm(*m.var))
+            {
+                wTP.write(x.hdr, x.line);
+                
+                const auto key = m.var->key();
+                
+                stats.tps.push_back(m);
+                
+                const auto exp = r.af(m.var->name);
+                const auto obs = m.qry.allF;
+                
+                A_ASSERT(!isnan(exp));
+                
+                // Eg: 2821292107
+                const auto id = toString(key);
+                
+                // Add for all variants
+                stats.oa.add(id, exp, obs);
+                
+                // Add for mutation type
+                stats.m2a[m.qry.type()].add(id, exp, obs);
+            }
         }
         else
         {
-            wFP.write(x.hdr, x.line);
-            
-            // FP because the variant is not found in the reference
-            stats.fps.push_back(m);
+            if (!r.findV2(x.cID, x.l))
+            {
+                wFP.write(x.hdr, x.line);
+                
+                // FP because the variant is not found in the reference
+                stats.fps.push_back(m);
+            }
         }
     });
     
     wTP.close();
     wFP.close();
     
-    o.info("Aggregating statistics");
-
     /*
      * Determine the quantification limits
      */
@@ -242,7 +251,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         for (auto &i : stats.tps)
         {
             // This shouldn't fail...
-            const auto &sv = r.findSeqVar(i.var->key());
+            const auto &sv = r.findSeqVar1(i.var->key());
             
             // Overall performance
             stats.oc.tp()++;
@@ -278,10 +287,10 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
 
     for (auto &mut : muts)
     {
-        stats.v2c[mut].nr() = r.nType(mut);
+        stats.v2c[mut].nr() = r.nType1(mut);
         stats.v2c[mut].nq() = stats.v2c[mut].tp() + stats.v2c[mut].fp();
         stats.v2c[mut].fn() = stats.v2c[mut].nr() - stats.v2c[mut].tp();
-        stats.oc.nr() += r.nType(mut);
+        stats.oc.nr() += r.nType1(mut);
     }
 
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
@@ -292,7 +301,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     
     for (auto &i : ctx)
     {
-        stats.c2c[i].nr() = r.nContext(i);
+        stats.c2c[i].nr() = r.nCtx1(i);
         stats.c2c[i].nq() = stats.c2c[i].tp() + stats.c2c[i].fp();
         stats.c2c[i].fn() = stats.c2c[i].nr() - stats.c2c[i].tp();
     }
@@ -303,20 +312,20 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     
     for (auto &i : gts)
     {
-        stats.g2c[i].nr() = r.nGeno(i);
+        stats.g2c[i].nr() = r.nGeno1(i);
         stats.g2c[i].nq() = stats.g2c[i].tp() + stats.g2c[i].fp();
         stats.g2c[i].fn() = stats.g2c[i].nr() - stats.g2c[i].tp();
     }
 
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
  
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
-        if (!stats.findTP(i.name))
+        if (!stats.findTP(i.name) && isGerm(i))
         {
             VGerm::Match m;
             
-            m.var = r.findVar(i.cID, i.l);
+            m.var = r.findV1(i.cID, i.l);
             m.rID = i.name;
             A_ASSERT(m.var);
             
@@ -349,50 +358,53 @@ static void writeQuins(const FileName &file,
                                            % "Genotype"
                                            % "Context"
                                            % "Mutation").str());
-    for (const auto &i : r.vars())
+    for (const auto &i : r.v1())
     {
-        // Can we find this sequin?
-        const auto isTP = ss.findTP(i.name);
-
-        // This shouldn't fail...
-        const auto &sv = r.findSeqVar(i.key());
-
-        if (isTP)
+        if (isGerm(i))
         {
-            // Called variant (if found)
-            const auto &c = isTP->qry;
+            // Can we find this sequin?
+            const auto isTP = ss.findTP(i.name);
             
-            o.writer->write((boost::format(format) % i.name
-                                                   % i.cID
-                                                   % i.l.start
-                                                   % "TP"
-                                                   % c.readR
-                                                   % c.readV
-                                                   % c.depth
-                                                   % r.af(i.name)
-                                                   % c.allF
-                                                   % toString(c.qual)
-                                                   % gt2str(sv.gt)
-                                                   % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())).str());
-        }
-
-        // Failed to detect the variant
-        else
-        {
-            o.writer->write((boost::format(format) % i.name
-                                                   % i.cID
-                                                   % i.l.start
-                                                   % "FN"
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % r.af(i.name)
-                                                   % "-"
-                                                   % "-"
-                                                   % gt2str(sv.gt)
-                                                   % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())).str());
+            // This shouldn't fail...
+            const auto &sv = r.findSeqVar1(i.key());
+            
+            if (isTP)
+            {
+                // Called variant (if found)
+                const auto &c = isTP->qry;
+                
+                o.writer->write((boost::format(format) % i.name
+                                 % i.cID
+                                 % i.l.start
+                                 % "TP"
+                                 % c.readR
+                                 % c.readV
+                                 % c.depth
+                                 % r.af(i.name)
+                                 % c.allF
+                                 % toString(c.qual)
+                                 % gt2str(sv.gt)
+                                 % ctx2Str(sv.ctx)
+                                 % var2str(i.type())).str());
+            }
+            
+            // Failed to detect the variant
+            else
+            {
+                o.writer->write((boost::format(format) % i.name
+                                 % i.cID
+                                 % i.l.start
+                                 % "FN"
+                                 % "-"
+                                 % "-"
+                                 % "-"
+                                 % r.af(i.name)
+                                 % "-"
+                                 % "-"
+                                 % gt2str(sv.gt)
+                                 % ctx2Str(sv.ctx)
+                                 % var2str(i.type())).str());
+            }
         }
     }
     
@@ -426,7 +438,7 @@ static void writeDetected(const FileName &file,
         for (const auto &i : x)
         {
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
-            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar(i.var->key()).ctx) : "-";
+            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar1(i.var->key()).ctx) : "-";
 
             o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
                                                    % i.qry.cID
@@ -565,9 +577,9 @@ static void writeSummary(const FileName &file,
                                                 % (endo.empty() ? "-" : endo)          // 4
                                                 % E3()                                 // 5
                                                 % (c_nSNP + c_nDel + c_nIns)           // 6
-                                                % (r.nType(Variation::SNP) +
-                                                   r.nType(Variation::Insertion) +
-                                                   r.nType(Variation::Deletion))       // 7
+                                                % (r.nType1(Variation::SNP) +
+                                                   r.nType1(Variation::Insertion) +
+                                                   r.nType1(Variation::Deletion))      // 7
                                                 % D(ss.oc.tp())                        // 8
                                                 % D(ss.oc.fp())                        // 9
                                                 % D(ss.oc.fn())                        // 10
@@ -575,7 +587,7 @@ static void writeSummary(const FileName &file,
                                                 % D(ss.oc.pc())                        // 12
                                                 % D(ss.oc.F1())                        // 13
                                                 % D(1-ss.oc.pc())                      // 14
-                                                % r.nType(Variation::SNP)              // 15
+                                                % r.nType1(Variation::SNP)             // 15
                                                 % D(snp.tp())                          // 16
                                                 % D(snp.fp())                          // 17
                                                 % D(snp.fn())                          // 18
@@ -583,8 +595,8 @@ static void writeSummary(const FileName &file,
                                                 % D(snp.pc())                          // 20
                                                 % D(snp.F1())                          // 21
                                                 % D(1 - snp.pc())                      // 22
-                                                % (r.nType(Variation::Insertion) +
-                                                   r.nType(Variation::Deletion))       // 23
+                                                % (r.nType1(Variation::Insertion) +
+                                                   r.nType1(Variation::Deletion))      // 23
                                                 % D(ind.tp())                          // 24
                                                 % D(ind.fp())                          // 25
                                                 % D(ind.fn())                          // 26
@@ -592,7 +604,7 @@ static void writeSummary(const FileName &file,
                                                 % D(ind.pc())                          // 28
                                                 % D(ind.F1())                          // 29
                                                 % D(1 - ind.pc())                      // 30
-                                                % D(r.nGeno(Genotype::Homozygous))     // 31
+                                                % D(r.nGeno1(Genotype::Homozygous))    // 31
                                                 % D(hom.tp())                          // 32
                                                 % D(hom.fp())                          // 33
                                                 % D(hom.fn())                          // 34
@@ -600,7 +612,7 @@ static void writeSummary(const FileName &file,
                                                 % D(hom.pc())                          // 36
                                                 % D(hom.F1())                          // 37
                                                 % D(1 - hom.pc())                      // 38
-                                                % D(r.nGeno(Genotype::Heterzygous))    // 39
+                                                % D(r.nGeno1(Genotype::Heterzygous))   // 39
                                                 % D(het.tp())                          // 40
                                                 % D(het.fp())                          // 41
                                                 % D(het.fn())                          // 42

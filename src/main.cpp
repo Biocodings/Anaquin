@@ -451,13 +451,23 @@ template <typename F> void readL6(F f, Option key, UserReference &r)
     }
 }
 
-static void readVCFOnlyCancer(Option opt, UserReference &r, Base trim = 0)
+static void readVCF2(Option opt, UserReference &r, Base trim = 0)
 {
     typedef SequinVariant::Context Context;
     
     if (!_p.opts[opt].empty())
     {
-        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
+        r.v2 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]), std::set<Context> {})));
+    }
+}
+
+static void readVCFSom1(Option opt, UserReference &r, Base trim = 0)
+{
+    typedef SequinVariant::Context Context;
+    
+    if (!_p.opts[opt].empty())
+    {
+        r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
             std::set<Context>
             {
                 Context::Common,
@@ -477,13 +487,13 @@ static void readVCFOnlyCancer(Option opt, UserReference &r, Base trim = 0)
     }
 }
 
-static void readVCFNoCancer(Option opt, UserReference &r, Base trim = 0)
+static void readVCFNoSom1(Option opt, UserReference &r, Base trim = 0)
 {
     typedef SequinVariant::Context Context;
 
     if (!_p.opts[opt].empty())
     {
-        r.vcf = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
+        r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
                     std::set<Context> { Context::Cancer })));
     }
 }
@@ -1169,9 +1179,10 @@ void parse(int argc, char ** argv)
                     
                 case Tool::VarStructure:
                 {
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readVCFNoCancer(OPT_R_VCF, r);
+                    assert(false);
+//                    readReg1(OPT_R_BED, r);
+//                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+//                    readVCFNoCancer(OPT_R_VCF, r);
                     break;
                 }
                     
@@ -1199,17 +1210,12 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarTrim:
-                {
-                    readReg1(OPT_R_BED, r);
-                    break;
-                }
-                    
                 case Tool::VarSomatic:
                 {
                     readReg1(OPT_R_BED, r);
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readVCFOnlyCancer(OPT_R_VCF, r);
+                    readVCFSom1(OPT_R_VCF, r);
+                    readVCF2(OPT_R_VCF, r);
                     break;
                 }
                     
@@ -1217,7 +1223,8 @@ void parse(int argc, char ** argv)
                 {
                     readReg1(OPT_R_BED, r);
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readVCFNoCancer(OPT_R_VCF, r);
+                    readVCFNoSom1(OPT_R_VCF, r);
+                    readVCF2(OPT_R_VCF, r);
                     break;
                 }
                     

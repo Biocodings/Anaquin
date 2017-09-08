@@ -43,6 +43,8 @@ namespace Anaquin
         
         Ladder af;
         std::set<SequinID> vIDs;
+        
+        // Eg: context information
         std::map<VarKey, SequinVariant> sVars;
     };
 
@@ -94,8 +96,7 @@ namespace Anaquin
     {
         std::shared_ptr<Ladder> l1, l2, l3, l4, l5, l6;
 
-        // Ladder for VCF references and allele frequency
-        std::shared_ptr<VCFLadder> vcf;
+        std::shared_ptr<VCFLadder> v1, v2;
         
         // Translation
         std::shared_ptr<Translate> t1, t2;
@@ -132,7 +133,7 @@ namespace Anaquin
             inline Concent input6(const SequinID &x, Mixture m = Mix_1) const { return _l6->input(x, m); }
 
             // Allele frequency from VCF reference (not from mixture file)
-            inline Proportion af(const SequinID &x) const { return _vcf->af.input(x, Mix_1); }
+            inline Proportion af(const SequinID &x) const { return _v1->af.input(x, Mix_1); }
 
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
@@ -173,13 +174,15 @@ namespace Anaquin
                 _r1 = r1;
             }
 
-            inline void build(std::shared_ptr<BedData> r1,
-                              std::shared_ptr<BedData> r2,
-                              std::shared_ptr<VCFLadder> vcf)
+            inline void build(std::shared_ptr<BedData>   r1,
+                              std::shared_ptr<BedData>   r2,
+                              std::shared_ptr<VCFLadder> v1,
+                              std::shared_ptr<VCFLadder> v2)
             {
-                _r1  = r1;
-                _r2  = r2;
-                _vcf = vcf;
+                _r1 = r1;
+                _r2 = r2;
+                _v1 = v1;
+                _v2 = v2;
             }
         
             inline void build(std::shared_ptr<BedData> r1, std::shared_ptr<BedData> r2)
@@ -326,7 +329,7 @@ namespace Anaquin
             std::shared_ptr<BedData> _r1, _r2;
 
             // VCF references and allele frequency ladder
-            std::shared_ptr<VCFLadder> _vcf;
+            std::shared_ptr<VCFLadder> _v1, _v2;
         
             // Sequin regions
             std::shared_ptr<GTFData> _g1;
@@ -367,17 +370,27 @@ namespace Anaquin
 
             VarRef();
 
-            Counts nCNV(int)  const;
-            Counts nGeno(Genotype)  const;
-            Counts nType(Variation) const;
-            Counts nContext(SequinVariant::Context) const;
+            Counts nCNV1(int) const;
+            Counts nGeno1(Genotype)  const;
+            Counts nType1(Variation) const;
+            Counts nCtx1(SequinVariant::Context) const;
 
-            // Returns all reference variants
-            std::set<Variant> vars() const;
-
-            const SequinVariant &findSeqVar(long) const;
+            Counts nCNV2(int) const;
+            Counts nGeno2(Genotype)  const;
+            Counts nType2(Variation) const;
+            Counts nCtx2(SequinVariant::Context) const;
         
-            const Variant *findVar(const ChrID &, const Locus &) const;
+            SequinVariant::Context ctx1(const Variant &) const;
+            SequinVariant::Context ctx2(const Variant &) const;
+        
+            std::set<Variant> v1() const;
+            std::set<Variant> v2() const;
+
+            const SequinVariant &findSeqVar1(long) const;
+            const SequinVariant &findSeqVar2(long) const;
+        
+            const Variant *findV1(const ChrID &, const Locus &) const;
+            const Variant *findV2(const ChrID &, const Locus &) const;
 
         protected:
 
