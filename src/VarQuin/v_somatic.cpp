@@ -6,6 +6,11 @@ using namespace Anaquin;
 
 typedef SequinVariant::Context Context;
 
+inline bool isSomatic(const Variant &x)
+{
+    return Standard::instance().r_var.ctx2(x) == Context::Cancer;
+}
+
 inline std::string ctx2Str(Context x)
 {
     switch (x)
@@ -368,49 +373,55 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
-            for (const auto &i : keys)
+            if (isSomatic(*m.var))
             {
-                if (x.fi.count(i))  { stats.si[i][m.var->key()] = x.fi.at(i);  }
-                if (x.ff.count(i))  { stats.sf[i][m.var->key()] = x.ff.at(i);  }
-                if (x.ifi.count(i)) { stats.si[i][m.var->key()] = x.ifi.at(i); }
-                if (x.iff.count(i)) { stats.sf[i][m.var->key()] = x.iff.at(i); }
+                for (const auto &i : keys)
+                {
+                    if (x.fi.count(i))  { stats.si[i][m.var->key()] = x.fi.at(i);  }
+                    if (x.ff.count(i))  { stats.sf[i][m.var->key()] = x.ff.at(i);  }
+                    if (x.ifi.count(i)) { stats.si[i][m.var->key()] = x.ifi.at(i); }
+                    if (x.iff.count(i)) { stats.sf[i][m.var->key()] = x.iff.at(i); }
+                }
+                
+                wTP.write(x.hdr, x.line);
+                
+                const auto key = m.var->key();
+                
+                stats.tps.push_back(m);
+                
+                // Expected allele frequency for tumor
+                const auto exp = r.af(m.var->name);
+                
+                // Measured allele frequency for tumor
+                auto obs = tumorAF(x);
+                
+                // Eg: 2821292107
+                const auto id = toString(key);
+                
+                // Add for all variants
+                stats.oa.add(id, exp, obs);
+                
+                // Add for mutation type
+                stats.m2a[m.qry.type()].add(id, exp, obs);
             }
-            
-            wTP.write(x.hdr, x.line);
-
-            const auto key = m.var->key();
-            
-            stats.tps.push_back(m);
-            
-            // Expected allele frequency for tumor
-            const auto exp = r.af(m.var->name);
-
-            // Measured allele frequency for tumor
-            auto obs = tumorAF(x);
-            
-            // Eg: 2821292107
-            const auto id = toString(key);
-            
-            // Add for all variants
-            stats.oa.add(id, exp, obs);
-            
-            // Add for mutation type
-            stats.m2a[m.qry.type()].add(id, exp, obs);
         }
         else
         {
-            for (const auto &i : keys)
+            if (!r.findV2(x.cID, x.l))
             {
-                if (x.fi.count(i))  { stats.si[i][x.key()] = x.fi.at(i);  }
-                if (x.ff.count(i))  { stats.sf[i][x.key()] = x.ff.at(i);  }
-                if (x.ifi.count(i)) { stats.si[i][x.key()] = x.ifi.at(i); }
-                if (x.iff.count(i)) { stats.sf[i][x.key()] = x.iff.at(i); }
+                for (const auto &i : keys)
+                {
+                    if (x.fi.count(i))  { stats.si[i][x.key()] = x.fi.at(i);  }
+                    if (x.ff.count(i))  { stats.sf[i][x.key()] = x.ff.at(i);  }
+                    if (x.ifi.count(i)) { stats.si[i][x.key()] = x.ifi.at(i); }
+                    if (x.iff.count(i)) { stats.sf[i][x.key()] = x.iff.at(i); }
+                }
+                
+                wFP.write(x.hdr, x.line);
+                
+                // FP because the variant is not found in the reference
+                stats.fps.push_back(m);
             }
-            
-            wFP.write(x.hdr, x.line);
-
-            // FP because the variant is not found in the reference
-            stats.fps.push_back(m);
         }
     });
     
@@ -509,7 +520,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     for (const auto &i : r.v1())
     {
-        if (!stats.findTP(i.name))
+        if (!stats.findTP(i.name) && isSomatic(i))
         {
             VSomatic::Match m;
             
@@ -584,59 +595,62 @@ static void writeQuins(const FileName &file,
                                            % head(ss)).str());
     for (const auto &i : r.v1())
     {
-        // Can we find this sequin?
-        const auto isTP = ss.findTP(i.name);
-        
-        // This shouldn't fail...
-        const auto &sv = r.findSeqVar1(i.key());
-        
-        #define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
-        #define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
-        
-        if (isTP)
+        if (isSomatic(i))
         {
-            // Called variant (if found)
-            const auto &c = isTP->qry;
+            // Can we find this sequin?
+            const auto isTP = ss.findTP(i.name);
             
-            o.writer->write((boost::format(format) % i.name
-                                                   % i.cID
-                                                   % i.l.start
-                                                   % "TP"
-                                                   % normalDPR(c)
-                                                   % normalDPV(c)
-                                                   % tumorDPR(c)
-                                                   % tumorDPV(c)
-                                                   % FORMAT_I("DP_1")
-                                                   % FORMAT_I("DP_2")
-                                                   % r.af(i.name)
-                                                   % normalAF(c)
-                                                   % tumorAF(c)
-                                                   % toString(c.qual)
-                                                   % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())
-                                                   % extra(ss, i.key())).str());
-        }
-        
-        // Failed to detect the variant
-        else
-        {
-            o.writer->write((boost::format(format) % i.name
-                                                   % i.cID
-                                                   % i.l.start
-                                                   % "FN"
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % r.af(i.name)
-                                                   % "-"
-                                                   % "-"
-                                                   % "-"
-                                                   % ctx2Str(sv.ctx)
-                                                   % var2str(i.type())
-                                                   % "").str());
+            // This shouldn't fail...
+            const auto &sv = r.findSeqVar1(i.key());
+            
+#define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
+#define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
+            
+            if (isTP)
+            {
+                // Called variant (if found)
+                const auto &c = isTP->qry;
+                
+                o.writer->write((boost::format(format) % i.name
+                                                       % i.cID
+                                                       % i.l.start
+                                                       % "TP"
+                                                       % normalDPR(c)
+                                                       % normalDPV(c)
+                                                       % tumorDPR(c)
+                                                       % tumorDPV(c)
+                                                       % FORMAT_I("DP_1")
+                                                       % FORMAT_I("DP_2")
+                                                       % r.af(i.name)
+                                                       % normalAF(c)
+                                                       % tumorAF(c)
+                                                       % toString(c.qual)
+                                                       % ctx2Str(sv.ctx)
+                                                       % var2str(i.type())
+                                                       % extra(ss, i.key())).str());
+            }
+            
+            // Failed to detect the variant
+            else
+            {
+                o.writer->write((boost::format(format) % i.name
+                                                       % i.cID
+                                                       % i.l.start
+                                                       % "FN"
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % r.af(i.name)
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % ctx2Str(sv.ctx)
+                                                       % var2str(i.type())
+                                                       % "").str());
+            }
         }
     }
     
