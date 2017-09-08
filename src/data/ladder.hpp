@@ -2,6 +2,7 @@
 #define LADDER_HPP
 
 #include <map>
+#include <algorithm>
 #include "data/data.hpp"
 #include "tools/tools.hpp"
 
@@ -40,6 +41,28 @@ namespace Anaquin
             }
         }
         
+        inline std::set<Concent> groups(Mixture m) const
+        {
+            std::set<Concent> x;
+            
+            for (auto const &i: m == Mix_1 ? m1 : m2)
+            {
+                x.insert(i.second);
+            }
+        
+            return x;
+        }
+        
+        inline Counts count(Concent i, Mixture m)
+        {
+            const auto &p = m == Mix_1 ? m1 : m2;
+            
+            return std::count_if(p.begin(), p.end(), [&](const std::pair<SequinID, Concent> &x)
+            {
+                return x.second == i;
+            });
+        }
+        
         inline Counts count() const { return seqs.size(); }
 
         inline Concent input(const SequinID &id, Mixture m)
@@ -49,9 +72,9 @@ namespace Anaquin
 
         inline void remove(const SequinID &id)
         {
-            seqs.erase(id);
             m1.erase(id);
             m2.erase(id);
+            seqs.erase(id);
         }
 
         std::set<SequinID> seqs;

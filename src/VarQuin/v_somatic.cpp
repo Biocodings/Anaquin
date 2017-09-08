@@ -292,9 +292,12 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         Context::Cancer,
     };
     
+    const auto afs = r.vcf1()->lad.groups(Mix_1);
+    
     for (auto &i : gts)  { stats.g2c[i]; }
     for (auto &i : ctx)  { stats.c2c[i]; }
     for (auto &i : muts) { stats.v2c[i]; }
+    for (auto &i : afs)  { stats.f2c[i]; }
     
     o.analyze(file);
     
@@ -463,6 +466,9 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             
             // Performance by variation
             stats.v2c[i.qry.type()].tp()++;
+            
+            // Performance by allele frequency
+            stats.f2c[r.af(i.var->name)].tp()++;
         }
     };
     
@@ -493,6 +499,17 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     }
     
     stats.oc.fn() = stats.oc.nr() - stats.oc.tp();
+    
+    /*
+     * Performance by allele frequency
+     */
+    
+    for (auto &i : r.vcf1()->lad.groups(Mix_1))
+    {
+        stats.f2c[i].nr() = r.vcf1()->lad.count(i, Mix_1);
+        stats.f2c[i].nq() = stats.f2c[i].tp() + stats.f2c[i].fp();
+        stats.f2c[i].fn() = stats.f2c[i].nr() - stats.f2c[i].tp();
+    }
     
     /*
      * Performance by context
@@ -551,10 +568,7 @@ template <typename T> std::string extra(const T &x, long key)
     
     for (auto &i : x.si)
     {
-        if (i.second.count(key))
-        {
-            ss << ("\t" + toString(i.second.at(key)));
-        }
+        if (i.second.count(key)) { ss << ("\t" + toString(i.second.at(key))); }
         else                     { ss << "\t-"; }
     }
 
@@ -602,9 +616,9 @@ static void writeQuins(const FileName &file,
             
             // This shouldn't fail...
             const auto &sv = r.findSeqVar1(i.key());
-            
-#define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
-#define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
+
+            #define FORMAT_I(x) (c.fi.count(x) ? toString(c.fi.at(x)) : "-")
+            #define FORMAT_F(x) (c.ff.count(x) ? toString(c.ff.at(x)) : "-")
             
             if (isTP)
             {
@@ -649,7 +663,7 @@ static void writeQuins(const FileName &file,
                                                        % "-"
                                                        % ctx2Str(sv.ctx)
                                                        % var2str(i.type())
-                                                       % "").str());
+                                                       % extra(ss, i.key())).str());
             }
         }
     }
@@ -734,6 +748,16 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName BedRef();
     
+    std::stringstream str;
+    
+    const auto grps = r.vcf1()->lad.groups(Mix_1);
+    
+    for (auto i = grps.rbegin(); i != grps.rend(); i++)
+    {
+        const auto s = std::to_string(*i);
+        str << boost::format("       %1%%2%%3%") % s % std::string(23 - s.size(), ' ') % ss.f2c.at(*i).sn() << std::endl;
+    }
+    
     const auto summary = "-------VarSomatic Summary Statistics\n\n"
                          "-------VarSomatic Output Results\n\n"
                          "       Reference variant annotation: %1%\n"
@@ -772,7 +796,9 @@ static void writeSummary(const FileName &file,
                          "       FDR Rate:              %30%\n\n"
                          "-------Diagnostic performance by context\n\n"
                          "       Context                Sensitivity:\n"
-                         "       Cancer                 %31%\n";
+                         "       Cancer                 %31%\n\n"
+                         "-------Diagnostic performance by allele frequency\n\n"
+                         "       Allele Frequency       Sensitivity:\n" + str.str();
 
     #define D(x) (isnan(x) ? "-" : std::to_string(x))
     
@@ -795,8 +821,6 @@ static void writeSummary(const FileName &file,
     #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
     #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
     
-    #define C(x) (D(ss.c2c.at(x).nq()))
-    
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % VCFRef()                             // 1
@@ -807,7 +831,7 @@ static void writeSummary(const FileName &file,
                                             % (c_nSNP + c_nDel + c_nIns)           // 6
                                             % (r.nType1(Variation::SNP) +
                                                r.nType1(Variation::Insertion) +
-                                               r.nType1(Variation::Deletion))       // 7
+                                               r.nType1(Variation::Deletion))      // 7
                                             % D(ss.oc.tp())                        // 8
                                             % D(ss.oc.fp())                        // 9
                                             % D(ss.oc.fn())                        // 10
@@ -815,7 +839,7 @@ static void writeSummary(const FileName &file,
                                             % D(ss.oc.pc())                        // 12
                                             % D(ss.oc.F1())                        // 13
                                             % D(1-ss.oc.pc())                      // 14
-                                            % r.nType1(Variation::SNP)              // 15
+                                            % r.nType1(Variation::SNP)             // 15
                                             % D(snp.tp())                          // 16
                                             % D(snp.fp())                          // 17
                                             % D(snp.fn())                          // 18
@@ -875,16 +899,16 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     writeSummary("VarSomatic_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarSomatic_detected.tsv
-     */
-    
-    writeDetected("VarSomatic_detected.tsv", ss, o);
-    
-    /*
      * Generating VarSomatic_sequins.tsv
      */
     
     writeQuins("VarSomatic_sequins.tsv", ss, o);
+    
+    /*
+     * Generating VarSomatic_detected.tsv
+     */
+    
+    writeDetected("VarSomatic_detected.tsv", ss, o);
     
     /*
      * Generating VarSomatic_ROC.R

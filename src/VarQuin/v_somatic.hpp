@@ -47,6 +47,9 @@ namespace Anaquin
         struct SStats
         {
             std::vector<Match> tps, fns, fps;
+
+            // Performance by allele frequency group
+            std::map<float, Confusion> f2c;
             
             // Performance by context
             std::map<SequinVariant::Context, Confusion> c2c;

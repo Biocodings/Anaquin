@@ -313,7 +313,7 @@ VCFLadder Standard::addVCF(const Reader &r, const std::set<SequinVariant::Contex
             }
             
             // Update allele frequency ladder
-            v.af.add(x.name, Mix_1, af);
+            v.lad.add(x.name, Mix_1, af);
             
             v.sVars[x.key()] = s;
             

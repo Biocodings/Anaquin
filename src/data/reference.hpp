@@ -41,7 +41,9 @@ namespace Anaquin
     {
         VCFData data;
         
-        Ladder af;
+        // Allele frequency ladder
+        Ladder lad;
+        
         std::set<SequinID> vIDs;
         
         // Eg: context information
@@ -77,17 +79,6 @@ namespace Anaquin
         MetaSubsample,
     };
     
-    /*
-     * Different rules how two positions can be compared
-     */
-
-//    enum MatchRule
-//    {
-//        Exact,
-//        Overlap,
-//        Contains,
-//    };
-    
     class  Ladder;
     class  GTFData;
     struct VCFLadder;
@@ -116,7 +107,7 @@ namespace Anaquin
         public:
 
             typedef std::set<SequinID> SequinIDs;
-        
+
             inline SequinIDs seqs()   const { return _seqs; }
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
@@ -133,7 +124,7 @@ namespace Anaquin
             inline Concent input6(const SequinID &x, Mixture m = Mix_1) const { return _l6->input(x, m); }
 
             // Allele frequency from VCF reference (not from mixture file)
-            inline Proportion af(const SequinID &x) const { return _v1->af.input(x, Mix_1); }
+            inline Proportion af(const SequinID &x) const { return _v1->lad.input(x, Mix_1); }
 
             // Position in the reference annoation
             inline Locus locus(const SequinID &id) const
@@ -155,6 +146,9 @@ namespace Anaquin
             inline Chr2DInters regs2()  const { return _r2->inters();  }
             inline Chr2MInters mRegs1() const { return _r1->minters(); }
             inline Chr2MInters mRegs2() const { return _r2->minters(); }
+        
+            inline std::shared_ptr<VCFLadder> vcf1() const { return _v1; }
+            inline std::shared_ptr<VCFLadder> vcf2() const { return _v2; }
         
             inline Counts nRegs() const { return _r1->count();  }
             inline Counts lRegs() const { return _r1->length(); }

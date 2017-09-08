@@ -148,17 +148,17 @@ const SequinVariant & VarRef::findSeqVar1(long key) const
 Counts VarRef::nCNV2(int c) const
 {
     return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
-                    {
-                        return x.copy == c ? 1 : 0;
-                    });
+    {
+        return x.copy == c ? 1 : 0;
+    });
 }
 
 Counts VarRef::nGeno2(Genotype g) const
 {
     return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
-                    {
-                        return x.gt == g ? 1 : 0;
-                    });
+    {
+        return x.gt == g ? 1 : 0;
+    });
 }
 
 Counts VarRef::nType2(Variation x) const
