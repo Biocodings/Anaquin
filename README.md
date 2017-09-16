@@ -16,15 +16,6 @@ This is a **beta software** as we are trying to work with the bioinformatics com
 * Representing genetic variation with synthetic DNA standards
 * ANAQUIN: a software toolkit for the analysis of spike-in controls for next generation sequencing
 
-## Bioinformatics
-
-<ul>
-<li>RNA-Seq</li>
-<li>Genome sequencing</li>
-<li>Cancer mutations</li>
-<li>Metagenomcis</li>
-</ul>
-
 ## Overview
 
 The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0CB4QFjAAahUKEwiWt5b-7p3IAhWEjJQKHcxhDMg&url=http%3A%2F%2Fwww.garvan.org.au%2F&usg=AFQjCNF03pFvjJsIYqEbmxMV3SBTC5PJxg&sig2=jxHlEHfy_CNSJ4cZyVfvVQ'>Garvan Institute of Medical Research</a>. See <a href='http://www.sequin.xyz'>www.sequin.xyz</a> for further details. In particular, the <a href='www.sequin.xyz/about/introduction/'>introduction page</a> should be helpful.
