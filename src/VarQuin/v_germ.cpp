@@ -218,6 +218,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
+            // Ignore anything that is somatic
             if (!r.findV2(x.cID, x.l))
             {
                 wFP.write(x.hdr, x.line);

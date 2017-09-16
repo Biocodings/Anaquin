@@ -410,6 +410,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
+            // Ignore anything for germline
             if (!r.findV2(x.cID, x.l))
             {
                 for (const auto &i : keys)
