@@ -5,6 +5,7 @@
 #include <vector>
 #include <assert.h>
 #include <algorithm>
+#include <stdexcept>
 #include "data/data.hpp"
 
 namespace Anaquin
