@@ -21,11 +21,11 @@ TEST_CASE("ReadRegions_Example")
     
     REQUIRE(i.size() == 1);
     
-    REQUIRE(i.at(ChrIS).exact(Locus(373692, 374677)));
-    REQUIRE(i.at(ChrIS).contains(Locus(373692, 374677)));
-    REQUIRE(i.at(ChrIS).overlap(Locus(373692, 374677)));
+    REQUIRE(i.at(ChrIS()).exact(Locus(373692, 374677)));
+    REQUIRE(i.at(ChrIS()).contains(Locus(373692, 374677)));
+    REQUIRE(i.at(ChrIS()).overlap(Locus(373692, 374677)));
     
-    REQUIRE(!i.at(ChrIS).exact(Locus(373691, 374677)));
-    REQUIRE(!i.at(ChrIS).contains(Locus(373691, 374677)));
-    REQUIRE(i.at(ChrIS).overlap(Locus(373691, 374677)));
+    REQUIRE(!i.at(ChrIS()).exact(Locus(373691, 374677)));
+    REQUIRE(!i.at(ChrIS()).contains(Locus(373691, 374677)));
+    REQUIRE(i.at(ChrIS()).overlap(Locus(373691, 374677)));
 }

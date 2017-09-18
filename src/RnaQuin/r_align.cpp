@@ -209,6 +209,11 @@ static void match(RAlign::Stats &stats, const ParserBAM::Info &info, ParserBAM::
     static Locus l;
     static bool spliced;
 
+    if (!stats.data.count(align.cID))
+    {
+        throw std::runtime_error("Chromsome: [" + align.cID + "] can't be found in annotations");
+    }
+    
     auto &x = stats.data.at(align.cID);
 
     if (info.skip)
