@@ -414,8 +414,11 @@ static void generateSummary(const FileName &file,
     o.logInfo("stats.gim.sn(): " + std::to_string(stats.gim.sn()));
     o.logInfo("stats.gbm.sn(): " + std::to_string(stats.gbm.sn()));
     
+    // Anaquin can only handle either "chrIS" or "IS"
+    const auto chrIS = stats.data.count("chrIS") ? "chrIS" : "IS";
+
     #define G(x) (stats.data.size() > 1   ? toString(x) : "-")
-    #define S(x) (stats.data.count(ChrIS()) ? toString(x) : "-")
+    #define S(x) (stats.data.count(chrIS) ? toString(x) : "-")
     
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                     // 1
