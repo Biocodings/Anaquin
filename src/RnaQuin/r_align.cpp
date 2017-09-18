@@ -9,7 +9,7 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName GTFRef();
 
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
 static std::ofstream __iWriter__;
 static std::ofstream __bWriter__;
 static std::ofstream __rWriter__;
@@ -17,14 +17,14 @@ static std::ofstream __rWriter__;
 
 static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
 {
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     __iWriter__ << cID << "\t" << l.start << "-" << l.end << "\t" << gID << "\t" << label << "\n";
 #endif
 }
 
 static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 {
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     __bWriter__ << cID << "\t" << l.start << "-" << l.end << "\t" << label << "\n";
 #endif
 }
@@ -88,7 +88,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     
     auto stats = init();
 
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     __bWriter__.open(o.work + "/RnaAlign_qbase.txt");
     __iWriter__.open(o.work + "/RnaAlign_qintrs.txt");
     __rWriter__.open(o.work + "/RnaAlign_reads.txt");
@@ -97,7 +97,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     // Parsing input files
     f(stats);
 
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     __iWriter__.close();
     __bWriter__.close();
 #endif
@@ -254,7 +254,7 @@ static void match(RAlign::Stats &stats, const ParserBAM::Info &info, ParserBAM::
             // Can we find an contained match for the exon?
             const auto match = stats.eInters.at(align.cID).contains(l);
             
-#ifdef DEBUG_ANAQUIN
+#ifdef RALIGN_DEBUG
             if (ms.size() > 1)
             {
                 o.logInfo("Mult1: " + align.cID + "\t" + match->tID() + "\t" + std::to_string(l.start) + "-" std::to_string(l.end));
@@ -343,7 +343,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             // Don't count for multiple alignments
             if (!x.mapped || x.isPrimary)
             {
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
                 if (x.mapped && x.cID != ChrIS)
                     __rWriter__ << x.name << "\n";
 #endif
@@ -354,7 +354,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             {
                 return;
             }
-            else if (x.cID == ChrIS || stats.data.count(x.cID))
+            else if (isChrIS(x.cID) || stats.data.count(x.cID))
             {
                 match(stats, info, x);
             }
@@ -410,7 +410,7 @@ static void generateSummary(const FileName &file,
     o.logInfo("stats.gbm.sn(): " + std::to_string(stats.gbm.sn()));
     
     #define G(x) (stats.data.size() > 1   ? toString(x) : "-")
-    #define S(x) (stats.data.count(ChrIS) ? toString(x) : "-")
+    #define S(x) (stats.data.count(ChrIS()) ? toString(x) : "-")
     
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % src                     // 1
@@ -442,7 +442,7 @@ static void writeBQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -471,7 +471,7 @@ static void writeIQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
     const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
@@ -529,7 +529,7 @@ static void writeQuins(const FileName &file,
         {
             std::map<GeneID, Confusion> bm, im;
 
-#ifdef ANAQUIN_DEBUG
+#ifdef RALIGN_DEBUG
             std::map<GeneID, Confusion> em;
             
             /*
@@ -607,8 +607,11 @@ static void writeQuins(const FileName &file,
                 // Sensitivity at the intron level
                 const auto isn = im.count(gID) ? std::to_string(im.at(gID).sn()) : "-";
                 
+                // Anaquin can only handle either "chrIS" or "IS"
+                const auto chrIS = inters.count("chrIS") ? "chrIS" : "IS";
+                
                 o.writer->write((boost::format(format) % gID
-                                                       % inters.at(ChrIS).find(gID)->l().length()
+                                                       % inters.at(chrIS).find(gID)->l().length()
                                                        % reads
                                                        % isn
                                                        % bm.at(gID).sn()).str());

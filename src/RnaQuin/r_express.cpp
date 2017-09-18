@@ -42,7 +42,7 @@ template <typename T> void update(RExpress::Stats &stats,
     auto cID = x.cID;
     if (cID == "") // TODO: Quick fix for Kallisto
     {
-        cID = r.seqsL1().count(x.id) ? ChrIS : "endo";
+        cID = r.seqsL1().count(x.id) ? ChrIS() : "endo";
     }
     
     if (isChrIS(cID))

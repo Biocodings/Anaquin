@@ -80,7 +80,7 @@ namespace Anaquin
                     // Can we match the isoform to sequins?
                     auto isChrIS = ref.seqsL1().count(t.iID);
                     
-                    t.cID = isChrIS ? ChrIS : "geno";
+                    t.cID = isChrIS ? ChrIS() : "geno";
                     t.gID = ""; // TODO: isChrIS ? ref.s2g(t.iID) : "";
                     
                     if (toks[Field::PValue] == "NA" || toks[Field::QValue] == "NA")

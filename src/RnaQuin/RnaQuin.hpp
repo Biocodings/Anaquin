@@ -1,13 +1,13 @@
-#ifndef R_RNAQUIN_HPP
-#define R_RNAQUIN_HPP
+#ifndef RNAQUIN_HPP
+#define RNAQUIN_HPP
 
 #include "data/data.hpp"
 
 namespace Anaquin
 {
-    const ChrID ChrIS = "chrIS";
+    inline ChrID ChrIS() { return "chrIS"; }
 
-    inline bool isChrIS(const ChrID &x) { return x == ChrIS; }
+    inline bool isChrIS(const ChrID &x) { return x == "chrIS" || x == "IS"; }
 
     // Eg: R1_1_1 to R1_1
     inline SequinID isoform2Gene(const SequinID &x)

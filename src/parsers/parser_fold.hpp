@@ -93,7 +93,7 @@ namespace Anaquin
                     
                     if (x.cID == "-")
                     {
-                        x.cID = r.seqsL1().count(x.iID) || r.seqsL2().count(x.gID) ? ChrIS : "endo";
+                        x.cID = r.seqsL1().count(x.iID) || r.seqsL2().count(x.gID) ? ChrIS() : "endo";
                     }
 
                     f(x, p);

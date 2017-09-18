@@ -80,24 +80,26 @@ static FileName grepVGTF(const FileName &file, const std::string &key)
     return tmp;
 }
 
+ChrID __ChrIS__ = "chrIS";
+
 static FileName createQGTFSyn(const FileName &file)
 {
-    return (__QForSyn__ = grepGTF(file, ChrIS));
+    return (__QForSyn__ = grepGTF(file, __ChrIS__));
 }
 
 static FileName createQGTFGen(const FileName &file)
 {
-    return (__QForGen__ = grepVGTF(file, ChrIS));
+    return (__QForGen__ = grepVGTF(file, __ChrIS__));
 }
 
 static FileName createRGTFSyn(const FileName &file)
 {
-    return (__RForSyn__ = grepGTF(file, ChrIS, false));
+    return (__RForSyn__ = grepGTF(file, __ChrIS__, false));
 }
 
 static FileName createRGTFGen(const FileName &file)
 {
-    return (__RForGen__ = grepVGTF(file, ChrIS));
+    return (__RForGen__ = grepVGTF(file, __ChrIS__));
 }
 
 static void readQueryGTF(const FileName &file)
@@ -257,8 +259,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
      */
 
     o.info("Generating for the synthetic");
-    compareGTF(ChrIS, __RForSyn__, __QForSyn__);
-    copyStats(ChrIS);
+    compareGTF(__ChrIS__, __RForSyn__, __QForSyn__);
+    copyStats(__ChrIS__);
     
     /*
      * Comparing for the genome
@@ -307,7 +309,7 @@ static void writeSummary(const FileName &file, const RAssembly::Stats &stats, co
     const auto &r = __RData__;
     
     const auto hasGen = __hasGen__;
-    const auto sData  = stats.data.at(ChrIS);
+    const auto sData  = stats.data.at(__ChrIS__);
     const auto gData  = hasGen ? stats.data.at("endo") : RAssembly::Stats::Data();
 
     #define C(x) (std::to_string(x))

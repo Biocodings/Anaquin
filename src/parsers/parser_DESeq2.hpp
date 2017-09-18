@@ -66,7 +66,7 @@ namespace Anaquin
                 if (p.i)
                 {
                     t.gID = toks[Field::Name];
-                    t.cID = Standard::instance().r_rna.seqsL2().count(t.gID) ? ChrIS : "endo";
+                    t.cID = Standard::instance().r_rna.seqsL2().count(t.gID) ? ChrIS() : "endo";
                     
                     /*
                      * Eg: ENSG00000000003.14,0,NA,NA,NA,NA,NA

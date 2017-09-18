@@ -60,7 +60,7 @@ namespace Anaquin
                      * We have to consult the reference annotation to make a decision.
                      */
                     
-                    t.cID = Standard::instance().r_rna.seqsL2().count(t.gID) ? ChrIS : "endo";
+                    t.cID = Standard::instance().r_rna.seqsL2().count(t.gID) ? ChrIS() : "endo";
                     
                     if (toks[Field::PValue] == "NA" || toks[Field::LogFC] == "NA")
                     {
