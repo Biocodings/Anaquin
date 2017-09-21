@@ -2,7 +2,7 @@
 # This script converts resources into C++ headers such that the software can compile with.
 #
 
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import sys
