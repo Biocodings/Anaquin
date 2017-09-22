@@ -45,7 +45,7 @@ Sampler::Stats Sampler::sample(const FileName &file, Proportion p, const Analyze
             }
 
             /*
-             * TopHat2 might give an empty QNAME, which clearly violates the SAM/BAM format. It's fine to
+             * TopHat2 might give an empty QNAME, which violates the SAM/BAM format. It's fine to
              * give '*' to QNAME, but not an empty string....
              */
             
