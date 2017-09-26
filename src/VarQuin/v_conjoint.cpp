@@ -82,7 +82,7 @@ static void writeConjointR(const FileName &file, const VConjoint::Stats &stats, 
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RWriter::createRConjoint("VarConjoint_sequins.csv",
+    o.writer->write(RWriter::createRConjoint("VarConjoint_sequins.tsv",
                                              PlotConjoint(),
                                              o.work,
                                              "Expected CNV vs Observed Abundance",
@@ -109,7 +109,7 @@ void VConjoint::report(const FileName &file, const Options &o)
      * Generating VarConjoint_sequins.csv
      */
     
-    writeQuins("VarConjoint_sequins.csv", stats, o);
+    writeQuins("VarConjoint_sequins.tsv", stats, o);
     
     /*
      * Generating VarConjoint_linear.R

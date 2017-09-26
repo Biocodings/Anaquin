@@ -447,13 +447,13 @@ void VStructure::report(const FileName &endo, const FileName &seqs, const Option
      * Generating VarStructure_sequins.csv
      */
     
-    writeQuins("VarStructure_sequins.csv", ss, o);
+    writeQuins("VarStructure_sequins.tsv", ss, o);
     
     /*
      * Generating VarStructure_detected.csv
      */
     
-    writeDetected("VarStructure_detected.csv", ss, o);
+    writeDetected("VarStructure_detected.tsv", ss, o);
     
     /*
      * Generating VarStructure_TP.vcf

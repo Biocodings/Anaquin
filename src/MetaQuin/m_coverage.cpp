@@ -315,11 +315,11 @@ void MCoverage::report(const std::vector<FileName> &files, const MCoverage::Opti
      * Generating MetaCoverage_sequins.csv
      */
     
-    writeQuins("MetaCoverage_sequins.csv", stats, o);
+    writeQuins("MetaCoverage_sequins.tsv", stats, o);
     
     /*
      * Generating MetaCoverage_linear.R
      */
     
-    writeRLinear("MetaCoverage_sequins.csv", stats, o);
+    writeRLinear("MetaCoverage_sequins.tsv", stats, o);
 }

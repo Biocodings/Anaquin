@@ -249,8 +249,8 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
      * Generating MetaAssembly_sequins.csv
      */
     
-    o.info("Generating MetaAssembly_sequins.csv");
-    o.writer->open("MetaAssembly_sequins.csv");
+    o.info("Generating MetaAssembly_sequins.tsv");
+    o.writer->open("MetaAssembly_sequins.tsv");
     o.writer->write(MAssembly::generateQuins(stats, o));
     o.writer->close();
     
@@ -258,8 +258,8 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
      * Generating MetaAssembly_queries.csv
      */
     
-    o.info("Generating MetaAssembly_queries.csv");
-    o.writer->open("MetaAssembly_queries.csv");
+    o.info("Generating MetaAssembly_queries.tsv");
+    o.writer->open("MetaAssembly_queries.tsv");
     o.writer->write(writeContigs(stats, o));
     o.writer->close();
     
@@ -269,7 +269,7 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
 
     o.info("Generating MetaAssembly_assembly.R");
     o.writer->open("MetaAssembly_assembly.R");
-    o.writer->write(RWriter::createLogistic("MetaAssembly_sequins.csv",
+    o.writer->write(RWriter::createLogistic("MetaAssembly_sequins.tsv",
                                             "Assembly Detection",
                                             "Input Concentration (log2)",
                                             "Sensitivity",

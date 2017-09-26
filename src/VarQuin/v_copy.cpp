@@ -229,7 +229,7 @@ void VCopy::report(const FileName &endo, const FileName &seqs, const Options &o)
      * Generating VarCopy_sequins.csv
      */
     
-    writeQuins("VarCopy_sequins.csv", stats, o);
+    writeQuins("VarCopy_sequins.tsv", stats, o);
 
     /*
      * Generating VarCopy_linear.R
@@ -237,6 +237,6 @@ void VCopy::report(const FileName &endo, const FileName &seqs, const Options &o)
 
     o.generate("VarCopy_linear.R");
     o.writer->open("VarCopy_linear.R");
-    o.writer->write(RWriter::createScript("VarCopy_sequins.csv", PlotCNV()));
+    o.writer->write(RWriter::createScript("VarCopy_sequins.tsv", PlotCNV()));
     o.writer->close();
 }

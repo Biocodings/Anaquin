@@ -389,13 +389,13 @@ void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RF
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RFold::generateRFold(stats, "RnaFoldChange_sequins.csv", o));
+    o.writer->write(RFold::generateRFold(stats, "RnaFoldChange_sequins.tsv", o));
     o.writer->close();
 }
 
 Scripts RFold::generateRROC(const RFold::Stats &stats, const RFold::Options &o)
 {
-    return RWriter::createScript("RnaFoldChange_sequins.csv", PlotTROC());
+    return RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTROC());
 }
 
 void RFold::writeRROC(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
@@ -408,7 +408,7 @@ void RFold::writeRROC(const FileName &file, const RFold::Stats &stats, const RFo
 
 Scripts RFold::generateRLODR(const RFold::Stats &stats, const RFold::Options &o)
 {
-    return RWriter::createScript("RnaFoldChange_sequins.csv", PlotTLODR());
+    return RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTLODR());
 }
 
 void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
@@ -461,10 +461,10 @@ void RFold::report(const FileName &file, const Options &o)
     RFold::writeSummary("RnaFoldChange_summary.stats", file, stats, o, units);
 
     /*
-     * Generating RnaFoldChange_sequins.csv
+     * Generating RnaFoldChange_sequins.tsv
      */
 
-    RFold::writeCSV("RnaFoldChange_sequins.csv", stats, o);
+    RFold::writeCSV("RnaFoldChange_sequins.tsv", stats, o);
     
     /*
      * Generating RnaFoldChange_fold.R
