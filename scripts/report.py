@@ -210,10 +210,10 @@ class Report:
         if (output is 'RMarkdown'):
             file = open(file, 'w')
 
-            header = r"---\n\
+            header = "---\n\
 title: 'Anaquin: %s'\n\
 header-includes: \usepackage{graphicx}\n\
-fpdf_document:\n\
+pdf_document:\n\
 keep_tex: true\n\
 toc: yes\n\
 toc_depth: 2\n\
@@ -500,8 +500,6 @@ def RnaReport(index, output, A, B, pdf):
         files.append({ 'tool': 'RnaFoldChange', 'type': 'T', 'path': output + '/I/RnaFoldChange_summary.stats', 'name': 'Summary statistics' })
         files.append({ 'tool': 'RnaFoldChange', 'type': 'R', 'path': output + '/G/RnaFoldChange_fold.R',        'name': 'Gene differential analysis' })
         files.append({ 'tool': 'RnaFoldChange', 'type': 'T', 'path': output + '/G/RnaFoldChange_summary.stats', 'name': 'Summary statistics' })
-
-    #print(files)
 
     # Create a PDF report based on the Anaquin results
     createReport(output, files, pdf)
