@@ -595,14 +595,14 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     RExpress::writeSummary("RnaExpression_summary.stats", files, stats, o, units);
     
     /*
-     * Generating RnaExpression_sequins.csv
+     * Generating RnaExpression_sequins.tsv
      */
     
-    RExpress::writeCSV("RnaExpression_sequins.csv", stats, o);
+    RExpress::writeCSV("RnaExpression_sequins.tsv", stats, o);
 
     /*
      * Generating RnaExpression_linear.R
      */
     
-    RExpress::writeRLinear("RnaExpression_linear.R", "RnaExpression_sequins.csv", stats, o);
+    RExpress::writeRLinear("RnaExpression_linear.R", "RnaExpression_sequins.tsv", stats, o);
 }
