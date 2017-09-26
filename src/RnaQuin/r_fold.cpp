@@ -411,29 +411,29 @@ Scripts RFold::generateRLODR(const RFold::Stats &stats, const RFold::Options &o)
     return RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTLODR());
 }
 
-void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
-{
-    switch (o.format)
-    {
-        case Format::edgeR:
-        case Format::Cuffdiff:
-        {
-            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
-            break;
-        }
-
-        case Format::Sleuth:
-        case Format::DESeq2:
-        case Format::Anaquin:
-        {
-            o.generate(file);
-            o.writer->open(file);
-            o.writer->write(RFold::generateRLODR(stats, o));
-            o.writer->close();
-            break;
-        }
-    }
-}
+//void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+//{
+//    switch (o.format)
+//    {
+//        case Format::edgeR:
+//        case Format::Cuffdiff:
+//        {
+//            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
+//            break;
+//        }
+//
+//        case Format::Sleuth:
+//        case Format::DESeq2:
+//        case Format::Anaquin:
+//        {
+//            o.generate(file);
+//            o.writer->open(file);
+//            o.writer->write(RFold::generateRLODR(stats, o));
+//            o.writer->close();
+//            break;
+//        }
+//    }
+//}
 
 void RFold::report(const FileName &file, const Options &o)
 {
@@ -482,5 +482,5 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_LODR.R
      */
     
-    RFold::writeRLODR("RnaFoldChange_LODR.R", stats, o);
+//    RFold::writeRLODR("RnaFoldChange_LODR.R", stats, o);
 }

@@ -100,7 +100,7 @@ namespace Anaquin
 
         static void writeRFold(const FileName &, const RFold::Stats &, const RFold::Options &);
         static void writeRROC(const FileName &, const RFold::Stats &, const RFold::Options &);
-        static void writeRLODR(const FileName &, const RFold::Stats &, const RFold::Options &);
+//        static void writeRLODR(const FileName &, const RFold::Stats &, const RFold::Options &);
 
         static void writeCSV(const FileName &, const RFold::Stats &, const RFold::Options &);
         static void writeSummary(const FileName &,
