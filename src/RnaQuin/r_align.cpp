@@ -644,7 +644,7 @@ void RAlign::report(const FileName &file, const Options &o)
     generateSummary("RnaAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_sequins.csv
+     * Generating RnaAlign_sequins.tsv
      */
     
     o.generate("RnaAlign_sequins.csv");
