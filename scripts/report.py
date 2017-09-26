@@ -210,7 +210,7 @@ class Report:
         if (output is 'RMarkdown'):
             file = open(file, 'w')
 
-            header = "---\n\
+            header = r"---\n\
 title: 'Anaquin: %s'\n\
 header-includes: \usepackage{graphicx}\n\
 fpdf_document:\n\
@@ -526,8 +526,12 @@ def readMeta(file):
 # Note: please give full path. The software only spports RNA-Seq for now.
 #
 if __name__ == '__main__':
-    # Which sequin?
+    # Which sequin? (Only RnaQuin is supported for now)
     __mode__ = sys.argv[1]
+
+    for i in range(2,5):
+        if not os.path.exists(sys.argv[i]):
+            raise IOError(sys.argv[i])
 
     # Kallisto index
     rIndex = sys.argv[2]
@@ -546,6 +550,6 @@ if __name__ == '__main__':
     
     if not os.path.exists(tmp):
         os.makedirs(tmp)
-
+    
     if __mode__ == 'RnaReport':
         RnaReport(rIndex, tmp, A, B, out) 
