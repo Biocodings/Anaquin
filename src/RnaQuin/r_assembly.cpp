@@ -444,7 +444,7 @@ void RAssembly::report(const FileName &file, const Options &o)
      * Generating RnaAssembly_quins.stats
      */
 
-    writeQuins("RnaAssembly_sequins.csv", stats, o);
+    writeQuins("RnaAssembly_sequins.tsv", stats, o);
     
     /*
      * Generating RnaAssembly_assembly.R
@@ -452,7 +452,7 @@ void RAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_assembly.R");
     o.writer->open("RnaAssembly_assembly.R");
-    o.writer->write(RWriter::createLogistic("RnaAssembly_sequins.csv",
+    o.writer->write(RWriter::createLogistic("RnaAssembly_sequins.tsv",
                                             "Assembly Detection",
                                             "Input Concentration (log2)",
                                             "Sensitivity",
