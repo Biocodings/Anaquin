@@ -44,7 +44,8 @@ static std::string exec(const char* cmd)
 static FileName grepGTF(const FileName &file, const std::string &key, bool shouldGeneTrans = true)
 {
     const auto tmp = System::tmpFile();
-
+    assert(!key.empty());
+    
     std::string cmd;
     
     if (shouldGeneTrans)
@@ -80,7 +81,7 @@ static FileName grepVGTF(const FileName &file, const std::string &key)
     return tmp;
 }
 
-ChrID __ChrIS__ = "chrIS";
+static ChrID __ChrIS__;
 
 static FileName createQGTFSyn(const FileName &file)
 {
@@ -231,6 +232,9 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 
     o.info("Analyzing transcripts");
     o.info("Creating temporary transcripts");
+    
+    // Only "chrIS" and "IS" are supported
+    __ChrIS__ = stats.data.count("chrIS") ? "chrIS" : "IS";
     
     std::thread t3(createQGTFSyn, file);
     std::thread t4(createQGTFGen, file);
