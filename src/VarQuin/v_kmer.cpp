@@ -12,14 +12,14 @@ static bool isKallisto(const FileName &file)
     return isEnded(file, "abundance.tsv");
 }
 
-VarKmer::Stats VarKmer::analyze(const FileName &file, const Options &o)
+VKmer::Stats VKmer::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
     // Ladder for allele frequency
     const auto l1 = r.seqsL1();
 
-    VarKmer::Stats stats;
+    VKmer::Stats stats;
 
     if (isKallisto(file))
     {
@@ -64,7 +64,7 @@ VarKmer::Stats VarKmer::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VarKmer::Stats &stats, const VarKmer::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VKmer::Stats &stats, const VKmer::Options &o)
 {
     o.generate("VarKmer_summary.stats");
     o.writer->open("VarKmer_summary.stats");
@@ -105,7 +105,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VarKme
     o.writer->close();
 }
 
-static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
+static void writeQuins(const VKmer::Stats &stats, const VKmer::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
@@ -142,7 +142,7 @@ static void writeQuins(const VarKmer::Stats &stats, const VarKmer::Options &o)
     o.writer->close();
 }
 
-void VarKmer::report(const FileName &file, const Options &o)
+void VKmer::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
     

@@ -20,9 +20,8 @@
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_calibrate.hpp"
+#include "VarQuin/v_split.hpp"
 #include "VarQuin/v_somatic.hpp"
-#include "VarQuin/v_conjoint.hpp"
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_coverage.hpp"
@@ -164,7 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarSplit,     { OPT_U_SEQS } },
+    { Tool::VarSplit,     { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
 
     /*
@@ -1241,9 +1240,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:     { analyze_1<VFlip>(OPT_U_SEQS);     break; }
-                case Tool::VarKmer:     { analyze_1<VarKmer>(OPT_U_SEQS);   break; }
-                case Tool::VarConjoint: { analyze_1<VConjoint>(OPT_U_SEQS); break; }
+                case Tool::VarFlip:  { analyze_1<VFlip>(OPT_U_SEQS);  break; }
+                case Tool::VarKmer:  { analyze_1<VKmer>(OPT_U_SEQS);  break; }
+                case Tool::VarSplit: { analyze_1<VSplit>(OPT_U_SEQS); break; }
 
                 case Tool::VarAlign:
                 {

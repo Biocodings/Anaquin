@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct VarKmer
+    struct VKmer
     {
         struct Stats : public SequinStats
         {

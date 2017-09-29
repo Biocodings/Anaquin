@@ -27,7 +27,6 @@ Version: 2.0
             VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
             VarFlip       - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation
             VarKmer       - Quantitative k-mer analysis for sequin allele frequnecy
-            VarCalibrate  - Calibrate sequin- and sample-derived alignment coverage
             VarGermline   - Compare the identification of germline variants from sequin- and sample-derived alignments
             VarCopy       - Perform quantitative analysis on copy number variation
             VarStructure  - Compare the identification of structural variants from sequin- and sample-derived alignments
