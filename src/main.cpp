@@ -155,7 +155,7 @@ static std::map<Tool, std::set<Option>> _options =
      * VarQuin Analysis
      */
 
-    { Tool::VarFlip,      { OPT_U_SEQS } },
+    { Tool::VarFlip,      { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
