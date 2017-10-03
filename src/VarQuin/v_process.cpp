@@ -233,6 +233,14 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         std::shared_ptr<FileWriter> g1, g2;
     };
 
+    const auto &r = Standard::instance().r_var;
+
+    // Regions without edge effects
+    const auto r1 = r.regs1();
+
+    // Region with edge effects
+    const auto r2 = r.regs2();
+    
     Impl impl(o);
     
     return parse(file, o, [&](const ParserBAM::Data &x1, const ParserBAM::Data &x2, Status status)
@@ -244,9 +252,43 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             {
                 impl.writeBefore(x1, x2);
                 
+                auto trim = [&](const ParserBAM::Data &x)
+                {
+                    std::vector<DInter *> multi;
+                    const auto m = x.mapped && r1.count(x.cID) ? r1.at(x.cID).contains(x.l, &multi) : nullptr;
+                    
+                    if (m)
+                    {
+                        std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
+                        {
+                            return x->l().length() < y->l().length();
+                        });
+
+                        // The smallest region
+                        const auto m = multi.front();
+                        
+                        const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
+                        const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
+                        
+                        return lTrim || rTrim;
+                    }
+                    
+                    return false;
+                };
+                
                 /*
-                 * Calculate alignment coverage for sequins
+                 * Perform edge trimming and calculate alignment coverage for sequins
                  */
+                
+                if (!trim(x1))
+                {
+                    
+                }
+                
+                if (!trim(x2))
+                {
+                    
+                }
                 
                 break;
             }

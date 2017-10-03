@@ -1166,9 +1166,15 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:    { readReg1(OPT_R_BED, r); break; }
-                case Tool::VarProcess: { readReg1(OPT_R_BED, r); break; }
+                case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
                     
+                case Tool::VarProcess:
+                {
+                    readReg1(OPT_R_BED, r);
+                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    break;
+                }
+
                 case Tool::VarAlign:
                 {
                     readReg1(OPT_R_BED, r);

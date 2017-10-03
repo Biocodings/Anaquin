@@ -1,7 +1,6 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_trim.hpp"
 #include "writers/bam_writer.hpp"
-//#include "writers/sam_writer.hpp"
 #include "parsers/parser_bambed.hpp"
 
 extern Anaquin::FileName BedRef();

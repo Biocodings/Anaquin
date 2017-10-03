@@ -7,8 +7,12 @@ namespace Anaquin
 {
     struct VProcess
     {
-        typedef AnalyzerOptions Options;
-
+        struct Options : AnalyzerOptions
+        {
+            // How much edge effects?
+            Base trim = 1;
+        };
+        
         enum class Status
         {
             ReverseReverse,
