@@ -15,7 +15,8 @@ namespace Anaquin
         public:
 
             FileWriter(const std::string &path) : path(path) {}
-
+            ~FileWriter() { close(); }
+        
             static void create(const Path &path, const FileName &file, const std::string &txt)
             {
                 FileWriter w(path);
@@ -26,8 +27,12 @@ namespace Anaquin
 
             inline void close() override
             {
-                _o->close();
-                _o.reset();
+                if (_o)
+                {
+                    _o->close();
+                    _o.reset();
+                    _o = nullptr;
+                }
             }
 
             inline void open(const FileName &file) override

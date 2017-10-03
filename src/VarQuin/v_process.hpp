@@ -9,6 +9,24 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
 
+        enum class Status
+        {
+            ReverseReverse,
+            ReverseNotMapped,
+            ForwardForward,
+            ForwardReverse,
+            ForwardNotMapped,
+            NotMappedNotMapped,
+            RevHang,
+            ForHang
+        };
+
+        struct Stats : public MappingStats
+        {
+            std::map<VProcess::Status, Counts> counts;
+        };
+
+        static Stats analyze(const FileName &, const Options &);
         static void report(const FileName &, const Options &);
     };
 }
