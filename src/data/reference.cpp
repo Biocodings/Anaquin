@@ -256,7 +256,6 @@ void VarRef::validate(Tool x, const UserReference &r)
         }
 
         case Tool::VarFlip:
-        case Tool::VarProcess:
         {
             merge(r.r1->seqs());
             build(r.r1);
@@ -271,6 +270,7 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
+        case Tool::VarProcess:
         case Tool::VarCalibrate:
         {
             merge(r.r1->seqs());

@@ -363,8 +363,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             h1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            f1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            f2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            g1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            g2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
             static const FileName HANG_1   = "VarProcess_hanging.fq";
             static const FileName SEQS_1   = "VarProcess_sequins_1.fq";
@@ -375,8 +375,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             static const FileName AMBIG_2  = "VarProcess_ambiguous_2.fq";
 
             h1->open(HANG_1);
-            f1->open(SEQS_1);
-            f2->open(SEQS_2);
             a1->open(AMBIG_1);
             a2->open(AMBIG_2);
             g1->open(GENOME_1);
@@ -433,7 +431,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         Stats &stats;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
-        std::shared_ptr<FileWriter> f1, f2;
         std::shared_ptr<FileWriter> g1, g2;
     };
 
@@ -562,7 +559,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
      * Subsample sequin reads
      */
     
-    sample(r2, stats, r1, o);
+    //sample(r2, stats, r1, o);
 }
 
 void VProcess::report(const FileName &file, const Options &o)
