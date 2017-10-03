@@ -367,8 +367,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             g2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             
             static const FileName HANG_1   = "VarProcess_hanging.fq";
-            static const FileName SEQS_1   = "VarProcess_sequins_1.fq";
-            static const FileName SEQS_2   = "VarProcess_sequins_2.fq";
             static const FileName GENOME_1 = "VarProcess_genome_1.fq";
             static const FileName GENOME_2 = "VarProcess_genome_2.fq";
             static const FileName AMBIG_1  = "VarProcess_ambiguous_1.fq";
@@ -379,6 +377,15 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             a2->open(AMBIG_2);
             g1->open(GENOME_1);
             g2->open(GENOME_2);
+        }
+        
+        ~Impl()
+        {
+            h1->close();
+            a1->close();
+            a2->close();
+            g1->close();
+            g2->close();
         }
         
         inline void writeHang(const ParserBAM::Data &x)
@@ -443,20 +450,20 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
 
     // Region with edge effects
     const auto r2 = r.regs2();
-    
+
     auto initInts = [&](ID2Intervals &inters)
     {
         // For each chromosome...
         for (const auto &i : r2)
         {
             DIntervals<> x;
-            
+
             for (const auto &inter : i.second.data())
             {
                 const auto &l = inter.second.l();
                 x.add(DInter(l.key(), l));
             }
-            
+
             inters[i.first] = x;
             inters[i.first].build();
         }
@@ -480,7 +487,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             stats.sInters[x.cID].overlap(x.l)->map(x.l);
         }
     };
-    
+
     parse(file, stats, o, [&](const ParserBAM::Data &x1, const ParserBAM::Data &x2, Status status)
     {
         switch (status)
@@ -489,12 +496,12 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             case Status::ReverseNotMapped:
             {
                 impl.writeBefore(x1, x2);
-                
+
                 auto trim = [&](const ParserBAM::Data &x)
                 {
                     std::vector<DInter *> multi;
                     const auto m = x.mapped && r1.count(x.cID) ? r1.at(x.cID).contains(x.l, &multi) : nullptr;
-                    
+
                     if (m)
                     {
                         std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
@@ -504,40 +511,40 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
 
                         // The smallest region
                         const auto m = multi.front();
-                        
+
                         const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
                         const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
-                        
+
                         return lTrim || rTrim;
                     }
-                    
+
                     return false;
                 };
-                
+
                 /*
                  * Perform edge trimming and calculate alignment coverage for sequin regions
                  */
-                
+
                 if (!trim(x1)) { sCov(x1); }
                 if (!trim(x2)) { sCov(x2); }
-                
+
                 break;
             }
 
             case Status::ForwardForward:
             {
                 impl.writeGeno(x1, x2);
-                
+
                 /*
                  * Calculate alignment coverage for genomic regions
                  */
-                
+
                 gCov(x1);
                 gCov(x2);
 
                 break;
             }
-                
+
             case Status::ForwardReverse:
             case Status::ForwardNotMapped:
             case Status::NotMappedNotMapped:
@@ -560,6 +567,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
      */
     
     //sample(r2, stats, r1, o);
+
+    return stats;
 }
 
 void VProcess::report(const FileName &file, const Options &o)
