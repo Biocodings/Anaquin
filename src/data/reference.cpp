@@ -256,7 +256,7 @@ void VarRef::validate(Tool x, const UserReference &r)
         }
 
         case Tool::VarFlip:
-        case Tool::VarSplit:
+        case Tool::VarProcess:
         {
             merge(r.r1->seqs());
             build(r.r1);

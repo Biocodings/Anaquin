@@ -20,7 +20,7 @@
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_split.hpp"
+#include "VarQuin/v_process.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_structure.hpp"
 
@@ -130,7 +130,7 @@ static std::map<Value, Tool> _tools =
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
     { "VarKmer",        Tool::VarKmer        },
-    { "VarSplit",       Tool::VarSplit       },
+    { "VarProcess",     Tool::VarProcess     },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -163,7 +163,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarSplit,     { OPT_U_SEQS, OPT_R_BED } },
+    { Tool::VarProcess,   { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
 
     /*
@@ -1151,8 +1151,8 @@ void parse(int argc, char ** argv)
         case Tool::VarFlip:
         case Tool::VarTrim:
         case Tool::VarKmer:
-        case Tool::VarSplit:
         case Tool::VarAlign:
+        case Tool::VarProcess:
         case Tool::VarGermline:
         case Tool::VarSomatic:
         case Tool::VarConjoint:
@@ -1166,8 +1166,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:  { readReg1(OPT_R_BED, r); break; }
-                case Tool::VarSplit: { readReg1(OPT_R_BED, r); break; }
+                case Tool::VarFlip:    { readReg1(OPT_R_BED, r); break; }
+                case Tool::VarProcess: { readReg1(OPT_R_BED, r); break; }
                     
                 case Tool::VarAlign:
                 {
@@ -1240,9 +1240,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:  { analyze_1<VFlip>(OPT_U_SEQS);  break; }
-                case Tool::VarKmer:  { analyze_1<VKmer>(OPT_U_SEQS);  break; }
-                case Tool::VarSplit: { analyze_1<VSplit>(OPT_U_SEQS); break; }
+                case Tool::VarFlip:    { analyze_1<VFlip>(OPT_U_SEQS);    break; }
+                case Tool::VarKmer:    { analyze_1<VKmer>(OPT_U_SEQS);    break; }
+                case Tool::VarProcess: { analyze_1<VProcess>(OPT_U_SEQS); break; }
 
                 case Tool::VarAlign:
                 {

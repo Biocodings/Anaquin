@@ -70,7 +70,7 @@ namespace Anaquin
         VarTrim,
         VarFlip,
         VarKmer,
-        VarSplit,
+        VarProcess,
         VarStructure,
         VarConjoint,
         
