@@ -2,6 +2,7 @@
 #define V_PROCESS_HPP
 
 #include "stats/analyzer.hpp"
+#include "parsers/parser_bam.hpp"
 
 namespace Anaquin
 {
@@ -17,6 +18,8 @@ namespace Anaquin
 
         struct Options : AnalyzerOptions
         {
+            Base edge = 0;
+            
             // How much edge effects?
             Base trim = 1;
             
@@ -63,11 +66,19 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
+            // Alignment records for sequins (we'll need them for sampling)
+            std::vector<ParserBAM::Data> s1, s2;
+
             std::vector<double> allBeforeEndoC;
             std::vector<double> allBeforeSeqsC;
 
             // Required for summary statistics
             std::vector<double> allNorms;
+
+            typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
+            
+            // Normalization for each region
+            NormFactors norms;
 
             // Sampling statistics
             std::map<ChrID, std::map<Locus, SampledInfo>> c2v;

@@ -1,6 +1,6 @@
+#include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_process.hpp"
-#include "parsers/parser_bam.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
@@ -162,7 +162,8 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
 }
 
 static void sample(const Chr2DInters &r2,
-                   const VProcess::Stats &stats,
+                   VProcess::Stats &stats,
+                   const Chr2DInters &sampled,
                    const VProcess::Options &o)
 {
     typedef VProcess::Method Method;
@@ -224,8 +225,8 @@ static void sample(const Chr2DInters &r2,
                 }
             }
             
-            //stats.allBeforeEndoC.push_back(endoC);
-            //stats.allBeforeSeqsC.push_back(seqsC);
+            stats.allBeforeEndoC.push_back(endoC);
+            stats.allBeforeSeqsC.push_back(seqsC);
             
             if (isnan(norm))
             {
@@ -252,108 +253,112 @@ static void sample(const Chr2DInters &r2,
                                                                                        % j.first).str());
             }
             
-//            stats.c2v[cID][l].nEndo   = gs.aligns;
-//            stats.c2v[cID][l].nBefore = ss.aligns;
-//
-//            stats.c2v[cID][l].rID    = j.first;
-//            stats.c2v[cID][l].endo   = endoC;
-//            stats.c2v[cID][l].before = seqsC;
-//            stats.c2v[cID][l].norm   = stats.norms[i.first][l] = norm;
-//
-//            stats.allNorms.push_back(norm);
+            stats.c2v[cID][l].nEndo   = gs.aligns;
+            stats.c2v[cID][l].nBefore = ss.aligns;
+
+            stats.c2v[cID][l].rID    = j.first;
+            stats.c2v[cID][l].endo   = endoC;
+            stats.c2v[cID][l].before = seqsC;
+            stats.c2v[cID][l].norm   = stats.norms[i.first][l] = norm;
+
+            stats.allNorms.push_back(norm);
         }
     }
     
-//    typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
-//
-//    /*
-//     * Initalize independnet random generators for every sampling region
-//     */
-//
-//    Selection select;
-//
-//    for (const auto &i : norms)
-//    {
-//        for (const auto &j : i.second)
-//        {
-//            A_ASSERT(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
-//
-//            // Create independent random generator for each region
-//            select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
-//        }
-//    }
-//
-//    A_ASSERT(select.size() == norms.size());
-//
-//    SAMWriter writer;
-//    writer.open("");
-//
-//    return ParserBAMBED::parse(sampled, [&](const ParserBAM::Data &x,
-//                                                  const ParserBAM::Info &info,
-//                                                  const DInter *inter)
-//                               {
-//                                   /*
-//                                    * We should sample :
-//                                    *
-//                                    *   - Anything that is not mapped
-//                                    *   - Anything outside the sampling regions
-//                                    *   - Inside the region with probability
-//                                    */
-//
-//                                   auto shouldSampled = !x.mapped;
-//
-//                                   if (!shouldSampled)
-//                                   {
-//                                       DInter *inter;
-//
-//                                       /*
-//                                        * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
-//                                        * into the regions still give valuable information and sequencing depth.
-//                                        */
-//
-//                                       if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
-//                                       {
-//                                           // Transform for the trimming region
-//                                           auto l = Locus(inter->l().start + o.edge, inter->l().end - o.edge);
-//
-//                                           if (select.at(x.cID).at(l)->select(x.name))
-//                                           {
-//                                               shouldSampled = true;
-//                                           }
-//                                       }
-//                                       else
-//                                       {
-//                                           // Never throw away reads outside the regions
-//                                           shouldSampled = true;
-//                                       }
-//                                   }
-//
-//                                   if (shouldSampled)
-//                                   {
-//                                       // Write SAM read to console
-//                                       writer.write(x);
-//
-//                                       if (trimmed.count(x.cID) && trimmed.at(x.cID).overlap(x.l))
-//                                       {
-//                                           trimmed.at(x.cID).overlap(x.l)->map(x.l);
-//                                       }
-//
-//                                       return ParserBAMBED::Response::OK;
-//                                   }
-//
-//                                   return ParserBAMBED::Response::SKIP_EVERYTHING;
-//                               });
+    typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
+
+    /*
+     * Initalize independnet random generators for every sampling region
+     */
+
+    Selection select;
+
+    for (const auto &i : stats.norms)
+    {
+        for (const auto &j : i.second)
+        {
+            A_ASSERT(j.second >= 0 && j.second <= 1.0 && !isnan(j.second));
+
+            // Create independent random generator for each region
+            select[i.first][j.first] = std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - j.second));
+        }
+    }
+
+    A_ASSERT(select.size() == stats.norms.size());
+
+    std::shared_ptr<FileWriter> f1, f2;
+    
+    static const FileName SEQS_1 = "VarProcess_sequins_1.fq";
+    static const FileName SEQS_2 = "VarProcess_sequins_2.fq";
+
+    f1->open(SEQS_1);
+    f2->open(SEQS_2);
+
+    auto __sample__ = [&](const std::vector<ParserBAM::Data> &v)
+    {
+        /*
+         * We should sample :
+         *
+         *   - Anything that is not mapped
+         *   - Anything outside the sampling regions
+         *   - Inside the region with probability
+         */
+
+        for (const auto &x : v)
+        {
+            auto shouldSampled = !x.mapped;
+            
+            if (!shouldSampled)
+            {
+                DInter *inter;
+                
+                /*
+                 * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
+                 * into the regions still give valuable information and sequencing depth.
+                 */
+                
+                if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
+                {
+                    // Transform for the trimming region
+                    auto l = Locus(inter->l().start + o.edge, inter->l().end - o.edge);
+                    
+                    if (select.at(x.cID).at(l)->select(x.name))
+                    {
+                        shouldSampled = true;
+                    }
+                }
+                else
+                {
+                    // Never throw away reads outside the regions
+                    shouldSampled = true;
+                }
+            }
+            
+            if (shouldSampled)
+            {
+                std::cout << x.cID << std::endl;
+//                if (trimmed.count(x.cID) && trimmed.at(x.cID).overlap(x.l))
+//                {
+//                    trimmed.at(x.cID).overlap(x.l)->map(x.l);
+//                }
+            }
+        }
+    };
+    
+    __sample__(stats.s1);
+    __sample__(stats.s2);
+    
+    f1->close();
+    f2->close();
 }
 
 VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
 {
-    /*
-     * For efficiency, this tool writes output files directly in the analyze() function.
-     */
-    
+    Stats stats;
+
     struct Impl
     {
-        Impl(const Options &o)
+        Impl(Stats &stats, const Options &o) : stats(stats)
         {
             h1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
@@ -399,8 +404,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         
         inline void writeBefore(const ParserBAM::Data &x1, const ParserBAM::Data &x2)
         {
-            s1.push_back(x1);
-            s2.push_back(x2);
+            stats.s1.push_back(x1);
+            stats.s2.push_back(x2);
         }
         
         inline void writePaired(std::shared_ptr<FileWriter> p1, std::shared_ptr<FileWriter> p2, const ParserBAM::Data &x1, const ParserBAM::Data &x2)
@@ -424,20 +429,16 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         {
             writePaired(g1, g2, x, y);
         }
-
-        // Alignment records for sequins (we'll need them for sampling)
-        std::vector<ParserBAM::Data> s1, s2;
         
+        Stats &stats;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> f1, f2;
         std::shared_ptr<FileWriter> g1, g2;
     };
 
-    Impl impl(o);
+    Impl impl(stats, o);
     
-    Stats stats;
-
     const auto &r = Standard::instance().r_var;
 
     // Regions without edge effects
@@ -561,10 +562,14 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
      * Subsample sequin reads
      */
     
-    sample(r2, stats, o);
+    sample(r2, stats, r1, o);
 }
 
 void VProcess::report(const FileName &file, const Options &o)
 {
+    /*
+     * For efficiency, this tool writes output files directly in the analyze() function.
+     */
+
     analyze(file, o);
 }
