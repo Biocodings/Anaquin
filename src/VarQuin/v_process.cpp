@@ -6,13 +6,43 @@
 
 using namespace Anaquin;
 
-typedef VProcess::Stats Stats;
+typedef VProcess::Stats  Stats;
 typedef VProcess::Status Status;
+typedef std::map<ChrID, Base> Headers;
+typedef std::map<ChrID, DIntervals<>> Regions;
+
+/*
+ * Implement trimming for sequins (reverse genome and ladders)
+ */
+
+template <typename O> bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const O &o)
+{
+    assert(heads.count(x.cID));
+    
+    if (!o.shouldTrim)
+    {
+        return false;
+    }
+    
+    // Length of the sequin
+    const auto len = heads.at(x.cID);
+    
+    const auto lTrim = std::abs(x.l.start) <= o.trim;
+    const auto rTrim = std::abs(x.l.end - len) <= o.trim;
+
+    return lTrim || rTrim;
+}
 
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
     const auto &r = Standard::instance().r_var;
     
+    // Regions without edge effects
+    const auto r1 = r.r1()->inters();
+    
+    // Regions with edge effects
+    const auto r2 = r.r2()->inters();
+
     // Sequin names
     const auto seqs = r.r1()->seqs();
     
@@ -21,7 +51,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     
     const auto heads = ParserBAM::header(file);
     
-    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &i)
+    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         if (i.p.i && !(i.p.i % 1000000))
         {
@@ -33,7 +63,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         else                        { stats.nEndo++; }
         
         /*
-         * Directly write out endogenous alignments
+         * Directly write out endogenous alignments (pairing not required)
          */
         
         if (!isLadQuin(x.cID) && (!seqs.count(x.cID) && !seqs.count(x.rnext)))
@@ -41,20 +71,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             f(&x, nullptr, Status::ForwardForward);
             return;
         }
-        
-        /*
-         * Ladder alignments don't require calibration and flipping
-         */
-        
-        else if (isLadQuin(x.cID))
-        {
-            
-            
-        }
-        
-        
-        
-        
+
         A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
         
         if (!seenMates.count(x.name))
@@ -63,10 +80,25 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
         else
         {
-            //            auto &seen  = seenMates[x.name];
-            //            auto first  = seen.isFirstPair ? &seen : &x;
-            //            auto second = seen.isFirstPair ? &x : &seen;
-            //
+            auto &seen  = seenMates[x.name];
+            auto first  = seen.isFirstPair ? &seen : &x;
+            auto second = seen.isFirstPair ? &x : &seen;
+
+            /*
+             * Ladder alignments don't require calibration and flipping
+             */
+            
+            if (isLadQuin(first->cID) && isLadQuin(second->cID))
+            {
+                if (!shouldTrim(*first, heads, o) && !shouldTrim(*second, heads, o))
+                {
+                    f(first, second, Status::LadQuin);
+                }
+            }
+
+            
+            
+            
             //            /*
             //             * Only complement reads aligned to the reverse genome
             //             */
@@ -135,8 +167,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
     }, true);
     
-    o.logInfo("Found: " + std::to_string(seenMates.size()) + " unpaired mates.");
-    
     for (auto &i: seenMates)
     {
         o.logWarn("Unpaired mate: " + i.first);
@@ -168,10 +198,10 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
         case VProcess::Method::Mean:   { return stats.mean; }
         case VProcess::Method::Median: { return stats.p50;  }
             
-            /*
-             * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure
-             * to report coverage.
-             */
+        /*
+         * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure
+         * to report coverage.
+         */
             
         case VProcess::Method::Prop:
         case VProcess::Method::Reads: { return stats.mean; }
@@ -248,7 +278,7 @@ static void sample(const Chr2DInters &r2,
             if (isnan(norm))
             {
                 o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
-                           % l.start
+                               % l.start
                            % norm).str());
                 
                 // We can't just use NAN...
@@ -388,15 +418,15 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             h1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-            
-            static const FileName HANG_1   = "VarProcess_hanging.fq";
-            static const FileName AMBIG_1  = "VarProcess_ambiguous_1.fq";
-            static const FileName AMBIG_2  = "VarProcess_ambiguous_2.fq";
-            
-            h1->open(HANG_1);
-            a1->open(AMBIG_1);
-            a2->open(AMBIG_2);
-            
+            l1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+            l2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+
+            h1->open("VarProcess_hanging.fq");
+            a1->open("VarProcess_ambiguous_1.fq");
+            a2->open("VarProcess_ambiguous_2.fq");
+            l1->open("VarProcess_ladder_1.fq");
+            l2->open("VarProcess_ladder_2.fq");
+
             // Write to BAM alignment file
             geno.open(o.work + "/VarProcess_genome.bam");
         }
@@ -406,6 +436,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             h1->close();
             a1->close();
             a2->close();
+            l1->close();
+            l2->close();
             geno.close();
         }
         
@@ -446,6 +478,11 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             p2->write(x2.qual);
         };
         
+        inline void writeLad(const ParserBAM::Data &x, const ParserBAM::Data &y)
+        {
+            writePaired(l1, l2, x, y);
+        }
+
         inline void writeAmb(const ParserBAM::Data &x, const ParserBAM::Data &y)
         {
             writePaired(a1, a2, x, y);
@@ -464,7 +501,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         Stats &stats;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
-        
+        std::shared_ptr<FileWriter> l1, l2;
+
         // Writing BAM for genomical alignments
         BAMWriter geno;
     };
@@ -512,6 +550,12 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     {
         switch (status)
         {
+            case Status::LadQuin:
+            {
+                impl.writeLad(*x1, *x2);
+                break;
+            }
+
             case Status::ReverseReverse:
             case Status::ReverseNotMapped:
             {

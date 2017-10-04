@@ -20,6 +20,9 @@ namespace Anaquin
         {
             Base edge = 0;
             
+            // Should we trim sequin reads?
+            bool shouldTrim = true;
+            
             // How much edge effects?
             Base trim = 1;
             
@@ -41,7 +44,8 @@ namespace Anaquin
             ForwardNotMapped,
             NotMappedNotMapped,
             RevHang,
-            ForHang
+            ForHang,
+            LadQuin
         };
 
         struct SampledInfo
