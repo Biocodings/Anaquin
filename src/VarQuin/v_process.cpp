@@ -8,6 +8,8 @@ using namespace Anaquin;
 
 typedef VProcess::Stats  Stats;
 typedef VProcess::Status Status;
+typedef VProcess::Method Method;
+
 typedef std::map<ChrID, Base> Headers;
 typedef std::map<ChrID, DIntervals<>> Regions;
 
@@ -258,20 +260,13 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
 }
 
 /*
- * Calculate calibration factors (but not peforming subsampling)
+ * Calculate calibration factors (but not peforming it)
  */
 
-static void calibration()
+static void calibrate(VProcess::Stats &stats,
+                      const Chr2DInters &r2,
+                      const VProcess::Options &o)
 {
-}
-
-static void sample(const Chr2DInters &r2,
-                   VProcess::Stats &stats,
-                   const Chr2DInters &sampled,
-                   const VProcess::Options &o)
-{
-    typedef VProcess::Method Method;
-    
     // For each chromosome...
     for (auto &i : r2)
     {
@@ -335,8 +330,8 @@ static void sample(const Chr2DInters &r2,
             if (isnan(norm))
             {
                 o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
-                               % l.start
-                           % norm).str());
+                                                                                 % l.start
+                                                                                 % norm).str());
                 
                 // We can't just use NAN...
                 norm = 0.0;
@@ -344,17 +339,17 @@ static void sample(const Chr2DInters &r2,
             else if (norm == 1.0)
             {
                 o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3% (%4%)") % i.first
-                           % l.start
-                           % l.end
-                           % j.first).str());
+                                                                                     % l.start
+                                                                                     % l.end
+                                                                                     % j.first).str());
             }
             else
             {
                 o.logInfo((boost::format("Normalization is %1% for %2%:%3%-%4% (%5%)") % norm
-                           % i.first
-                           % l.start
-                           % l.end
-                           % j.first).str());
+                                                                                       % i.first
+                                                                                       % l.start
+                                                                                       % l.end
+                                                                                       % j.first).str());
             }
             
             stats.c2v[cID][l].nEndo   = gs.aligns;
@@ -369,10 +364,17 @@ static void sample(const Chr2DInters &r2,
         }
     }
     
+    assert(!stats.norms.empty());
+}
+
+static void sample(VProcess::Stats &stats,
+                   const Chr2DInters &sampled,
+                   const VProcess::Options &o)
+{
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
     
     /*
-     * Initalize independnet random generators for every sampling region
+     * Initalize independnet random generators for each sampling region
      */
     
     Selection select;
@@ -392,66 +394,69 @@ static void sample(const Chr2DInters &r2,
     
     std::shared_ptr<FileWriter> f1, f2;
     
-    static const FileName SEQS_1 = "VarProcess_sequins_1.fq";
-    static const FileName SEQS_2 = "VarProcess_sequins_2.fq";
+    f1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+    f2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+
+    f1->open("VarProcess_sequins_1.fq");
+    f2->open("VarProcess_sequins_2.fq");
     
-    f1->open(SEQS_1);
-    f2->open(SEQS_2);
+    /*
+     * We should sample :
+     *
+     *   - Anything that is not mapped
+     *   - Anything outside the sampling regions
+     *   - Inside the region with probability
+     */
+
+    assert(stats.s1.size() == stats.s2.size());
     
-    auto __sample__ = [&](const std::vector<ParserBAM::Data> &v)
+    for (auto i = 0; i < stats.s1.size(); i++)
     {
-        /*
-         * We should sample :
-         *
-         *   - Anything that is not mapped
-         *   - Anything outside the sampling regions
-         *   - Inside the region with probability
-         */
+        const auto &x1 = stats.s1.at(i);
+        const auto &x2 = stats.s2.at(i);
+
+        auto shouldSampled = !x1.mapped || !x2.mapped;
         
-        for (const auto &x : v)
+        if (!shouldSampled)
         {
-            auto shouldSampled = !x.mapped;
+            DInter *inter;
             
-            if (!shouldSampled)
+            /*
+             * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
+             * into the regions still give valuable information and sequencing depth.
+             */
+            
+            if (sampled.count(x1.cID) && (inter = sampled.at(x1.cID).overlap(x1.l)))
             {
-                DInter *inter;
+                // Transform for the trimming region
+                auto l = Locus(inter->l().start + o.edge, inter->l().end - o.edge);
                 
-                /*
-                 * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
-                 * into the regions still give valuable information and sequencing depth.
-                 */
-                
-                if (sampled.count(x.cID) && (inter = sampled.at(x.cID).overlap(x.l)))
+                if (select.at(x1.cID).at(l)->select(x1.name))
                 {
-                    // Transform for the trimming region
-                    auto l = Locus(inter->l().start + o.edge, inter->l().end - o.edge);
-                    
-                    if (select.at(x.cID).at(l)->select(x.name))
-                    {
-                        shouldSampled = true;
-                    }
-                }
-                else
-                {
-                    // Never throw away reads outside the regions
                     shouldSampled = true;
                 }
             }
-            
-            if (shouldSampled)
+            else
             {
-                std::cout << x.cID << std::endl;
-                //                if (trimmed.count(x.cID) && trimmed.at(x.cID).overlap(x.l))
-                //                {
-                //                    trimmed.at(x.cID).overlap(x.l)->map(x.l);
-                //                }
+                // Never throw away reads outside the regions
+                shouldSampled = true;
             }
         }
-    };
-    
-    __sample__(stats.s1);
-    __sample__(stats.s2);
-    
+        
+        if (shouldSampled)
+        {
+            f1->write("@" + x1.name + "/1");
+            f1->write(x1.seq);
+            f1->write("+");
+            f1->write(x1.qual);
+            
+            f2->write("@" + x2.name + "/2");
+            f2->write(x2.seq);
+            f2->write("+");
+            f2->write(x2.qual);
+        }
+    }
+
     f1->close();
     f2->close();
 }
@@ -633,13 +638,13 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
      * Checking calibration
      */
 
-    calibration();
+    calibrate(stats, r2, o);
     
     /*
      * Calibrating sequin alignments
      */
     
-    //sample(r2, stats, r1, o);
+    sample(stats, r1, o);
     
     return stats;
 }
