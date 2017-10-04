@@ -186,35 +186,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 }
             }
             
-            //            /*
-            //             * Only complement reads aligned to the reverse genome
-            //             */
-            //
-            //            if (__impl__->isReverse(first->cID))
-            //            {
-            //                if (first->isForward)
-            //                {
-            //                    complement(first->seq);
-            //                }
-            //                else
-            //                {
-            //                    std::reverse(first->seq.begin(), first->seq.end());
-            //                }
-            //            }
-            //
-            //            if (__impl__->isReverse(second->cID))
-            //            {
-            //                if (second->isForward)
-            //                {
-            //                    complement(second->seq);
-            //                }
-            //                else
-            //                {
-            //                    std::reverse(second->seq.begin(), second->seq.end());
-            //                }
-            //            }
-            //
-            //            seenMates.erase(x.name);
+            seenMates.erase(x.name);
         }
     }, true);
     
@@ -412,8 +384,8 @@ static void sample(VProcess::Stats &stats,
     
     for (auto i = 0; i < stats.s1.size(); i++)
     {
-        const auto &x1 = stats.s1.at(i);
-        const auto &x2 = stats.s2.at(i);
+        auto &x1 = stats.s1.at(i);
+        auto &x2 = stats.s2.at(i);
 
         auto shouldSampled = !x1.mapped || !x2.mapped;
         
@@ -443,8 +415,27 @@ static void sample(VProcess::Stats &stats,
             }
         }
         
+        /*
+         * Only complement reads aligned to the reverse genome
+         */
+        
+        auto __reverse__ = [&](ParserBAM::Data &x)
+        {
+            if (x.isForward)
+            {
+                complement(x.seq);
+            }
+            else
+            {
+                std::reverse(x.seq.begin(), x.seq.end());
+            }
+        };
+        
         if (shouldSampled)
         {
+            __reverse__(x1);
+            __reverse__(x2);
+            
             f1->write("@" + x1.name + "/1");
             f1->write(x1.seq);
             f1->write("+");
