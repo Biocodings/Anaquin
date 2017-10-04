@@ -123,13 +123,39 @@ namespace Anaquin
                 
                 // Number of alignments for sequins (excluding LadQuin) after calibration
                 Counts aSeqs = 0;
+                
+                // Normalization for the sequins
+                std::map<SequinID, Proportion> norms;
             };
             
             Calibration cStats;
             
+            /*
+             * Mapping statistics
+             */
             
-            
+            struct MappingStats
+            {
+                // List of sequins
+                std::set<SequinID> seqs;
+                
+                // Mapping between sequins to their endogenous regions
+                std::map<SequinID, std::pair<ChrID, std::string>> s2e;
+                
+                // Mapping between sequins to their sequin regions
+                std::map<SequinID, std::pair<ChrID, std::string>> s2s;
+                
+                // Alignment coverage for sequins (before and after) and endogenous regions
+                ID2Intervals eInters, bInters, aInters;
 
+                // Eg: GS_037 to chr2
+                inline ChrID s2c(const SequinID &x) const
+                {
+                    return s2e.at(x).first;
+                }
+            };
+            
+            MappingStats mStats;
             
             
             
@@ -151,16 +177,8 @@ namespace Anaquin
             // Required for summary statistics
             std::vector<double> allNorms;
 
-            typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
-            
-            // Normalization for each region
-            NormFactors norms;
-
             // Sampling statistics
-            std::map<ChrID, std::map<Locus, SampledInfo>> c2v;
-            
-            // Alignment coverage for sequins and genome
-            ID2Intervals sInters, gInters;
+            std::map<SequinID, SampledInfo> c2v;
             
             std::map<VProcess::Status, Counts> counts;
         };
