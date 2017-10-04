@@ -41,188 +41,6 @@ template <typename O> bool shouldTrim(Stats &stats, const ParserBAM::Data &x, co
     return lTrim || rTrim;
 }
 
-template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
-{
-    const auto &r = Standard::instance().r_var;
-    
-    // Regions without edge effects
-    const auto r1 = r.r1()->inters();
-    
-    // Regions with edge effects
-    const auto r2 = r.r2()->inters();
-
-    // Sequin names
-    const auto seqs = r.r1()->seqs();
-    
-    // Mapping from sequins to chromosomes
-    const auto s2c = r.r1()->s2c();
-    
-    // Required for pooling paired-end reads
-    std::map<ReadName, ParserBAM::Data> seenMates;
-    
-    stats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x)
-    {
-        return x.size();
-    });
-
-    const auto heads = ParserBAM::header(file);
-    
-    /*
-     * Update alignment coverage for endogenous and sequins
-     */
-    
-    auto coverage = [&](const ParserBAM::Data &x, const ChrID &cID, ID2Intervals &inters)
-    {
-        if (x.mapped && inters.count(cID))
-        {
-            const auto matched = inters.at(cID).overlap(x.l);
-            
-            if (matched)
-            {
-                matched->map(x.l);
-            }
-        }
-    };
-
-    // Eg: chrev1, LAD_18 ...
-    auto isVarQuin = [&](const ChrID &x)
-    {
-        return isLadQuin(x) || seqs.count(x);
-    };
-    
-    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
-    {
-        if (i.p.i && !(i.p.i % 1000000))
-        {
-            o.wait(std::to_string(i.p.i));
-        }
-        
-        if (!x.mapped)              { stats.nNA++;  }
-        else if (seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.lad.nLad++; } stats.nSeqs++; }
-        else                        { stats.nEndo++; }
-        
-        /*
-         * Directly write out endogenous alignments (pairing not required)
-         */
-        
-        if (!isLadQuin(x.cID) && (!seqs.count(x.cID) && !seqs.count(x.rnext)))
-        {
-            // Calculate alignment coverage for endogenous regions
-            coverage(x, x.cID, stats.gInters);
-
-            // Write out the read
-            f(&x, nullptr, Status::ForwardForward);
-            
-            return;
-        }
-
-        A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
-        
-        if (!seenMates.count(x.name))
-        {
-            seenMates[x.name] = x;
-        }
-        else
-        {
-            auto &seen  = seenMates[x.name];
-            auto first  = seen.isFirstPair ? &seen : &x;
-            auto second = seen.isFirstPair ? &x : &seen;
-
-            if (isLadQuin(first->cID) && isLadQuin(second->cID))
-            {
-                /*
-                 * Ladder alignments don't require calibration and flipping
-                 */
-
-                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
-                {
-                    f(first, second, Status::LadQuin);
-                }
-            }
-            else if (!s2c.count(first->cID) || !s2c.count(second->cID))
-            {
-                f(first, second, Status::ReverseLadQuin);
-            }
-            else
-            {
-                /*
-                 * Reverse alignments require trimming, calibration and flipping
-                 */
-
-                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
-                {
-                    assert(s2c.count(x.cID));
-                    
-                    // Calculate alignment coverage for sequin regions
-                    coverage(x, s2c.at(x.cID), stats.sInters);
-                
-                    const auto bothRev =  isVarQuin(first->cID) && isVarQuin(second->cID);
-                    const auto bothFor = !isVarQuin(first->cID) && !isVarQuin(second->cID);
-                    const auto anyRev  =  isVarQuin(first->cID) || isVarQuin(second->cID);
-                    const auto anyFor  = !isVarQuin(first->cID) || !isVarQuin(second->cID);
-                    const auto anyMap  =  first->mapped ||  second->mapped;
-                    const auto anyNMap = !first->mapped || !second->mapped;
-                    
-                    Status status;
-                    
-                    if (bothRev && !anyNMap)
-                    {
-                        status = Status::ReverseReverse;
-                    }
-                    else if (bothFor && !anyNMap)
-                    {
-                        throw std::runtime_error("Status::ForwardForward is invalid for sequins");
-                    }
-                    else if (anyRev && anyFor && !anyNMap)
-                    {
-                        status = Status::ForwardReverse;
-                    }
-                    else if (anyNMap && anyMap && anyRev)
-                    {
-                        status = Status::ReverseNotMapped;
-                    }
-                    else if (anyNMap && anyMap && anyFor)
-                    {
-                        status = Status::ForwardNotMapped;
-                    }
-                    else
-                    {
-                        status = Status::NotMappedNotMapped;
-                    }
-                    
-                    stats.counts[status]++;
-                    
-                    // Write out the paired-end reads
-                    f(first, second, status);
-                }
-            }
-            
-            seenMates.erase(x.name);
-        }
-    }, true);
-    
-    for (auto &i: seenMates)
-    {
-        o.logWarn("Unpaired mate: " + i.first);
-        
-        // Compute the complement (but not reverse)
-        complement(i.second.seq);
-        
-        if (isVarQuin(i.second.cID))
-        {
-            stats.counts[Status::RevHang]++;
-            f(&i.second, nullptr, Status::RevHang);
-        }
-        else
-        {
-            stats.counts[Status::ForHang]++;
-            f(&i.second, nullptr, Status::ForHang);
-        }
-    }
-    
-    return stats;
-}
-
 typedef std::map<ChrID, std::map<Locus, Proportion>> NormFactors;
 
 template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const Stats &stats)
@@ -248,103 +66,113 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
 
 static void calibrate(VProcess::Stats &stats,
                       const Chr2DInters &r2,
+                      const std::set<SequinID> &seqs,
+                      const std::map<SequinID, std::pair<ChrID, std::string>> &s2e,
+                      const std::map<SequinID, std::pair<ChrID, std::string>> &s2s,
                       const VProcess::Options &o)
 {
-    // For each chromosome...
-    for (auto &i : r2)
+    for (const auto &sID : seqs)
     {
-        const auto cID = i.first;
+        assert(s2s.count(sID) && s2e.count(sID));
         
-        // For each region...
-        for (auto &j : i.second.data())
+        const auto &p1 = s2e.at(sID);
+        const auto &p2 = s2s.at(sID);
+        
+        assert(stats.gInters.count(p1.first));
+        assert(stats.gInters.at(p1.first).find(p1.second));
+        assert(stats.sInters.count(p2.first));
+        assert(stats.sInters.at(p2.first).find(p2.second));
+
+        // Locus for the sequin
+        const auto &l = stats.gInters.at(p1.first).find(p1.second)->l();
+        
+        // Chromosome for the sequin
+        const auto &cID = p1.first;
+        
+        // Genomic statistics for the region
+        const auto gs = stats.gInters.at(p1.first).find(p1.second)->stats();
+        
+        // Sequins statistics for the region
+        const auto ss = stats.sInters.at(p2.first).find(p2.second)->stats();
+        
+        o.info("Calculating coverage for " + sID);
+        
+        /*
+         * Now we have the data, we'll need to compare coverage and determine the fraction that
+         * the synthetic alignments needs to be sampled.
+         */
+        
+        const auto endoC = stats2cov(o.meth, gs);
+        const auto seqsC = stats2cov(o.meth, ss);
+        
+        Proportion norm;
+        
+        switch (o.meth)
         {
-            const auto &l = j.second.l();
-            
-            // Genomic statistics for the region
-            const auto gs = stats.gInters.at(cID).find(l.key())->stats();
-            
-            // Sequins statistics for the region
-            const auto ss = stats.sInters.at(cID).find(l.key())->stats();
-            
-            o.info("Calculating coverage for " + j.first);
-            
-            /*
-             * Now we have the data, we'll need to compare coverage and determine the fraction that
-             * the synthetic alignments needs to be sampled.
-             */
-            
-            const auto endoC = stats2cov(o.meth, gs);
-            const auto seqsC = stats2cov(o.meth, ss);
-            
-            Proportion norm;
-            
-            switch (o.meth)
+            case Method::Mean:
+            case Method::Median: { norm = seqsC ? std::min(endoC / seqsC, 1.0) : NAN; break; }
+            case Method::Prop:
             {
-                case Method::Mean:
-                case Method::Median: { norm = seqsC ? std::min(endoC / seqsC, 1.0) : NAN; break; }
-                case Method::Prop:
-                {
-                    A_ASSERT(!isnan(o.p));
-                    norm = o.p;
-                    break;
-                }
-                    
-                case Method::Reads:
-                {
-                    A_ASSERT(!isnan(o.reads));
-                    
-                    const auto gAligns = gs.aligns;
-                    const auto sAligns = ss.aligns;
-                    
-                    /*
-                     * Nothing to sample if no sequin alignments. Subsample everything if the
-                     * genomic region has higher coverage.
-                     */
-                    
-                    norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
-                    
-                    break;
-                }
+                A_ASSERT(!isnan(o.p));
+                norm = o.p;
+                break;
             }
-            
-            stats.allBeforeEndoC.push_back(endoC);
-            stats.allBeforeSeqsC.push_back(seqsC);
-            
-            if (isnan(norm))
-            {
-                o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % i.first
-                                                                                 % l.start
-                                                                                 % norm).str());
                 
-                // We can't just use NAN...
-                norm = 0.0;
-            }
-            else if (norm == 1.0)
+            case Method::Reads:
             {
-                o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3% (%4%)") % i.first
-                                                                                     % l.start
-                                                                                     % l.end
-                                                                                     % j.first).str());
+                A_ASSERT(!isnan(o.reads));
+                
+                const auto gAligns = gs.aligns;
+                const auto sAligns = ss.aligns;
+                
+                /*
+                 * Nothing to sample if no sequin alignments. Subsample everything if the
+                 * genomic region has higher coverage.
+                 */
+                
+                norm = sAligns == 0 ? 0 : gAligns >= sAligns ? 1 : ((Proportion) gAligns) / sAligns;
+                
+                break;
             }
-            else
-            {
-                o.logInfo((boost::format("Normalization is %1% for %2%:%3%-%4% (%5%)") % norm
-                                                                                       % i.first
-                                                                                       % l.start
-                                                                                       % l.end
-                                                                                       % j.first).str());
-            }
-            
-            stats.c2v[cID][l].nEndo   = gs.aligns;
-            stats.c2v[cID][l].nBefore = ss.aligns;
-            
-            stats.c2v[cID][l].rID    = j.first;
-            stats.c2v[cID][l].endo   = endoC;
-            stats.c2v[cID][l].before = seqsC;
-            stats.c2v[cID][l].norm   = stats.norms[i.first][l] = norm;
-            
-            stats.allNorms.push_back(norm);
         }
+        
+        stats.allBeforeEndoC.push_back(endoC);
+        stats.allBeforeSeqsC.push_back(seqsC);
+        
+        if (isnan(norm))
+        {
+            o.logWarn((boost::format("Normalization is NAN for %1%:%2%-%3%") % cID
+                                                                             % l.start
+                                                                             % norm).str());
+            
+            // We can't just use NAN...
+            norm = 0.0;
+        }
+        else if (norm == 1.0)
+        {
+            o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3% (%4%)") % cID
+                                                                                 % l.start
+                                                                                 % l.end
+                                                                                 % sID).str());
+        }
+        else
+        {
+            o.logInfo((boost::format("Normalization is %1% for %2%:%3%-%4% (%5%)") % norm
+                                                                                   % cID
+                                                                                   % l.start
+                                                                                   % l.end
+                                                                                   % sID).str());
+        }
+        
+        stats.c2v[cID][l].nEndo   = gs.aligns;
+        stats.c2v[cID][l].nBefore = ss.aligns;
+        
+        stats.c2v[cID][l].rID    = sID;
+        stats.c2v[cID][l].endo   = endoC;
+        stats.c2v[cID][l].before = seqsC;
+        stats.c2v[cID][l].norm   = stats.norms[cID][l] = norm;
+        
+        stats.allNorms.push_back(norm);
     }
     
     assert(!stats.norms.empty());
@@ -463,7 +291,8 @@ static void sample(VProcess::Stats &stats,
     f2->close();
 }
 
-VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
+
+template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
     const auto &r = Standard::instance().r_var;
     
@@ -473,6 +302,244 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     // Regions with edge effects
     const auto r2 = r.r2()->inters();
     
+    // Sequin names
+    const auto seqs = r.r1()->seqs();
+    
+    // Mapping from sequins to chromosomes
+    const auto s2c = r.r1()->s2c();
+    
+    // Required for pooling paired-end reads
+    std::map<ReadName, ParserBAM::Data> seenMates;
+    
+    stats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x) { return x.size(); });
+    
+    /*
+     * Initalize genomic and sequin regions
+     */
+    
+    // Mapping between sequins to their sequin regions
+    std::map<SequinID, std::pair<ChrID, std::string>> s2s;
+    
+    // Mapping between sequins to their endogenous regions
+    std::map<SequinID, std::pair<ChrID, std::string>> s2e;
+    
+    auto initRegs = [&]()
+    {
+        // For each chromosome...
+        for (const auto &i : r2)
+        {
+            DIntervals<> x1;
+            
+            for (const auto &inter : i.second.data())
+            {
+                assert(!inter.second.name().empty());
+                
+                // Sequin for the region
+                const auto &sID = inter.second.name();
+                
+                const auto &l1 = inter.second.l();
+                x1.add(DInter(l1.key(), l1));
+                
+                // Update mapping for endogenous
+                s2e[sID] = std::pair<ChrID, std::string>(i.first, l1.key());
+                
+                // Locus for the sequin region
+                const auto l2 = Locus(0, inter.second.l().end - inter.second.l().start);
+                
+                DIntervals<> x2;
+                x2.add(DInter(l2.key(), l2));
+                
+                // Only single chromosome for each sequin
+                stats.sInters[sID] = x2;
+                stats.sInters[sID].build();
+                
+                // Update mapping for endogenous
+                s2s[sID] = std::pair<ChrID, std::string>(sID, l2.key());
+            }
+            
+            stats.gInters[i.first] = x1;
+            stats.gInters[i.first].build();
+        }
+    };
+    
+    initRegs();
+    
+    assert(!s2e.empty() && !s2s.empty());
+    assert(s2e.size() == s2s.size());
+
+    const auto heads = ParserBAM::header(file);
+    
+    /*
+     * Update alignment coverage for endogenous and sequins
+     */
+    
+    auto coverage = [&](const ParserBAM::Data &x, const ChrID &cID, ID2Intervals &inters)
+    {
+        if (x.mapped && inters.count(cID))
+        {
+            const auto matched = inters.at(cID).overlap(x.l);
+            
+            if (matched)
+            {
+                matched->map(x.l);
+            }
+        }
+    };
+    
+    // Eg: chrev1, LAD_18 ...
+    auto isVarQuin = [&](const ChrID &x)
+    {
+        return isLadQuin(x) || seqs.count(x);
+    };
+    
+    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
+    {
+        if (i.p.i && !(i.p.i % 1000000))
+        {
+            o.wait(std::to_string(i.p.i));
+        }
+        
+        if (!x.mapped)              { stats.nNA++;  }
+        else if (seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.lad.nLad++; } stats.nSeqs++; }
+        else                        { stats.nEndo++; }
+        
+        /*
+         * Directly write out endogenous alignments (pairing not required)
+         */
+        
+        if (!isLadQuin(x.cID) && (!seqs.count(x.cID) && !seqs.count(x.rnext)))
+        {
+            // Calculate alignment coverage for endogenous regions
+            coverage(x, x.cID, stats.gInters);
+            
+            // Write out the read
+            f(&x, nullptr, Status::ForwardForward);
+            
+            return;
+        }
+        
+        A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
+        
+        if (!seenMates.count(x.name))
+        {
+            seenMates[x.name] = x;
+        }
+        else
+        {
+            auto &seen  = seenMates[x.name];
+            auto first  = seen.isFirstPair ? &seen : &x;
+            auto second = seen.isFirstPair ? &x : &seen;
+            
+            if (isLadQuin(first->cID) && isLadQuin(second->cID))
+            {
+                /*
+                 * Ladder alignments don't require calibration and flipping
+                 */
+                
+                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
+                {
+                    f(first, second, Status::LadQuin);
+                }
+            }
+            else if (!s2c.count(first->cID) || !s2c.count(second->cID))
+            {
+                f(first, second, Status::ReverseLadQuin);
+            }
+            else
+            {
+                /*
+                 * Reverse alignments require trimming, calibration and flipping
+                 */
+                
+                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
+                {
+                    assert(s2c.count(x.cID));
+                    assert(stats.sInters.count(x.cID));
+
+                    // Calculate alignment coverage for sequin regions
+                    coverage(x, x.cID, stats.sInters);
+                    
+                    const auto bothRev =  isVarQuin(first->cID) && isVarQuin(second->cID);
+                    const auto bothFor = !isVarQuin(first->cID) && !isVarQuin(second->cID);
+                    const auto anyRev  =  isVarQuin(first->cID) || isVarQuin(second->cID);
+                    const auto anyFor  = !isVarQuin(first->cID) || !isVarQuin(second->cID);
+                    const auto anyMap  =  first->mapped ||  second->mapped;
+                    const auto anyNMap = !first->mapped || !second->mapped;
+                    
+                    Status status;
+                    
+                    if (bothRev && !anyNMap)
+                    {
+                        status = Status::ReverseReverse;
+                    }
+                    else if (bothFor && !anyNMap)
+                    {
+                        throw std::runtime_error("Status::ForwardForward is invalid for sequins");
+                    }
+                    else if (anyRev && anyFor && !anyNMap)
+                    {
+                        status = Status::ForwardReverse;
+                    }
+                    else if (anyNMap && anyMap && anyRev)
+                    {
+                        status = Status::ReverseNotMapped;
+                    }
+                    else if (anyNMap && anyMap && anyFor)
+                    {
+                        status = Status::ForwardNotMapped;
+                    }
+                    else
+                    {
+                        status = Status::NotMappedNotMapped;
+                    }
+                    
+                    stats.counts[status]++;
+                    
+                    // Write out the paired-end reads
+                    f(first, second, status);
+                }
+            }
+            
+            seenMates.erase(x.name);
+        }
+    }, true);
+    
+    for (auto &i: seenMates)
+    {
+        o.logWarn("Unpaired mate: " + i.first);
+        
+        // Compute the complement (but not reverse)
+        complement(i.second.seq);
+        
+        if (isVarQuin(i.second.cID))
+        {
+            stats.counts[Status::RevHang]++;
+            f(&i.second, nullptr, Status::RevHang);
+        }
+        else
+        {
+            stats.counts[Status::ForHang]++;
+            f(&i.second, nullptr, Status::ForHang);
+        }
+    }
+    
+    /*
+     * Checking calibration
+     */
+    
+    calibrate(stats, r2, seqs, s2e, s2s, o);
+    
+    /*
+     * Calibrating sequin alignments
+     */
+    
+    sample(stats, r1, o);
+    
+    return stats;
+}
+
+VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
+{
     Stats stats;
 
     struct Impl
@@ -568,27 +635,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     
     Impl impl(stats, o);
     
-    auto initInts = [&](ID2Intervals &inters)
-    {
-        // For each chromosome...
-        for (const auto &i : r2)
-        {
-            DIntervals<> x;
-            
-            for (const auto &inter : i.second.data())
-            {
-                const auto &l = inter.second.l();
-                x.add(DInter(l.key(), l));
-            }
-            
-            inters[i.first] = x;
-            inters[i.first].build();
-        }
-    };
-    
-    initInts(stats.gInters);
-    initInts(stats.sInters);
-
     parse(file, stats, o, [&](const ParserBAM::Data *x1, const ParserBAM::Data *x2, Status status)
     {
         switch (status)
@@ -636,18 +682,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         }
     });
 
-    /*
-     * Checking calibration
-     */
-
-    calibrate(stats, r2, o);
-    
-    /*
-     * Calibrating sequin alignments
-     */
-    
-    sample(stats, r1, o);
-    
     return stats;
 }
 
@@ -672,7 +706,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "-------Before trimming\n\n"
                          "       Number of alignments: %13%\n\n"
                          "-------After trimming\n\n"
-                         "       Number of alignments: %14%\n"
+                         "       Number of alignments: %14%\n\n"
                          "-------Sequin Outputs\n\n"
                          "       Flipped reads:   %15% (%16$.2f%%)\n"
                          "       Ambiguous reads: %17% (%18$.2f%%)\n"
@@ -713,12 +747,52 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                      ).str());
 }
 
+static void writeSequins(const FileName &file, const Stats &stats, const VProcess::Options &o)
+{
+    o.generate(file);
+    
+    const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8$.2f\t%9$.2f\t%10$.2f\t%11$.2f");
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Chrom"
+                                           % "Start"
+                                           % "End"
+                                           % "SampleReads"
+                                           % "BeforeReads"
+                                           % "AfterReads"
+                                           % "GenomeCov"
+                                           % "BeforeCov"
+                                           % "AfterCov"
+                                           % "Norm").str());
+    
+    // For each chromosome...
+    for (const auto &i : stats.c2v)
+    {
+        // For each variant...
+        for (const auto &j : i.second)
+        {
+            o.writer->write((boost::format(format) % j.second.rID
+                                                   % i.first
+                                                   % j.first.start
+                                                   % j.first.end
+                                                   % j.second.nEndo
+                                                   % j.second.nBefore
+                                                   % j.second.nAfter
+                                                   % j.second.endo
+                                                   % j.second.before
+                                                   % j.second.after
+                                                   % j.second.norm).str());
+        }
+    }
+    
+    o.writer->close();
+}
+
 void VProcess::report(const FileName &file, const Options &o)
 {
-    /*
-     * For efficiency, this tool writes some of the output files directly in the analyze() function.
-     */
-    
+    // For efficiency, this tool writes some of the output files directly in the analyze() function.
     const auto stats = analyze(file, o);
     
     /*
@@ -728,9 +802,9 @@ void VProcess::report(const FileName &file, const Options &o)
     writeSummary("VarProcess_summary.stats", file, stats, o);
 
     /*
-     * Generating VarProcess_summary.stats
+     * Generating VarProcess_sequins.tsv
      */
     
-    generateSummary("VarProcess_summary.stats", endo, seqs, stats, o);
+    writeSequins("VarProcess_sequins.tsv", stats, o);
 }
 
