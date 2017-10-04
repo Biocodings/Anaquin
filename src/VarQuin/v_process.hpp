@@ -71,8 +71,53 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            // Number of alignments for ladders
-            Counts nLad = 0;
+            Stats()
+            {
+                counts[Status::RevHang] = 0;
+                counts[Status::ForHang] = 0;
+                counts[Status::LadQuin] = 0;
+                counts[Status::ReverseReverse] = 0;
+                counts[Status::ForwardForward] = 0;
+                counts[Status::ForwardReverse] = 0;
+                counts[Status::ReverseLadQuin] = 0;
+                counts[Status::ReverseNotMapped] = 0;
+                counts[Status::ForwardNotMapped] = 0;
+                counts[Status::NotMappedNotMapped] = 0;
+            }
+            
+            /*
+             * General statistics
+             */
+            
+            // Number of reference regions
+            Counts nRegs;
+
+            struct Trim
+            {
+                // Number of reads trimmed on left
+                Counts left = 0;
+                
+                // Number of reads trimmed on right
+                Counts right = 0;
+                
+                // Number of alignments before trimming
+                Counts before = 0;
+                
+                // Number of alignments after trimming
+                Counts after  = 0;
+            };
+            
+            struct Ladder
+            {
+                // Number of alignments for ladders
+                Counts nLad = 0;
+            };
+            
+            // Trimming statistics
+            Trim trim;
+            
+            // Ladder statistics
+            Ladder lad;
             
             // Alignment records for sequins (we'll need them for sampling)
             std::vector<ParserBAM::Data> s1, s2;

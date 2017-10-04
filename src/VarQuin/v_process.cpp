@@ -17,7 +17,7 @@ typedef std::map<ChrID, DIntervals<>> Regions;
  * Implement trimming for sequins (reverse genome and ladders)
  */
 
-template <typename O> bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const O &o)
+template <typename O> bool shouldTrim(Stats &stats, const ParserBAM::Data &x, const Headers &heads, const O &o)
 {
     assert(heads.count(x.cID));
     
@@ -32,6 +32,12 @@ template <typename O> bool shouldTrim(const ParserBAM::Data &x, const Headers &h
     const auto lTrim = std::abs(x.l.start) <= o.trim;
     const auto rTrim = std::abs(x.l.end - len) <= o.trim;
 
+    if (lTrim) { stats.trim.left++;  }
+    if (rTrim) { stats.trim.right++; }
+
+    stats.trim.before++;
+    if (!lTrim && !rTrim) { stats.trim.after++; }
+    
     return lTrim || rTrim;
 }
 
@@ -54,6 +60,11 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
+    stats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x)
+    {
+        return x.size();
+    });
+
     const auto heads = ParserBAM::header(file);
     
     /*
@@ -87,7 +98,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
         
         if (!x.mapped)              { stats.nNA++;  }
-        else if (seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.nLad++; } stats.nSeqs++; }
+        else if (seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.lad.nLad++; } stats.nSeqs++; }
         else                        { stats.nEndo++; }
         
         /*
@@ -123,7 +134,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                  * Ladder alignments don't require calibration and flipping
                  */
 
-                if (!shouldTrim(*first, heads, o) && !shouldTrim(*second, heads, o))
+                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
                 {
                     f(first, second, Status::LadQuin);
                 }
@@ -138,7 +149,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                  * Reverse alignments require trimming, calibration and flipping
                  */
 
-                if (!shouldTrim(*first, heads, o) && !shouldTrim(*second, heads, o))
+                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
                 {
                     assert(s2c.count(x.cID));
                     
@@ -463,7 +474,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     const auto r2 = r.r2()->inters();
     
     Stats stats;
-    
+
     struct Impl
     {
         Impl(Stats &stats, const Options &o) : stats(stats)
@@ -640,12 +651,86 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
+static void writeSummary(const FileName &file, const FileName &src, const VProcess::Stats &stats, const VProcess::Options &o)
+{
+    extern FileName BedRef();
+
+    const auto summary = "-------VarProcess Summary Statistics\n\n"
+                         "-------VarFlip Inputs\n\n"
+                         "       Reference annotation file: %1%\n"
+                         "       Input alignment file: %2%\n\n"
+                         "-------Reference regions\n\n"
+                         "       Regions: %3% regions\n"
+                         "       Method:  %4%\n\n"
+                         "-------Alignments\n\n"
+                         "       Unmapped: %5% (64$.2f%%)\n"
+                         "       Genome:   %7% (%8$.2f%%)\n"
+                         "       Sequins:  %9% (%10$.2f%%)\n\n"
+                         "-------Trimming\n\n"
+                         "       Left:  %11% reads\n"
+                         "       Right: %12% reads\n\n"
+                         "-------Before trimming\n\n"
+                         "       Number of alignments: %13%\n\n"
+                         "-------After trimming\n\n"
+                         "       Number of alignments: %14%\n"
+                         "-------Sequin Outputs\n\n"
+                         "       Flipped reads:   %15% (%16$.2f%%)\n"
+                         "       Ambiguous reads: %17% (%18$.2f%%)\n"
+                         "       Hanging reads:   %19% (%20$.2f%%)\n";
+    
+    
+    #define C(x) stats.counts.at(x)
+    
+    const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped);
+    const auto ca = C(Status::ForwardForward) + C(Status::ForwardReverse) + C(Status::ForwardNotMapped) + C(Status::NotMappedNotMapped);
+    const auto ch = C(Status::RevHang) + C(Status::ForHang);
+    const auto pf = 100.0 * cf / (cf + ca + ch);
+    const auto pa = 100.0 * ca / (cf + ca + ch);
+    const auto ph = 100.0 * ch / (cf + ca + ch);
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % BedRef()          // 1
+                                            % src               // 2
+                                            % stats.nRegs       // 3
+                                            % "LeftRight"       // 4
+                                            % stats.nNA         // 5
+                                            % stats.pNA()       // 6
+                                            % stats.nEndo       // 7
+                                            % stats.pEndo()     // 8
+                                            % stats.nSeqs       // 9
+                                            % stats.pSyn()      // 10
+                                            % stats.trim.left   // 11
+                                            % stats.trim.right  // 12
+                                            % stats.trim.before // 13
+                                            % stats.trim.after  // 14
+                                            % cf                // 15
+                                            % pf                // 16
+                                            % ca                // 17
+                                            % pa                // 18
+                                            % ch                // 19
+                                            % ph                // 20
+                     ).str());
+}
+
 void VProcess::report(const FileName &file, const Options &o)
 {
     /*
-     * For efficiency, this tool writes output files directly in the analyze() function.
+     * For efficiency, this tool writes some of the output files directly in the analyze() function.
      */
     
-    analyze(file, o);
+    const auto stats = analyze(file, o);
+    
+    /*
+     * Generating VarProcess_summary.stats
+     */
+    
+    writeSummary("VarProcess_summary.stats", file, stats, o);
+
+    /*
+     * Generating VarProcess_summary.stats
+     */
+    
+    generateSummary("VarProcess_summary.stats", endo, seqs, stats, o);
 }
 
