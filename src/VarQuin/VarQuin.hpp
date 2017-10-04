@@ -28,6 +28,13 @@ namespace Anaquin
         }
     }
     
+    // Eg: LAD_18
+    inline bool isLadQuin(const ChrID &x)
+    {
+        A_ASSERT(!x.empty());
+        return x.find("LAD_") != std::string::npos;
+    }
+    
     // Eg: chrev1, chrev10 etc...
     inline bool isRevChr(const ChrID &x)
     {

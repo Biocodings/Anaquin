@@ -108,7 +108,7 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     o.logInfo("Exon intervals: " + std::to_string(stats.eInters.size()));
     
     // For each reference chromosome...
-    for (const auto i : stats.eInters)
+    for (const auto &i : stats.eInters)
     {
         const auto &cID = i.first;
         const auto &x = stats.data.at(cID);

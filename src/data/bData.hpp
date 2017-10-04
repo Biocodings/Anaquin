@@ -19,6 +19,10 @@ namespace Anaquin
     
     struct BedData : public std::map<ChrID, BedChrData>
     {
+        /*
+         * Return sequin names (4th column in BED)
+         */
+        
         inline std::set<SequinID> seqs() const
         {
             std::set<SequinID> x;
@@ -32,11 +36,6 @@ namespace Anaquin
             }
             
             return x;
-        }
-
-        inline Counts nGene(const ChrID &cID) const
-        {
-            return at(cID).r2d.size();
         }
 
         inline Counts countBase(const ChrID &cID) const
@@ -60,14 +59,6 @@ namespace Anaquin
             });
         }
         
-        inline Counts nGene() const
-        {
-            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
-            {
-                return nGene(cID);
-            });
-        }
-
         inline Counts count() const
         {
             return countMap(*this, [&](const ChrID &, const BedChrData &x)
@@ -76,19 +67,6 @@ namespace Anaquin
             });
         }
         
-        template <typename F> Counts nGeneSyn(F f) const
-        {
-            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
-            {
-                return f(cID) ? nGene(cID) : 0;
-            });
-        }
-
-        template <typename F> Counts nGeneGen(F f) const
-        {
-            return nGene() - nGeneSyn(f);
-        }
-
         inline DIntervals<> inters(const ChrID &cID) const
         {
             DIntervals<> r;

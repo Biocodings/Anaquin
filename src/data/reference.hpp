@@ -142,6 +142,9 @@ namespace Anaquin
 
             inline std::shared_ptr<GTFData> gtf() const { return _g1; }
 
+            inline std::shared_ptr<BedData> r1() const { return _r1; }
+            inline std::shared_ptr<BedData> r2() const { return _r2; }
+
             inline Chr2DInters regs1()  const { return _r1->inters();  }
             inline Chr2DInters regs2()  const { return _r2->inters();  }
             inline Chr2MInters mRegs1() const { return _r1->minters(); }
