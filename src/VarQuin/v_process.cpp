@@ -19,6 +19,8 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
+    const auto heads = ParserBAM::header(file);
+    
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         if (i.p.i && !(i.p.i % 1000000))

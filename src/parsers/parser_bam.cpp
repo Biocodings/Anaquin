@@ -104,6 +104,27 @@ bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
     return false;
 }
 
+std::map<ChrID, Base> ParserBAM::header(const FileName &file)
+{
+    auto f = sam_open(file.c_str(), "r");
+    
+    if (!f)
+    {
+        throw std::runtime_error("Failed to open: " + file);
+    }
+    
+    auto h = sam_hdr_read(f);
+
+    std::map<ChrID, Base> c2b;
+    
+    for (auto i = 0; i < h->n_targets; i++)
+    {
+        c2b[std::string(h->target_name[i])] = h->target_len[i];
+    }
+    
+    return c2b;
+}
+
 void ParserBAM::parse(const FileName &file, Functor x, bool details)
 {
     auto f = sam_open(file.c_str(), "r");

@@ -56,6 +56,8 @@ namespace Anaquin
         
         typedef std::function<void (Data &, const Info &)> Functor;
         
+        static std::map<ChrID, Base> header(const FileName &);
+        
         /*
          * In order to improve the efficiency, not everything is computed. Set the last
          * argument to true will force it to happen.
