@@ -66,6 +66,9 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
+            // Number of alignments for ladders
+            Counts nLad = 0;
+            
             // Alignment records for sequins (we'll need them for sampling)
             std::vector<ParserBAM::Data> s1, s2;
 

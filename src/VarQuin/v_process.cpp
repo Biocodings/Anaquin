@@ -28,18 +28,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             o.wait(std::to_string(i.p.i));
         }
         
-        if (!x.mapped)
-        {
-            stats.nNA++;
-        }
-        else if (isRevChr(x.cID))
-        {
-            stats.nSeqs++; // Reverse genome
-        }
-        else
-        {
-            stats.nEndo++; // Forward genome
-        }
+        if (!x.mapped)              { stats.nNA++;  }
+        else if (seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.nLad++; } stats.nSeqs++; }
+        else                        { stats.nEndo++; }
         
         /*
          * Directly write out endogenous alignments
@@ -51,13 +42,18 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             return;
         }
         
+        /*
+         * Ladder alignments don't require calibration and flipping
+         */
+        
+        else if (isLadQuin(x.cID))
+        {
+            
+            
+        }
         
         
         
-        //        if (!x.isPassed || x.isSecondary || x.isSupplement)
-        //        {
-        //            return;
-        //        }
         
         A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
         
