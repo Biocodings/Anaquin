@@ -6,15 +6,15 @@
 
 using namespace Anaquin;
 
+typedef VProcess::Stats Stats;
+typedef VProcess::Status Status;
+
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
     const auto &r = Standard::instance().r_var;
     
     // Sequin names
     const auto seqs = r.r1()->seqs();
-    
-    typedef VProcess::Stats Stats;
-    typedef VProcess::Status Status;
     
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
@@ -511,83 +511,83 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     };
     
     parse(file, stats, o, [&](const ParserBAM::Data *x1, const ParserBAM::Data *x2, Status status)
-          {
-              switch (status)
-              {
-                  case Status::ReverseReverse:
-                  case Status::ReverseNotMapped:
-                  {
-                      //                impl.writeBefore(x1, x2);
-                      //
-                      //                auto trim = [&](const ParserBAM::Data &x)
-                      //                {
-                      //                    std::vector<DInter *> multi;
-                      //                    const auto m = x.mapped && r1.count(x.cID) ? r1.at(x.cID).contains(x.l, &multi) : nullptr;
-                      //
-                      //                    if (m)
-                      //                    {
-                      //                        std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
-                      //                        {
-                      //                            return x->l().length() < y->l().length();
-                      //                        });
-                      //
-                      //                        // The smallest region
-                      //                        const auto m = multi.front();
-                      //
-                      //                        const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
-                      //                        const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
-                      //
-                      //                        return lTrim || rTrim;
-                      //                    }
-                      //
-                      //                    return false;
-                      //                };
-                      //
-                      //                /*
-                      //                 * Perform edge trimming and calculate alignment coverage for sequin regions
-                      //                 */
-                      //
-                      //                if (!trim(x1)) { sCov(x1); }
-                      //                if (!trim(x2)) { sCov(x2); }
-                      
-                      break;
-                  }
-                      
-                  case Status::ForwardForward:
-                  {
-                      // We should directly write out genomic reads
-                      assert(x2 == nullptr);
-                      
-                      // Write out endogenous alignments
-                      impl.writeEndo(*x1);
-                      
-                      /*
-                       //                 * Calculate alignment coverage for genomic regions
-                       //                 */
-                      //
-                      //                gCov(x1);
-                      //                gCov(x2);
-                      
-                      break;
-                  }
-                      
-                  case Status::ForwardReverse:
-                  case Status::ForwardNotMapped:
-                  case Status::NotMappedNotMapped:
-                  {
-                      //                impl.writeAmb(x1, x2);
-                      break;
-                  }
-                      
-                  case Status::RevHang:
-                  case Status::ForHang:
-                  {
-                      //                impl.writeHang(x1);
-                      break;
-                  }
-              }
-          });
-    
+    {
+        switch (status)
+        {
+            case Status::ReverseReverse:
+            case Status::ReverseNotMapped:
+            {
+                //                impl.writeBefore(x1, x2);
+                //
+                //                auto trim = [&](const ParserBAM::Data &x)
+                //                {
+                //                    std::vector<DInter *> multi;
+                //                    const auto m = x.mapped && r1.count(x.cID) ? r1.at(x.cID).contains(x.l, &multi) : nullptr;
+                //
+                //                    if (m)
+                //                    {
+                //                        std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
+                //                        {
+                //                            return x->l().length() < y->l().length();
+                //                        });
+                //
+                //                        // The smallest region
+                //                        const auto m = multi.front();
+                //
+                //                        const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
+                //                        const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
+                //
+                //                        return lTrim || rTrim;
+                //                    }
+                //
+                //                    return false;
+                //                };
+                //
+                //                /*
+                //                 * Perform edge trimming and calculate alignment coverage for sequin regions
+                //                 */
+                //
+                //                if (!trim(x1)) { sCov(x1); }
+                //                if (!trim(x2)) { sCov(x2); }
+                
+                break;
+            }
+                
+            case Status::ForwardForward:
+            {
+                // We should directly write out genomic reads
+                assert(x2 == nullptr);
+                
+                // Write out endogenous alignments
+                impl.writeEndo(*x1);
+                
+                /*
+                 //                 * Calculate alignment coverage for genomic regions
+                 //                 */
+                //
+                //                gCov(x1);
+                //                gCov(x2);
+                
+                break;
+            }
+                
+            case Status::ForwardReverse:
+            case Status::ForwardNotMapped:
+            case Status::NotMappedNotMapped:
+            {
+                //                impl.writeAmb(x1, x2);
+                break;
+            }
+                
+            case Status::RevHang:
+            case Status::ForHang:
+            {
+                //                impl.writeHang(x1);
+                break;
+            }
+        }
+    });
+
     /*
      * Subsample sequin reads
      */
