@@ -85,13 +85,6 @@ namespace Anaquin
                 counts[Status::NotMappedNotMapped] = 0;
             }
             
-            /*
-             * General statistics
-             */
-            
-            // Number of reference regions
-            Counts nRegs;
-
             struct Trim
             {
                 // Number of reads trimmed on left
@@ -118,6 +111,36 @@ namespace Anaquin
             
             // Ladder statistics
             Ladder lad;
+            
+            /*
+             * Calibration statistics
+             */
+            
+            struct Calibration
+            {
+                // Number of alignments for sequins (excluding LadQuin) before calibration
+                Counts bSeqs = 0;
+                
+                // Number of alignments for sequins (excluding LadQuin) after calibration
+                Counts aSeqs = 0;
+            };
+            
+            Calibration cStats;
+            
+            
+            
+
+            
+            
+            
+            /*
+             * General statistics
+             */
+            
+            // Number of reference regions
+            Counts nRegs;
+    
+            Coverage afterSeqs;
             
             // Alignment records for sequins (we'll need them for sampling)
             std::vector<ParserBAM::Data> s1, s2;

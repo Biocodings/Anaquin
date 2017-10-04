@@ -180,6 +180,8 @@ static void calibrate(VProcess::Stats &stats,
 
 static void sample(VProcess::Stats &stats,
                    const Chr2DInters &sampled,
+                   const Chr2DInters &r2,
+                   const std::map<SequinID, std::pair<ChrID, std::string>> &s2e,
                    const VProcess::Options &o)
 {
     typedef std::map<ChrID, std::map<Locus, std::shared_ptr<RandomSelection>>> Selection;
@@ -284,6 +286,19 @@ static void sample(VProcess::Stats &stats,
             f2->write(x2.seq);
             f2->write("+");
             f2->write(x2.qual);
+            
+            const auto cID1 = s2e.at(x1.cID).first;
+            const auto cID2 = s2e.at(x2.cID).first;
+
+            if (r2.count(cID1) && r2.at(cID1).overlap(x1.l))
+            {
+                r2.at(cID1).overlap(x1.l)->map(x1.l);
+            }
+
+            if (r2.count(cID2) && r2.at(cID2).overlap(x2.l))
+            {
+                r2.at(cID2).overlap(x2.l)->map(x2.l);
+            }
         }
     }
 
@@ -291,6 +306,98 @@ static void sample(VProcess::Stats &stats,
     f2->close();
 }
 
+struct SampledInfo
+{
+    SequinID rID;
+    
+    // Alignment coverage for the endogenous sample
+    Coverage endo;
+    
+    // Alignment coverage before subsampling
+    Coverage before;
+    
+    // Alignment coverage after subsampling
+    Coverage after;
+    
+    // Number of alignments before and after
+    Counts nEndo, nBefore, nAfter;
+    
+    // Normalization factor
+    Proportion norm;
+};
+
+template <typename O> double afterSeqsC(const Chr2DInters &tRegs, Stats &stats, const O &o)
+{
+    std::vector<double> allAfterSeqsC;
+    
+    // For each chromosome...
+    for (auto &i : tRegs)
+    {
+        // For each region...
+        for (auto &j : i.second.data())
+        {
+            // Coverage after subsampling
+            const auto cov = stats2cov(o.meth, j.second.stats());
+            
+            // Alignments after subsampling
+            const auto aligns = j.second.stats().aligns;
+            
+            stats.c2v[i.first].at(j.second.l()).after  = cov;
+            stats.c2v[i.first].at(j.second.l()).nAfter = aligns;
+            
+            // Required for generating summary statistics
+            allAfterSeqsC.push_back(cov);
+        }
+    }
+    
+    return SS::mean(allAfterSeqsC);
+}
+
+struct GenomeSequins
+{
+    Counts nEndo = 0;
+    Counts nSeqs = 0;
+};
+
+GenomeSequins tBefore(const Stats &x)
+{
+    GenomeSequins r;
+    
+    r.nEndo = x.nEndo;
+    r.nSeqs = x.nSeqs;
+    
+    return r;
+}
+
+GenomeSequins sAfter(const Stats &x)
+{
+    GenomeSequins r;
+    
+    r.nEndo = 9999; //x.es.nMap;
+    r.nSeqs = 9999; //y.nMap;
+    
+    return r;
+}
+
+GenomeSequins sBefore(const Stats &x)
+{
+    GenomeSequins r;
+    
+    r.nEndo = 9999; //x.es.nMap;
+    r.nSeqs = 9999; //x.ss.nMap;
+    
+    return r;
+}
+
+GenomeSequins tAfter(const Stats &x)
+{
+    GenomeSequins r;
+    
+    r.nEndo = x.nEndo;
+    r.nSeqs = 9999; //y.nNA + y.nMap;
+    
+    return r;
+}
 
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
@@ -317,11 +424,11 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
      * Initalize genomic and sequin regions
      */
     
-    // Mapping between sequins to their sequin regions
-    std::map<SequinID, std::pair<ChrID, std::string>> s2s;
-    
     // Mapping between sequins to their endogenous regions
     std::map<SequinID, std::pair<ChrID, std::string>> s2e;
+    
+    // Mapping between sequins to their sequin regions
+    std::map<SequinID, std::pair<ChrID, std::string>> s2s;
     
     auto initRegs = [&]()
     {
@@ -524,7 +631,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     }
     
     /*
-     * Checking calibration
+     * Checking calibration before sampling
      */
     
     calibrate(stats, r2, seqs, s2e, s2s, o);
@@ -533,8 +640,19 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
      * Calibrating sequin alignments
      */
     
-    sample(stats, r1, o);
+    sample(stats, r1, r2, s2e, o);
     
+    /*
+     * Checking calibration after sampling
+     */
+
+    stats.afterSeqs = afterSeqsC(r2, stats, o);
+    
+//    stats.tBefore = tBefore(stats.cStats, after);
+//    stats.tAfter  = tAfter (stats.cStats, after);
+//    stats.sBefore = sBefore(stats.cStats, after);
+//    stats.sAfter  = sAfter (stats.cStats, after);
+
     return stats;
 }
 
@@ -710,9 +828,27 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "-------Sequin Outputs\n\n"
                          "       Flipped reads:   %15% (%16$.2f%%)\n"
                          "       Ambiguous reads: %17% (%18$.2f%%)\n"
-                         "       Hanging reads:   %19% (%20$.2f%%)\n";
-    
-    
+                         "       Hanging reads:   %19% (%20$.2f%%)\n\n"
+                         "-------Before calibration (within sampling regions)\n\n"
+                         "       Sample coverage (average): %21$.2f\n"
+                         "       Sequin coverage (average): %22$.2f\n\n"
+                         "-------After calibration (within sampling regions)\n\n"
+                         "       Sample coverage (average): %23$.2f\n"
+                         "       Sequin coverage (average): %24$.2f\n\n"
+                         "       Scaling Factor: %25% \u00B1 %26%\n\n"
+                         "-------Total alignments (before subsampling)\n\n"
+                         "       Sample: %27%\n"
+                         "       Sequin: %28%\n\n"
+                         "-------Total alignments (after subsampling)\n\n"
+                         "       Sample: %29%\n"
+                         "       Sequin: %30%\n\n"
+                         "-------Alignments within specified regions (before subsampling)\n\n"
+                         "       Sample: %31%\n"
+                         "       Sequin: %32%\n\n"
+                         "-------Alignments within specified regions (after subsampling)\n\n"
+                         "       Sample: %33%\n"
+                         "       Sequin: %34%\n\n";
+
     #define C(x) stats.counts.at(x)
     
     const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped);
@@ -744,6 +880,20 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                                             % pa                // 18
                                             % ch                // 19
                                             % ph                // 20
+                                            % "????"                // 21
+                                            % "????"                // 22
+                                            % "????"                // 23
+                                            % "????"                // 24
+                                            % "????"                // 25
+                                            % "????"                // 26
+                                            % "????"                // 27
+                                            % "????"                // 28
+                                            % "????"                // 29
+                                            % "????"                // 30
+                                            % "????"                // 31
+                                            % "????"                // 32
+                                            % "????"                // 33
+                                            % "????"                // 34
                      ).str());
 }
 
