@@ -130,8 +130,8 @@ static void calibrate(VProcess::Stats &stats,
             }
         }
         
-        stats.allBeforeEndoC.push_back(endoC);
-        stats.allBeforeSeqsC.push_back(seqsC);
+        stats.cStats.allBeforeEndoC.push_back(endoC);
+        stats.cStats.allBeforeSeqsC.push_back(seqsC);
         
         // Forward locus for the region
         const auto &l = stats.mStats.eInters.at(p1.first).find(p1.second)->l();
@@ -172,13 +172,13 @@ static void calibrate(VProcess::Stats &stats,
         // Normalization for the sequin
         stats.cStats.norms[sID] = norm;
         
-        stats.allNorms.push_back(norm);
+        stats.cStats.allNorms.push_back(norm);
     }
     
     assert(!stats.cStats.norms.empty());
 }
 
-static void sample(Stats &stats, const Chr2DInters &r1, const Options &o)
+static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 {
     A_ASSERT(!stats.cStats.norms.empty());
     
@@ -217,6 +217,8 @@ static void sample(Stats &stats, const Chr2DInters &r1, const Options &o)
      */
 
     assert(stats.s1.size() == stats.s2.size());
+    
+    Counts nSeqs = 0;
     
     for (auto i = 0; i < stats.s1.size(); i++)
     {
@@ -275,6 +277,9 @@ static void sample(Stats &stats, const Chr2DInters &r1, const Options &o)
             __reverse__(x1);
             __reverse__(x2);
             
+            nSeqs++;
+            nSeqs++;
+            
             f1->write("@" + x1.name + "/1");
             f1->write(x1.seq);
             f1->write("+");
@@ -289,6 +294,8 @@ static void sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 
     f1->close();
     f2->close();
+    
+    return nSeqs;
 }
 
 struct SampledInfo
@@ -400,7 +407,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
-    stats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x) { return x.size(); });
+    stats.gStats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x) { return x.size(); });
     
     /*
      * Initalize genomic and sequin regions
@@ -499,6 +506,11 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             // Write out the read
             f(&x, nullptr, Status::ForwardForward);
             
+            if (stats.mStats.eInters.count(x.cID) && stats.mStats.eInters.at(x.cID).overlap(x.l))
+            {
+                stats.gStats.bREndo++;
+            }
+
             return;
         }
         
@@ -617,7 +629,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
      * Calibrating sequin alignments
      */
     
-    sample(stats, r1, o);
+    stats.gStats.aTSeqs = sample(stats, r1, o);
     
     /*
      * Checking calibration after sampling
@@ -625,6 +637,12 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
 
     stats.afterSeqs = checkAfter(stats, r2, o);
     
+    stats.gStats.bTEndo = stats.nEndo;
+    stats.gStats.bTSeqs = stats.nSeqs;
+    stats.gStats.aTEndo = stats.nEndo;
+    stats.gStats.aTSeqs = stats.nSeqs;
+    stats.gStats.aREndo = stats.gStats.bREndo;
+
     return stats;
 }
 
@@ -780,7 +798,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     extern FileName BedRef();
 
     const auto summary = "-------VarProcess Summary Statistics\n\n"
-                         "-------VarFlip Inputs\n\n"
+                         "-------Input files\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Input alignment file: %2%\n\n"
                          "-------Reference regions\n\n"
@@ -808,18 +826,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Sample coverage (average): %23$.2f\n"
                          "       Sequin coverage (average): %24$.2f\n\n"
                          "       Scaling Factor: %25% \u00B1 %26%\n\n"
-                         "-------Total alignments (before subsampling)\n\n"
+                         "-------Alignments within reference regions (before subsampling)\n\n"
                          "       Sample: %27%\n"
                          "       Sequin: %28%\n\n"
-                         "-------Total alignments (after subsampling)\n\n"
+                         "-------Alignments within reference regions (after subsampling)\n\n"
                          "       Sample: %29%\n"
-                         "       Sequin: %30%\n\n"
-                         "-------Alignments within specified regions (before subsampling)\n\n"
-                         "       Sample: %31%\n"
-                         "       Sequin: %32%\n\n"
-                         "-------Alignments within specified regions (after subsampling)\n\n"
-                         "       Sample: %33%\n"
-                         "       Sequin: %34%\n\n";
+                         "       Sequin: %30%\n";
 
     #define C(x) stats.counts.at(x)
     
@@ -832,40 +844,36 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()          // 1
-                                            % src               // 2
-                                            % stats.nRegs       // 3
-                                            % "LeftRight"       // 4
-                                            % stats.nNA         // 5
-                                            % stats.pNA()       // 6
-                                            % stats.nEndo       // 7
-                                            % stats.pEndo()     // 8
-                                            % stats.nSeqs       // 9
-                                            % stats.pSyn()      // 10
-                                            % stats.trim.left   // 11
-                                            % stats.trim.right  // 12
-                                            % stats.trim.before // 13
-                                            % stats.trim.after  // 14
-                                            % cf                // 15
-                                            % pf                // 16
-                                            % ca                // 17
-                                            % pa                // 18
-                                            % ch                // 19
-                                            % ph                // 20
-                                            % "????"                // 21
-                                            % "????"                // 22
-                                            % "????"                // 23
-                                            % "????"                // 24
-                                            % "????"                // 25
-                                            % "????"                // 26
-                                            % "????"                // 27
-                                            % "????"                // 28
-                                            % "????"                // 29
-                                            % "????"                // 30
-                                            % "????"                // 31
-                                            % "????"                // 32
-                                            % "????"                // 33
-                                            % "????"                // 34
+    o.writer->write((boost::format(summary) % BedRef()                 // 1
+                                            % src                      // 2
+                                            % stats.gStats.nRegs       // 3
+                                            % "LeftRight"              // 4
+                                            % stats.nNA                // 5
+                                            % stats.pNA()              // 6
+                                            % stats.nEndo              // 7
+                                            % stats.pEndo()            // 8
+                                            % stats.nSeqs              // 9
+                                            % stats.pSyn()             // 10
+                                            % stats.trim.left          // 11
+                                            % stats.trim.right         // 12
+                                            % stats.trim.before        // 13
+                                            % stats.trim.after         // 14
+                                            % cf                       // 15
+                                            % pf                       // 16
+                                            % ca                       // 17
+                                            % pa                       // 18
+                                            % ch                       // 19
+                                            % ph                       // 20
+                                            % stats.cStats.meanBEndo() // 21
+                                            % stats.cStats.meanBSeqs() // 22
+                                            % stats.cStats.meanBEndo() // 23
+                                            % stats.afterSeqs          // 24
+                                            % stats.cStats.normMean()  // 25
+                                            % stats.cStats.normSD()    // 26
+                                            % stats.gStats.bREndo      // 27
+                                            % stats.gStats.bTSeqs      // 28
+                                            % stats.gStats.aREndo      // 29
+                                            % stats.gStats.aTSeqs      // 30
                      ).str());
 }
 

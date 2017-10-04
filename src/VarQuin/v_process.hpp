@@ -126,6 +126,36 @@ namespace Anaquin
                 
                 // Normalization for the sequins
                 std::map<SequinID, Proportion> norms;
+                
+                std::vector<double> allBeforeEndoC;
+                std::vector<double> allBeforeSeqsC;
+                
+                // Required for summary statistics
+                std::vector<double> allNorms;
+
+                // Summary statistics for normalization factors
+                inline double normMean() const
+                {
+                    return SS::mean(allNorms);
+                }
+                
+                // Summary statistics for normalization factors
+                inline double normSD() const
+                {
+                    return SS::getSD(allNorms);
+                }
+
+                // Average sequence coverage for endogenous before normalization
+                inline double meanBEndo() const
+                {
+                    return SS::mean(allBeforeEndoC);
+                }
+                
+                // Average sequence coverage for sequins before normalization
+                inline double meanBSeqs() const
+                {
+                    return SS::mean(allBeforeSeqsC);
+                }
             };
             
             Calibration cStats;
@@ -134,7 +164,7 @@ namespace Anaquin
              * Mapping statistics
              */
             
-            struct MappingStats
+            struct Mapping
             {
                 // List of sequins
                 std::set<SequinID> seqs;
@@ -155,27 +185,42 @@ namespace Anaquin
                 }
             };
             
-            MappingStats mStats;
-            
-            
+            Mapping mStats;
             
             /*
              * General statistics
              */
             
-            // Number of reference regions
-            Counts nRegs;
-    
+            struct GeneralStats
+            {
+                // Number of reference regions
+                Counts nRegs;
+                
+                // Total alignments before sampling for endogenous
+                Counts bTEndo = 0;
+                
+                // Total alignments before sampling for sequins
+                Counts bTSeqs = 0;
+                
+                // Total alignments after sampling for endogenous
+                Counts aTEndo = 0;
+
+                // Total alignments after sampling for sequins
+                Counts aTSeqs = 0;
+
+                // Regional alignments before sampling for endogenous
+                Counts bREndo = 0;
+                
+                // Regional alignments after sampling for endogenous
+                Counts aREndo = 0;
+            };
+            
+            GeneralStats gStats;
+            
             Coverage afterSeqs;
             
             // Alignment records for sequins (we'll need them for sampling)
             std::vector<ParserBAM::Data> s1, s2;
-
-            std::vector<double> allBeforeEndoC;
-            std::vector<double> allBeforeSeqsC;
-
-            // Required for summary statistics
-            std::vector<double> allNorms;
 
             // Sampling statistics
             std::map<SequinID, SampledInfo> c2v;
