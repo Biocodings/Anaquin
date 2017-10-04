@@ -46,10 +46,36 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     // Sequin names
     const auto seqs = r.r1()->seqs();
     
+    // Mapping from sequins to chromosomes
+    const auto s2c = r.r1()->s2c();
+    
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
     const auto heads = ParserBAM::header(file);
+    
+    /*
+     * Update alignment coverage for endogenous and sequins
+     */
+    
+    auto coverage = [&](const ParserBAM::Data &x, const ChrID &cID, ID2Intervals &inters)
+    {
+        if (x.mapped && inters.count(cID))
+        {
+            const auto matched = inters.at(cID).overlap(x.l);
+            
+            if (matched)
+            {
+                matched->map(x.l);
+            }
+        }
+    };
+
+    // Eg: chrev1, LAD_18 ...
+    auto isVarQuin = [&](const ChrID &x)
+    {
+        return isLadQuin(x) || seqs.count(x);
+    };
     
     ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
     {
@@ -68,7 +94,12 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         
         if (!isLadQuin(x.cID) && (!seqs.count(x.cID) && !seqs.count(x.rnext)))
         {
+            // Calculate alignment coverage for endogenous regions
+            coverage(x, x.cID, stats.gInters);
+
+            // Write out the read
             f(&x, nullptr, Status::ForwardForward);
+            
             return;
         }
 
@@ -84,20 +115,74 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
 
-            /*
-             * Ladder alignments don't require calibration and flipping
-             */
-            
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
+                /*
+                 * Ladder alignments don't require calibration and flipping
+                 */
+
                 if (!shouldTrim(*first, heads, o) && !shouldTrim(*second, heads, o))
                 {
                     f(first, second, Status::LadQuin);
                 }
             }
+            else if (!s2c.count(first->cID) || !s2c.count(second->cID))
+            {
+                f(first, second, Status::ReverseLadQuin);
+            }
+            else
+            {
+                /*
+                 * Reverse alignments require trimming, calibration and flipping
+                 */
 
-            
-            
+                if (!shouldTrim(*first, heads, o) && !shouldTrim(*second, heads, o))
+                {
+                    assert(s2c.count(x.cID));
+                    
+                    // Calculate alignment coverage for sequin regions
+                    coverage(x, s2c.at(x.cID), stats.sInters);
+                
+                    const auto bothRev =  isVarQuin(first->cID) && isVarQuin(second->cID);
+                    const auto bothFor = !isVarQuin(first->cID) && !isVarQuin(second->cID);
+                    const auto anyRev  =  isVarQuin(first->cID) || isVarQuin(second->cID);
+                    const auto anyFor  = !isVarQuin(first->cID) || !isVarQuin(second->cID);
+                    const auto anyMap  =  first->mapped ||  second->mapped;
+                    const auto anyNMap = !first->mapped || !second->mapped;
+                    
+                    Status status;
+                    
+                    if (bothRev && !anyNMap)
+                    {
+                        status = Status::ReverseReverse;
+                    }
+                    else if (bothFor && !anyNMap)
+                    {
+                        throw std::runtime_error("Status::ForwardForward is invalid for sequins");
+                    }
+                    else if (anyRev && anyFor && !anyNMap)
+                    {
+                        status = Status::ForwardReverse;
+                    }
+                    else if (anyNMap && anyMap && anyRev)
+                    {
+                        status = Status::ReverseNotMapped;
+                    }
+                    else if (anyNMap && anyMap && anyFor)
+                    {
+                        status = Status::ForwardNotMapped;
+                    }
+                    else
+                    {
+                        status = Status::NotMappedNotMapped;
+                    }
+                    
+                    stats.counts[status]++;
+                    
+                    // Write out the paired-end reads
+                    f(first, second, status);
+                }
+            }
             
             //            /*
             //             * Only complement reads aligned to the reverse genome
@@ -127,42 +212,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             //                }
             //            }
             //
-            //            const auto bothRev =  __impl__->isReverse(first->cID) && __impl__->isReverse(second->cID);
-            //            const auto bothFor = !__impl__->isReverse(first->cID) && !__impl__->isReverse(second->cID);
-            //            const auto anyRev  =  __impl__->isReverse(first->cID) || __impl__->isReverse(second->cID);
-            //            const auto anyFor  = !__impl__->isReverse(first->cID) || !__impl__->isReverse(second->cID);
-            //            const auto anyMap  =  first->mapped ||  second->mapped;
-            //            const auto anyNMap = !first->mapped || !second->mapped;
-            //
-            //            VFlip::Status status;
-            //
-            //            if (bothRev && !anyNMap)
-            //            {
-            //                status = Status::ReverseReverse;
-            //            }
-            //            else if (bothFor && !anyNMap)
-            //            {
-            //                status = Status::ForwardForward;
-            //            }
-            //            else if (anyRev && anyFor && !anyNMap)
-            //            {
-            //                status = Status::ForwardReverse;
-            //            }
-            //            else if (anyNMap && anyMap && anyRev)
-            //            {
-            //                status = Status::ReverseNotMapped;
-            //            }
-            //            else if (anyNMap && anyMap && anyFor)
-            //            {
-            //                status = Status::ForwardNotMapped;
-            //            }
-            //            else
-            //            {
-            //                status = Status::NotMappedNotMapped;
-            //            }
-            //
-            //            __stats__.counts[status]++;
-            //            __impl__->process(*first, *second, status);
             //            seenMates.erase(x.name);
         }
     }, true);
@@ -174,15 +223,15 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         // Compute the complement (but not reverse)
         complement(i.second.seq);
         
-        if (isRevChr(i.second.cID))
+        if (isVarQuin(i.second.cID))
         {
             stats.counts[Status::RevHang]++;
-            //            f(&i.second, &i.second, Status::RevHang);
+            f(&i.second, nullptr, Status::RevHang);
         }
         else
         {
             stats.counts[Status::ForHang]++;
-            //            f(&i.second, &i.second, Status::ForHang);
+            f(&i.second, nullptr, Status::ForHang);
         }
     }
     
@@ -206,6 +255,14 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
         case VProcess::Method::Prop:
         case VProcess::Method::Reads: { return stats.mean; }
     }
+}
+
+/*
+ * Calculate calibration factors (but not peforming subsampling)
+ */
+
+static void calibration()
+{
 }
 
 static void sample(const Chr2DInters &r2,
@@ -490,11 +547,6 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         
         inline void writeEndo(const ParserBAM::Data &x)
         {
-            if (x.cID == "LAD_18")
-            {
-                std::cout << "dssad" << std::endl;
-            }
-            
             geno.write(x);
         }
         
@@ -529,23 +581,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     
     initInts(stats.gInters);
     initInts(stats.sInters);
-    
-    auto gCov = [&](const ParserBAM::Data &x)
-    {
-        if (x.mapped && stats.gInters.count(x.cID))
-        {
-            stats.gInters[x.cID].overlap(x.l)->map(x.l);
-        }
-    };
-    
-    auto sCov = [&](const ParserBAM::Data &x)
-    {
-        if (x.mapped && stats.sInters.count(x.cID))
-        {
-            stats.sInters[x.cID].overlap(x.l)->map(x.l);
-        }
-    };
-    
+
     parse(file, stats, o, [&](const ParserBAM::Data *x1, const ParserBAM::Data *x2, Status status)
     {
         switch (status)
@@ -559,79 +595,48 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             case Status::ReverseReverse:
             case Status::ReverseNotMapped:
             {
-                //                impl.writeBefore(x1, x2);
-                //
-                //                auto trim = [&](const ParserBAM::Data &x)
-                //                {
-                //                    std::vector<DInter *> multi;
-                //                    const auto m = x.mapped && r1.count(x.cID) ? r1.at(x.cID).contains(x.l, &multi) : nullptr;
-                //
-                //                    if (m)
-                //                    {
-                //                        std::sort(multi.begin(), multi.end(), [&](const DInter * x, const DInter * y)
-                //                        {
-                //                            return x->l().length() < y->l().length();
-                //                        });
-                //
-                //                        // The smallest region
-                //                        const auto m = multi.front();
-                //
-                //                        const auto lTrim = std::abs(x.l.start - m->l().start) <= o.trim;
-                //                        const auto rTrim = std::abs(x.l.end - m->l().end) <= o.trim;
-                //
-                //                        return lTrim || rTrim;
-                //                    }
-                //
-                //                    return false;
-                //                };
-                //
-                //                /*
-                //                 * Perform edge trimming and calculate alignment coverage for sequin regions
-                //                 */
-                //
-                //                if (!trim(x1)) { sCov(x1); }
-                //                if (!trim(x2)) { sCov(x2); }
-                
+                impl.writeBefore(*x1, *x2);
                 break;
             }
                 
             case Status::ForwardForward:
             {
-                // We should directly write out genomic reads
+                // We should directly write out endogenous reads
                 assert(x2 == nullptr);
                 
                 // Write out endogenous alignments
                 impl.writeEndo(*x1);
                 
-                /*
-                 //                 * Calculate alignment coverage for genomic regions
-                 //                 */
-                //
-                //                gCov(x1);
-                //                gCov(x2);
-                
                 break;
             }
                 
             case Status::ForwardReverse:
+            case Status::ReverseLadQuin:
             case Status::ForwardNotMapped:
             case Status::NotMappedNotMapped:
             {
-                //                impl.writeAmb(x1, x2);
+                impl.writeAmb(*x1, *x2);
                 break;
             }
                 
             case Status::RevHang:
             case Status::ForHang:
             {
-                //                impl.writeHang(x1);
+                assert(x2 == nullptr);                
+                impl.writeHang(*x1);
                 break;
             }
         }
     });
 
     /*
-     * Subsample sequin reads
+     * Checking calibration
+     */
+
+    calibration();
+    
+    /*
+     * Calibrating sequin alignments
      */
     
     //sample(r2, stats, r1, o);

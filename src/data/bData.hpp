@@ -20,7 +20,7 @@ namespace Anaquin
     struct BedData : public std::map<ChrID, BedChrData>
     {
         /*
-         * Return sequin names (4th column in BED)
+         * Return sequin names (4th column)
          */
         
         inline std::set<SequinID> seqs() const
@@ -32,6 +32,25 @@ namespace Anaquin
                 for (const auto &j : i.second.r2d)
                 {
                     x.insert(j.first);
+                }
+            }
+            
+            return x;
+        }
+
+        /*
+         * Construct mapping from sequin names (4th column) to chromsome names (1th column)
+         */
+        
+        inline std::map<SequinID, ChrID> s2c() const
+        {
+            std::map<SequinID, ChrID> x;
+            
+            for (const auto &i : *this)
+            {
+                for (const auto &j : i.second.r2d)
+                {
+                    x[j.first] = i.first;
                 }
             }
             

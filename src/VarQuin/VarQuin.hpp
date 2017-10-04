@@ -40,7 +40,7 @@ namespace Anaquin
     {
         A_ASSERT(!x.empty());
         return x.find("rev") != std::string::npos;
-    }
+    }    
 }
 
 #endif

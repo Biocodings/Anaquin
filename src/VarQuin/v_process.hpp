@@ -45,6 +45,7 @@ namespace Anaquin
             NotMappedNotMapped,
             RevHang,
             ForHang,
+            ReverseLadQuin,
             LadQuin
         };
 
