@@ -244,7 +244,16 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
                     shouldSampled = true;
                     
                     inters.at(x1.cID).overlap(x1.l)->map(x1.l);
-                    inters.at(x2.cID).overlap(x2.l)->map(x2.l);
+                    
+                    if (inters.at(x2.cID).overlap(x2.l))
+                    {
+                        inters.at(x2.cID).overlap(x2.l)->map(x2.l);
+                    }
+                    else
+                    {
+                        o.logWarn("No overlapping found for: " + x2.name);
+                        shouldSampled = false;
+                    }
                 }
             }
             else
