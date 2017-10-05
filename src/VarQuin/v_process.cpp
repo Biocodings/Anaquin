@@ -177,7 +177,7 @@ static void calibrate(VProcess::Stats &stats,
 static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 {
     A_ASSERT(!stats.cStats.norms.empty());
-    
+
     typedef std::map<SequinID, std::shared_ptr<RandomSelection>> Selection;
     
     /*
@@ -191,19 +191,21 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
         A_ASSERT(i.second >= 0 && i.second <= 1.0 && !isnan(i.second));
         
         // Create independent random generator for each region
-        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - i.second));
+        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - 0.5 * i.second));
     }
     
     A_ASSERT(select.size() == stats.cStats.norms.size());
     
-    std::shared_ptr<FileWriter> f1, f2;
-    
-    f1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
-    f2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+    auto f1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+    auto f2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+    auto s1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+    auto s2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
 
-    f1->open("VarProcess_sequins_1.fq");
-    f2->open("VarProcess_sequins_2.fq");
-    
+    f1->open("VarProcess_flipped_1.fq");
+    f2->open("VarProcess_flipped_2.fq");
+    s1->open("VarProcess_sampled_1.fq");
+    s2->open("VarProcess_sampled_2.fq");
+
     /*
      * We should sample :
      *
@@ -241,8 +243,8 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
                 {
                     shouldSampled = true;
                     
-                    // Update alignment coverage after sampling
                     inters.at(x1.cID).overlap(x1.l)->map(x1.l);
+                    inters.at(x2.cID).overlap(x2.l)->map(x2.l);
                 }
             }
             else
@@ -254,6 +256,16 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
         
         if (shouldSampled)
         {
+            s1->write("@" + x1.name + "/1");
+            s1->write(x1.seq);
+            s1->write("+");
+            s1->write(x1.qual);
+            
+            s2->write("@" + x2.name + "/2");
+            s2->write(x2.seq);
+            s2->write("+");
+            s2->write(x2.qual);
+
             auto __reverse__ = [&](ParserBAM::Data &x)
             {
                 if (x.isForward)
@@ -271,7 +283,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
             
             nSeqs++;
             nSeqs++;
-            
+
             f1->write("@" + x1.name + "/1");
             f1->write(x1.seq);
             f1->write("+");
@@ -286,7 +298,9 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 
     f1->close();
     f2->close();
-    
+    s1->close();
+    s2->close();
+
     return nSeqs;
 }
 
@@ -619,7 +633,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     /*
      * Calibrating sequin alignments
      */
-    
+
     stats.gStats.aTSeqs = sample(stats, r1, o);
     
     /*
@@ -656,8 +670,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l1->open("VarProcess_ladder_1.fq");
             l2->open("VarProcess_ladder_2.fq");
 
-            // Write to BAM alignment file
-            geno.open(o.work + "/VarProcess_genome.bam");
+            endo.open(o.work + "/VarProcess_genome.bam");
         }
         
         ~Impl()
@@ -667,7 +680,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             a2->close();
             l1->close();
             l2->close();
-            geno.close();
+            endo.close();
         }
         
         inline void writeHang(const ParserBAM::Data &x)
@@ -719,7 +732,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         
         inline void writeEndo(const ParserBAM::Data &x)
         {
-            geno.write(x);
+            endo.write(x);
         }
         
         Stats &stats;
@@ -727,8 +740,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
 
-        // Writing BAM for genomical alignments
-        BAMWriter geno;
+        BAMWriter endo;
     };
     
     Impl impl(stats, o);
