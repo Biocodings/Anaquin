@@ -802,36 +802,35 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Reference annotation file: %1%\n"
                          "       Input alignment file: %2%\n\n"
                          "-------Reference regions\n\n"
-                         "       Regions: %3% regions\n"
-                         "       Method:  %4%\n\n"
+                         "       Regions: %3% regions\n\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %5% (64$.2f%%)\n"
-                         "       Genome:   %7% (%8$.2f%%)\n"
-                         "       Sequins:  %9% (%10$.2f%%)\n\n"
+                         "       Unmapped: %4% (%5$.2f%%)\n"
+                         "       Genome:   %6% (%7$.2f%%)\n"
+                         "       Sequins:  %8% (%9$.2f%%)\n\n"
                          "-------Trimming\n\n"
-                         "       Left:  %11% reads\n"
-                         "       Right: %12% reads\n\n"
+                         "       Left:  %10% reads\n"
+                         "       Right: %11% reads\n\n"
                          "-------Before trimming\n\n"
-                         "       Number of alignments: %13%\n\n"
+                         "       Number of alignments: %12%\n\n"
                          "-------After trimming\n\n"
-                         "       Number of alignments: %14%\n\n"
+                         "       Number of alignments: %13%\n\n"
                          "-------Sequin Outputs\n\n"
-                         "       Flipped reads:   %15% (%16$.2f%%)\n"
-                         "       Ambiguous reads: %17% (%18$.2f%%)\n"
-                         "       Hanging reads:   %19% (%20$.2f%%)\n\n"
+                         "       Flipped reads:   %14% (%15$.2f%%)\n"
+                         "       Ambiguous reads: %16% (%17$.2f%%)\n"
+                         "       Hanging reads:   %18% (%19$.2f%%)\n\n"
                          "-------Before calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %21$.2f\n"
-                         "       Sequin coverage (average): %22$.2f\n\n"
+                         "       Sample coverage (average): %20$.2f\n"
+                         "       Sequin coverage (average): %21$.2f\n\n"
                          "-------After calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %23$.2f\n"
-                         "       Sequin coverage (average): %24$.2f\n\n"
-                         "       Scaling Factor: %25% \u00B1 %26%\n\n"
+                         "       Sample coverage (average): %22$.2f\n"
+                         "       Sequin coverage (average): %23$.2f\n\n"
+                         "       Scaling Factor: %24% \u00B1 %25%\n\n"
                          "-------Alignments within reference regions (before subsampling)\n\n"
-                         "       Sample: %27%\n"
-                         "       Sequin: %28%\n\n"
+                         "       Sample: %26%\n"
+                         "       Sequin: %27%\n\n"
                          "-------Alignments within reference regions (after subsampling)\n\n"
-                         "       Sample: %29%\n"
-                         "       Sequin: %30%\n";
+                         "       Sample: %28%\n"
+                         "       Sequin: %29%\n";
 
     #define C(x) stats.counts.at(x)
     
@@ -847,33 +846,32 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     o.writer->write((boost::format(summary) % BedRef()                 // 1
                                             % src                      // 2
                                             % stats.gStats.nRegs       // 3
-                                            % "LeftRight"              // 4
-                                            % stats.nNA                // 5
-                                            % stats.pNA()              // 6
-                                            % stats.nEndo              // 7
-                                            % stats.pEndo()            // 8
-                                            % stats.nSeqs              // 9
-                                            % stats.pSyn()             // 10
-                                            % stats.trim.left          // 11
-                                            % stats.trim.right         // 12
-                                            % stats.trim.before        // 13
-                                            % stats.trim.after         // 14
-                                            % cf                       // 15
-                                            % pf                       // 16
-                                            % ca                       // 17
-                                            % pa                       // 18
-                                            % ch                       // 19
-                                            % ph                       // 20
-                                            % stats.cStats.meanBEndo() // 21
-                                            % stats.cStats.meanBSeqs() // 22
-                                            % stats.cStats.meanBEndo() // 23
-                                            % stats.afterSeqs          // 24
-                                            % stats.cStats.normMean()  // 25
-                                            % stats.cStats.normSD()    // 26
-                                            % stats.gStats.bREndo      // 27
-                                            % stats.gStats.bTSeqs      // 28
-                                            % stats.gStats.aREndo      // 29
-                                            % stats.gStats.aTSeqs      // 30
+                                            % stats.nNA                // 4
+                                            % stats.pNA()              // 5
+                                            % stats.nEndo              // 6
+                                            % stats.pEndo()            // 7
+                                            % stats.nSeqs              // 8
+                                            % stats.pSyn()             // 9
+                                            % stats.trim.left          // 10
+                                            % stats.trim.right         // 11
+                                            % stats.trim.before        // 12
+                                            % stats.trim.after         // 13
+                                            % cf                       // 14
+                                            % pf                       // 15
+                                            % ca                       // 16
+                                            % pa                       // 17
+                                            % ch                       // 18
+                                            % ph                       // 19
+                                            % stats.cStats.meanBEndo() // 20
+                                            % stats.cStats.meanBSeqs() // 21
+                                            % stats.cStats.meanBEndo() // 22
+                                            % stats.afterSeqs          // 23
+                                            % stats.cStats.normMean()  // 24
+                                            % stats.cStats.normSD()    // 25
+                                            % stats.gStats.bREndo      // 26
+                                            % stats.gStats.bTSeqs      // 27
+                                            % stats.gStats.aREndo      // 28
+                                            % stats.gStats.aTSeqs      // 29
                      ).str());
 }
 
