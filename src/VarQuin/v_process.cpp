@@ -32,7 +32,7 @@ static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Opt
     
     lTrim = std::abs(x.l.start) <= o.trim;
     rTrim = std::abs(x.l.end - len) <= o.trim;
-    
+ 
     return lTrim || rTrim;
 }
 

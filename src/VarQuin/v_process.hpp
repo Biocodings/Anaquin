@@ -24,7 +24,7 @@ namespace Anaquin
             bool shouldTrim = true;
             
             // How much edge effects?
-            Base trim = 1;
+            Base trim = 2;
             
             // Defined only if meth==Prop
             Proportion p = NAN;
