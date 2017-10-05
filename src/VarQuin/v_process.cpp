@@ -18,26 +18,20 @@ typedef std::map<ChrID, DIntervals<>> Regions;
  * Implement trimming for sequins (reverse genome and ladders)
  */
 
-template <typename O> bool shouldTrim(Stats &stats, const ParserBAM::Data &x, const Headers &heads, const O &o)
+static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Options &o, bool &lTrim, bool &rTrim)
 {
     assert(heads.count(x.cID));
-    
+
     if (!o.shouldTrim)
     {
         return false;
     }
     
-    // Length of the sequin
+    // Length of the sequin from BAM header
     const auto len = heads.at(x.cID);
     
-    const auto lTrim = std::abs(x.l.start) <= o.trim;
-    const auto rTrim = std::abs(x.l.end - len) <= o.trim;
-
-    if (lTrim) { stats.trim.left++;  }
-    if (rTrim) { stats.trim.right++; }
-
-    stats.trim.before++;
-    if (!lTrim && !rTrim) { stats.trim.after++; }
+    lTrim = std::abs(x.l.start) <= o.trim;
+    rTrim = std::abs(x.l.end - len) <= o.trim;
     
     return lTrim || rTrim;
 }
@@ -68,26 +62,28 @@ static void calibrate(VProcess::Stats &stats,
                       const std::set<SequinID> &seqs,
                       const VProcess::Options &o)
 {
+    auto &mStats = stats.mStats;
+    
     for (const auto &sID : seqs)
     {
         assert(stats.mStats.s2s.count(sID) && stats.mStats.s2e.count(sID));
         
-        const auto &p1 = stats.mStats.s2e.at(sID);
-        const auto &p2 = stats.mStats.s2s.at(sID);
+        const auto &p1 = mStats.s2e.at(sID);
+        const auto &p2 = mStats.s2s.at(sID);
         
-        assert(stats.mStats.eInters.count(p1.first));
-        assert(stats.mStats.eInters.at(p1.first).find(p1.second));
-        assert(stats.mStats.bInters.count(p2.first));
-        assert(stats.mStats.bInters.at(p2.first).find(p2.second));
+        assert(mStats.eInters.count(p1.first));
+        assert(mStats.eInters.at(p1.first).find(p1.second));
+        assert(mStats.bInters.count(p2.first));
+        assert(mStats.bInters.at(p2.first).find(p2.second));
 
         // Chromosome for the sequin
         const auto &cID = p1.first;
         
         // Endogenous statistics for the region
-        const auto es = stats.mStats.eInters.at(p1.first).find(p1.second)->stats();
+        const auto es = mStats.eInters.at(p1.first).find(p1.second)->stats();
         
         // Sequins statistics for the region
-        const auto ss = stats.mStats.bInters.at(p2.first).find(p2.second)->stats();
+        const auto ss = mStats.bInters.at(p2.first).find(p2.second)->stats();
         
         o.info("Calculating coverage for " + sID);
         
@@ -175,7 +171,7 @@ static void calibrate(VProcess::Stats &stats,
         stats.cStats.allNorms.push_back(norm);
     }
     
-    assert(!stats.cStats.norms.empty());
+    A_ASSERT(!stats.cStats.norms.empty());
 }
 
 static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
@@ -342,52 +338,6 @@ template <typename O> double checkAfter(Stats &stats, const Chr2DInters &r2, con
     return SS::mean(all);
 }
 
-struct GenomeSequins
-{
-    Counts nEndo = 0;
-    Counts nSeqs = 0;
-};
-
-GenomeSequins tBefore(const Stats &x)
-{
-    GenomeSequins r;
-    
-    r.nEndo = x.nEndo;
-    r.nSeqs = x.nSeqs;
-    
-    return r;
-}
-
-GenomeSequins sAfter(const Stats &x)
-{
-    GenomeSequins r;
-    
-    r.nEndo = 9999; //x.es.nMap;
-    r.nSeqs = 9999; //y.nMap;
-    
-    return r;
-}
-
-GenomeSequins sBefore(const Stats &x)
-{
-    GenomeSequins r;
-    
-    r.nEndo = 9999; //x.es.nMap;
-    r.nSeqs = 9999; //x.ss.nMap;
-    
-    return r;
-}
-
-GenomeSequins tAfter(const Stats &x)
-{
-    GenomeSequins r;
-    
-    r.nEndo = x.nEndo;
-    r.nSeqs = 9999; //y.nNA + y.nMap;
-    
-    return r;
-}
-
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
     const auto &r = Standard::instance().r_var;
@@ -483,6 +433,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         return isLadQuin(x) || stats.mStats.seqs.count(x);
     };
     
+    bool t1l, t2l; // Left trimming for paired-end?
+    bool t1r, t2r; // Right trimming for paired-end?
+    
     ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         if (i.p.i && !(i.p.i % 1000000))
@@ -531,16 +484,29 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
             
+            t1r = t1r = t2l = t2r = false;
+            
+            auto checkTrim = [&]()
+            {
+                if (t1l || t2l) { stats.trim.left  += 2; }
+                if (t1r || t2r) { stats.trim.right += 2; }
+            };
+            
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
+                stats.trim.before += 2;
+                
                 /*
                  * Ladder alignments don't require calibration and flipping
                  */
                 
-                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
+                if (!shouldTrim(*first,  heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r))
                 {
+                    stats.trim.after += 2;
                     f(first, second, Status::LadQuin);
                 }
+                
+                checkTrim();
             }
             else if (!s2c.count(first->cID) || !s2c.count(second->cID))
             {
@@ -548,28 +514,37 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             }
             else
             {
-                /*
-                 * Reverse alignments require trimming, calibration and flipping
-                 */
+                const auto bothVar =  isVarQuin(first->cID) && isVarQuin(second->cID);
+                const auto bothFor = !isVarQuin(first->cID) && !isVarQuin(second->cID);
+                const auto anyVar  =  isVarQuin(first->cID) || isVarQuin(second->cID);
+                const auto anyFor  = !isVarQuin(first->cID) || !isVarQuin(second->cID);
+                const auto anyMap  =  first->mapped ||  second->mapped;
+                const auto anyNMap = !first->mapped || !second->mapped;
                 
-                if (!shouldTrim(stats, *first, heads, o) && !shouldTrim(stats, *second, heads, o))
+                // Don't trim unless necessary
+                const auto tryTrim = o.trim && bothVar;
+                
+                if (tryTrim)
                 {
+                    stats.trim.before += 2;
+                }
+                
+                if (!tryTrim || (!shouldTrim(*first, heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r)))
+                {
+                    if (tryTrim)
+                    {
+                        stats.trim.after += 2;
+                    }
+
                     assert(s2c.count(x.cID));
                     assert(stats.mStats.bInters.count(x.cID));
 
                     // Calculate alignment coverage for sequin regions
                     coverage(x, x.cID, stats.mStats.bInters);
                     
-                    const auto bothRev =  isVarQuin(first->cID) && isVarQuin(second->cID);
-                    const auto bothFor = !isVarQuin(first->cID) && !isVarQuin(second->cID);
-                    const auto anyRev  =  isVarQuin(first->cID) || isVarQuin(second->cID);
-                    const auto anyFor  = !isVarQuin(first->cID) || !isVarQuin(second->cID);
-                    const auto anyMap  =  first->mapped ||  second->mapped;
-                    const auto anyNMap = !first->mapped || !second->mapped;
-                    
                     Status status;
                     
-                    if (bothRev && !anyNMap)
+                    if (bothVar && !anyNMap)
                     {
                         status = Status::ReverseReverse;
                     }
@@ -577,11 +552,11 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                     {
                         throw std::runtime_error("Status::ForwardForward is invalid for sequins");
                     }
-                    else if (anyRev && anyFor && !anyNMap)
+                    else if (anyVar && anyFor && !anyNMap)
                     {
                         status = Status::ForwardReverse;
                     }
-                    else if (anyNMap && anyMap && anyRev)
+                    else if (anyNMap && anyMap && anyVar)
                     {
                         status = Status::ReverseNotMapped;
                     }
@@ -595,10 +570,10 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                     }
                     
                     stats.counts[status]++;
-                    
-                    // Write out the paired-end reads
                     f(first, second, status);
                 }
+                
+                checkTrim();
             }
             
             seenMates.erase(x.name);
@@ -608,7 +583,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     for (auto &i: seenMates)
     {
         o.logWarn("Unpaired mate: " + i.first);
-        
+     
         // Compute the complement (but not reverse)
         complement(i.second.seq);
         
@@ -647,7 +622,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     stats.gStats.aTEndo = stats.nEndo;
     stats.gStats.aTSeqs = stats.nSeqs;
     stats.gStats.aREndo = stats.gStats.bREndo;
-
+    
     return stats;
 }
 
@@ -817,7 +792,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Left:  %11% alignments\n"
                          "       Right: %12% alignments\n\n"
                          "-------Before trimming\n\n"
-                         "       Number of alignments: %13%\n\n"
+                         "       Number of alignments: %13% (only primary alignments are trimmed)\n\n"
                          "-------After trimming\n\n"
                          "       Number of alignments: %14%\n\n"
                          "-------Sequin Outputs\n\n"
