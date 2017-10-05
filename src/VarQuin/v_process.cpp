@@ -491,7 +491,8 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
         
         if (!x.mapped)              { stats.nNA++;  }
-        else if (stats.mStats.seqs.count(x.cID)) { if (isLadQuin(x.cID)) { stats.lad.nLad++; } stats.nSeqs++; }
+        else if (isLadQuin(x.cID))  { stats.lad.nLad++; stats.nSeqs++; }
+        else if (stats.mStats.seqs.count(x.cID)) { stats.nSeqs++; }
         else                        { stats.nEndo++; }
         
         /*
@@ -513,7 +514,11 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
 
             return;
         }
-        
+        else if (!x.isPassed || x.isSecondary || x.isSupplement)
+        {
+            return;
+        }
+
         A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
         
         if (!seenMates.count(x.name))
