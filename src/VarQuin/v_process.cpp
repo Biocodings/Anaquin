@@ -252,24 +252,20 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
             }
         }
         
-        /*
-         * Only complement reads aligned to the reverse genome
-         */
-        
-        auto __reverse__ = [&](ParserBAM::Data &x)
-        {
-            if (x.isForward)
-            {
-                complement(x.seq);
-            }
-            else
-            {
-                std::reverse(x.seq.begin(), x.seq.end());
-            }
-        };
-        
         if (shouldSampled)
         {
+            auto __reverse__ = [&](ParserBAM::Data &x)
+            {
+                if (x.isForward)
+                {
+                    complement(x.seq);
+                }
+                else
+                {
+                    std::reverse(x.seq.begin(), x.seq.end());
+                }
+            };
+
             __reverse__(x1);
             __reverse__(x2);
             
@@ -404,7 +400,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     };
     
     initRegs();
-    
+
     assert(!stats.mStats.s2e.empty() && !stats.mStats.s2s.empty());
     assert(stats.mStats.s2e.size() == stats.mStats.s2s.size());
 
@@ -492,9 +488,21 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 if (t1r || t2r) { stats.trim.right += 2; }
             };
             
+            auto incBefore = [&]()
+            {
+                if (first->mapped)  { stats.trim.before++; }
+                if (second->mapped) { stats.trim.before++; }
+            };
+
+            auto incAfter = [&]()
+            {
+                if (first->mapped)  { stats.trim.after++; }
+                if (second->mapped) { stats.trim.after++; }
+            };
+
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
-                stats.trim.before += 2;
+                incBefore();
                 
                 /*
                  * Ladder alignments don't require calibration and flipping
@@ -502,7 +510,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 
                 if (!shouldTrim(*first,  heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r))
                 {
-                    stats.trim.after += 2;
+                    incAfter();
                     f(first, second, Status::LadQuin);
                 }
                 
@@ -510,6 +518,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             }
             else if (!s2c.count(first->cID) || !s2c.count(second->cID))
             {
+                stats.counts[Status::ReverseLadQuin]++;
                 f(first, second, Status::ReverseLadQuin);
             }
             else
@@ -526,14 +535,14 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 
                 if (tryTrim)
                 {
-                    stats.trim.before += 2;
+                    incBefore();
                 }
                 
                 if (!tryTrim || (!shouldTrim(*first, heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r)))
                 {
                     if (tryTrim)
                     {
-                        stats.trim.after += 2;
+                        incAfter();
                     }
 
                     assert(s2c.count(x.cID));
@@ -570,6 +579,8 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                     }
                     
                     stats.counts[status]++;
+                    stats.counts[status]++;
+                    
                     f(first, second, status);
                 }
                 
@@ -620,7 +631,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     stats.gStats.bTEndo = stats.nEndo;
     stats.gStats.bTSeqs = stats.nSeqs;
     stats.gStats.aTEndo = stats.nEndo;
-    stats.gStats.aTSeqs = stats.nSeqs;
     stats.gStats.aREndo = stats.gStats.bREndo;
     
     return stats;
@@ -780,43 +790,44 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     const auto summary = "-------VarProcess Summary Statistics\n\n"
                          "-------Input files\n\n"
                          "       Reference annotation file: %1%\n"
-                         "       Input alignment file: %2%\n\n"
+                         "       Input alignment file:      %2%\n\n"
                          "-------Reference regions\n\n"
-                         "       Regions: %3% regions\n\n"
+                         "       Regions: %3% regions\n"
+                         "       Edge:    %4% regions\n"
                          "-------Alignments\n\n"
-                         "       Unmapped: %4% (%5$.2f%%)\n"
-                         "       Genome:   %6% (%7$.2f%%)\n"
-                         "       Sequins:  %8% (%9$.2f%%)\n"
-                         "       Ladders:  %10%\n\n"
+                         "       Unmapped: %5% (%6$.2f%%)\n"
+                         "       Genome:   %7% (%8$.2f%%)\n"
+                         "       Sequins:  %9% (%10$.2f%%)\n"
+                         "       Ladders:  %11%\n\n"
                          "-------Trimming\n\n"
-                         "       Left:  %11% alignments\n"
-                         "       Right: %12% alignments\n\n"
+                         "       Left:  %12% alignments\n"
+                         "       Right: %13% alignments\n\n"
                          "-------Before trimming\n\n"
-                         "       Number of alignments: %13% (only primary alignments are trimmed)\n\n"
+                         "       Number of alignments: %14% (only primary alignments)\n\n"
                          "-------After trimming\n\n"
-                         "       Number of alignments: %14%\n\n"
+                         "       Number of alignments: %15%\n\n"
                          "-------Sequin Outputs\n\n"
-                         "       Flipped reads:   %15% (%16$.2f%%)\n"
-                         "       Ambiguous reads: %17% (%18$.2f%%)\n"
-                         "       Hanging reads:   %19% (%20$.2f%%)\n\n"
+                         "       Flipped reads:   %16% (%17$.2f%%)\n"
+                         "       Ambiguous reads: %18% (%19$.2f%%)\n"
+                         "       Hanging reads:   %20% (%21$.2f%%)\n\n"
                          "-------Before calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %21$.2f\n"
-                         "       Sequin coverage (average): %22$.2f\n\n"
+                         "       Sample coverage (average): %22$.2f\n"
+                         "       Sequin coverage (average): %23$.2f\n\n"
                          "-------After calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %23$.2f\n"
-                         "       Sequin coverage (average): %24$.2f\n\n"
-                         "       Scaling Factor: %25% \u00B1 %26%\n\n"
+                         "       Sample coverage (average): %24$.2f\n"
+                         "       Sequin coverage (average): %25$.2f\n\n"
+                         "       Scaling Factor: %26% \u00B1 %27%\n\n"
                          "-------Alignments within reference regions (before subsampling)\n\n"
-                         "       Sample: %27%\n"
-                         "       Sequin: %28%\n\n"
+                         "       Sample: %28%\n"
+                         "       Sequin: %29%\n\n"
                          "-------Alignments within reference regions (after subsampling)\n\n"
-                         "       Sample: %29%\n"
-                         "       Sequin: %30%\n";
+                         "       Sample: %30%\n"
+                         "       Sequin: %31%\n";
 
     #define C(x) stats.counts.at(x)
     
-    const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped);
-    const auto ca = C(Status::ForwardForward) + C(Status::ForwardReverse) + C(Status::ForwardNotMapped) + C(Status::NotMappedNotMapped);
+    const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped) + C(Status::LadQuin);
+    const auto ca = C(Status::ForwardReverse) + C(Status::ForwardNotMapped) + C(Status::NotMappedNotMapped) + C(Status::ReverseLadQuin);
     const auto ch = C(Status::RevHang) + C(Status::ForHang);
     const auto pf = 100.0 * cf / (cf + ca + ch);
     const auto pa = 100.0 * ca / (cf + ca + ch);
@@ -827,33 +838,34 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     o.writer->write((boost::format(summary) % BedRef()                 // 1
                                             % src                      // 2
                                             % stats.gStats.nRegs       // 3
-                                            % stats.nNA                // 4
-                                            % stats.pNA()              // 5
-                                            % stats.nEndo              // 6
-                                            % stats.pEndo()            // 7
-                                            % stats.nSeqs              // 8
-                                            % stats.pSyn()             // 9
-                                            % stats.lad.nLad           // 10
-                                            % stats.trim.left          // 11
-                                            % stats.trim.right         // 12
-                                            % stats.trim.before        // 13
-                                            % stats.trim.after         // 14
-                                            % cf                       // 15
-                                            % pf                       // 16
-                                            % ca                       // 17
-                                            % pa                       // 18
-                                            % ch                       // 19
-                                            % ph                       // 20
-                                            % stats.cStats.meanBEndo() // 21
-                                            % stats.cStats.meanBSeqs() // 22
-                                            % stats.cStats.meanBEndo() // 23
-                                            % stats.afterSeqs          // 24
-                                            % stats.cStats.normMean()  // 25
-                                            % stats.cStats.normSD()    // 26
-                                            % stats.gStats.bREndo      // 27
-                                            % stats.gStats.bTSeqs      // 28
-                                            % stats.gStats.aREndo      // 29
-                                            % stats.gStats.aTSeqs      // 30
+                                            % o.edge                   // 4
+                                            % stats.nNA                // 5
+                                            % stats.pNA()              // 6
+                                            % stats.nEndo              // 7
+                                            % stats.pEndo()            // 8
+                                            % stats.nSeqs              // 9
+                                            % stats.pSyn()             // 10
+                                            % stats.lad.nLad           // 11
+                                            % stats.trim.left          // 12
+                                            % stats.trim.right         // 13
+                                            % stats.trim.before        // 14
+                                            % stats.trim.after         // 15
+                                            % cf                       // 16
+                                            % pf                       // 17
+                                            % ca                       // 18
+                                            % pa                       // 19
+                                            % ch                       // 20
+                                            % ph                       // 21
+                                            % stats.cStats.meanBEndo() // 22
+                                            % stats.cStats.meanBSeqs() // 23
+                                            % stats.cStats.meanBEndo() // 24
+                                            % stats.afterSeqs          // 25
+                                            % stats.cStats.normMean()  // 26
+                                            % stats.cStats.normSD()    // 27
+                                            % stats.gStats.bREndo      // 28
+                                            % stats.gStats.bTSeqs      // 29
+                                            % stats.gStats.aREndo      // 30
+                                            % stats.gStats.aTSeqs      // 31
                      ).str());
 }
 

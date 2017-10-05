@@ -18,7 +18,7 @@ namespace Anaquin
 
         struct Options : AnalyzerOptions
         {
-            Base edge = 0;
+            Base edge = 500;
             
             // Should we trim sequin reads?
             bool shouldTrim = true;
