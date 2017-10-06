@@ -11,9 +11,8 @@ namespace Anaquin
     {
         public:
 
-            RandomSelection(double prob) : _prob(prob)
+            RandomSelection(double prob, int seed = rand())  : _prob(prob), _seed(seed)
             {
-                _seed = rand();
                 A_ASSERT(prob >= 0.0);
             }
 

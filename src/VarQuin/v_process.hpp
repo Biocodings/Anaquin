@@ -49,6 +49,7 @@ namespace Anaquin
             LadQuinLadQuin,
             Original,
             Passed,
+            Sampled
         };
 
         struct SampledInfo

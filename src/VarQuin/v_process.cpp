@@ -172,7 +172,7 @@ static void calibrate(VProcess::Stats &stats,
     A_ASSERT(!stats.cStats.norms.empty());
 }
 
-static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
+static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
 {
     A_ASSERT(!stats.cStats.norms.empty());
 
@@ -189,7 +189,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
         A_ASSERT(i.second >= 0 && i.second <= 1.0 && !isnan(i.second));
         
         // Create independent random generator for each region
-        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection(1.0 - 0.5 * i.second));
+        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection(0.5 * (1.0 - i.second), 99));
     }
     
     A_ASSERT(select.size() == stats.cStats.norms.size());
@@ -201,8 +201,6 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 
     f1->open("VarProcess_flipped_1.fq");
     f2->open("VarProcess_flipped_2.fq");
-    s1->open("VarProcess_sampled_1.fq");
-    s2->open("VarProcess_sampled_2.fq");
 
     /*
      * We should sample :
@@ -221,57 +219,34 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
         auto &x1 = stats.s1.at(i);
         auto &x2 = stats.s2.at(i);
 
-        auto shouldSampled = !x1.mapped || !x2.mapped;
-        
-        if (!shouldSampled)
+        auto shouldKeep = [&](const ParserBAM::Data &x)
         {
-            DInter *inter;
+            if (!x.mapped) { return true; }
+            else           { return select.at(x.cID)->select(x.name); }
+        };
 
-            // Intervals after sampling
-            auto &inters = stats.mStats.aInters;
+        const auto k1 = shouldKeep(x1);
+        const auto k2 = shouldKeep(x2);
+
+        if (k1 || k2)
+        {
+            auto addCov = [&](const ParserBAM::Data &x)
+            {
+                if (stats.mStats.aInters.at(x.cID).overlap(x.l))
+                {
+                    stats.mStats.aInters.at(x.cID).overlap(x.l)->map(x.l);
+                }
+            };
             
+            addCov(x1);
+            addCov(x2);
+
             /*
-             * Should that be contains or overlap? We prefer overlaps because any read that is overlapped
-             * into the regions still give valuable information and sequencing depth.
+             * TODO: Check coverage after the latest paired-end sampling
              */
             
-            if (inters.count(x1.cID) && (inter = inters.at(x1.cID).overlap(x1.l)))
-            {
-                if (select.at(x1.cID)->select(x1.name))
-                {
-                    shouldSampled = true;
-                    
-                    inters.at(x1.cID).overlap(x1.l)->map(x1.l);
-                    
-                    if (inters.at(x2.cID).overlap(x2.l))
-                    {
-                        inters.at(x2.cID).overlap(x2.l)->map(x2.l);
-                    }
-                    else
-                    {
-                        o.logWarn("No overlapping found for: " + x2.name);
-                        shouldSampled = false;
-                    }
-                }
-            }
-            else
-            {
-                // Never throw away reads outside the regions
-                shouldSampled = true;
-            }
-        }
-        
-        if (shouldSampled)
-        {
-            s1->write("@" + x1.name + "/1");
-            s1->write(x1.seq);
-            s1->write("+");
-            s1->write(x1.qual);
-            
-            s2->write("@" + x2.name + "/2");
-            s2->write(x2.seq);
-            s2->write("+");
-            s2->write(x2.qual);
+            sampled.insert(x1.name);
+            sampled.insert(x2.name);
 
             auto __reverse__ = [&](ParserBAM::Data &x)
             {
@@ -305,8 +280,6 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, const Options &o)
 
     f1->close();
     f2->close();
-    s1->close();
-    s2->close();
 
     return nSeqs;
 }
@@ -331,14 +304,19 @@ struct SampledInfo
     Proportion norm;
 };
 
-template <typename O> double checkAfter(Stats &stats, const Chr2DInters &r2, const O &o)
+template <typename O> double checkAfter(Stats &stats, const O &o)
 {
     std::vector<double> all;
     
     for (const auto &seq : stats.mStats.seqs)
     {
+        if (seq == "GS_077")
+        {
+            std::cout << stats.dilution() << std::endl;
+        }
+
         const auto x = stats.mStats.aInters.at(seq).stats();
-        
+
         // Coverage after sampling
         const auto cov = stats2cov(o.meth, x);
         
@@ -614,18 +592,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
     }, true);
 
-    /*
-     * Write out alignments after trimming
-     */
-    
-    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
-    {
-        if (kept.count(x.name))
-        {
-            f(&x, nullptr, Status::Passed);
-        }
-    }, true);
-    
     for (auto &i: seenMates)
     {
         o.logWarn("Unpaired mate: " + i.first);
@@ -647,7 +613,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     
     /*
      * Checking calibration before sampling
-     */
+     */ 
     
     calibrate(stats, r2, stats.mStats.seqs, o);
     
@@ -655,19 +621,30 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
      * Calibrating sequin alignments
      */
 
-    stats.gStats.aTSeqs = sample(stats, r1, o);
+    std::set<ReadName> sampled;
+    stats.gStats.aTSeqs = sample(stats, r1, sampled, o);
     
     /*
      * Checking calibration after sampling
      */
 
-    stats.afterSeqs = checkAfter(stats, r2, o);
+    stats.afterSeqs = checkAfter(stats, o);
     
     stats.gStats.bTEndo = stats.nEndo;
     stats.gStats.bTSeqs = stats.nSeqs;
     stats.gStats.aTEndo = stats.nEndo;
     stats.gStats.aREndo = stats.gStats.bREndo;
     
+    /*
+     * Write out alignments after trimming
+     */
+    
+    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
+    {
+        if (kept.count(x.name))    { f(&x, nullptr, Status::Passed);  }
+        if (sampled.count(x.name)) { f(&x, nullptr, Status::Sampled); }
+    }, false);
+
     return stats;
 }
 
@@ -693,7 +670,8 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
 
             orig.open(o.work + "/VarProcess_original.bam");
             endo.open(o.work + "/VarProcess_genome.bam");
-            trim.open(o.work + "/VarProcess_trimmed.bam");
+            pass.open(o.work + "/VarProcess_passed.bam");
+            sample.open(o.work + "/VarProcess_sampled.bam");
         }
         
         ~Impl()
@@ -704,8 +682,9 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l1->close();
             l2->close();
             endo.close();
-            trim.close();
+            pass.close();
             orig.close();
+            sample.close();
         }
         
         inline void writeHang(const ParserBAM::Data &x)
@@ -770,9 +749,14 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             endo.write(x);
         }
 
-        inline void writeTrim(const ParserBAM::Data &x)
+        inline void writeSample(const ParserBAM::Data &x)
         {
-            trim.write(x);
+            sample.write(x);
+        }
+        
+        inline void writePass(const ParserBAM::Data &x)
+        {
+            pass.write(x);
         }
 
         inline void writeOrig(const ParserBAM::Data &x)
@@ -785,7 +769,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
 
-        BAMWriter endo, trim, orig;
+        BAMWriter endo, sample, pass, orig;
     };
     
     Impl impl(stats, o);
@@ -800,10 +784,17 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
                 break;
             }
                 
+            case Status::Sampled:
+            {
+                assert(x2 == nullptr);
+                impl.writeSample(*x1);
+                break;
+            }
+                
             case Status::Passed:
             {
                 assert(x2 == nullptr);
-                impl.writeTrim(*x1);
+                impl.writePass(*x1);
                 break;
             }
                 
