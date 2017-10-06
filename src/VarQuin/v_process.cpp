@@ -21,7 +21,8 @@ static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Opt
 {
     assert(heads.count(x.cID));
 
-    if (!o.shouldTrim)
+    // Unable to trim if it's not mapped
+    if (!o.shouldTrim || !x.mapped)
     {
         return false;
     }
@@ -188,7 +189,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         A_ASSERT(i.second >= 0 && i.second <= 1.0 && !isnan(i.second));
         
         // Create independent random generator for each region
-        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection((1.0 - i.second), 99));
+        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection((1.0 - i.second)));
     }
     
     A_ASSERT(select.size() == stats.cStats.norms.size());
@@ -503,32 +504,23 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
 
+            if (first->mapped)  { stats.trim.before++; }
+            if (second->mapped) { stats.trim.before++; }
+
             if (shouldTrim(*first, heads, o, t1l, t1r) || shouldTrim(*second, heads, o, t2l, t2r))
             {
+                if (t1l || t2l) { stats.trim.left  += 2; }
+                if (t1r || t2r) { stats.trim.right += 2; }
+
                 return;
             }
 
             kept.insert(first->name);
             kept.insert(second->name);
 
-//            auto checkTrim = [&]()
-//            {
-//                if (t1l || t2l) { stats.trim.left  += 2; }
-//                if (t1r || t2r) { stats.trim.right += 2; }
-//            };
-//
-//            auto incBefore = [&]()
-//            {
-//                if (first->mapped)  { stats.trim.before++; }
-//                if (second->mapped) { stats.trim.before++; }
-//            };
-//
-//            auto incAfter = [&]()
-//            {
-//                if (first->mapped)  { stats.trim.after++; }
-//                if (second->mapped) { stats.trim.after++; }
-//            };
-            
+            if (first->mapped)  { stats.trim.after++; }
+            if (second->mapped) { stats.trim.after++; }
+
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
                 f(first, second, Status::LadQuinLadQuin);
