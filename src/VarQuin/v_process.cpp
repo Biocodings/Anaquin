@@ -12,7 +12,6 @@ typedef VProcess::Method  Method;
 typedef VProcess::Options Options;
 
 typedef std::map<ChrID, Base> Headers;
-typedef std::map<ChrID, DIntervals<>> Regions;
 
 /*
  * Implement trimming for sequins (reverse genome and ladders)
@@ -189,7 +188,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         A_ASSERT(i.second >= 0 && i.second <= 1.0 && !isnan(i.second));
         
         // Create independent random generator for each region
-        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection(0.5 * (1.0 - i.second), 99));
+        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection((1.0 - i.second), 99));
     }
     
     A_ASSERT(select.size() == stats.cStats.norms.size());
@@ -219,10 +218,15 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         auto &x1 = stats.s1.at(i);
         auto &x2 = stats.s2.at(i);
 
+        auto &after = stats.mStats.aInters;
+        
         auto shouldKeep = [&](const ParserBAM::Data &x)
         {
             if (!x.mapped) { return true; }
-            else           { return select.at(x.cID)->select(x.name); }
+            else
+            {
+                return select.at(x.cID)->select(x.name);
+            }
         };
 
         const auto k1 = shouldKeep(x1);
@@ -232,9 +236,9 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         {
             auto addCov = [&](const ParserBAM::Data &x)
             {
-                if (stats.mStats.aInters.at(x.cID).overlap(x.l))
+                if (after.at(x.cID).overlap(x.l))
                 {
-                    stats.mStats.aInters.at(x.cID).overlap(x.l)->map(x.l);
+                    after.at(x.cID).overlap(x.l)->map(x.l);
                 }
             };
             
@@ -310,11 +314,6 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
     
     for (const auto &seq : stats.mStats.seqs)
     {
-        if (seq == "GS_077")
-        {
-            std::cout << stats.dilution() << std::endl;
-        }
-
         const auto x = stats.mStats.aInters.at(seq).stats();
 
         // Coverage after sampling

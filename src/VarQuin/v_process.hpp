@@ -32,6 +32,7 @@ namespace Anaquin
             // Defined only if meth==Reads
             Counts reads = NAN;
 
+            // How calibration is calculated
             Method meth = Method::Mean;
         };
         
