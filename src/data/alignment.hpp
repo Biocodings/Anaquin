@@ -64,9 +64,9 @@ namespace Anaquin
 
         // Reference sequence name of the primary alignment
         ChrID rnext;
-        
+
         // Position of the primary alignment of the NEXT read in the template
-        std::string pnext;
+        Base pnext;
 
         // Segment sequence
         std::string seq;

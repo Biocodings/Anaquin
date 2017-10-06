@@ -203,7 +203,7 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
             align.qual   = bam2qual(t);
             align.cigar  = hasCID ? bam2cigar(t) : "*";
             align.tlen   = hasCID ? t->core.isize : 0;
-            align.pnext  = hasCID ? std::to_string(t->core.mpos) : "0";
+            align.pnext  = hasCID ? t->core.mpos : 0;
             align.rnext  = hasCID ? bam2rnext(h, t) : "*";
             
             if (align.rnext == "=")
