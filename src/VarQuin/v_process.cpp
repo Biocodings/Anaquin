@@ -163,7 +163,7 @@ static void calibrate(VProcess::Stats &stats,
         stats.c2v[sID].before = seqsC;
         stats.c2v[sID].norm   = norm;
         
-        // Normalization for the sequin
+        stats.cStats.covs[sID]  = endoC;
         stats.cStats.norms[sID] = norm;
         
         stats.cStats.allNorms.push_back(norm);
@@ -174,6 +174,7 @@ static void calibrate(VProcess::Stats &stats,
 
 static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
 {
+    A_ASSERT(!stats.cStats.covs.empty());
     A_ASSERT(!stats.cStats.norms.empty());
 
     typedef std::map<SequinID, std::shared_ptr<RandomSelection>> Selection;
@@ -226,6 +227,19 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             if (!x.mapped) { return true; }
             else
             {
+                // Targeted coverage
+                const auto exp = stats.cStats.covs.at(x.cID);
+                
+                // Latest coverage
+                const auto obs = after.at(x.cID).stats().mean;
+                
+                // Stop if the target coverage reached
+                if (obs >= exp)
+                {
+                    o.logInfo("Stopped for " + x.cID);
+                    return false;
+                }
+
                 return select.at(x.cID)->select(x.name);
             }
         };
@@ -246,10 +260,6 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             addCov(x1);
             addCov(x2);
 
-            /*
-             * TODO: Check coverage after the latest paired-end sampling
-             */
-            
             sampled.insert(x1.name);
             sampled.insert(x2.name);
 

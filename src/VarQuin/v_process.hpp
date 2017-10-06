@@ -128,9 +128,9 @@ namespace Anaquin
                 // Number of alignments for sequins (excluding LadQuin) after calibration
                 Counts aSeqs = 0;
                 
-                // Normalization for the sequins
+                std::map<SequinID, Coverage> covs;
                 std::map<SequinID, Proportion> norms;
-                
+
                 std::vector<double> allBeforeEndoC;
                 std::vector<double> allBeforeSeqsC;
                 
