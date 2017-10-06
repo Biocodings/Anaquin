@@ -85,8 +85,6 @@ static void calibrate(VProcess::Stats &stats,
         // Sequins statistics for the region
         const auto ss = mStats.bInters.at(p2.first).find(p2.second)->stats();
         
-        o.info("Calculating coverage for " + sID);
-        
         /*
          * Now we have the data, we'll need to compare coverage and determine the fraction that
          * the synthetic alignments needs to be sampled.
@@ -359,6 +357,8 @@ template <typename O> double checkAfter(Stats &stats, const Chr2DInters &r2, con
 
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
+    o.logInfo("Edge: " + std::to_string(o.edge));
+
     const auto &r = Standard::instance().r_var;
     
     // Regions without edge effects
@@ -402,8 +402,17 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 // Update mapping for endogenous
                 stats.mStats.s2e[sID] = std::pair<ChrID, std::string>(i.first, l1.key());
                 
+                /*
+                 * Construct interval for sequins and consider edge effects
+                 */
+                
                 // Locus for the sequin region
-                const auto l2 = Locus(0, inter.second.l().end - inter.second.l().start);
+                auto l2 = Locus(0, inter.second.l().end - inter.second.l().start);
+
+                l2.end   -= o.edge;
+                l2.start += o.edge;
+                
+                A_ASSERT(l2.end > l2.start);
                 
                 DIntervals<> x2;
                 x2.add(DInter(l2.key(), l2));
@@ -412,8 +421,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 stats.mStats.bInters[sID].build();
                 stats.mStats.aInters[sID] = x2;
                 stats.mStats.aInters[sID].build();
-
-                // Update mapping for endogenous
+                
                 stats.mStats.s2s[sID] = std::pair<ChrID, std::string>(sID, l2.key());
             }
             
@@ -571,7 +579,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                     assert(s2c.count(x.cID));
                     assert(stats.mStats.bInters.count(x.cID));
 
-                    // Calculate alignment coverage for sequin regions
+                    // Calculate alignment coverage for sequin regions before calibration
                     coverage(x, x.cID, stats.mStats.bInters);
                     
                     Status status;
@@ -679,6 +687,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l1->open("VarProcess_ladder_1.fq");
             l2->open("VarProcess_ladder_2.fq");
 
+            trim.open(o.work + "/VarProcess_trimmed.bam");
             endo.open(o.work + "/VarProcess_genome.bam");
         }
         
@@ -690,6 +699,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l1->close();
             l2->close();
             endo.close();
+            trim.close();
         }
         
         inline void writeHang(const ParserBAM::Data &x)
@@ -743,13 +753,19 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         {
             endo.write(x);
         }
-        
+
+        inline void writeTrim(const ParserBAM::Data &x1, const ParserBAM::Data &x2)
+        {
+            trim.write(x1);
+            trim.write(x2);
+        }
+
         Stats &stats;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
 
-        BAMWriter endo;
+        BAMWriter endo, trim;
     };
     
     Impl impl(stats, o);
@@ -760,6 +776,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         {
             case Status::LadQuin:
             {
+                impl.writeTrim(*x1, *x2);
                 impl.writeLad(*x1, *x2);
                 break;
             }
@@ -767,6 +784,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             case Status::ReverseReverse:
             case Status::ReverseNotMapped:
             {
+                impl.writeTrim(*x1, *x2);
                 impl.writeBefore(*x1, *x2);
                 break;
             }
@@ -787,6 +805,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             case Status::ForwardNotMapped:
             case Status::NotMappedNotMapped:
             {
+                impl.writeTrim(*x1, *x2);
                 impl.writeAmb(*x1, *x2);
                 break;
             }

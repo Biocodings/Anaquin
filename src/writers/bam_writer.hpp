@@ -15,6 +15,7 @@ namespace Anaquin
             void write(const ParserBAM::Data &);
 
         private:
+            bool _head;        
             samFile *_fp;
     };
 }
