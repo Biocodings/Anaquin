@@ -190,7 +190,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         A_ASSERT(i.second >= 0 && i.second <= 1.0 && !isnan(i.second));
         
         // Create independent random generator for each region
-        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection((1.0 - i.second)));
+        select[i.first]= std::shared_ptr<RandomSelection>(new RandomSelection((1.0 - i.second), 100));
     }
     
     A_ASSERT(select.size() == stats.cStats.norms.size());
@@ -236,7 +236,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
                 // Stop if the target coverage reached
                 if (obs >= exp)
                 {
-                    o.logInfo("Stopped for " + x.cID);
+                    o.info("Stopped for " + x.cID);
                     return false;
                 }
 
