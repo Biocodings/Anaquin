@@ -376,6 +376,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
+    // Cached for proprocessing
+    std::set<ReadName> kept;
+
     stats.gStats.nRegs = countMap(r1, [&](ChrID, const DIntervals<> &x) { return x.size(); });
     
     /*
@@ -462,36 +465,47 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     
     bool t1l, t2l; // Left trimming for paired-end?
     bool t1r, t2r; // Right trimming for paired-end?
-    
+
     ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
     {
+        A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
+
         if (i.p.i && !(i.p.i % 1000000))
         {
             o.wait(std::to_string(i.p.i));
         }
         
-        if (!x.mapped)              { stats.nNA++;  }
-        else if (isLadQuin(x.cID))  { stats.lad.nLad++; stats.nSeqs++; }
-        else if (stats.mStats.seqs.count(x.cID)) { stats.nSeqs++; }
-        else                        { stats.nEndo++; }
+        if (!x.mapped)             { stats.nNA++;  }
+        else if (isLadQuin(x.cID)) { stats.lad.nLad++; stats.nSeqs++; }
+        else if (isVarQuin(x.cID)) { stats.nSeqs++; }
+        else                       { stats.nEndo++; }
         
         /*
-         * Directly write out endogenous alignments (pairing not required)
+         * Write out endogenous alignments
          */
         
-        if (!isLadQuin(x.cID) && (!stats.mStats.seqs.count(x.cID) && !stats.mStats.seqs.count(x.rnext)))
+        if (!isVarQuin(x.cID) && !isVarQuin(x.rnext))
         {
             // Calculate alignment coverage for endogenous regions
             coverage(x, x.cID, stats.mStats.eInters);
             
-            // Write out the read
             f(&x, nullptr, Status::ForwardForward);
             
             if (stats.mStats.eInters.count(x.cID) && stats.mStats.eInters.at(x.cID).overlap(x.l))
             {
                 stats.gStats.bREndo++;
             }
-
+            
+            return;
+        }
+        
+        /*
+         * Write out ambiguous alignments (VarQuin and endeogenous)
+         */
+        
+        else if ((!isVarQuin(x.cID) && isVarQuin(x.rnext)) || (isVarQuin(x.cID) && !isVarQuin(x.rnext)))
+        {
+            f(&x, nullptr, Status::ForwardVarQuin);
             return;
         }
         else if (!x.isPassed || x.isSecondary || x.isSupplement)
@@ -499,8 +513,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             return;
         }
 
-        A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
-        
+        // Relevant sequin alignments before trimming
+        f(&x, nullptr, Status::Original);
+
         if (!seenMates.count(x.name))
         {
             seenMates[x.name] = x;
@@ -510,42 +525,36 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto &seen  = seenMates[x.name];
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
-            
-            t1r = t1r = t2l = t2r = false;
-            
-            auto checkTrim = [&]()
-            {
-                if (t1l || t2l) { stats.trim.left  += 2; }
-                if (t1r || t2r) { stats.trim.right += 2; }
-            };
-            
-            auto incBefore = [&]()
-            {
-                if (first->mapped)  { stats.trim.before++; }
-                if (second->mapped) { stats.trim.before++; }
-            };
 
-            auto incAfter = [&]()
+            if (shouldTrim(*first, heads, o, t1l, t1r) || shouldTrim(*second, heads, o, t2l, t2r))
             {
-                if (first->mapped)  { stats.trim.after++; }
-                if (second->mapped) { stats.trim.after++; }
-            };
+                return;
+            }
 
+            kept.insert(first->name);
+            kept.insert(second->name);
+
+//            auto checkTrim = [&]()
+//            {
+//                if (t1l || t2l) { stats.trim.left  += 2; }
+//                if (t1r || t2r) { stats.trim.right += 2; }
+//            };
+//
+//            auto incBefore = [&]()
+//            {
+//                if (first->mapped)  { stats.trim.before++; }
+//                if (second->mapped) { stats.trim.before++; }
+//            };
+//
+//            auto incAfter = [&]()
+//            {
+//                if (first->mapped)  { stats.trim.after++; }
+//                if (second->mapped) { stats.trim.after++; }
+//            };
+            
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
-                incBefore();
-                
-                /*
-                 * Ladder alignments don't require calibration and flipping
-                 */
-                
-                if (!shouldTrim(*first,  heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r))
-                {
-                    incAfter();
-                    f(first, second, Status::LadQuin);
-                }
-                
-                checkTrim();
+                f(first, second, Status::LadQuinLadQuin);
             }
             else if (!s2c.count(first->cID) || !s2c.count(second->cID))
             {
@@ -561,64 +570,59 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 const auto anyMap  =  first->mapped ||  second->mapped;
                 const auto anyNMap = !first->mapped || !second->mapped;
                 
-                // Don't trim unless necessary
-                const auto tryTrim = o.trim && bothVar;
+                assert(s2c.count(x.cID));
+                assert(stats.mStats.bInters.count(x.cID));
                 
-                if (tryTrim)
-                {
-                    incBefore();
-                }
-                
-                if (!tryTrim || (!shouldTrim(*first, heads, o, t1l, t1r) && !shouldTrim(*second, heads, o, t2l, t2r)))
-                {
-                    if (tryTrim)
-                    {
-                        incAfter();
-                    }
+                // Calculate alignment coverage for sequin regions before calibration
+                coverage(*first,  first->cID,  stats.mStats.bInters);
+                coverage(*second, second->cID, stats.mStats.bInters);
 
-                    assert(s2c.count(x.cID));
-                    assert(stats.mStats.bInters.count(x.cID));
-
-                    // Calculate alignment coverage for sequin regions before calibration
-                    coverage(x, x.cID, stats.mStats.bInters);
-                    
-                    Status status;
-                    
-                    if (bothVar && !anyNMap)
-                    {
-                        status = Status::ReverseReverse;
-                    }
-                    else if (bothFor && !anyNMap)
-                    {
-                        throw std::runtime_error("Status::ForwardForward is invalid for sequins");
-                    }
-                    else if (anyVar && anyFor && !anyNMap)
-                    {
-                        status = Status::ForwardReverse;
-                    }
-                    else if (anyNMap && anyMap && anyVar)
-                    {
-                        status = Status::ReverseNotMapped;
-                    }
-                    else if (anyNMap && anyMap && anyFor)
-                    {
-                        status = Status::ForwardNotMapped;
-                    }
-                    else
-                    {
-                        status = Status::NotMappedNotMapped;
-                    }
-                    
-                    stats.counts[status]++;
-                    stats.counts[status]++;
-                    
-                    f(first, second, status);
-                }
+                Status status;
                 
-                checkTrim();
+                if (bothVar && !anyNMap)
+                {
+                    status = Status::ReverseReverse;
+                }
+                else if (bothFor && !anyNMap)
+                {
+                    throw std::runtime_error("Status::ForwardForward is invalid for sequins");
+                }
+                else if (anyVar && anyFor && !anyNMap)
+                {
+                    throw std::runtime_error("Status::ForReverse is invalid for sequins");
+                }
+                else if (anyNMap && anyMap && anyVar)
+                {
+                    status = Status::ReverseNotMapped;
+                }
+                else if (anyNMap && anyMap && anyFor)
+                {
+                    status = Status::ForwardNotMapped;
+                }
+                else
+                {
+                    status = Status::NotMappedNotMapped;
+                }
+
+                stats.counts[status]++;
+                stats.counts[status]++;
+                
+                f(first, second, status);
             }
-            
+
             seenMates.erase(x.name);
+        }
+    }, true);
+
+    /*
+     * Write out alignments after trimming
+     */
+    
+    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
+    {
+        if (kept.count(x.name))
+        {
+            f(&x, nullptr, Status::Passed);
         }
     }, true);
     
@@ -631,13 +635,13 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         
         if (isVarQuin(i.second.cID))
         {
-            stats.counts[Status::RevHang]++;
-            f(&i.second, nullptr, Status::RevHang);
+            stats.counts[Status::ReverseHang]++;
+            f(&i.second, nullptr, Status::ReverseHang);
         }
         else
         {
-            stats.counts[Status::ForHang]++;
-            f(&i.second, nullptr, Status::ForHang);
+            stats.counts[Status::ForwardHang]++;
+            f(&i.second, nullptr, Status::ForwardHang);
         }
     }
     
@@ -687,8 +691,9 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l1->open("VarProcess_ladder_1.fq");
             l2->open("VarProcess_ladder_2.fq");
 
-            trim.open(o.work + "/VarProcess_trimmed.bam");
+            orig.open(o.work + "/VarProcess_original.bam");
             endo.open(o.work + "/VarProcess_genome.bam");
+            trim.open(o.work + "/VarProcess_trimmed.bam");
         }
         
         ~Impl()
@@ -700,6 +705,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l2->close();
             endo.close();
             trim.close();
+            orig.close();
         }
         
         inline void writeHang(const ParserBAM::Data &x)
@@ -721,43 +727,57 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             }
         }
         
-        inline void writeBefore(const ParserBAM::Data &x1, const ParserBAM::Data &x2)
+        inline void writeBefore1(const ParserBAM::Data &x)
         {
-            stats.s1.push_back(x1);
-            stats.s2.push_back(x2);
-        }
-        
-        inline void writePaired(std::shared_ptr<FileWriter> p1, std::shared_ptr<FileWriter> p2, const ParserBAM::Data &x1, const ParserBAM::Data &x2)
-        {
-            p1->write("@" + x1.name + "/1");
-            p1->write(x1.seq);
-            p1->write("+");
-            p1->write(x1.qual);
-            p2->write("@" + x2.name + "/2");
-            p2->write(x2.seq);
-            p2->write("+");
-            p2->write(x2.qual);
-        };
-        
-        inline void writeLad(const ParserBAM::Data &x, const ParserBAM::Data &y)
-        {
-            writePaired(l1, l2, x, y);
+            stats.s1.push_back(x);
         }
 
-        inline void writeAmb(const ParserBAM::Data &x, const ParserBAM::Data &y)
+        inline void writeBefore2(const ParserBAM::Data &x)
         {
-            writePaired(a1, a2, x, y);
+            stats.s2.push_back(x);
         }
-        
+
+        inline void writeFASTQ(std::shared_ptr<FileWriter> p, const ParserBAM::Data &x)
+        {
+            p->write("@" + x.name + "/1");
+            p->write(x.seq);
+            p->write("+");
+            p->write(x.qual);
+        };
+
+        inline void writeLad1(const ParserBAM::Data &x)
+        {
+            writeFASTQ(l1, x);
+        }
+
+        inline void writeLad2(const ParserBAM::Data &x)
+        {
+            writeFASTQ(l2, x);
+        }
+
+        inline void writeAmb1(const ParserBAM::Data &x)
+        {
+            writeFASTQ(a1, x);
+        }
+
+        inline void writeAmb2(const ParserBAM::Data &x)
+        {
+            writeFASTQ(a2, x);
+        }
+
         inline void writeEndo(const ParserBAM::Data &x)
         {
             endo.write(x);
         }
 
-        inline void writeTrim(const ParserBAM::Data &x1, const ParserBAM::Data &x2)
+        inline void writeTrim(const ParserBAM::Data &x)
         {
-            trim.write(x1);
-            trim.write(x2);
+            trim.write(x);
+        }
+
+        inline void writeOrig(const ParserBAM::Data &x)
+        {
+            orig.write(x);
         }
 
         Stats &stats;
@@ -765,7 +785,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
 
-        BAMWriter endo, trim;
+        BAMWriter endo, trim, orig;
     };
     
     Impl impl(stats, o);
@@ -774,18 +794,31 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     {
         switch (status)
         {
-            case Status::LadQuin:
+            case Status::Original:
             {
-                impl.writeTrim(*x1, *x2);
-                impl.writeLad(*x1, *x2);
+                impl.writeOrig(*x1);
+                break;
+            }
+                
+            case Status::Passed:
+            {
+                assert(x2 == nullptr);
+                impl.writeTrim(*x1);
+                break;
+            }
+                
+            case Status::LadQuinLadQuin:
+            {
+                impl.writeLad1(*x1);
+                impl.writeLad2(*x2);
                 break;
             }
 
             case Status::ReverseReverse:
             case Status::ReverseNotMapped:
             {
-                impl.writeTrim(*x1, *x2);
-                impl.writeBefore(*x1, *x2);
+                impl.writeBefore1(*x1);
+                impl.writeBefore2(*x2);
                 break;
             }
                 
@@ -800,18 +833,18 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
                 break;
             }
                 
-            case Status::ForwardReverse:
             case Status::ReverseLadQuin:
+            case Status::ForwardVarQuin:
             case Status::ForwardNotMapped:
             case Status::NotMappedNotMapped:
             {
-                impl.writeTrim(*x1, *x2);
-                impl.writeAmb(*x1, *x2);
+                impl.writeAmb1(*x1);
+                if (x2) { impl.writeAmb2(*x2); }
                 break;
             }
                 
-            case Status::RevHang:
-            case Status::ForHang:
+            case Status::ReverseHang:
+            case Status::ForwardHang:
             {
                 assert(x2 == nullptr);                
                 impl.writeHang(*x1);
@@ -866,9 +899,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
 
     #define C(x) stats.counts.at(x)
     
-    const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped) + C(Status::LadQuin);
-    const auto ca = C(Status::ForwardReverse) + C(Status::ForwardNotMapped) + C(Status::NotMappedNotMapped) + C(Status::ReverseLadQuin);
-    const auto ch = C(Status::RevHang) + C(Status::ForHang);
+    const auto cf = C(Status::ReverseReverse) + C(Status::ReverseNotMapped) + C(Status::LadQuinLadQuin);
+    const auto ca = C(Status::ForwardVarQuin) + C(Status::ForwardNotMapped) + C(Status::NotMappedNotMapped) + C(Status::ReverseLadQuin);
+    const auto ch = C(Status::ReverseHang) + C(Status::ForwardHang);
     const auto pf = 100.0 * cf / (cf + ca + ch);
     const auto pa = 100.0 * ca / (cf + ca + ch);
     const auto ph = 100.0 * ch / (cf + ca + ch);

@@ -40,13 +40,15 @@ namespace Anaquin
             ReverseReverse,
             ReverseNotMapped,
             ForwardForward,
-            ForwardReverse,
+            ForwardVarQuin,
             ForwardNotMapped,
             NotMappedNotMapped,
-            RevHang,
-            ForHang,
+            ReverseHang,
+            ForwardHang,
             ReverseLadQuin,
-            LadQuin
+            LadQuinLadQuin,
+            Original,
+            Passed,
         };
 
         struct SampledInfo
@@ -73,14 +75,14 @@ namespace Anaquin
         {
             Stats()
             {
-                counts[Status::RevHang] = 0;
-                counts[Status::ForHang] = 0;
-                counts[Status::LadQuin] = 0;
-                counts[Status::ReverseReverse] = 0;
-                counts[Status::ForwardForward] = 0;
-                counts[Status::ForwardReverse] = 0;
-                counts[Status::ReverseLadQuin] = 0;
+                counts[Status::ReverseReverse]  = 0;
+                counts[Status::LadQuinLadQuin]  = 0;
+                counts[Status::ReverseLadQuin]  = 0;
+                counts[Status::ReverseHang] = 0;
+                counts[Status::ForwardHang] = 0;
                 counts[Status::ReverseNotMapped] = 0;
+                counts[Status::ForwardForward] = 0;
+                counts[Status::ForwardVarQuin] = 0;
                 counts[Status::ForwardNotMapped] = 0;
                 counts[Status::NotMappedNotMapped] = 0;
             }
