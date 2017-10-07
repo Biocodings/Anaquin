@@ -514,6 +514,8 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
 
+            seenMates.erase(x.name);
+
             if (first->mapped)  { stats.trim.before++; }
             if (second->mapped) { stats.trim.before++; }
 
@@ -588,8 +590,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 
                 f(first, second, status);
             }
-
-            seenMates.erase(x.name);
         }
     }, true);
 
