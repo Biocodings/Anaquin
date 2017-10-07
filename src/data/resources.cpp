@@ -1,17 +1,14 @@
 #include <string>
 #include <algorithm>
 
-#include "resources/VarCopy.txt"
 #include "resources/anaquin.txt"
-#include "resources/VarFlip.txt"
+#include "resources/VarCopy.txt"
 #include "resources/VarTrim.txt"
 #include "resources/VarAlign.txt"
 #include "resources/VarKmer.txt"
-#include "resources/VarGermline.txt"
-#include "resources/VarSomatic.txt"
-#include "resources/VarConjoint.txt"
+#include "resources/VarProcess.txt"
+#include "resources/VarMutation.txt"
 #include "resources/VarStructure.txt"
-#include "resources/VarCalibrate.txt"
 
 #include "resources/RnaAlign.txt"
 #include "resources/RnaReport.txt"
@@ -63,14 +60,11 @@ Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
 Scripts RnaFoldChange() { return ToString(data_manuals_RnaFoldChange_txt); }
 
 Scripts VarTrim()       { return ToString(data_manuals_VarTrim_txt);      }
-Scripts VarFlip()       { return ToString(data_manuals_VarFlip_txt);      }
+Scripts VarProcess()    { return ToString(data_manuals_VarProcess_txt);   }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
 Scripts VarKmer()       { return ToString(data_manuals_VarKmer_txt);      }
-Scripts VarCalibrate()  { return ToString(data_manuals_VarCalibrate_txt); }
-Scripts VarGermline()     { return ToString(data_manuals_VarGermline_txt);    }
-Scripts VarSomatic()    { return ToString(data_manuals_VarSomatic_txt);   }
-Scripts VarConjoint()   { return ToString(data_manuals_VarConjoint_txt);  }
+Scripts VarMutation()   { return ToString(data_manuals_VarMutation_txt);  }
 Scripts VarStructure()  { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaCoverage()  { return ToString(data_manuals_MetaCoverage_txt);   }

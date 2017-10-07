@@ -25,12 +25,11 @@ Version: 2.0
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
 
             VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
-            VarFlip       - Flips sequin-derived reads from chiral (3’ to 5’) to human genome .(5’ to 3’) orientation
+            VarProcess    - Perform flipping, trimming, splitting and calibration on sequin- and sample-derived alignments
             VarKmer       - Quantitative k-mer analysis for sequin allele frequnecy
-            VarGermline   - Compare the identification of germline variants from sequin- and sample-derived alignments
+            VarMutation   - Compare the identification of germline variants from sequin- and sample-derived alignments
             VarCopy       - Perform quantitative analysis on copy number variation
             VarStructure  - Compare the identification of structural variants from sequin- and sample-derived alignments
-            VarSomatic    - Compare the identification of somatic variants from sequin- and sample-derived alignments
 
             MetaAbund     - Quantitative analysis of sequin abundance
             MetaAssembly  - Compares assembled contigs to sequin annotations in the in silico community

@@ -336,14 +336,11 @@ static void printUsage()
 static Scripts manual(Tool tool)
 {
     extern Scripts VarCopy();
-    extern Scripts VarGermline();
-    extern Scripts VarFlip();
+    extern Scripts VarProcess();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
-    extern Scripts VarSomatic();
+    extern Scripts VarMutation();
     extern Scripts VarKmer();
-    extern Scripts VarCalibrate();
-    extern Scripts VarConjoint();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
     extern Scripts RnaReport();
@@ -357,23 +354,20 @@ static Scripts manual(Tool tool)
     
     switch (tool)
     {
-        case Tool::RnaAlign:       { return RnaAlign();       }
-        case Tool::RnaAssembly:    { return RnaAssembly();    }
-        case Tool::RnaExpress:     { return RnaExpression();  }
-        case Tool::RnaFoldChange:  { return RnaFoldChange();  }
-        case Tool::RnaSubsample:   { return RnaSubsample();   }
-        case Tool::RnaReport:      { return RnaReport();      }
-        case Tool::VarCopy:        { return VarCopy();        }
-        case Tool::VarFlip:        { return VarFlip();        }
-        case Tool::VarSomatic:     { return VarSomatic();     }
-        case Tool::VarAlign:       { return VarAlign();       }
-        case Tool::VarCalibrate:   { return VarCalibrate();   }
-        case Tool::VarKmer:        { return VarKmer();        }
-        case Tool::VarGermline:    { return VarGermline();    }
-        case Tool::VarConjoint:    { return VarConjoint();    }
-        case Tool::VarStructure:   { return VarStructure();   }
-        case Tool::MetaAssembly:   { return MetaAssembly();   }
-        case Tool::MetaCoverage:   { return MetaCoverage();   }
+        case Tool::RnaAlign:       { return RnaAlign();      }
+        case Tool::RnaAssembly:    { return RnaAssembly();   }
+        case Tool::RnaExpress:     { return RnaExpression(); }
+        case Tool::RnaFoldChange:  { return RnaFoldChange(); }
+        case Tool::RnaSubsample:   { return RnaSubsample();  }
+        case Tool::RnaReport:      { return RnaReport();     }
+        case Tool::VarCopy:        { return VarCopy();       }
+        case Tool::VarProcess:     { return VarProcess();    }
+        case Tool::VarMutation:    { return VarMutation();   }
+        case Tool::VarAlign:       { return VarAlign();      }
+        case Tool::VarKmer:        { return VarKmer();       }
+        case Tool::VarStructure:   { return VarStructure();  }
+        case Tool::MetaAssembly:   { return MetaAssembly();  }
+        case Tool::MetaCoverage:   { return MetaCoverage();  }
         default:                   { return ""; }
     }
 }
@@ -1246,19 +1240,20 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip:    { analyze_1<VFlip>(OPT_U_SEQS);    break; }
-                case Tool::VarKmer:    { analyze_1<VKmer>(OPT_U_SEQS);    break; }
-                case Tool::VarProcess: { analyze_1<VProcess>(OPT_U_SEQS); break; }
+                case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
+                case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
+                case Tool::VarProcess:
+                {
+                    VProcess::Options o;
+                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
+                    analyze_1<VProcess>(OPT_U_SEQS);
+                    break;
+                }
 
                 case Tool::VarAlign:
                 {
                     VAlign::Options o;
-                    
-                    if (_p.opts.count(OPT_EDGE))
-                    {
-                        o.edge = stoi(_p.opts[OPT_EDGE]);
-                    }
-
+                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
                     analyze_2<VAlign>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }

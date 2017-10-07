@@ -1,0 +1,43 @@
+<b>ANAQUIN MANUAL</b>
+
+<b>NAME</b>
+    VarProcess - Perform flipping, trimming, splitting and calibration on sequin- and sample-derived alignments.
+
+<b>DESCRIPTION</b>
+    Workflow in three steps:
+
+    1. Sequin alignments give artificials near the region boundaries. This step trims those reads.
+    2. Alignment subsampling is a simple and effective method for calibrating the sequence coverage of sequins
+       to accompanying human genome sample. The second step calculates the alignment coverage within specified regions,
+       and scales sequin coverage in corresponding regions accordingly. 
+    3. Reverse the sequence (and quality scores) of sequin-derived reads.
+    
+    This tool generates a new set of paired-end library files (.FASTQ) that are orientated in the same direction as
+    the human genome. This tool will also omit any alignments that are ambiguous (eg. if either mate pair
+    does not align, or aligns to the reference genome). Please note single-ended reads is not supported.
+
+<b>SUPPORT SOFTWARE</b>
+     VarProcess supports standard SAM/BAM file.
+     
+<b>USAGE EXAMPLE</b>
+     anaquin VarProcess -rbed reference.bed –usequin aligned.bam
+
+<b>TOOL OPTIONS</b>
+     Required:
+        -rbed        Annotation file (BED format) of sequin regions
+        -usequin     Generated forward/reverse alignment file in SAM/BAM format
+
+     Optional:
+        -o = output  Directory in which output files are written to
+        -edge = 0    Edge effects width in nucleotide bases
+
+<b>OUTPUTS</b>
+     VarProcess_summary.stats      - provides the summary statistics
+     VarProcess_flipped_1.fq       - is the first paired-end sequence file for flipped reads
+     VarProcess_flipped_2.fq       - is the second paired-end for VarProcess_flipped_1.fq
+     VarProcess_ladder_1.fq        - is the first paired-end sequence file for LadQuin reads
+     VarProcess_ladder_2.fq        - is the second paired-end for VarProcess_ladder_1.fq
+     VarProcess_ambiguous_1.fq     - is the first paired-end sequence file for ambiguous reads
+     VarProcess_ambiguous_2.fq     - is the second paired-end for VarProcess_ambig_1.fq
+     VarProcess_hanging.fq         - is the sequence file for hanging reads
+     VarProcess_sample.bam         - is the sample derived alignment file

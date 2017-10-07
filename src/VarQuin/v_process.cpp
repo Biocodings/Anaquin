@@ -670,7 +670,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l2->open("VarProcess_ladder_2.fq");
 
             orig.open(o.work + "/VarProcess_original.bam");
-            endo.open(o.work + "/VarProcess_genome.bam");
+            endo.open(o.work + "/VarProcess_sample.bam");
             pass.open(o.work + "/VarProcess_passed.bam");
             sample.open(o.work + "/VarProcess_sampled.bam");
         }

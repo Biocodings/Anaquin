@@ -73,6 +73,7 @@ namespace Anaquin
         VarProcess,
         VarStructure,
         VarConjoint,
+        VarMutation,
         
         MetaCoverage,
         MetaAssembly,
