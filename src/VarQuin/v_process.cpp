@@ -376,7 +376,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     auto initRegs = [&]()
     {
         // For each chromosome...
-        for (const auto &i : r2)
+        for (const auto &i : r1)
         {
             DIntervals<> x1;
             
@@ -400,6 +400,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                 // Locus for the sequin region
                 auto l2 = Locus(0, inter.second.l().end - inter.second.l().start);
 
+                l2.end   -= o.edge;
+                l2.start += o.edge;
+                
                 A_ASSERT(l2.end > l2.start);
                 
                 DIntervals<> x2;
