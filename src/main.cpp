@@ -7,6 +7,9 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
+#define BACKWARD_HAS_BFD 1
+#include "tools/backward.hpp"
+
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_report.hpp"
@@ -1246,7 +1249,7 @@ void parse(int argc, char ** argv)
                 {
                     VProcess::Options o;
                     o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
-                    analyze_1<VProcess>(OPT_U_SEQS);
+                    analyze_1<VProcess>(OPT_U_SEQS, o);
                     break;
                 }
 

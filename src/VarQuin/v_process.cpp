@@ -345,7 +345,7 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
 
 template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
 {
-    o.logInfo("Edge: " + std::to_string(o.edge));
+    o.info("Edge: " + std::to_string(o.edge));
 
     const auto &r = Standard::instance().r_var;
     
