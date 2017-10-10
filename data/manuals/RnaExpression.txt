@@ -18,15 +18,14 @@
 
 <b>USAGE EXAMPLE</b>
      For single replicate:
-     anaquin RnaExpression –rmix mixture.csv -method gene –usequin sample1.gtf
+     anaquin RnaExpression –rmix mixture.csv –usequin sample1.gtf
 
      For multiple replicates:
-     anaquin RnaExpression –rmix mixture.csv -method gene –usequin sample1.gtf –usequin sample2.gtf –usequin sample3.gtf
+     anaquin RnaExpression –rmix mixture.csv –usequin sample1.gtf –usequin sample2.gtf –usequin sample3.gtf
 
 <b>TOOL OPTIONS</b>
      Required:
         -rmix        Reference VarQuin mixture file in CSV format
-        -method      Whether the analysis should be performed at "gene" or "isoform" level.
         -usequin     User-generated expression file in GTF format or custom text format.
                      Please refer to users guide for details on custom text format.
 
@@ -36,6 +35,9 @@
 
 <b>OUTPUTS</b>
      RnaExpression_summary.stats - provides global summary statistics for sequin expression
-     RnaExpression_sequins.csv   - provides detailed statistics for each individual sequin
-     RnaExpression_linear.R      - provides R-script for plotting a linear model between expression level (dependent variable)
-                                   and input concentration (independent variable) on the logarithm scale
+     RnaExpression_isoforms.csv  - provides detailed statistics for each individual sequin isoform
+     RnaExpression_genes.csv     - provides detailed statistics for each individual sequin gene
+     RnaExpression_isoforms.R    - provides R-script for plotting a linear model for isoform expression between expression level
+                                   (dependent variable) and input concentration (independent variable) on the logarithm scale
+     RnaExpression_genes.R       - provides R-script for plotting a linear model for gene expression between expression level
+                                   (dependent variable) and input concentration (independent variable) on the logarithm scale
