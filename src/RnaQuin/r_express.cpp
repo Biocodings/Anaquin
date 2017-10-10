@@ -222,7 +222,10 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 t.cID   = x.cID;
                 t.abund = x.fpkm;
 
-                matching(stats, t, o);
+                if (x.type == RNAFeature::Transcript)
+                {
+                    matching(stats, t, o);
+                }
             });
 
             break;
