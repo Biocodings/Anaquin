@@ -306,7 +306,7 @@ static Scripts multipleTSV(const std::vector<RExpress::Stats> &stats, bool shoul
     {
         ss << ((boost::format("%1%\t%2%\t%3%") % seq
                                                % expect.at(seq)
-                                               % r.input3(seq)//(metrs == Metrics::Isoform ? r.input3(seq) : r.input4(seq)
+                                               % (shouldIso ? r.input3(seq) : r.input4(seq))
                 ).str());
         
         for (auto i = 0; i < stats.size(); i++)
