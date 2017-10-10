@@ -7,9 +7,6 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
-#define BACKWARD_HAS_BFD 1
-#include "tools/backward.hpp"
-
 #include "RnaQuin/r_fold.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_report.hpp"
