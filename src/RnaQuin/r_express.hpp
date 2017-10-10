@@ -27,7 +27,7 @@ namespace Anaquin
             Mixture mix = Mixture::Mix_1;
         };
         
-        struct Stats : public MappingStats, public LimitStats
+        struct Stats : public MappingStats
         {
             struct GenData
             {
@@ -43,6 +43,8 @@ namespace Anaquin
             
             SequinStats isos, genes;
 
+            Limit iLimit, gLimit;
+            
             // Data for the genome
             std::map<ChrID, GenData> gData;
         };

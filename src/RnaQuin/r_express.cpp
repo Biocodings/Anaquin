@@ -93,6 +93,7 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
         Concent  exp = NAN;
         Measured obs = NAN;
 
+        Limit *l = nullptr;
         SequinStats *p = nullptr;
         
         // Can we match by isoforms?
@@ -101,6 +102,7 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
             if (!isnan(x.abund) && x.abund)
             {
                 p   = &stats.isos;
+                l   = &stats.iLimit;
                 id  = x.iID;
                 exp = r.input1(x.iID, o.mix);
                 obs = x.abund;
@@ -117,6 +119,7 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
             if (!isnan(x.abund) && x.abund)
             {
                 p   = &stats.genes;
+                l   = &stats.gLimit;
                 id  = x.gID;
                 exp = r.input2(x.gID, o.mix);
                 obs = x.abund;
@@ -151,10 +154,10 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
                 p->add(id, exp, obs);
             }
 
-            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+            if (isnan(l->abund) || exp < l->abund)
             {
-                stats.limit.id = id;
-                stats.limit.abund = exp;
+                l->id = id;
+                l->abund = exp;
             }
         }
     }
@@ -247,9 +250,6 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
         // Important, we'll need to reset counting for isoforms
         stats.nSeqs = 0;
         
-        // Start again at the gene level
-        stats.limit = Limit();
-        
         for (const auto &i : express)
         {
             // Input concentration at the gene level
@@ -258,10 +258,10 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             stats.nSeqs++;
             stats.genes.add(i.first, input, i.second);
             
-            if (isnan(stats.limit.abund) || input < stats.limit.abund)
+            if (isnan(stats.gLimit.abund) || input < stats.gLimit.abund)
             {
-                stats.limit.id = i.first;
-                stats.limit.abund = input;
+                stats.gLimit.id = i.first;
+                stats.gLimit.abund = input;
             }
         }
     }
@@ -380,15 +380,20 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
         {
             auto &ls = shouldI ? stats[i].isos : stats[i].genes;
             
+            auto ms_ = stats[i];
+            ms_.nSeqs = ls.size();
+            
             ss.push_back(ls);
-            ms.push_back(stats[i]);
+            ms.push_back(ms_);
+            
+            auto p = shouldI ? &stats[i].iLimit : &stats[i].gLimit;
             
             // Not every replicate is defined...
-            if (!stats[i].limit.id.empty())
+            if (!p->id.empty())
             {
-                if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
+                if (isnan(limit.abund) || p->abund < limit.abund)
                 {
-                    limit = stats[i].limit;
+                    limit = *p;
                 }
             }
         }
@@ -407,67 +412,69 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                         "       Summary for input: %1%\n\n"
                         "-------Reference Transcript Annotations\n\n"
                         "       Synthetic: %2% isoforms\n"
-                        "       Mixture file: %3%\n\n"
+                        "       Synthetic: %3% genes\n"
+                        "       Mixture file: %4%\n\n"
                         "-------Detected Isoforms\n\n"
-                        "       Sequin: %4%\n"
-                        "       Detection Sensitivity: %5% (attomol/ul) (%6%)\n"
-                        "       Genome: %7%\n\n"
+                        "       Sequin: %5%\n"
+                        "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n"
+                        "       Genome: %8%\n\n"
                         "-------Linear regression (Isoform expression) (log2 scale)\n\n"
-                        "       Slope:       %8%\n"
-                        "       Correlation: %9%\n"
-                        "       R2:          %10%\n"
-                        "       F-statistic: %11%\n"
-                        "       P-value:     %12%\n"
-                        "       SSM:         %13%, DF: %14%\n"
-                        "       SSE:         %15%, DF: %16%\n"
-                        "       SST:         %17%, DF: %18%\n\n"
+                        "       Slope:       %9%\n"
+                        "       Correlation: %10%\n"
+                        "       R2:          %11%\n"
+                        "       F-statistic: %12%\n"
+                        "       P-value:     %13%\n"
+                        "       SSM:         %14%, DF: %15%\n"
+                        "       SSE:         %16%, DF: %17%\n"
+                        "       SST:         %18%, DF: %19%\n\n"
                         "-------Detected Genes\n\n"
-                        "       Sequin: %19%\n"
-                        "       Detection Sensitivity: %20% (attomol/ul) (%21%)\n"
-                        "       Genome: %22%\n\n"
+                        "       Sequin: %20%\n"
+                        "       Detection Sensitivity: %21% (attomol/ul) (%22%)\n"
+                        "       Genome: %23%\n\n"
                         "-------Linear regression (Gene expression) (log2 scale)\n\n"
-                        "       Slope:       %23%\n"
-                        "       Correlation: %24%\n"
-                        "       R2:          %25%\n"
-                        "       F-statistic: %26%\n"
-                        "       P-value:     %27%\n"
-                        "       SSM:         %28%, DF: %29%\n"
-                        "       SSE:         %30%, DF: %31%\n"
-                        "       SST:         %32%, DF: %33%\n";
+                        "       Slope:       %24%\n"
+                        "       Correlation: %25%\n"
+                        "       R2:          %26%\n"
+                        "       F-statistic: %27%\n"
+                        "       P-value:     %28%\n"
+                        "       SSM:         %29%, DF: %30%\n"
+                        "       SSE:         %31%, DF: %32%\n"
+                        "       SST:         %33%, DF: %34%\n";
     
     return (boost::format(format) % STRING(iMS.files)       // 1
-                                  % r.seqsL2().size()       // 2
-                                  % LadRef()                // 3
-                                  % STRING(iMS.nSeqs)       // 4
-                                  % iLimit.abund            // 5
-                                  % iLimit.id               // 6
-                                  % STRING(iMS.nEndo)       // 7
-                                  % STRING(iMS.stats.sl)    // 8
-                                  % STRING(iMS.stats.r)     // 9
-                                  % STRING(iMS.stats.R2)    // 10
-                                  % STRING(iMS.stats.F)     // 11
-                                  % STRING(iMS.stats.p)     // 12
-                                  % STRING(iMS.stats.SSM)   // 13
-                                  % STRING(iMS.stats.SSM_D) // 14
-                                  % STRING(iMS.stats.SSE)   // 15
-                                  % STRING(iMS.stats.SSE_D) // 16
-                                  % STRING(iMS.stats.SST)   // 17
-                                  % STRING(iMS.stats.SST_D) // 18
-                                  % STRING(gMS.nSeqs)       // 19
-                                  % gLimit.abund            // 20
-                                  % gLimit.id               // 21
-                                  % STRING(gMS.nEndo)       // 22
-                                  % STRING(gMS.stats.sl)    // 23
-                                  % STRING(gMS.stats.r)     // 24
-                                  % STRING(gMS.stats.R2)    // 25
-                                  % STRING(gMS.stats.F)     // 26
-                                  % STRING(gMS.stats.p)     // 27
-                                  % STRING(gMS.stats.SSM)   // 28
-                                  % STRING(gMS.stats.SSM_D) // 29
-                                  % STRING(gMS.stats.SSE)   // 30
-                                  % STRING(gMS.stats.SSE_D) // 31
-                                  % STRING(gMS.stats.SST)   // 32
-                                  % STRING(gMS.stats.SST_D) // 33
+                                  % r.seqsL1().size()       // 2
+                                  % r.seqsL2().size()       // 3
+                                  % LadRef()                // 4
+                                  % STRING(iMS.nSeqs)       // 5
+                                  % iLimit.abund            // 6
+                                  % iLimit.id               // 7
+                                  % STRING(iMS.nEndo)       // 8
+                                  % STRING(iMS.stats.sl)    // 9
+                                  % STRING(iMS.stats.r)     // 10
+                                  % STRING(iMS.stats.R2)    // 11
+                                  % STRING(iMS.stats.F)     // 12
+                                  % STRING(iMS.stats.p)     // 13
+                                  % STRING(iMS.stats.SSM)   // 14
+                                  % STRING(iMS.stats.SSM_D) // 15
+                                  % STRING(iMS.stats.SSE)   // 16
+                                  % STRING(iMS.stats.SSE_D) // 17
+                                  % STRING(iMS.stats.SST)   // 18
+                                  % STRING(iMS.stats.SST_D) // 19
+                                  % STRING(gMS.nSeqs)       // 20
+                                  % gLimit.abund            // 21
+                                  % gLimit.id               // 22
+                                  % STRING(gMS.nEndo)       // 23
+                                  % STRING(gMS.stats.sl)    // 24
+                                  % STRING(gMS.stats.r)     // 25
+                                  % STRING(gMS.stats.R2)    // 26
+                                  % STRING(gMS.stats.F)     // 27
+                                  % STRING(gMS.stats.p)     // 28
+                                  % STRING(gMS.stats.SSM)   // 29
+                                  % STRING(gMS.stats.SSM_D) // 30
+                                  % STRING(gMS.stats.SSE)   // 31
+                                  % STRING(gMS.stats.SSE_D) // 32
+                                  % STRING(gMS.stats.SST)   // 33
+                                  % STRING(gMS.stats.SST_D) // 34
                      ).str();
 }
 
