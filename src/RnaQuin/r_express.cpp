@@ -269,7 +269,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
+static Scripts multipleTSV(const std::vector<RExpress::Stats> &stats, bool shouldIso)
 {
     const auto &r = Standard::instance().r_rna;
     
@@ -286,7 +286,7 @@ static Scripts multipleCSV(const std::vector<RExpress::Stats> &stats)
     
     for (auto i = 0; i < stats.size(); i++)
     {
-        auto &ls = stats[i].isos; //metrs == RExpress::Metrics::Isoform ? stats[i].isos : stats[i].genes;
+        auto &ls = shouldIso ? stats[i].isos : stats[i].genes;
 
         ss << ((boost::format("\tObserved%1%") % (i+1)).str());
 
@@ -558,7 +558,7 @@ Scripts RExpress::generateITSV(const std::vector<RExpress::Stats> &stats, const 
     }
     else
     {
-        return multipleCSV(stats);
+        return multipleTSV(stats, true);
     }
 }
 
@@ -585,7 +585,7 @@ Scripts RExpress::generateGTSV(const std::vector<RExpress::Stats> &stats, const 
     }
     else
     {
-        return multipleCSV(stats);
+        return multipleTSV(stats, false);
     }
 }
 
