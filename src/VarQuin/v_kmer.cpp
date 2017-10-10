@@ -31,19 +31,19 @@ VKmer::Stats VKmer::analyze(const FileName &file, const Options &o)
              *
              */
             
-            if (l1.count(noLast(x.id, "_")))
+            if (l1.count(noLast(x.iID, "_")))
             {
-                if (x.id[x.id.size() - 1] == 'R')
+                if (x.iID[x.iID.size() - 1] == 'R')
                 {
-                    stats.r[noLast(x.id, "_")] = x.abund;
+                    stats.r[noLast(x.iID, "_")] = x.abund;
                 }
-                else if (x.id[x.id.size() - 1] == 'V')
+                else if (x.iID[x.iID.size() - 1] == 'V')
                 {
-                    stats.v[noLast(x.id, "_")] = x.abund;
+                    stats.v[noLast(x.iID, "_")] = x.abund;
                 }
                 else
                 {
-                    throw std::runtime_error("Unknown: " + x.id);
+                    throw std::runtime_error("Unknown: " + x.iID);
                 }
             }
         });

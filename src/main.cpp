@@ -145,8 +145,8 @@ static std::map<Tool, std::set<Option>> _options =
     
     { Tool::RnaSubsample,  { OPT_U_SEQS, OPT_METHOD } },
     { Tool::RnaAssembly,   { OPT_R_GTF, OPT_R_LAD, OPT_U_SEQS } },
-    { Tool::RnaFoldChange, { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
-    { Tool::RnaExpress,    { OPT_R_LAD, OPT_U_SEQS, OPT_METHOD } },
+    { Tool::RnaFoldChange, { OPT_R_LAD, OPT_U_SEQS } },
+    { Tool::RnaExpress,    { OPT_R_LAD, OPT_U_SEQS } },
     { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
     { Tool::RnaReport,     { OPT_R_IND, OPT_R_LAD, OPT_U_SEQS } },
 
@@ -979,13 +979,6 @@ void parse(int argc, char ** argv)
                 {
                     RExpress::Options o;
                     o.mix = _p.mix;
-                    
-                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
-                    {
-                        throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
-                    }
-
-                    o.metrs = _p.opts[OPT_METHOD] == "gene" ? RExpress::Metrics::Gene : RExpress::Metrics::Isoform;
                     
                     const auto &file = _p.seqs[0];
                     

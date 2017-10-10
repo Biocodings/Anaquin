@@ -9,25 +9,6 @@ namespace Anaquin
 {
     struct ParserExpress
     {
-        typedef enum
-        {
-            ChrID,
-            GeneID,
-            IsoID,
-            Abund,
-        } Field;
-
-        struct Data
-        {
-            ::Anaquin::ChrID cID;
-
-            // Eg: R1_1 or R1_1
-            SequinID id;
-            
-            // Eg: FPKM, counts
-            double abund;
-        };
-
         static bool isExpress(const Reader &r)
         {
             std::string line;
@@ -49,39 +30,7 @@ namespace Anaquin
             }
             
             return false;
-        }
-        
-        template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
-        {
-            ParserProgress p;
-            std::string line;
-            std::vector<Token> toks;
-            
-            while (r.nextLine(line))
-            {
-                Tokens::split(line, "\t", toks);
-                Data x;
-
-                if (p.i)
-                {
-                    if (shouldGene)
-                    {
-                        x.id = toks[Field::GeneID];
-                    }
-                    else
-                    {
-                        x.id = toks[Field::IsoID];
-                    }
-                    
-                    x.cID   = toks[Field::ChrID];
-                    x.abund = ss2ld(toks[Field::Abund]);
-                    
-                    f(x, p);
-                }
-
-                p.i++;
-            }
-        }
+        }        
     };
 }
 

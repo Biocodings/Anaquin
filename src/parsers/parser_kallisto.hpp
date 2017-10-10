@@ -26,8 +26,11 @@ namespace Anaquin
             ChrID cID; // TODO: Fix this
             
             // Eg: Target ID
-            IsoformID id;
+            IsoformID iID;
 
+            // Kallisto is an isoform quantification program
+            GeneID gID = "NA";
+            
             // Estimated abundance
             Coverage abund;
         };
@@ -58,29 +61,26 @@ namespace Anaquin
 
         static void parse(const Reader &rr, std::function<void(const Data &, const ParserProgress &)> f)
         {
-            protectParse("Kallisto format", [&]()
+            Data d;
+            ParserProgress p;
+            
+            Line line;
+            std::vector<Token> toks;
+            
+            while (rr.nextLine(line))
             {
-                Data d;
-                ParserProgress p;
-                
-                Line line;
-                std::vector<Token> toks;
-                
-                while (rr.nextLine(line))
+                if (p.i++ == 0)
                 {
-                    if (p.i++ == 0)
-                    {
-                        continue;
-                    }
-                    
-                    Tokens::split(line, "\t", toks);
-                    
-                    d.id    = toks[TargetID];
-                    d.abund = s2d(toks[TPM]);
-                    
-                    f(d, p);
+                    continue;
                 }
-            });
+                
+                Tokens::split(line, "\t", toks);
+                
+                d.iID   = toks[TargetID];
+                d.abund = s2d(toks[TPM]);
+                
+                f(d, p);
+            }
         }
     };
 }

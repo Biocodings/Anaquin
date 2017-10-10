@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2016 - Garvan Institute of Medical Research
- *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
- */
-
 #ifndef R_EXPRESS_HPP
 #define R_EXPRESS_HPP
 
@@ -15,12 +9,6 @@ namespace Anaquin
     struct RExpress : public Analyzer
     {
         typedef ParserCufflink::Data TestData;
-        
-        enum class Metrics
-        {
-            Gene,
-            Isoform,
-        };
         
         enum class Format
         {
@@ -37,9 +25,6 @@ namespace Anaquin
 
             // What mixture to analyze?
             Mixture mix = Mixture::Mix_1;
-
-            // Gene or isoform?
-            Metrics metrs;
         };
         
         struct Stats : public MappingStats, public LimitStats
@@ -50,6 +35,12 @@ namespace Anaquin
                 double abund = NAN;
             };
 
+            // Do we have any isoform data?
+            inline bool hasIsoform() const
+            {
+                return isos.size() > genes.size();
+            }
+            
             SequinStats isos, genes;
 
             // Data for the genome
@@ -66,7 +57,7 @@ namespace Anaquin
             {
                 const auto x = analyze(file, o);
                 
-                if (x.genes.empty() && x.isos.empty() && files.size() == 1)
+                if (x.genes.empty() && x.isos.empty())
                 {
                     throw std::runtime_error("Failed to find anything on the in-silico chromosome: " + file);
                 }
@@ -77,8 +68,8 @@ namespace Anaquin
             return stats;
         }
 
-        static Scripts generateCSV(const std::vector<RExpress::Stats> &,
-                                   const Options &);
+        static Scripts generateITSV(const std::vector<RExpress::Stats> &, const Options &);
+        static Scripts generateGTSV(const std::vector<RExpress::Stats> &, const Options &);
 
         static Scripts generateSummary(const std::vector<FileName> &,
                                        const std::vector<Stats> &,
@@ -86,10 +77,12 @@ namespace Anaquin
                                        const Units &);
 
         static Scripts generateRLinear(const FileName &,
+                                       const std::string &,
                                        const std::vector<Stats> &,
                                        const Options &);
 
-        static void writeCSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
+        static void writeITSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
+        static void writeGTSV(const FileName &, const std::vector<RExpress::Stats> &, const Options &);
 
         static void writeSummary(const FileName &,
                                  const std::vector<FileName> &,
@@ -99,6 +92,7 @@ namespace Anaquin
 
         static void writeRLinear(const FileName &,
                                  const FileName &,
+                                 const std::string &,
                                  const std::vector<Stats> &,
                                  const Options &);
         

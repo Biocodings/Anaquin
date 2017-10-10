@@ -236,7 +236,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
                 // Stop if the target coverage reached
                 if (obs >= exp)
                 {
-                    o.info("Stopped for " + x.cID);
+                    o.logInfo("Stopped for " + x.cID);
                     return false;
                 }
 
@@ -873,21 +873,22 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Number of alignments: %15%\n\n"
                          "-------Sequin Outputs\n\n"
                          "       Flipped reads:   %16% (%17$.2f%%)\n"
-                         "       Ambiguous reads: %18% (%19$.2f%%)\n"
-                         "       Hanging reads:   %20% (%21$.2f%%)\n\n"
+                         "       Ladder reads:    %18% (%19$.2f%%)\n"
+                         "       Ambiguous reads: %20% (%21$.2f%%)\n"
+                         "       Hanging reads:   %22% (%23$.2f%%)\n\n"
                          "-------Before calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %22$.2f\n"
-                         "       Sequin coverage (average): %23$.2f\n\n"
-                         "-------After calibration (within sampling regions)\n\n"
                          "       Sample coverage (average): %24$.2f\n"
                          "       Sequin coverage (average): %25$.2f\n\n"
-                         "       Scaling Factor: %26% \u00B1 %27%\n\n"
+                         "-------After calibration (within sampling regions)\n\n"
+                         "       Sample coverage (average): %26$.2f\n"
+                         "       Sequin coverage (average): %27$.2f\n\n"
+                         "       Scaling Factor: %28% \u00B1 %29%\n\n"
                          "-------Alignments within reference regions (before subsampling)\n\n"
-                         "       Sample: %28%\n"
-                         "       Sequin: %29%\n\n"
-                         "-------Alignments within reference regions (after subsampling)\n\n"
                          "       Sample: %30%\n"
-                         "       Sequin: %31%\n";
+                         "       Sequin: %31%\n\n"
+                         "-------Alignments within reference regions (after subsampling)\n\n"
+                         "       Sample: %32%\n"
+                         "       Sequin: %33%\n";
 
     #define C(x) stats.counts.at(x)
     
