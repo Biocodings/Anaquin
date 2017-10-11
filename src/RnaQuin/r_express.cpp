@@ -423,58 +423,40 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                         "       Correlation: %10%\n"
                         "       R2:          %11%\n"
                         "       F-statistic: %12%\n"
-                        "       P-value:     %13%\n"
-                        "       SSM:         %14%, DF: %15%\n"
-                        "       SSE:         %16%, DF: %17%\n"
-                        "       SST:         %18%, DF: %19%\n\n"
+                        "       P-value:     %13%\n\n"
                         "-------Detected Genes\n\n"
-                        "       Sequin: %20%\n"
-                        "       Detection Sensitivity: %21% (attomol/ul) (%22%)\n"
-                        "       Genome: %23%\n\n"
+                        "       Sequin: %14%\n"
+                        "       Detection Sensitivity: %15% (attomol/ul) (%16%)\n"
+                        "       Genome: %17%\n\n"
                         "-------Linear regression (Gene expression) (log2 scale)\n\n"
-                        "       Slope:       %24%\n"
-                        "       Correlation: %25%\n"
-                        "       R2:          %26%\n"
-                        "       F-statistic: %27%\n"
-                        "       P-value:     %28%\n"
-                        "       SSM:         %29%, DF: %30%\n"
-                        "       SSE:         %31%, DF: %32%\n"
-                        "       SST:         %33%, DF: %34%\n";
+                        "       Slope:       %18%\n"
+                        "       Correlation: %19%\n"
+                        "       R2:          %20%\n"
+                        "       F-statistic: %21%\n"
+                        "       P-value:     %22%\n";
     
-    return (boost::format(format) % STRING(iMS.files)       // 1
-                                  % r.seqsL1().size()       // 2
-                                  % r.seqsL2().size()       // 3
-                                  % LadRef()                // 4
-                                  % STRING(iMS.nSeqs)       // 5
-                                  % iLimit.abund            // 6
-                                  % iLimit.id               // 7
-                                  % STRING(iMS.nEndo)       // 8
-                                  % STRING(iMS.stats.sl)    // 9
-                                  % STRING(iMS.stats.r)     // 10
-                                  % STRING(iMS.stats.R2)    // 11
-                                  % STRING(iMS.stats.F)     // 12
-                                  % STRING(iMS.stats.p)     // 13
-                                  % STRING(iMS.stats.SSM)   // 14
-                                  % STRING(iMS.stats.SSM_D) // 15
-                                  % STRING(iMS.stats.SSE)   // 16
-                                  % STRING(iMS.stats.SSE_D) // 17
-                                  % STRING(iMS.stats.SST)   // 18
-                                  % STRING(iMS.stats.SST_D) // 19
-                                  % STRING(gMS.nSeqs)       // 20
-                                  % gLimit.abund            // 21
-                                  % gLimit.id               // 22
-                                  % STRING(gMS.nEndo)       // 23
-                                  % STRING(gMS.stats.sl)    // 24
-                                  % STRING(gMS.stats.r)     // 25
-                                  % STRING(gMS.stats.R2)    // 26
-                                  % STRING(gMS.stats.F)     // 27
-                                  % STRING(gMS.stats.p)     // 28
-                                  % STRING(gMS.stats.SSM)   // 29
-                                  % STRING(gMS.stats.SSM_D) // 30
-                                  % STRING(gMS.stats.SSE)   // 31
-                                  % STRING(gMS.stats.SSE_D) // 32
-                                  % STRING(gMS.stats.SST)   // 33
-                                  % STRING(gMS.stats.SST_D) // 34
+    return (boost::format(format) % STRING(iMS.files)    // 1
+                                  % r.seqsL1().size()    // 2
+                                  % r.seqsL2().size()    // 3
+                                  % LadRef()             // 4
+                                  % STRING(iMS.nSeqs)    // 5
+                                  % iLimit.abund         // 6
+                                  % iLimit.id            // 7
+                                  % STRING(iMS.nEndo)    // 8
+                                  % STRING(iMS.stats.sl) // 9
+                                  % STRING(iMS.stats.r)  // 10
+                                  % STRING(iMS.stats.R2) // 11
+                                  % STRING(iMS.stats.F)  // 12
+                                  % STRING(iMS.stats.p)  // 13
+                                  % STRING(gMS.nSeqs)    // 14
+                                  % gLimit.abund         // 15
+                                  % gLimit.id            // 16
+                                  % STRING(gMS.nEndo)    // 17
+                                  % STRING(gMS.stats.sl) // 18
+                                  % STRING(gMS.stats.r)  // 19
+                                  % STRING(gMS.stats.R2) // 20
+                                  % STRING(gMS.stats.F)  // 21
+                                  % STRING(gMS.stats.p)  // 22
                      ).str();
 }
 
