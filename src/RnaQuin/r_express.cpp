@@ -1,7 +1,4 @@
 #include <cmath>
-#include "tools/system.hpp"
-#include "tools/gtf_data.hpp"
-#include "RnaQuin/RnaQuin.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
@@ -12,24 +9,19 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName LadRef();
 
-typedef enum
-{
-    F_ChrID,
-    F_GeneID,
-    F_IsoID,
-    F_Abund,
-} Field;
-
 struct MultiStats
 {
     SStrings files;
     
-    // Eg: 2387648 (15.56%)
-    SCounts nSeqs, nEndo;
+    SCounts nISeqs, nGSeqs, nIEndo, nGEndo;
     
-    // Linear regression with logarithm
+    // Log-normal regression
     SLinearStats stats;
 };
+
+/*
+ * Common data struture between Kallisto, Cufflinks etc...
+ */
 
 struct ExpressData
 {
@@ -42,11 +34,19 @@ struct ExpressData
     double abund;
 };
 
-typedef RExpress::Stats Stats;
+typedef RExpress::Stats   Stats;
 typedef RExpress::Options Options;
 
 template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
 {
+    enum class Field
+    {
+        F_ChrID,
+        F_GeneID,
+        F_IsoID,
+        F_Abund,
+    };
+
     ParserProgress p;
     std::string line;
     std::vector<Token> toks;
@@ -111,6 +111,8 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
             {
                 o.logWarn((boost::format("Zero or invalid measurements for %1%.") % x.iID).str());
             }
+            
+            if (!isnan(exp)) { stats.nISeqs++; }
         }
         
         // Can we match by genes?
@@ -128,15 +130,8 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
             {
                 o.logWarn((boost::format("Zero or invalid measurements for %1%.") % x.gID).str());
             }
-        }
-        
-        /*
-         * Sequins that has zero or invalid measurement is equivalenet being undetected.
-         */
-        
-        if (!isnan(exp))
-        {
-            stats.nSeqs++;
+            
+            if (!isnan(exp)) { stats.nGSeqs++; }
         }
 
         if (p)
@@ -147,7 +142,9 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
                 o.warn("Duplicate: " + id);
                 
                 p->sum(id, exp, obs);
-                stats.nSeqs--;
+                
+                // Only isoforms are duplicated...
+                stats.nISeqs--;
             }
             else
             {
@@ -163,7 +160,8 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
     }
     else
     {
-        stats.nEndo++;
+        if (!x.iID.empty()) { stats.nIEndo++; }
+        else                { stats.nGEndo++; }
 
         // We'll need the information to estimate the numbers below and above the LOQ
         stats.gData[x.iID].abund = x.abund;
@@ -225,7 +223,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 t.cID   = x.cID;
                 t.abund = x.fpkm;
 
-                if (x.type == RNAFeature::Transcript)
+                if (x.type == RNAFeature::Transcript || x.type == RNAFeature::Gene)
                 {
                     matching(stats, t, o);
                 }
@@ -247,15 +245,12 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             express[isoform2Gene(i.first)] += i.second.y;
         }
         
-        // Important, we'll need to reset counting for isoforms
-        stats.nSeqs = 0;
-        
         for (const auto &i : express)
         {
             // Input concentration at the gene level
             const auto input = r.input2(i.first, o.mix);
             
-            stats.nSeqs++;
+            stats.nGSeqs++;
             stats.genes.add(i.first, input, i.second);
             
             if (isnan(stats.gLimit.abund) || input < stats.gLimit.abund)
@@ -328,7 +323,7 @@ static Scripts multipleTSV(const std::vector<RExpress::Stats> &stats, bool shoul
 }
 
 static MultiStats multiStats(const std::vector<FileName>     &files,
-                             const std::vector<MappingStats> &mStats,
+                             const std::vector<RExpress::MappingStats> &mStats,
                              const std::vector<SequinStats>  &lstats)
 {
     A_ASSERT(files.size()  == mStats.size());
@@ -340,9 +335,11 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
     {
         const auto lm = lstats[i].linear();
         
-        r.nSeqs.add(mStats[i].nSeqs);
-        r.nEndo.add(mStats[i].nEndo);
-        
+        r.nISeqs.add(mStats[i].nISeqs);
+        r.nGSeqs.add(mStats[i].nGSeqs);
+        r.nIEndo.add(mStats[i].nIEndo);
+        r.nGEndo.add(mStats[i].nGEndo);
+
         r.files.add(files[i]);
         r.stats.p.add(lm.p);
         r.stats.r.add(lm.r);
@@ -368,6 +365,8 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     const auto files = path2file(tmp);
     const auto &r = Standard::instance().r_rna;
     
+    typedef RExpress::MappingStats MappingStats;
+    
     std::vector<SequinStats>  iSStats, gSStats;
     std::vector<MappingStats> iMStats, gMStats;
     
@@ -380,11 +379,8 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
         {
             auto &ls = shouldI ? stats[i].isos : stats[i].genes;
             
-            auto ms_ = stats[i];
-            ms_.nSeqs = ls.size();
-            
             ss.push_back(ls);
-            ms.push_back(ms_);
+            ms.push_back(stats[i]);
             
             auto p = shouldI ? &stats[i].iLimit : &stats[i].gLimit;
             
@@ -439,19 +435,19 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   % r.seqsL1().size()    // 2
                                   % r.seqsL2().size()    // 3
                                   % LadRef()             // 4
-                                  % STRING(iMS.nSeqs)    // 5
+                                  % STRING(iMS.nISeqs)   // 5
                                   % iLimit.abund         // 6
                                   % iLimit.id            // 7
-                                  % STRING(iMS.nEndo)    // 8
+                                  % STRING(iMS.nIEndo)   // 8
                                   % STRING(iMS.stats.sl) // 9
                                   % STRING(iMS.stats.r)  // 10
                                   % STRING(iMS.stats.R2) // 11
                                   % STRING(iMS.stats.F)  // 12
                                   % STRING(iMS.stats.p)  // 13
-                                  % STRING(gMS.nSeqs)    // 14
+                                  % STRING(gMS.nGSeqs)   // 14
                                   % gLimit.abund         // 15
                                   % gLimit.id            // 16
-                                  % STRING(gMS.nEndo)    // 17
+                                  % STRING(gMS.nGEndo)   // 17
                                   % STRING(gMS.stats.sl) // 18
                                   % STRING(gMS.stats.r)  // 19
                                   % STRING(gMS.stats.R2) // 20

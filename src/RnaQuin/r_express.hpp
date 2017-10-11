@@ -26,8 +26,16 @@ namespace Anaquin
             // What mixture to analyze?
             Mixture mix = Mixture::Mix_1;
         };
-        
-        struct Stats : public MappingStats
+
+        struct MappingStats
+        {
+            Counts nIEndo = 0;
+            Counts nGEndo = 0;
+            Counts nISeqs = 0;
+            Counts nGSeqs = 0;
+        };
+
+        struct Stats : public RExpress::MappingStats
         {
             struct GenData
             {
