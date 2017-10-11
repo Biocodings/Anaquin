@@ -21,11 +21,6 @@
 <b>USAGE EXAMPLE</b>
      anaquin RnaFoldChange –rmix reference.csv -method gene –usequin diff.txt
 
-<b>ADDITIONAL INFORMATION</b>
-    For additional information on the use of ROC / LODR plots to assess differential gene expression, please refer to:
-    ‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control
-    ratio mixtures.’ Munro et al., Nature Communications. 2014 Sep 25;5:5125.
-
 <b>TOOL OPTIONS</b>
      Required:
         -rmix        Reference RnaQuin mixture file in CSV format
@@ -42,4 +37,3 @@
      RnaFoldChange_fold.R        - R script for plotting a linear model between measured log-folds (dependent variable)
                                    and expected log-folds (independent variable)
      RnaFoldChange_ROC.R         - provides R script for plotting  ROC curve (including AUC statistics) for each sequin group
-     RnaFoldChange_LODR.R        - R script for plotting limit-of-detection-ratio (LODR) curves for the sequin groups
