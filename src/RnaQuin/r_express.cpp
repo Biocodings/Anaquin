@@ -19,34 +19,13 @@ struct MultiStats
     SLinearStats stats;
 };
 
-/*
- * Common data struture between Kallisto, Cufflinks etc...
- */
-
-struct ExpressData
-{
-    ChrID cID;
-    
-    GeneID gID;
-    IsoformID iID;
-    
-    // Eg: FPKM, counts
-    double abund;
-};
-
 typedef RExpress::Stats   Stats;
 typedef RExpress::Options Options;
 
 template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
 {
-    enum class Field
-    {
-        F_ChrID,
-        F_GeneID,
-        F_IsoID,
-        F_Abund,
-    };
-
+    typedef ParserExpress::Field Field;
+    
     ParserProgress p;
     std::string line;
     std::vector<Token> toks;
@@ -54,14 +33,14 @@ template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
     while (r.nextLine(line))
     {
         Tokens::split(line, "\t", toks);
-        ExpressData x;
+        ParserExpress::Data x;
 
         if (p.i)
         {
-            x.gID   = toks[Field::F_GeneID];
-            x.iID   = toks[Field::F_IsoID];
-            x.cID   = toks[Field::F_ChrID];
-            x.abund = ss2ld(toks[Field::F_Abund]);
+            x.iID   = toks[Field::IsoID];
+            x.cID   = toks[Field::ChrID];
+            x.gID   = toks[Field::GeneID];
+            x.abund = ss2ld(toks[Field::Abund]);
             f(x, p);
         }
         
@@ -193,23 +172,22 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             
         case Format::Text:
         {
-            //                ParserExpress::parse(Reader(file), o.metrs == Metrics::Gene,
-            //                                     [&](const ParserExpress::Data &x, const ParserProgress &p)
-            //                {
-            //                    if (p.i && !(p.i % 100000))
-            //                    {
-            //                        o.wait(std::to_string(p.i));
-            //                    }
-            //
-            //                    update(stats, x, o);
-            //                });
-            
+            ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &p)
+            {
+                if (p.i && !(p.i % 100000))
+                {
+                    o.wait(std::to_string(p.i));
+                }
+                
+                matching(stats, x, o);
+            });
+
             break;
         }
             
         case Format::GTF:
         {
-            ExpressData t;
+            ParserExpress::Data t;
             
             ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &p)
             {
