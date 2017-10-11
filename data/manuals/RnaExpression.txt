@@ -6,7 +6,7 @@
 <b>DESCRIPTION</b>
      RnaExpression can be used for analyzing the RNA sequin gene / isoform expression within a library.
      Comparing the measured expression (typically in FPKM) relative to the known input concentrations provides
-     an indication of the quantitative accuracy for measuring gene expression. RnaExpression can accept both 
+     an indication of the quantitative accuracy for measuring gene expression. RnaExpression supports either
      single replicate or multiple replicate libraries. If multiple libraries are provided, RnaExpression will
      report statistics with standard deviation indicated.  
 
