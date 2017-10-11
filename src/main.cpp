@@ -1039,7 +1039,7 @@ void parse(int argc, char ** argv)
                         o.format = RFold::Format::edgeR;
                         std::cout << "[INFO]: edgeR format" << std::endl;
                     }
-                    else if (ParserDiff::isDiff(Reader(file)))
+                    else if (ParserDiff::isFold(Reader(file)))
                     {
                         o.format = RFold::Format::Anaquin;
                         std::cout << "[INFO]: Anaquin format" << std::endl;

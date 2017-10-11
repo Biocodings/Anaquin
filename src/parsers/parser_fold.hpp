@@ -1,11 +1,5 @@
-/*
- * Copyright (C) 2016 - Garvan Institute of Medical Research
- *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
- */
-
-#ifndef PARSER_DIFF_HPP
-#define PARSER_DIFF_HPP
+#ifndef PARSER_FOLD_HPP
+#define PARSER_FOLD_HPP
 
 #include "data/data.hpp"
 #include "data/tokens.hpp"
@@ -32,7 +26,7 @@ namespace Anaquin
 
         typedef DiffTest Data;
         
-        static bool isDiff(const Reader &r)
+        static bool isFold(const Reader &r)
         {
             std::string line;
             std::vector<Token> toks;
@@ -83,7 +77,7 @@ namespace Anaquin
                     x.p      = ss2ld(toks[Field::PValue]);
                     x.q      = ss2ld(toks[Field::QValue]);
                     x.mean   = s2d(toks[Field::Mean]);
-                    x.logF_   = s2d(toks[Field::LogFold]);
+                    x.logF_  = s2d(toks[Field::LogFold]);
                     x.logFSE = s2d(toks[Field::LogFoldSE]);
                     x.samp1  = s2d(toks[Field::Sample1]);
                     x.samp2  = s2d(toks[Field::Sample2]);
@@ -94,6 +88,7 @@ namespace Anaquin
                     if (x.cID == "-")
                     {
                         x.cID = r.seqsL1().count(x.iID) || r.seqsL2().count(x.gID) ? ChrIS() : "endo";
+                        std::cout << x.gID << std::endl;
                     }
 
                     f(x, p);
