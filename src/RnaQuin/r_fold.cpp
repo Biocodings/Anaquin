@@ -347,10 +347,7 @@ Scripts RFold::generateSummary(const FileName &src,
                          "       Correlation: %9%\n"
                          "       R2:          %10%\n"
                          "       F-statistic: %11%\n"
-                         "       P-value:     %12%\n"
-                         "       SSM:         %13%, DF: %14%\n"
-                         "       SSE:         %15%, DF: %16%\n"
-                         "       SST:         %17%, DF: %18%\n";
+                         "       P-value:     %12%\n";
 
     return (boost::format(summary) % src         // 1
                                    % nSyn        // 2
@@ -364,12 +361,6 @@ Scripts RFold::generateSummary(const FileName &src,
                                    % lm.R2       // 10
                                    % lm.F        // 11
                                    % lm.p        // 12
-                                   % lm.SSM      // 13
-                                   % lm.SSM_D    // 14
-                                   % lm.SSE      // 15
-                                   % lm.SSE_D    // 16
-                                   % lm.SST      // 17
-                                   % lm.SST_D    // 18
                      ).str();
 }
 
