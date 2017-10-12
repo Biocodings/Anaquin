@@ -468,10 +468,4 @@ void RFold::report(const FileName &file, const Options &o)
      */
 
     RFold::writeRROC("RnaFoldChange_ROC.R", stats, o);
-
-    /*
-     * Generating RnaFoldChange_LODR.R
-     */
-    
-//    RFold::writeRLODR("RnaFoldChange_LODR.R", stats, o);
 }

@@ -898,6 +898,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     const auto pf = 100.0 * cf / (cf + ca + ch);
     const auto pa = 100.0 * ca / (cf + ca + ch);
     const auto ph = 100.0 * ch / (cf + ca + ch);
+    const auto cl = C(Status::LadQuinLadQuin);
+    const auto pl = 100.0 * cl / (cf + ca + ch);
     
     o.generate(file);
     o.writer->open(file);
@@ -918,20 +920,22 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                                             % stats.trim.after         // 15
                                             % cf                       // 16
                                             % pf                       // 17
-                                            % ca                       // 18
-                                            % pa                       // 19
-                                            % ch                       // 20
-                                            % ph                       // 21
-                                            % stats.cStats.meanBEndo() // 22
-                                            % stats.cStats.meanBSeqs() // 23
+                                            % cl                       // 18
+                                            % pl                       // 19
+                                            % ca                       // 20
+                                            % pa                       // 21
+                                            % ch                       // 22
+                                            % ph                       // 23
                                             % stats.cStats.meanBEndo() // 24
-                                            % stats.afterSeqs          // 25
-                                            % stats.cStats.normMean()  // 26
-                                            % stats.cStats.normSD()    // 27
-                                            % stats.gStats.bREndo      // 28
-                                            % stats.gStats.bTSeqs      // 29
-                                            % stats.gStats.aREndo      // 30
-                                            % stats.gStats.aTSeqs      // 31
+                                            % stats.cStats.meanBSeqs() // 25
+                                            % stats.cStats.meanBEndo() // 26
+                                            % stats.afterSeqs          // 27
+                                            % stats.cStats.normMean()  // 28
+                                            % stats.cStats.normSD()    // 29
+                                            % stats.gStats.bREndo      // 30
+                                            % stats.gStats.bTSeqs      // 31
+                                            % stats.gStats.aREndo      // 32
+                                            % stats.gStats.aTSeqs      // 33
                      ).str());
 }
 
