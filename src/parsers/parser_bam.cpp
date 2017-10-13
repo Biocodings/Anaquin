@@ -182,7 +182,7 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
         {
             align.seq    = bam2seq(t);
             align.qual   = bam2qual(t);
-            align.cigar  = hasCID ? bam2cigar(t) : "*";
+            //align.cigar  = hasCID ? bam2cigar(t) : "*";
             align.tlen   = hasCID ? t->core.isize : 0;
             align.pnext  = hasCID ? t->core.mpos : 0;
             align.rnext  = hasCID ? bam2rnext(h, t) : "*";

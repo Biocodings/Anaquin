@@ -60,7 +60,7 @@ namespace Anaquin
         Base tlen;
         
         // Cigar string
-        std::string cigar;
+        //std::string cigar;
 
         // Reference sequence name of the primary alignment
         ChrID rnext;
