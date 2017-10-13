@@ -36,7 +36,7 @@ namespace Anaquin
             Method meth = Method::Mean;
         };
         
-        enum class Status
+        enum class Paired
         {
             ReverseReverse,
             ReverseNotMapped,
@@ -48,7 +48,6 @@ namespace Anaquin
             ForwardHang,
             ReverseLadQuin,
             LadQuinLadQuin,
-            Original,
             Passed,
             Sampled
         };
@@ -73,20 +72,20 @@ namespace Anaquin
             Proportion norm;
         };
 
-        struct Stats : public MappingStats
+        struct Stats
         {
             Stats()
             {
-                counts[Status::ReverseReverse]  = 0;
-                counts[Status::LadQuinLadQuin]  = 0;
-                counts[Status::ReverseLadQuin]  = 0;
-                counts[Status::ReverseHang] = 0;
-                counts[Status::ForwardHang] = 0;
-                counts[Status::ReverseNotMapped] = 0;
-                counts[Status::ForwardForward] = 0;
-                counts[Status::ForwardVarQuin] = 0;
-                counts[Status::ForwardNotMapped] = 0;
-                counts[Status::NotMappedNotMapped] = 0;
+                counts[Paired::ReverseReverse]     = 0;
+                counts[Paired::LadQuinLadQuin]     = 0;
+                counts[Paired::ReverseLadQuin]     = 0;
+                counts[Paired::ReverseHang]        = 0;
+                counts[Paired::ForwardHang]        = 0;
+                counts[Paired::ReverseNotMapped]   = 0;
+                counts[Paired::ForwardForward]     = 0;
+                counts[Paired::ForwardVarQuin]     = 0;
+                counts[Paired::ForwardNotMapped]   = 0;
+                counts[Paired::NotMappedNotMapped] = 0;
             }
             
             struct Trim
@@ -104,7 +103,10 @@ namespace Anaquin
                 Counts after  = 0;
             };
 
+            Counts nNA   = 0;
             Counts nLad  = 0;
+            Counts nRev  = 0;
+            Counts nEndo = 0;
             Counts nFlip = 0;
 
             // Trimming statistics
@@ -226,7 +228,7 @@ namespace Anaquin
             // Sampling statistics
             std::map<SequinID, SampledInfo> c2v;
             
-            std::map<VProcess::Status, Counts> counts;
+            std::map<VProcess::Paired, Counts> counts;
         };
 
         static Stats analyze(const FileName &, const Options &);
