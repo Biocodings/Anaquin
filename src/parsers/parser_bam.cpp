@@ -25,11 +25,6 @@ bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
 
         switch (op)
         {
-            case BAM_CINS:
-            {
-                continue;
-            }
-                
             case BAM_CDEL:
             {
                 // We'll need it for the next operation
@@ -72,6 +67,7 @@ bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
                 continue;
             }
                 
+            case BAM_CINS:
             case BAM_CPAD:
             case BAM_CBACK:
             case BAM_CDIFF:
