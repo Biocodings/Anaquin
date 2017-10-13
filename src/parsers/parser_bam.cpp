@@ -72,30 +72,11 @@ bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
                 continue;
             }
                 
-            case BAM_CHARD_CLIP:
-            {
-                continue;
-            }
-                
-            case BAM_CEQUAL:
-            {
-                continue;
-            }
-                
-            case BAM_CDIFF:
-            {
-                continue;
-            }
-                
-            case BAM_CBACK:
-            {
-                continue;
-            }
-                
             case BAM_CPAD:
-            {
-                continue;
-            }
+            case BAM_CBACK:
+            case BAM_CDIFF:
+            case BAM_CEQUAL:
+            case BAM_CHARD_CLIP: { continue; }
         }
         
         return true;
