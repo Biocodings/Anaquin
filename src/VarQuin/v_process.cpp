@@ -860,7 +860,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Input alignment file:      %2%\n\n"
                          "-------Reference regions\n\n"
                          "       Regions: %3% regions\n"
-                         "       Edge:    %4% regions\n\n"
+                         "       Edge:    %4%\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped: %5% (%6$.2f%%)\n"
                          "       Genome:   %7% (%8$.2f%%)\n"
