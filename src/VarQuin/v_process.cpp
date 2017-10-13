@@ -277,7 +277,6 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             __reverse__(x2);
             
             stats.nFlip++;
-            stats.nFlip++;
 
             f1->write("@" + x1.name + "/1");
             f1->write(x1.seq);
@@ -294,7 +293,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
     f1->close();
     f2->close();
 
-    return stats.nFlip;
+    return 2 * stats.nFlip;
 }
 
 struct SampledInfo
@@ -669,7 +668,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             l2->open("VarProcess_ladder_2.fq");
 
             orig.open(o.work + "/VarProcess_original.bam");
-            endo.open(o.work + "/VarProcess_sample.bam");
+            endo.open(o.work + "/VarProcess_genome.bam");
             pass.open(o.work + "/VarProcess_passed.bam");
             sample.open(o.work + "/VarProcess_sampled.bam");
         }
