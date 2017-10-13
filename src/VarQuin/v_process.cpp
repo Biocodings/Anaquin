@@ -211,9 +211,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
      *   - Inside the region with probability
      */
 
-    assert(stats.s1.size() == stats.s2.size());
-    
-    Counts nSeqs = 0;
+    A_ASSERT(stats.s1.size() == stats.s2.size());
     
     for (auto i = 0; i < stats.s1.size(); i++)
     {
@@ -278,8 +276,8 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             __reverse__(x1);
             __reverse__(x2);
             
-            nSeqs++;
-            nSeqs++;
+            stats.nFlip++;
+            stats.nFlip++;
 
             f1->write("@" + x1.name + "/1");
             f1->write(x1.seq);
@@ -296,7 +294,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
     f1->close();
     f2->close();
 
-    return nSeqs;
+    return stats.nFlip;
 }
 
 struct SampledInfo
@@ -464,7 +462,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
         
         if (!x.mapped)             { stats.nNA++;  }
-        else if (isLadQuin(x.cID)) { stats.lad.nLad++; stats.nSeqs++; }
         else if (isVarQuin(x.cID)) { stats.nSeqs++; }
         else                       { stats.nEndo++; }
         
@@ -803,6 +800,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
                 
             case Status::LadQuinLadQuin:
             {
+                stats.nLad++;
                 impl.writeLad1(*x1);
                 impl.writeLad2(*x2);
                 break;
@@ -864,33 +862,33 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "-------Alignments\n\n"
                          "       Unmapped: %5% (%6$.2f%%)\n"
                          "       Genome:   %7% (%8$.2f%%)\n"
-                         "       Sequins:  %9% (%10$.2f%%)\n"
-                         "       Ladders:  %11%\n\n"
+                         "       Flipped:  %9% (%10$.2f%%)\n"
+                         "       Ladders:  %11% (%12$.2f%%)\n\n"
                          "-------Trimming\n\n"
-                         "       Left:  %12% alignments\n"
-                         "       Right: %13% alignments\n\n"
+                         "       Left:  %13% alignments\n"
+                         "       Right: %14% alignments\n\n"
                          "-------Before trimming\n\n"
-                         "       Number of alignments: %14% (only primary alignments)\n\n"
+                         "       Number of alignments: %15% (only primary alignments)\n\n"
                          "-------After trimming\n\n"
-                         "       Number of alignments: %15%\n\n"
+                         "       Number of alignments: %16%\n\n"
                          "-------Sequin Outputs\n\n"
-                         "       Flipped reads:   %16% (%17$.2f%%)\n"
-                         "       Ladder reads:    %18% (%19$.2f%%)\n"
-                         "       Ambiguous reads: %20% (%21$.2f%%)\n"
-                         "       Hanging reads:   %22% (%23$.2f%%)\n\n"
+                         "       Flipped reads:   %17% (%18$.2f%%)\n"
+                         "       Ladder reads:    %19% (%20$.2f%%)\n"
+                         "       Ambiguous reads: %21% (%22$.2f%%)\n"
+                         "       Hanging reads:   %23% (%24$.2f%%)\n\n"
                          "-------Before calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %24$.2f\n"
-                         "       Sequin coverage (average): %25$.2f\n\n"
+                         "       Sample coverage (average): %25$.2f\n"
+                         "       Sequin coverage (average): %26$.2f\n\n"
                          "-------After calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %26$.2f\n"
-                         "       Sequin coverage (average): %27$.2f\n\n"
-                         "       Scaling Factor: %28% \u00B1 %29%\n\n"
+                         "       Sample coverage (average): %27$.2f\n"
+                         "       Sequin coverage (average): %28$.2f\n\n"
+                         "       Scaling Factor: %29% \u00B1 %30%\n\n"
                          "-------Alignments within reference regions (before subsampling)\n\n"
-                         "       Sample: %30%\n"
-                         "       Sequin: %31%\n\n"
+                         "       Sample: %31%\n"
+                         "       Sequin: %32%\n\n"
                          "-------Alignments within reference regions (after subsampling)\n\n"
-                         "       Sample: %32%\n"
-                         "       Sequin: %33%\n";
+                         "       Sample: %33%\n"
+                         "       Sequin: %34%\n";
 
     #define C(x) stats.counts.at(x)
     
@@ -902,7 +900,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
     const auto ph = 100.0 * ch / (cf + ca + ch);
     const auto cl = C(Status::LadQuinLadQuin);
     const auto pl = 100.0 * cl / (cf + ca + ch);
-    
+
+    const auto pNA   = 100.0 * stats.nNA   / (stats.nNA + stats.nEndo + stats.nLad + stats.nFlip);
+    const auto pEndo = 100.0 * stats.nEndo / (stats.nNA + stats.nEndo + stats.nLad + stats.nFlip);
+    const auto pLad  = 100.0 * stats.nLad  / (stats.nNA + stats.nEndo + stats.nLad + stats.nFlip);
+    const auto pFlip = 100.0 * stats.nFlip / (stats.nNA + stats.nEndo + stats.nLad + stats.nFlip);
+
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                 // 1
@@ -910,34 +913,35 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                                             % stats.gStats.nRegs       // 3
                                             % o.edge                   // 4
                                             % stats.nNA                // 5
-                                            % stats.pNA()              // 6
+                                            % pNA                      // 6
                                             % stats.nEndo              // 7
-                                            % stats.pEndo()            // 8
-                                            % stats.nSeqs              // 9
-                                            % stats.pSyn()             // 10
-                                            % stats.lad.nLad           // 11
-                                            % stats.trim.left          // 12
-                                            % stats.trim.right         // 13
-                                            % stats.trim.before        // 14
-                                            % stats.trim.after         // 15
-                                            % cf                       // 16
-                                            % pf                       // 17
-                                            % cl                       // 18
-                                            % pl                       // 19
-                                            % ca                       // 20
-                                            % pa                       // 21
-                                            % ch                       // 22
-                                            % ph                       // 23
-                                            % stats.cStats.meanBEndo() // 24
-                                            % stats.cStats.meanBSeqs() // 25
-                                            % stats.cStats.meanBEndo() // 26
-                                            % stats.afterSeqs          // 27
-                                            % stats.cStats.normMean()  // 28
-                                            % stats.cStats.normSD()    // 29
-                                            % stats.gStats.bREndo      // 30
-                                            % stats.gStats.bTSeqs      // 31
-                                            % stats.gStats.aREndo      // 32
-                                            % stats.gStats.aTSeqs      // 33
+                                            % pEndo                    // 8
+                                            % stats.nFlip              // 9
+                                            % pFlip                    // 10
+                                            % stats.nLad               // 11
+                                            % pLad                     // 12
+                                            % stats.trim.left          // 13
+                                            % stats.trim.right         // 14
+                                            % stats.trim.before        // 15
+                                            % stats.trim.after         // 16
+                                            % cf                       // 17
+                                            % pf                       // 18
+                                            % cl                       // 19
+                                            % pl                       // 20
+                                            % ca                       // 21
+                                            % pa                       // 22
+                                            % ch                       // 23
+                                            % ph                       // 24
+                                            % stats.cStats.meanBEndo() // 25
+                                            % stats.cStats.meanBSeqs() // 26
+                                            % stats.cStats.meanBEndo() // 27
+                                            % stats.afterSeqs          // 28
+                                            % stats.cStats.normMean()  // 29
+                                            % stats.cStats.normSD()    // 30
+                                            % stats.gStats.bREndo      // 31
+                                            % stats.gStats.bTSeqs      // 33
+                                            % stats.gStats.aREndo      // 34
+                                            % stats.gStats.aTSeqs      // 34
                      ).str());
 }
 

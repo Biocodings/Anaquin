@@ -103,13 +103,10 @@ namespace Anaquin
                 // Number of alignments after trimming
                 Counts after  = 0;
             };
-            
-            struct Ladder
-            {
-                // Number of alignments for ladders
-                Counts nLad = 0;
-            };
-            
+
+            Counts nLad  = 0;
+            Counts nFlip = 0;
+
             // Trimming statistics
             Trim trim;
             
