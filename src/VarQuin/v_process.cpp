@@ -636,8 +636,9 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     stats.gStats.aTEndo = stats.nEndo;
     stats.gStats.aREndo = stats.gStats.bREndo;
     
+#ifdef DEBUG
     /*
-     * Write out alignments after trimming
+     * Write out alignments after trimming (debugging only)
      */
     
     ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
@@ -645,6 +646,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         if (kept.count(x.name))    { f(&x, nullptr, Status::Passed);  }
         if (sampled.count(x.name)) { f(&x, nullptr, Status::Sampled); }
     }, false);
+#endif
 
     return stats;
 }
