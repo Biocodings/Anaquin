@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2016 - Garvan Institute of Medical Research
- *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
- */
-
 #include "tools/tools.hpp"
 #include "RnaQuin/r_fold.hpp"
 #include "tools/gtf_data.hpp"
@@ -15,6 +9,9 @@
 #include "parsers/parser_DESeq2.hpp"
 
 using namespace Anaquin;
+
+typedef RFold::Stats   Stats;
+typedef RFold::Options Options;
 
 extern Scripts PlotTROC();
 
@@ -226,15 +223,7 @@ RFold::Stats RFold::analyze(const FileName &file, const Options &o)
     });
 }
 
-void RFold::writeCSV(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
-{
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write(RFold::generateCSV(stats, o));
-    o.writer->close();
-}
-
-Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
+static void writeTSV(const FileName &file, const Stats &stats, const Options &o)
 {
     const auto &r = Standard::instance().r_rna;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
@@ -307,24 +296,17 @@ Scripts RFold::generateCSV(const RFold::Stats &stats, const RFold::Options &o)
                                      % toString(x.mean)).str() << std::endl;
     }
 
-    return ss.str();
-}
-
-void RFold::writeSummary(const FileName &file,
-                            const FileName &src,
-                            const RFold::Stats &stats,
-                            const RFold::Options &o,
-                            const Units &units)
-{
+    o.generate(file);
     o.writer->open(file);
-    o.writer->write(RFold::generateSummary(src, stats, o, units));
+    o.writer->write(ss.str());
     o.writer->close();
 }
 
-Scripts RFold::generateSummary(const FileName &src,
-                               const RFold::Stats &stats,
-                               const RFold::Options &o,
-                               const Units &units)
+static void writeSummary(const FileName &file,
+                         const FileName &src,
+                         const RFold::Stats &stats,
+                         const RFold::Options &o,
+                         const Units &units)
 {
     const auto &r = Standard::instance().r_rna;
     const auto lm = stats.linear(false);
@@ -349,82 +331,45 @@ Scripts RFold::generateSummary(const FileName &src,
                          "       F-statistic: %11%\n"
                          "       P-value:     %12%\n";
 
-    return (boost::format(summary) % src         // 1
-                                   % nSyn        // 2
-                                   % units       // 3
-                                   % LadRef()    // 4
-                                   % title       // 5
-                                   % stats.nSeqs // 6
-                                   % stats.nEndo // 7
-                                   % lm.m        // 8
-                                   % lm.r        // 9
-                                   % lm.R2       // 10
-                                   % lm.F        // 11
-                                   % lm.p        // 12
-                     ).str();
-}
-
-Scripts RFold::generateRFold(const RFold::Stats &stats, const FileName &csv, const RFold::Options &o)
-{
-    return RWriter::createFold(csv,
-                               o.work,
-                               o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
-                               "Expected fold change (log2)",
-                               "Measured fold change (log2)",
-                               "ExpLFC",
-                               "ObsLFC",
-                               false);
-}
-
-void RFold::writeRFold(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
-{
-    o.generate(file);
     o.writer->open(file);
-    o.writer->write(RFold::generateRFold(stats, "RnaFoldChange_sequins.tsv", o));
+    o.writer->write((boost::format(summary) % src         // 1
+                                            % nSyn        // 2
+                                            % units       // 3
+                                            % LadRef()    // 4
+                                            % title       // 5
+                                            % stats.nSeqs // 6
+                                            % stats.nEndo // 7
+                                            % lm.m        // 8
+                                            % lm.r        // 9
+                                            % lm.R2       // 10
+                                            % lm.F        // 11
+                                            % lm.p        // 12
+                     ).str());
     o.writer->close();
 }
 
-Scripts RFold::generateRROC(const RFold::Stats &stats, const RFold::Options &o)
-{
-    return RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTROC());
-}
-
-void RFold::writeRROC(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
+static void writeRFold(const FileName &file, const FileName &src, const RFold::Stats &stats, const RFold::Options &o)
 {
     o.generate(file);
     o.writer->open(file);
-    o.writer->write(RFold::generateRROC(stats, o));
+    o.writer->write(RWriter::createFold(src,
+                                        o.work,
+                                        o.metrs == RFold::Metrics::Gene ? "Gene Fold Change" : "Isoform Fold Change",
+                                        "Expected fold change (log2)",
+                                        "Measured fold change (log2)",
+                                        "ExpLFC",
+                                        "ObsLFC",
+                                        false));
     o.writer->close();
 }
 
-Scripts RFold::generateRLODR(const RFold::Stats &stats, const RFold::Options &o)
+static void writeRROC(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
 {
-    return RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTLODR());
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write(RWriter::createScript("RnaFoldChange_sequins.tsv", PlotTROC()));
+    o.writer->close();
 }
-
-//void RFold::writeRLODR(const FileName &file, const RFold::Stats &stats, const RFold::Options &o)
-//{
-//    switch (o.format)
-//    {
-//        case Format::edgeR:
-//        case Format::Cuffdiff:
-//        {
-//            o.info("Skip RnaFoldChange_LODR.R because no average counts given");
-//            break;
-//        }
-//
-//        case Format::Sleuth:
-//        case Format::DESeq2:
-//        case Format::Anaquin:
-//        {
-//            o.generate(file);
-//            o.writer->open(file);
-//            o.writer->write(RFold::generateRLODR(stats, o));
-//            o.writer->close();
-//            break;
-//        }
-//    }
-//}
 
 void RFold::report(const FileName &file, const Options &o)
 {
@@ -449,23 +394,23 @@ void RFold::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_summary.stats
      */
 
-    RFold::writeSummary("RnaFoldChange_summary.stats", file, stats, o, units);
+    writeSummary("RnaFoldChange_summary.stats", file, stats, o, units);
 
     /*
      * Generating RnaFoldChange_sequins.tsv
      */
 
-    RFold::writeCSV("RnaFoldChange_sequins.tsv", stats, o);
+    writeTSV("RnaFoldChange_sequins.tsv", stats, o);
     
     /*
      * Generating RnaFoldChange_fold.R
      */
     
-    RFold::writeRFold("RnaFoldChange_fold.R", stats, o);
+    writeRFold("RnaFoldChange_fold.R", "RnaFoldChange_sequins.tsv", stats, o);
     
     /*
      * Generating RnaFoldChange_ROC.R
      */
 
-    RFold::writeRROC("RnaFoldChange_ROC.R", stats, o);
+    writeRROC("RnaFoldChange_ROC.R", stats, o);
 }
