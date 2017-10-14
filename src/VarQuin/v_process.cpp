@@ -520,13 +520,8 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             f(&x, nullptr, Paired::NotMappedNotMapped);
             return;
         }
-        else if ((isMap1 && !isVar1 && isMap2 && isVar2) || (isMap1 && isVar1 && isMap2 && !isVar2))
-        {
-            f(&x, nullptr, Paired::ForwardVarQuin);
-            return;
-        }
         
-        // Don't trim unless it's primary
+        // Don't trim and calibrate unless it's primary
         else if (!x.isPassed || x.isSecondary || x.isSupplement)
         {
             return;
@@ -542,6 +537,13 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
 
+            if ((!isVarQuin(first->cID) && isVarQuin(second->cID)) || (isVarQuin(first->cID) && !isVarQuin(second->cID)))
+            {
+                f(&x, nullptr, Paired::ForwardVarQuin);
+                seenMates.erase(x.name);
+                return;
+            }
+            
             if (first->mapped)  { stats.trim.before++; }
             if (second->mapped) { stats.trim.before++; }
 
