@@ -385,14 +385,14 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
     const auto format = "-------RnaExpression Output\n\n"
                         "       Summary for input: %1%\n\n"
                         "-------Reference Transcript Annotations\n\n"
-                        "       Synthetic: %2% isoforms\n"
-                        "       Synthetic: %3% genes\n"
+                        "       Sequin: %2% isoforms\n"
+                        "       Sequin: %3% genes\n"
                         "       Mixture file: %4%\n\n"
                         "-------Detected Isoforms\n\n"
                         "       Sequin: %5%\n"
                         "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n"
                         "       Genome: %8%\n\n"
-                        "-------Linear regression (Isoform expression) (log2 scale)\n\n"
+                        "-------Linear regression (isoform expression) (log2 scale)\n\n"
                         "       Slope:       %9%\n"
                         "       Correlation: %10%\n"
                         "       R2:          %11%\n"
@@ -402,12 +402,11 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                         "       Sequin: %14%\n"
                         "       Detection Sensitivity: %15% (attomol/ul) (%16%)\n"
                         "       Genome: %17%\n\n"
-                        "-------Linear regression (Gene expression) (log2 scale)\n\n"
+                        "-------Linear regression (gene expression) (log2 scale)\n\n"
                         "       Slope:       %18%\n"
                         "       Correlation: %19%\n"
                         "       R2:          %20%\n"
-                        "       F-statistic: %21%\n"
-                        "       P-value:     %22%\n";
+                        "       P-value:     %21%\n";
     
     return (boost::format(format) % STRING(iMS.files)    // 1
                                   % r.seqsL1().size()    // 2
@@ -429,8 +428,7 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   % STRING(gMS.stats.sl) // 18
                                   % STRING(gMS.stats.r)  // 19
                                   % STRING(gMS.stats.R2) // 20
-                                  % STRING(gMS.stats.F)  // 21
-                                  % STRING(gMS.stats.p)  // 22
+                                  % STRING(gMS.stats.p)  // 21
                      ).str();
 }
 
@@ -512,7 +510,7 @@ Scripts RExpress::generateITSV(const std::vector<RExpress::Stats> &stats, const 
         for (const auto &i : stats[0].isos)
         {
             ss << (boost::format(format) % i.first
-                                         % (stats[0].hasIsoform() ? r.input3(i.first) : r.input4(i.first))
+                                         % r.input3(i.first)
                                          % i.second.x
                                          % i.second.y).str();
         }
@@ -539,7 +537,7 @@ Scripts RExpress::generateGTSV(const std::vector<RExpress::Stats> &stats, const 
         for (const auto &i : stats[0].genes)
         {
             ss << (boost::format(format) % i.first
-                                         % (stats[0].hasIsoform() ? r.input4(i.first) : r.input4(i.first))
+                                         % r.input4(i.first)
                                          % i.second.x
                                          % i.second.y).str();
         }
