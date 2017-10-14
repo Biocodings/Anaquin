@@ -538,11 +538,6 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         }
         else
         {
-            if (x.name == "ST-E00152:305:H3MG3CCXY:2:1101:21694:44907")
-            {
-                std::cout << "a" << std::endl;
-            }
-            
             auto &seen  = seenMates[x.name];
             auto first  = seen.isFirstPair ? &seen : &x;
             auto second = seen.isFirstPair ? &x : &seen;
