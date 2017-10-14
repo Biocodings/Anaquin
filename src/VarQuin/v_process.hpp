@@ -76,16 +76,16 @@ namespace Anaquin
         {
             Stats()
             {
-                counts[Paired::ReverseReverse]     = 0;
-                counts[Paired::LadQuinLadQuin]     = 0;
-                counts[Paired::ReverseLadQuin]     = 0;
-                counts[Paired::ReverseHang]        = 0;
-                counts[Paired::ForwardHang]        = 0;
-                counts[Paired::ReverseNotMapped]   = 0;
-                counts[Paired::ForwardForward]     = 0;
-                counts[Paired::ForwardVarQuin]     = 0;
-                counts[Paired::ForwardNotMapped]   = 0;
-                counts[Paired::NotMappedNotMapped] = 0;
+                pairs[Paired::ReverseReverse]     = 0;
+                pairs[Paired::LadQuinLadQuin]     = 0;
+                pairs[Paired::ReverseLadQuin]     = 0;
+                pairs[Paired::ReverseHang]        = 0;
+                pairs[Paired::ForwardHang]        = 0;
+                pairs[Paired::ReverseNotMapped]   = 0;
+                pairs[Paired::ForwardForward]     = 0;
+                pairs[Paired::ForwardVarQuin]     = 0;
+                pairs[Paired::ForwardNotMapped]   = 0;
+                pairs[Paired::NotMappedNotMapped] = 0;
             }
             
             struct Trim
@@ -228,7 +228,7 @@ namespace Anaquin
             // Sampling statistics
             std::map<SequinID, SampledInfo> c2v;
             
-            std::map<VProcess::Paired, Counts> counts;
+            std::map<VProcess::Paired, Counts> pairs;
         };
 
         static Stats analyze(const FileName &, const Options &);

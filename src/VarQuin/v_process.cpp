@@ -563,12 +563,12 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
 
             if (isLadQuin(first->cID) && isLadQuin(second->cID))
             {
-                stats.counts[Paired::LadQuinLadQuin]++;
+                stats.pairs[Paired::LadQuinLadQuin]++;
                 f(first, second, Paired::LadQuinLadQuin);
             }
             else if (!s2c.count(first->cID) || !s2c.count(second->cID))
             {
-                stats.counts[Paired::ReverseLadQuin]++;
+                stats.pairs[Paired::ReverseLadQuin]++;
                 f(first, second, Paired::ReverseLadQuin);
             }
             else
@@ -617,9 +617,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
                     throw std::runtime_error("Invalid NotMappedNotMapped");
                 }
 
-                stats.counts[status]++;
-                stats.counts[status]++;
-                
+                stats.pairs[status]++;
                 f(first, second, status);
             }
             
@@ -636,12 +634,12 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
         
         if (isVarQuin(i.second.cID))
         {
-            stats.counts[Paired::ReverseHang]++;
+            stats.pairs[Paired::ReverseHang]++;
             f(&i.second, nullptr, Paired::ReverseHang);
         }
         else
         {
-            stats.counts[Paired::ForwardHang]++;
+            stats.pairs[Paired::ForwardHang]++;
             f(&i.second, nullptr, Paired::ForwardHang);
         }
     }
@@ -659,7 +657,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
 
     std::set<ReadName> sampled;
 
-    o.info("Peforming calibration");
+    o.info("Performing calibration");
     stats.gStats.aTSeqs = sample(stats, r1, sampled, o);
     
     /*
@@ -757,9 +755,9 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
             stats.s2.push_back(x);
         }
 
-        inline void writeFASTQ(std::shared_ptr<FileWriter> p, const ParserBAM::Data &x)
+        inline void writeFASTQ(std::shared_ptr<FileWriter> p, const ParserBAM::Data &x, bool isFirst)
         {
-            p->write("@" + x.name + "/1");
+            p->write("@" + x.name + (isFirst ? "/1" : "/2"));
             p->write(x.seq);
             p->write("+");
             p->write(x.qual);
@@ -767,22 +765,22 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
 
         inline void writeLad1(const ParserBAM::Data &x)
         {
-            writeFASTQ(l1, x);
+            writeFASTQ(l1, x, true);
         }
 
         inline void writeLad2(const ParserBAM::Data &x)
         {
-            writeFASTQ(l2, x);
+            writeFASTQ(l2, x, false);
         }
 
         inline void writeAmb1(const ParserBAM::Data &x)
         {
-            writeFASTQ(a1, x);
+            writeFASTQ(a1, x, true);
         }
 
         inline void writeAmb2(const ParserBAM::Data &x)
         {
-            writeFASTQ(a2, x);
+            writeFASTQ(a2, x, false);
         }
 
         inline void writeEndo(const ParserBAM::Data &x)
@@ -907,9 +905,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "-------After trimming\n\n"
                          "       Number of alignments: %16%\n\n"
                          "-------Sequin Outputs\n\n"
-                         "       Flipped reads:   %17% (%18$.2f%%)\n"
-                         "       Ladder reads:    %19% (%20$.2f%%)\n"
-                         "       Ambiguous reads: %21% (%22$.2f%%)\n"
+                         "       Flipped pairs:   %17% (%18$.2f%%)\n"
+                         "       Ladder pairs:    %19% (%20$.2f%%)\n"
+                         "       Ambiguous pairs: %21% (%22$.2f%%)\n"
                          "       Hanging reads:   %23% (%24$.2f%%)\n\n"
                          "-------Before calibration (within sampling regions)\n\n"
                          "       Sample coverage (average): %25$.2f\n"
@@ -918,16 +916,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                          "       Sample coverage (average): %27$.2f\n"
                          "       Sequin coverage (average): %28$.2f\n\n"
                          "       Scaling Factor: %29% \u00B1 %30%\n\n"
-                         "-------Alignments within reference regions (before subsampling)\n\n"
+                         "-------Alignments within reference regions (before calibration but after trimming)\n\n"
                          "       Sample: %31%\n"
                          "       Sequin: %32%\n\n"
-                         "-------Alignments within reference regions (after subsampling)\n\n"
+                         "-------Alignments within reference regions (after calibration)\n\n"
                          "       Sample: %33%\n"
                          "       Sequin: %34%\n";
 
-    #define C(x) stats.counts.at(x)
+    #define C(x) stats.pairs.at(x)
     
-    const auto cf = C(Paired::ReverseReverse) + C(Paired::ReverseNotMapped);
+    const auto cf = stats.nFlip;
     const auto ca = C(Paired::ForwardVarQuin) + C(Paired::ForwardNotMapped) + C(Paired::NotMappedNotMapped) + C(Paired::ReverseLadQuin);
     const auto ch = C(Paired::ReverseHang) + C(Paired::ForwardHang);
     const auto cl = C(Paired::LadQuinLadQuin);
