@@ -1010,38 +1010,41 @@ void parse(int argc, char ** argv)
                 {
                     RFold::Options o;
 
-                    if (_p.opts[OPT_METHOD] != "gene" && _p.opts[OPT_METHOD] != "isoform")
-                    {
-                        throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
-                    }
-                    
-                    o.metrs = _p.opts[OPT_METHOD] == "gene" ? RFold::Metrics::Gene : RFold::Metrics::Isoform;
-                    
                     const auto &file = _p.seqs[0];
                     
-                    if (ParserCDiff::isTracking(Reader(file)))
+                    // Softwares that are ambiguous
+                    unsigned nTrans, nGenes;
+                    
+                    typedef RFold::Format  Format;
+                    typedef RFold::Metrics Metrics;
+                    
+                    if (ParserCDiff::isCDiff(Reader(file), nTrans, nGenes))
                     {
-                        o.format = RFold::Format::Cuffdiff;
+                        o.format = Format::Cuffdiff;
+                        o.metrs  = nGenes ? Metrics::Gene : Metrics::Isoform;
                         std::cout << "[INFO]: Cuffdiff format" << std::endl;
                     }
                     else if (ParserSleuth::isSleuth(Reader(file)))
                     {
-                        o.format = RFold::Format::Sleuth;
+                        o.format = Format::Sleuth;
+                        o.metrs  = Metrics::Isoform;
                         std::cout << "[INFO]: Sleuth format" << std::endl;
                     }
                     else if (ParserDESeq2::isDESeq2(Reader(file)))
                     {
-                        o.format = RFold::Format::DESeq2;
+                        o.format = Format::DESeq2;
+                        o.metrs  = Metrics::Gene;
                         std::cout << "[INFO]: DESeq2 format" << std::endl;
                     }
                     else if (ParserEdgeR::isEdgeR(Reader(file)))
                     {
                         o.format = RFold::Format::edgeR;
+                        o.metrs  = RFold::Metrics::Gene;
                         std::cout << "[INFO]: edgeR format" << std::endl;
                     }
                     else if (ParserDiff::isFold(Reader(file)))
                     {
-                        o.format = RFold::Format::Anaquin;
+                        o.format = Format::Anaquin;
                         std::cout << "[INFO]: Anaquin format" << std::endl;
                     }
                     else

@@ -328,8 +328,7 @@ static void writeSummary(const FileName &file,
                          "       Slope:       %8%\n"
                          "       Correlation: %9%\n"
                          "       R2:          %10%\n"
-                         "       F-statistic: %11%\n"
-                         "       P-value:     %12%\n";
+                         "       P-value:     %11%\n";
 
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src         // 1
@@ -342,8 +341,7 @@ static void writeSummary(const FileName &file,
                                             % lm.m        // 8
                                             % lm.r        // 9
                                             % lm.R2       // 10
-                                            % lm.F        // 11
-                                            % lm.p        // 12
+                                            % lm.p        // 11
                      ).str());
     o.writer->close();
 }

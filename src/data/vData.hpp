@@ -2,7 +2,6 @@
 #define VCF_DATA_HPP
 
 #include "tools/tools.hpp"
-//#include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 
 namespace Anaquin
