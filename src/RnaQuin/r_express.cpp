@@ -321,7 +321,6 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
         r.files.add(files[i]);
         r.stats.p.add(lm.p);
         r.stats.r.add(lm.r);
-        r.stats.F.add(lm.F);
         r.stats.sl.add(lm.m);
         r.stats.R2.add(lm.R2);
         r.stats.SSM.add(lm.SSM);
@@ -396,17 +395,16 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                         "       Slope:       %9%\n"
                         "       Correlation: %10%\n"
                         "       R2:          %11%\n"
-                        "       F-statistic: %12%\n"
-                        "       P-value:     %13%\n\n"
+                        "       P-value:     %12%\n\n"
                         "-------Detected Genes\n\n"
-                        "       Sequin: %14%\n"
-                        "       Detection Sensitivity: %15% (attomol/ul) (%16%)\n"
-                        "       Genome: %17%\n\n"
+                        "       Sequin: %13%\n"
+                        "       Detection Sensitivity: %14% (attomol/ul) (%15%)\n"
+                        "       Genome: %16%\n\n"
                         "-------Linear regression (gene expression) (log2 scale)\n\n"
-                        "       Slope:       %18%\n"
-                        "       Correlation: %19%\n"
-                        "       R2:          %20%\n"
-                        "       P-value:     %21%\n";
+                        "       Slope:       %17%\n"
+                        "       Correlation: %18%\n"
+                        "       R2:          %19%\n"
+                        "       P-value:     %20%\n";
     
     return (boost::format(format) % STRING(iMS.files)    // 1
                                   % r.seqsL1().size()    // 2
@@ -419,16 +417,15 @@ Scripts RExpress::generateSummary(const std::vector<FileName> &tmp,
                                   % STRING(iMS.stats.sl) // 9
                                   % STRING(iMS.stats.r)  // 10
                                   % STRING(iMS.stats.R2) // 11
-                                  % STRING(iMS.stats.F)  // 12
-                                  % STRING(iMS.stats.p)  // 13
-                                  % STRING(gMS.nGSeqs)   // 14
-                                  % gLimit.abund         // 15
-                                  % gLimit.id            // 16
-                                  % STRING(gMS.nGEndo)   // 17
-                                  % STRING(gMS.stats.sl) // 18
-                                  % STRING(gMS.stats.r)  // 19
-                                  % STRING(gMS.stats.R2) // 20
-                                  % STRING(gMS.stats.p)  // 21
+                                  % STRING(iMS.stats.p)  // 12
+                                  % STRING(gMS.nGSeqs)   // 13
+                                  % gLimit.abund         // 14
+                                  % gLimit.id            // 15
+                                  % STRING(gMS.nGEndo)   // 16
+                                  % STRING(gMS.stats.sl) // 17
+                                  % STRING(gMS.stats.r)  // 18
+                                  % STRING(gMS.stats.R2) // 19
+                                  % STRING(gMS.stats.p)  // 20
                      ).str();
 }
 

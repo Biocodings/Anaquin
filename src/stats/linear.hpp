@@ -20,9 +20,6 @@ namespace Anaquin
         // Coefficient of determination
         SReals R2;
         
-        // F-statistic
-        SReals F;
-        
         // P-value under the null hypothesis
         SReals p;
         
