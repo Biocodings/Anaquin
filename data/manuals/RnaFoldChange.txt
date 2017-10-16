@@ -24,7 +24,6 @@
 <b>TOOL OPTIONS</b>
      Required:
         -rmix        Reference RnaQuin mixture file in CSV format
-        -method      Whether the analysis should be performed at "gene" or "isoform" level.
         -usequin     User-generated differential analysis file in Cuffdiff, DESeq2 or RnaFoldChange Text Format.
                      Please refer to users guide for details on the RnaFoldChange Text Format.
 
