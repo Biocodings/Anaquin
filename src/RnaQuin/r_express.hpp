@@ -14,7 +14,7 @@ namespace Anaquin
         {
             GTF,
             Kallisto,
-            Text
+            Anaquin
         };
         
         struct Options : public AnalyzerOptions

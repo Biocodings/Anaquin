@@ -991,7 +991,7 @@ void parse(int argc, char ** argv)
                     }
                     else if (ParserExpress::isExpress(file))
                     {
-                        o.format = RExpress::Format::Text;
+                        o.format = RExpress::Format::Anaquin;
                     }
                     else if (ParserKallisto::isKallisto(file))
                     {

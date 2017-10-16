@@ -20,6 +20,7 @@ struct MultiStats
 };
 
 typedef RExpress::Stats   Stats;
+typedef RExpress::Format  Format;
 typedef RExpress::Options Options;
 
 template <typename F> static void parse(const Reader &r, bool shouldGene, F f)
@@ -170,7 +171,7 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
             break;
         }
             
-        case Format::Text:
+        case Format::Anaquin:
         {
             ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &p)
             {
@@ -450,9 +451,9 @@ Scripts RExpress::generateRLinear(const FileName &file,
     
     switch (o.format)
     {
-        case RExpress::Format::GTF:      { measured = "FPKM"; break; }
-        case RExpress::Format::Text:     { measured = "FPKM"; break; }
-        case RExpress::Format::Kallisto: { measured = "Transcripts per million"; break; }
+        case Format::GTF:
+        case Format::Anaquin:  { measured = "FPKM"; break; }
+        case Format::Kallisto: { measured = "Transcripts per million"; break; }
     }
 
     if (stats.size() == 1)
