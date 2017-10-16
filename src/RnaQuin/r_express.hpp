@@ -1,6 +1,7 @@
 #ifndef R_EXPRESS_HPP
 #define R_EXPRESS_HPP
 
+#include "data/data.hpp"
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cufflink.hpp"
 
@@ -29,8 +30,12 @@ namespace Anaquin
 
         struct MappingStats
         {
-            Counts nIEndo = 0;
-            Counts nGEndo = 0;
+            // Make sure they're not duplicate
+            std::set<GeneID> nGEndo;
+            
+            // Make sure they're not duplicate
+            std::set<IsoformID> nIEndo;
+
             Counts nISeqs = 0;
             Counts nGSeqs = 0;
         };

@@ -140,8 +140,8 @@ template <typename T> void matching(Stats &stats, const T &x, const Options &o)
     }
     else
     {
-        if (!x.iID.empty()) { stats.nIEndo++; }
-        else                { stats.nGEndo++; }
+        if (!x.iID.empty()) { stats.nIEndo.insert(x.iID); }
+        if (!x.gID.empty()) { stats.nGEndo.insert(x.gID); }
 
         // We'll need the information to estimate the numbers below and above the LOQ
         stats.gData[x.iID].abund = x.abund;
@@ -316,8 +316,8 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
         
         r.nISeqs.add(mStats[i].nISeqs);
         r.nGSeqs.add(mStats[i].nGSeqs);
-        r.nIEndo.add(mStats[i].nIEndo);
-        r.nGEndo.add(mStats[i].nGEndo);
+        r.nIEndo.add(mStats[i].nIEndo.size());
+        r.nGEndo.add(mStats[i].nGEndo.size());
 
         r.files.add(files[i]);
         r.stats.p.add(lm.p);
