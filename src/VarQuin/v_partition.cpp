@@ -200,8 +200,8 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
     auto s1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
     auto s2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
 
-    f1->open("VarProcess_flipped_1.fq");
-    f2->open("VarProcess_flipped_2.fq");
+    f1->open("VarPartition_flipped_1.fq");
+    f2->open("VarPartition_flipped_2.fq");
 
     /*
      * We should sample :
@@ -698,17 +698,17 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             l1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             l2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
 
-            h1->open("VarProcess_hanging.fq");
-            a1->open("VarProcess_ambiguous_1.fq");
-            a2->open("VarProcess_ambiguous_2.fq");
-            l1->open("VarProcess_ladder_1.fq");
-            l2->open("VarProcess_ladder_2.fq");
+            h1->open("VarPartition_hanging.fq");
+            a1->open("VarPartition_ambiguous_1.fq");
+            a2->open("VarPartition_ambiguous_2.fq");
+            l1->open("VarPartition_ladder_1.fq");
+            l2->open("VarPartition_ladder_2.fq");
 
-            endo.open(o.work + "/VarProcess_genome.bam");
+            endo.open(o.work + "/VarPartition_genome.bam");
             
 #ifdef DEBUG
-            pass.open(o.work + "/VarProcess_passed.bam");
-            sample.open(o.work + "/VarProcess_sampled.bam");
+            pass.open(o.work + "/VarPartition_passed.bam");
+            sample.open(o.work + "/VarPartition_sampled.bam");
 #endif
         }
         
@@ -886,7 +886,7 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
 {
     extern FileName BedRef();
 
-    const auto summary = "-------VarProcess Summary Statistics\n\n"
+    const auto summary = "-------VarPartition Summary Statistics\n\n"
                          "-------Input files\n\n"
                          "       Reference annotation file: %1%\n"
                          "       Input alignment file:      %2%\n\n"
@@ -1030,15 +1030,15 @@ void VPartition::report(const FileName &file, const Options &o)
     const auto stats = analyze(file, o);
     
     /*
-     * Generating VarProcess_summary.stats
+     * Generating VarPartition_summary.stats
      */
     
-    writeSummary("VarProcess_summary.stats", file, stats, o);
+    writeSummary("VarPartition_summary.stats", file, stats, o);
 
     /*
-     * Generating VarProcess_sequins.tsv
+     * Generating VarPartition_sequins.tsv
      */
     
-    writeSequins("VarProcess_sequins.tsv", stats, o);
+    writeSequins("VarPartition_sequins.tsv", stats, o);
 }
 
