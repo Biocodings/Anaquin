@@ -704,7 +704,7 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             l1->open("VarPartition_ladder_1.fq");
             l2->open("VarPartition_ladder_2.fq");
 
-            endo.open(o.work + "/VarPartition_genome.bam");
+            endo.open(o.work + "/VarPartition_sample.bam");
             
 #ifdef DEBUG
             pass.open(o.work + "/VarPartition_passed.bam");
