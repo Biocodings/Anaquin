@@ -540,7 +540,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
             if ((!isVarQuin(first->cID) && isVarQuin(second->cID)) || (isVarQuin(first->cID) && !isVarQuin(second->cID)))
             {
                 f(&x, nullptr, Paired::ForwardVarQuin);
-                stats.pairs[status]++;
+                stats.pairs[Paired::ForwardVarQuin]++;
                 seenMates.erase(x.name);
                 return;
             }
