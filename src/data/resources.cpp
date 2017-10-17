@@ -4,10 +4,10 @@
 #include "resources/anaquin.txt"
 #include "resources/VarCopy.txt"
 #include "resources/VarTrim.txt"
-#include "resources/VarAlign.txt"
 #include "resources/VarKmer.txt"
-#include "resources/VarProcess.txt"
+#include "resources/VarAlign.txt"
 #include "resources/VarMutation.txt"
+#include "resources/VarPartition.txt"
 #include "resources/VarStructure.txt"
 
 #include "resources/RnaAlign.txt"
@@ -60,11 +60,11 @@ Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
 Scripts RnaFoldChange() { return ToString(data_manuals_RnaFoldChange_txt); }
 
 Scripts VarTrim()       { return ToString(data_manuals_VarTrim_txt);      }
-Scripts VarProcess()    { return ToString(data_manuals_VarProcess_txt);   }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
 Scripts VarKmer()       { return ToString(data_manuals_VarKmer_txt);      }
 Scripts VarMutation()   { return ToString(data_manuals_VarMutation_txt);  }
+Scripts VarPartition()  { return ToString(data_manuals_VarPartition_txt); }
 Scripts VarStructure()  { return ToString(data_manuals_VarStructure_txt); }
 
 Scripts MetaCoverage()  { return ToString(data_manuals_MetaCoverage_txt);   }

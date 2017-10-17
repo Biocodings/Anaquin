@@ -22,7 +22,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaReport.txt',
 
           'data/manuals/VarCopy.txt',          
-          'data/manuals/VarProcess.txt',
+          'data/manuals/VarPartition.txt',
           'data/manuals/VarTrim.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarMutation.txt',

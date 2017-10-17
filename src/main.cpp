@@ -20,8 +20,8 @@
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_process.hpp"
 #include "VarQuin/v_somatic.hpp"
+#include "VarQuin/v_partition.hpp"
 #include "VarQuin/v_structure.hpp"
 
 #include "MetaQuin/m_coverage.hpp"
@@ -115,7 +115,6 @@ static std::map<Value, Tool> _tools =
 
     { "RnaAlign",       Tool::RnaAlign       },
     { "RnaAssembly",    Tool::RnaAssembly    },
-    { "RnaReport",      Tool::RnaReport      },
     { "RnaExpression",  Tool::RnaExpress     },
     { "RnaFoldChange",  Tool::RnaFoldChange  },
     { "RnaSubsample",   Tool::RnaSubsample   },
@@ -130,7 +129,7 @@ static std::map<Value, Tool> _tools =
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
     { "VarKmer",        Tool::VarKmer        },
-    { "VarProcess",     Tool::VarProcess     },
+    { "VarPartition",   Tool::VarPartition   },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
     { "MetaAssembly",   Tool::MetaAssembly   },
@@ -148,7 +147,6 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::RnaFoldChange, { OPT_R_LAD, OPT_U_SEQS } },
     { Tool::RnaExpress,    { OPT_R_LAD, OPT_U_SEQS } },
     { Tool::RnaAlign,      { OPT_R_GTF, OPT_U_SEQS } },
-    { Tool::RnaReport,     { OPT_R_IND, OPT_R_LAD, OPT_U_SEQS } },
 
     /*
      * VarQuin Analysis
@@ -163,7 +161,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarProcess,   { OPT_U_SEQS, OPT_R_BED } },
+    { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
 
     /*
@@ -336,14 +334,13 @@ static void printUsage()
 static Scripts manual(Tool tool)
 {
     extern Scripts VarCopy();
-    extern Scripts VarProcess();
+    extern Scripts VarPartition();
     extern Scripts VarTrim();
     extern Scripts VarAlign();
     extern Scripts VarMutation();
     extern Scripts VarKmer();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
-    extern Scripts RnaReport();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
@@ -359,9 +356,8 @@ static Scripts manual(Tool tool)
         case Tool::RnaExpress:     { return RnaExpression(); }
         case Tool::RnaFoldChange:  { return RnaFoldChange(); }
         case Tool::RnaSubsample:   { return RnaSubsample();  }
-        case Tool::RnaReport:      { return RnaReport();     }
         case Tool::VarCopy:        { return VarCopy();       }
-        case Tool::VarProcess:     { return VarProcess();    }
+        case Tool::VarPartition:   { return VarPartition();  }
         case Tool::VarMutation:    { return VarMutation();   }
         case Tool::VarAlign:       { return VarAlign();      }
         case Tool::VarKmer:        { return VarKmer();       }
@@ -895,7 +891,6 @@ void parse(int argc, char ** argv)
         }
 
         case Tool::RnaAlign:
-        case Tool::RnaReport:
         case Tool::RnaExpress:
         case Tool::RnaAssembly:
         case Tool::RnaSubsample:
@@ -948,17 +943,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::RnaReport:
-                {
-                    startAnalysis<RReport>([&](const typename RReport::Options &o)
-                    {
-                        RReport::report(_p.opts.at(OPT_R_IND), _p.opts.at(OPT_R_LAD), _p.seqs[0], o);
-                    }, RReport::Options());
-
-                    break;
-                }
-                    
-                case Tool::RnaAlign:    { analyze_1<RAlign>(OPT_U_SEQS);    break; }
+                case Tool::RnaAlign: { analyze_1<RAlign>(OPT_U_SEQS);    break; }
                 case Tool::RnaAssembly:
                 {
                     RAssembly::Options o;
@@ -1142,7 +1127,7 @@ void parse(int argc, char ** argv)
         case Tool::VarTrim:
         case Tool::VarKmer:
         case Tool::VarAlign:
-        case Tool::VarProcess:
+        case Tool::VarPartition:
         case Tool::VarGermline:
         case Tool::VarSomatic:
         case Tool::VarConjoint:
@@ -1158,7 +1143,7 @@ void parse(int argc, char ** argv)
             {
                 case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
                     
-                case Tool::VarProcess:
+                case Tool::VarPartition:
                 {
                     readReg1(OPT_R_BED, r);
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
@@ -1238,11 +1223,12 @@ void parse(int argc, char ** argv)
             {
                 case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
-                case Tool::VarProcess:
+
+                case Tool::VarPartition:
                 {
-                    VProcess::Options o;
+                    VPartition::Options o;
                     o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
-                    analyze_1<VProcess>(OPT_U_SEQS, o);
+                    analyze_1<VPartition>(OPT_U_SEQS, o);
                     break;
                 }
 

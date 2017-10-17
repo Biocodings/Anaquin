@@ -1,12 +1,12 @@
-#ifndef V_PROCESS_HPP
-#define V_PROCESS_HPP
+#ifndef V_PARTITION_HPP
+#define V_PARTITION_HPP
 
 #include "stats/analyzer.hpp"
 #include "parsers/parser_bam.hpp"
 
 namespace Anaquin
 {
-    struct VProcess
+    struct VPartition
     {
         enum class Method
         {
@@ -228,7 +228,7 @@ namespace Anaquin
             // Sampling statistics
             std::map<SequinID, SampledInfo> c2v;
             
-            std::map<VProcess::Paired, Counts> pairs;
+            std::map<VPartition::Paired, Counts> pairs;
         };
 
         static Stats analyze(const FileName &, const Options &);

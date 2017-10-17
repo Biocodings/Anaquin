@@ -1,15 +1,15 @@
 #include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
-#include "VarQuin/v_process.hpp"
 #include "writers/bam_writer.hpp"
+#include "VarQuin/v_partition.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
-typedef VProcess::Stats   Stats;
-typedef VProcess::Paired  Paired;
-typedef VProcess::Method  Method;
-typedef VProcess::Options Options;
+typedef VPartition::Stats   Stats;
+typedef VPartition::Paired  Paired;
+typedef VPartition::Method  Method;
+typedef VPartition::Options Options;
 
 typedef std::map<ChrID, Base> Headers;
 
@@ -36,20 +36,20 @@ static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Opt
     return lTrim || rTrim;
 }
 
-template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const Stats &stats)
+template <typename Stats> Coverage stats2cov(const Method meth, const Stats &stats)
 {
     switch (meth)
     {
-        case VProcess::Method::Mean:   { return stats.mean; }
-        case VProcess::Method::Median: { return stats.p50;  }
+        case Method::Mean:   { return stats.mean; }
+        case Method::Median: { return stats.p50;  }
             
         /*
          * Prop and Reads specifies a fixed proportion to subsample. It's not actually a measure
          * to report coverage.
          */
             
-        case VProcess::Method::Prop:
-        case VProcess::Method::Reads: { return stats.mean; }
+        case Method::Prop:
+        case Method::Reads: { return stats.mean; }
     }
 }
 
@@ -57,10 +57,10 @@ template <typename Stats> Coverage stats2cov(const VProcess::Method meth, const 
  * Calculate calibration factors (but not peforming it)
  */
 
-static void calibrate(VProcess::Stats &stats,
+static void calibrate(Stats &stats,
                       const Chr2DInters &r2,
                       const std::set<SequinID> &seqs,
-                      const VProcess::Options &o)
+                      const Options &o)
 {
     auto &mStats = stats.mStats;
     
@@ -340,7 +340,7 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
     return SS::mean(all);
 }
 
-template <typename T, typename F> VProcess::Stats &parse(const FileName &file, VProcess::Stats &stats, T o, F f)
+template <typename T, typename F> Stats &parse(const FileName &file, Stats &stats, T o, F f)
 {
     o.info("Edge: " + std::to_string(o.edge));
 
@@ -684,7 +684,7 @@ template <typename T, typename F> VProcess::Stats &parse(const FileName &file, V
     return stats;
 }
 
-VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
+Stats VPartition::analyze(const FileName &file, const Options &o)
 {
     Stats stats;
 
@@ -882,7 +882,7 @@ VProcess::Stats VProcess::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const VProcess::Stats &stats, const VProcess::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const Stats &stats, const Options &o)
 {
     extern FileName BedRef();
 
@@ -981,7 +981,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VProce
                      ).str());
 }
 
-static void writeSequins(const FileName &file, const Stats &stats, const VProcess::Options &o)
+static void writeSequins(const FileName &file, const Stats &stats, const Options &o)
 {
     o.generate(file);
     
@@ -1024,7 +1024,7 @@ static void writeSequins(const FileName &file, const Stats &stats, const VProces
     o.writer->close();
 }
 
-void VProcess::report(const FileName &file, const Options &o)
+void VPartition::report(const FileName &file, const Options &o)
 {
     // For efficiency, this tool writes some of the output files directly in the analyze() function.
     const auto stats = analyze(file, o);

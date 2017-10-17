@@ -270,8 +270,7 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
-        case Tool::VarProcess:
-        case Tool::VarCalibrate:
+        case Tool::VarPartition:
         {
             merge(r.r1->seqs());
             build(r.r1, r.r2);

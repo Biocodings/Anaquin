@@ -60,7 +60,6 @@ namespace Anaquin
         RnaExpress,
         RnaFoldChange,
         RnaSubsample,
-        RnaReport,
         
         VarCopy,
         VarAlign,
@@ -70,7 +69,7 @@ namespace Anaquin
         VarTrim,
         VarFlip,
         VarKmer,
-        VarProcess,
+        VarPartition,
         VarStructure,
         VarConjoint,
         VarMutation,
