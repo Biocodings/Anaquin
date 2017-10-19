@@ -20,7 +20,7 @@ Please take a look at the Makefile and adjust the paths.
 
 > I'm getting *"error while loading shared libraries: libhts.so.2: cannot open shared object file: No such file or directory"*?
 
-You will need to download and compile htslib for the shared object file. You can also try our file, which should work for most Linux distributions.
+You will need to download and compile `htslib` for the shared object file. You can also try our file, which should work for most Linux distributions.
 
 * [libhts.so](https://s3.amazonaws.com/sequins/software/libhts.so)
 * [libhts.so.2](https://s3.amazonaws.com/sequins/software/libhts.so.2)
