@@ -33,8 +33,6 @@
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
 
-#include "resources/report.py"
-
 typedef std::string Scripts;
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
@@ -77,4 +75,3 @@ Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
 Scripts PlotVGROC() { return ToString(src_r_plotVGROC_R); }
 Scripts PlotVCROC() { return ToString(src_r_plotVCROC_R); }
 
-Scripts PythonReport() { return ToString(scripts_report_py); }

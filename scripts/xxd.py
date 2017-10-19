@@ -33,7 +33,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
 
-          'scripts/report.py',
           'src/r/plotCNV.R',          
           'src/r/plotFold.R',
           'src/r/plotLinear.R',

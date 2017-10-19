@@ -25,7 +25,7 @@ Version: 2.0
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
 
             VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
-            VarProcess    - Perform flipping, trimming, splitting and calibration on sequin- and sample-derived alignments
+            VarPartition  - Perform flipping, trimming, splitting and calibration on sequin- and sample-derived alignments
             VarKmer       - Quantitative k-mer analysis for sequin allele frequnecy
             VarMutation   - Compare the identification of germline variants from sequin- and sample-derived alignments
             VarCopy       - Perform quantitative analysis on copy number variation
