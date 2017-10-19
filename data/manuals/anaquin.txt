@@ -3,7 +3,7 @@
 Developed at the Garvan Institute of Medical Research.
 
 Please visit our website www.sequin.xyz for more information. 
-Version: 2.0
+Version: 2.0.1
 
 <b>Usage</b>
        anaquin <tool> [options]
