@@ -6,6 +6,27 @@ Respository for the R-package is hosted by Bioconductor and available at: https:
 
 This is a **beta software** as we are trying to work with the bioinformatics community. Please send us your suggestions (eg. what do you want Anaquin to do?). Detailed workflow guide is avaialble for download at www.sequin.xyz.
 
+Please email [t.wong@garvan.org.au](t.wong@garvan.org.au) for any question or issue.
+
+## Compilation
+
+Anaquin requires:
+
+* [Eigen](http://eigen.tuxfamily.org) for linear algebra
+* [Boost](http://www.boost.org/) for C++
+* [htslib](https://github.com/samtools/htslib) for reading BAM files
+
+Please take a look at the Makefile and adjust the paths.
+
+> I'm getting *"error while loading shared libraries: libhts.so.2: cannot open shared object file: No such file or directory"*?
+
+You will need to download and compile htslib for the shared object file. You can also try our file, which should work for most Linux distributions.
+
+* [libhts.so](https://s3.amazonaws.com/sequins/software/libhts.so)
+* [libhts.so.2](https://s3.amazonaws.com/sequins/software/libhts.so.2)
+
+Add them to your `LD_LIBRARY_PATH`.
+
 ## License
 
 <a href='https://opensource.org/licenses/BSD-3-Clause'>The BSD 3-Clause License</a>
