@@ -41,7 +41,9 @@ namespace Anaquin
                     throw std::runtime_error("Failed to SAM record");
                 }
                 
+#ifndef UNIT_TEST
                 std::cout << std::string(_fp->line.s);
+#endif
                 _header = true;
             }
 

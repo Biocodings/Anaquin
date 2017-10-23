@@ -6,8 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("RSample_OverSubsampled")
 {
-    clrTest();
-    
+    clrTest();    
     RSample::Options o;
 
     // Over subsampling
@@ -27,8 +26,7 @@ TEST_CASE("RSample_OverSubsampled")
 TEST_CASE("RSample_Negative")
 {
     clrTest();
-    
-    const auto r = runTest("RnaSubsample -method -0.5 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method -0.5 -usequin tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -37,8 +35,7 @@ TEST_CASE("RSample_Negative")
 TEST_CASE("RSample_Zero")
 {
     clrTest();
-    
-    const auto r = runTest("RnaSubsample -method 0.00 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 0.00 -usequin tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be greater than zero.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -47,8 +44,7 @@ TEST_CASE("RSample_Zero")
 TEST_CASE("RSample_One")
 {
     clrTest();
-    
-    const auto r = runTest("RnaSubsample -method 1.00 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 1.00 -usequin tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n***********************\n");
     REQUIRE(r.status == 1);
@@ -57,9 +53,9 @@ TEST_CASE("RSample_One")
 TEST_CASE("RSample_Ten")
 {
     clrTest();
-    
-    const auto r = runTest("RnaSubsample -method 10 -ufiles tests/data/sampled.bam");
+    const auto r = runTest("RnaSubsample -method 10 -usequin tests/data/sampled.bam");
     
     REQUIRE(r.error == "***********************\n[ERRO]: Invalid value for -method. Sampling fraction must be less than one.\n***********************\n");
     REQUIRE(r.status == 1);
 }
+

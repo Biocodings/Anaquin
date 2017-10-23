@@ -1,5 +1,4 @@
 #include "VarQuin/v_kmer.hpp"
-#include "parsers/parser_salmon.hpp"
 #include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;

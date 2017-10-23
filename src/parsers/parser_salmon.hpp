@@ -49,7 +49,7 @@ namespace Anaquin
                     Tokens::split(line, "\t", toks);
                     
                     d.name  = toks[Name];
-                    d.abund = s2d(toks[NumReads]); // Raw counts
+                    d.abund = s2d(toks[TPM]);
 
                     f(d, p);
                 }
