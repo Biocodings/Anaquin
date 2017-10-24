@@ -180,12 +180,6 @@ namespace Anaquin
                 
                 // Alignment coverage for sequins (before and after) and endogenous regions
                 ID2Intervals eInters, bInters, aInters;
-
-                // Eg: GS_037 to chr2
-                inline ChrID s2c(const SequinID &x) const
-                {
-                    return s2e.at(x).first;
-                }
             };
             
             Mapping mStats;

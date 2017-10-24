@@ -72,7 +72,7 @@ namespace Anaquin
         return x;
     }
 
-    inline bool hasSub(const std::string &s1, const std::string &s2)
+    inline bool isSubstr(const std::string &s1, const std::string &s2)
     {
         return s1.find(s2) != std::string::npos;
     }

@@ -74,6 +74,17 @@ template <typename Stats> Coverage stats2cov(const Method meth, const Stats &sta
     }
 }
 
+static SequinID trimSID(const SequinID &sID)
+{
+    if (isSubstr(sID, "_R") || isSubstr(sID, "_V"))
+    {
+        // Eg: DEL_02_R to DEL_02
+        return noLast(sID, "_");
+    }
+    
+    return sID;
+}
+
 /*
  * Calculate calibration factors (but not peforming it)
  */
@@ -87,15 +98,16 @@ static void calibrate(Stats &stats,
     
     for (const auto &sID : seqs)
     {
-        assert(stats.mStats.s2s.count(sID) && stats.mStats.s2e.count(sID));
+        auto sID_ = trimSID(sID);
+        A_ASSERT(stats.mStats.s2s.count(sID_) && stats.mStats.s2e.count(sID_));
         
-        const auto &p1 = mStats.s2e.at(sID);
-        const auto &p2 = mStats.s2s.at(sID);
+        const auto &p1 = mStats.s2e.at(sID_);
+        const auto &p2 = mStats.s2s.at(sID_);
         
-        assert(mStats.eInters.count(p1.first));
-        assert(mStats.eInters.at(p1.first).find(p1.second));
-        assert(mStats.bInters.count(p2.first));
-        assert(mStats.bInters.at(p2.first).find(p2.second));
+        A_ASSERT(mStats.eInters.count(p1.first));
+        A_ASSERT(mStats.eInters.at(p1.first).find(p1.second));
+        A_ASSERT(mStats.bInters.count(p2.first));
+        A_ASSERT(mStats.bInters.at(p2.first).find(p2.second));
 
         // Chromosome for the sequin
         const auto &cID = p1.first;
@@ -165,7 +177,7 @@ static void calibrate(Stats &stats,
             o.logWarn((boost::format("Normalization is 1 for %1%:%2%-%3% (%4%)") % cID
                                                                                  % l.start
                                                                                  % l.end
-                                                                                 % sID).str());
+                                                                                 % sID_).str());
         }
         else
         {
@@ -173,19 +185,19 @@ static void calibrate(Stats &stats,
                                                                                    % cID
                                                                                    % l.start
                                                                                    % l.end
-                                                                                   % sID).str());
+                                                                                   % sID_).str());
         }
         
-        stats.c2v[sID].nEndo   = es.aligns;
-        stats.c2v[sID].nBefore = ss.aligns;
+        stats.c2v[sID_].nEndo   = es.aligns;
+        stats.c2v[sID_].nBefore = ss.aligns;
         
-        stats.c2v[sID].rID    = sID;
-        stats.c2v[sID].endo   = endoC;
-        stats.c2v[sID].before = seqsC;
-        stats.c2v[sID].norm   = norm;
+        stats.c2v[sID_].rID    = sID_;
+        stats.c2v[sID_].endo   = endoC;
+        stats.c2v[sID_].before = seqsC;
+        stats.c2v[sID_].norm   = norm;
         
-        stats.cStats.covs[sID]  = endoC;
-        stats.cStats.norms[sID] = norm;
+        stats.cStats.covs[sID_]  = endoC;
+        stats.cStats.norms[sID_] = norm;
         
         stats.cStats.allNorms.push_back(norm);
     }
@@ -246,11 +258,13 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             if (!x.mapped) { return true; }
             else
             {
+                auto sID = trimSID(x.cID);
+                
                 // Targeted coverage
-                const auto exp = stats.cStats.covs.at(x.cID);
+                const auto exp = stats.cStats.covs.at(sID);
                 
                 // Latest coverage
-                const auto obs = after.at(x.cID).stats().mean;
+                const auto obs = after.at(sID).stats().mean;
                 
                 // Stop if the target coverage reached
                 if (obs >= exp)
@@ -259,7 +273,7 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
                     return false;
                 }
 
-                return select.at(x.cID)->select(x.name);
+                return select.at(sID)->select(x.name);
             }
         };
 
@@ -270,9 +284,9 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
         {
             auto addCov = [&](const ParserBAM::Data &x)
             {
-                if (after.at(x.cID).overlap(x.l))
+                if (after.at(trimSID(x.cID)).overlap(x.l))
                 {
-                    after.at(x.cID).overlap(x.l)->map(x.l);
+                    after.at(trimSID(x.cID)).overlap(x.l)->map(x.l);
                 }
             };
             
@@ -341,9 +355,9 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
 {
     std::vector<double> all;
     
-    for (const auto &seq : stats.mStats.seqs)
+    for (const auto &sID : stats.mStats.seqs)
     {
-        const auto x = stats.mStats.aInters.at(seq).stats();
+        const auto x = stats.mStats.aInters.at(trimSID(sID)).stats();
 
         // Coverage after sampling
         const auto cov = stats2cov(o.meth, x);
@@ -351,8 +365,8 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
         // Alignments after sampling
         const auto aligns = x.aligns;
         
-        stats.c2v[seq].after  = cov;
-        stats.c2v[seq].nAfter = aligns;
+        stats.c2v[trimSID(sID)].after  = cov;
+        stats.c2v[trimSID(sID)].nAfter = aligns;
         
         // Required for generating summary statistics
         all.push_back(cov);
@@ -379,9 +393,6 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     // Sequin names
     stats.mStats.seqs = r.r1()->seqs();
     
-    // Mapping from sequins to their chromosomes
-    const auto s2c = r.r1()->s2c();
-    
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;
     
@@ -394,21 +405,42 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
      * Initalize genomic and sequin regions
      */
     
-    auto initRegs = [&]()
+    auto initR = [&]()
     {
-        // For each chromosome...
+        std::map<ChrID, std::map<SequinID, Locus>> x;
+
         for (const auto &i : r1)
+        {
+            for (const auto &j : i.second.data())
+            {
+                const auto sID = trimSID(j.second.name());
+                const auto &l  = j.second.l();
+
+                if (x.count(i.first) && x[i.first].count(sID))
+                {
+                    x[i.first][sID].start = std::min(x[i.first][sID].start, l.start);
+                    x[i.first][sID].end   = std::max(x[i.first][sID].end, l.end);
+                }
+                else
+                {
+                    x[i.first][sID] = l;
+                }
+            }
+        }
+
+        // For each chromosome...
+        for (const auto &i : x)
         {
             DIntervals<> x1;
             
-            for (const auto &inter : i.second.data())
+            for (const auto &j : i.second)
             {
-                assert(!inter.second.name().empty());
+                A_ASSERT(!j.first.empty());
                 
                 // Sequin for the region
-                const auto &sID = inter.second.name();
+                const auto &sID = j.first;
                 
-                const auto &l1 = inter.second.l();
+                const auto &l1 = j.second;
                 x1.add(DInter(l1.key(), l1));
                 
                 // Update mapping for endogenous
@@ -419,7 +451,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
                  */
                 
                 // Locus for the sequin region
-                auto l2 = Locus(0, inter.second.l().end - inter.second.l().start);
+                auto l2 = Locus(0, j.second.end - j.second.start);
 
                 l2.end   -= o.edge;
                 l2.start += o.edge;
@@ -442,7 +474,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
         }
     };
     
-    initRegs();
+    initR();
 
     A_ASSERT(!stats.mStats.s2e.empty() && !stats.mStats.s2s.empty());
     A_ASSERT(stats.mStats.s2e.size() == stats.mStats.s2s.size());
@@ -591,7 +623,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
                 stats.pairs[Paired::LadQuinLadQuin]++;
                 f(first, second, Paired::LadQuinLadQuin);
             }
-            else if (!s2c.count(first->cID) || !s2c.count(second->cID))
+            else if (isLadQuin(first->cID) || isLadQuin(second->cID))
             {
                 stats.pairs[Paired::ReverseLadQuin]++;
                 f(first, second, Paired::ReverseLadQuin);
@@ -605,15 +637,15 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
                 const auto anyMap  =  first->mapped ||  second->mapped;
                 const auto anyNMap = !first->mapped || !second->mapped;
                 
-                A_ASSERT(s2c.count(x.cID));
-                A_ASSERT(stats.mStats.bInters.count(x.cID));
+                A_ASSERT(stats.mStats.bInters.count(trimSID(x.cID)));
+                A_ASSERT(stats.mStats.bInters.count(trimSID(x.cID)));
                 
                 /*
-                 * Calculate alignment coverage for sequin regions before calibration
+                 * Calculate alignment coverage for sequins before calibration
                  */
                 
-                coverage(*first,  first->cID,  stats.mStats.bInters);
-                coverage(*second, second->cID, stats.mStats.bInters);
+                coverage(*first,  trimSID(first->cID),  stats.mStats.bInters);
+                coverage(*second, trimSID(second->cID), stats.mStats.bInters);
 
                 Paired status;
                 
