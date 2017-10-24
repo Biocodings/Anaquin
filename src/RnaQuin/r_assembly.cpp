@@ -390,11 +390,11 @@ static void writeSummary(const FileName &file, const RAssembly::Stats &stats, co
                                            % r.countUExonSyn() // 3
                                            % r.countUIntrSyn() // 4
                                            % r.countTransSyn() // 5
-                                           % r.nGeneSyn()  // 6
+                                           % r.nGeneSyn()      // 6
                                            % r.countUExonGen() // 7
                                            % r.countUIntrGen() // 8
                                            % r.countTransGen() // 9
-                                           % r.nGeneGen()  // 10
+                                           % r.nGeneGen()      // 10
                                            % stats.sExons      // 11
                                            % stats.sIntrs      // 12
                                            % stats.sTrans      // 13
