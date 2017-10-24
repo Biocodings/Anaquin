@@ -98,6 +98,9 @@ namespace Anaquin
         // Second bed regions (trimmed)
         std::shared_ptr<BedData> r2;
         
+        // Eg: Trimming for structural variant
+        std::shared_ptr<BedData> r3;
+        
         // GTF annoation
         std::shared_ptr<GTFData> g1;
     };
@@ -144,6 +147,7 @@ namespace Anaquin
 
             inline std::shared_ptr<BedData> r1() const { return _r1; }
             inline std::shared_ptr<BedData> r2() const { return _r2; }
+            inline std::shared_ptr<BedData> r3() const { return _r3; }
 
             inline Chr2DInters regs1()  const { return _r1->inters();  }
             inline Chr2DInters regs2()  const { return _r2->inters();  }
@@ -186,6 +190,13 @@ namespace Anaquin
             {
                 _r1 = r1;
                 _r2 = r2;
+            }
+
+            inline void build(std::shared_ptr<BedData> r1, std::shared_ptr<BedData> r2, std::shared_ptr<BedData> r3)
+            {
+                _r1 = r1;
+                _r2 = r2;
+                _r3 = r3;
             }
 
             inline void build(std::shared_ptr<Ladder> l1)
@@ -323,7 +334,7 @@ namespace Anaquin
             std::set<SequinID> _seqs;
         
             // Sequin regions
-            std::shared_ptr<BedData> _r1, _r2;
+            std::shared_ptr<BedData> _r1, _r2, _r3;
 
             // VCF references and allele frequency ladder
             std::shared_ptr<VCFLadder> _v1, _v2;

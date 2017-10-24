@@ -13,13 +13,14 @@ typedef VPartition::Options Options;
 
 typedef std::map<ChrID, Base> Headers;
 
-/*
- * Implement trimming for sequins (reverse genome and ladders)
- */
-
-static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Options &o, bool &lTrim, bool &rTrim)
+static bool shouldTrim(const ParserBAM::Data &x,
+                       const Headers &heads,
+                       const std::map<ChrID, DIntervals<>> &r3,
+                       const Options &o,
+                       bool &lTrim,
+                       bool &rTrim)
 {
-    assert(heads.count(x.cID));
+    A_ASSERT(heads.count(x.cID));
 
     // Unable to trim if it's not mapped
     if (!o.shouldTrim || !x.mapped)
@@ -27,13 +28,33 @@ static bool shouldTrim(const ParserBAM::Data &x, const Headers &heads, const Opt
         return false;
     }
     
-    // Length of the sequin from BAM header
-    const auto len = heads.at(x.cID);
+    auto lrTrim = [&](Base start, Base end)
+    {
+        // Trimming by left?
+        lTrim = x.l.start < start ? false : (x.l.start - start) <= o.trim;
+        
+        // Trimming by right?
+        rTrim = x.l.end > end ? false : (end - x.l.end) <= o.trim;
+        
+        return lTrim || rTrim;
+    };
     
-    lTrim = std::abs(x.l.start) <= o.trim;
-    rTrim = std::abs(x.l.end - len) <= o.trim;
- 
-    return lTrim || rTrim;
+    // Trimming by looking at BAM headers?
+    auto shouldTrim = lrTrim(0, heads.at(x.cID));
+
+    // Is this a structural variant region?
+    if (!shouldTrim && r3.count(x.cID))
+    {
+        A_ASSERT(r3.at(x.cID).data().size() == 1);
+        
+        // Trimming interval
+        const auto &l = r3.at(x.cID).data().begin()->second.l();
+        
+        // Should we trim by structural variant?
+        shouldTrim = lrTrim(l.start, l.end);
+    }
+
+    return shouldTrim;
 }
 
 template <typename Stats> Coverage stats2cov(const Method meth, const Stats &stats)
@@ -351,7 +372,10 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     
     // Regions with edge effects
     const auto r2 = r.r2()->inters();
-    
+
+    // Structuring variant trimming region
+    const auto r3 = r.r3()->inters();
+
     // Sequin names
     stats.mStats.seqs = r.r1()->seqs();
     
@@ -548,7 +572,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
             if (first->mapped)  { stats.trim.before++; }
             if (second->mapped) { stats.trim.before++; }
 
-            if (shouldTrim(*first, heads, o, t1l, t1r) || shouldTrim(*second, heads, o, t2l, t2r))
+            if (shouldTrim(*first, heads, r3, o, t1l, t1r) || shouldTrim(*second, heads, r3, o, t2l, t2r))
             {
                 if (t1l || t2l) { stats.trim.left  += 2; }
                 if (t1r || t2r) { stats.trim.right += 2; }

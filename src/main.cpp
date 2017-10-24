@@ -503,18 +503,9 @@ static void readReg2(Option opt, UserReference &r, Base trim = 0)
     }
 }
 
-// Apply a reference source given where it comes from
-template <typename Reference> void applyRef(Reference ref, Option opt)
+static void readReg3(const FileName &file, UserReference &r, Base trim = 0)
 {
-    if (__showInfo__)
-    {
-        std::cout << "[INFO]: Loading: " << _p.opts[opt] << std::endl;
-    }
-    
-    if (!_p.opts[opt].empty())
-    {
-        ref(Reader(_p.opts[opt]));
-    }
+    r.r3 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(file), trim)));
 }
 
 template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyzer::Options o)
@@ -1145,8 +1136,17 @@ void parse(int argc, char ** argv)
                     
                 case Tool::VarPartition:
                 {
+                    Scripts StructBED();
+                    
+                    const auto tmp = System::tmpFile();
+                    std::ofstream out(tmp);
+                    out << StructBED();
+                    out.close();
+
                     readReg1(OPT_R_BED, r);
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readReg3(tmp, r);
+                    
                     break;
                 }
 

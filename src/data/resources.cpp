@@ -1,6 +1,8 @@
 #include <string>
 #include <algorithm>
 
+#include "resources/structural_trimming.bed"
+
 #include "resources/anaquin.txt"
 #include "resources/VarCopy.txt"
 #include "resources/VarTrim.txt"
@@ -37,10 +39,9 @@ typedef std::string Scripts;
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
-Scripts Manual()
-{
-    return ToString(data_manuals_anaquin_txt);
-}
+Scripts Manual() { return ToString(data_manuals_anaquin_txt); }
+
+Scripts StructBED()    { return ToString(data_structural_trimming_bed); }
 
 Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }

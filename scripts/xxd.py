@@ -32,6 +32,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaCoverage.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
+          'data/structural_trimming.bed',
 
           'src/r/plotCNV.R',          
           'src/r/plotFold.R',

@@ -273,7 +273,7 @@ void VarRef::validate(Tool x, const UserReference &r)
         case Tool::VarPartition:
         {
             merge(r.r1->seqs());
-            build(r.r1, r.r2);
+            build(r.r1, r.r2, r.r3);
             break;
         }
 
