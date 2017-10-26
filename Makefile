@@ -1,13 +1,24 @@
+#
+# Please modify only BOOST, EIGEN and HTSLIB. You should be able to leave all other options intact. C++ compiler with C++11 support is mandatory.
+#
+
 # Boost C++ library
 BOOST = /usr/local/include/boost_1_64_0
 
 # Linear-algebra library
 EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 
-# HTSLIB library for BAM files
+# HTSLIB library for reading BAM files
 HTSLIB = /Users/tedwong/Sources/QA/htslib
 
-# Where the header are
+CC     = g++
+CFLAGS = -g -O2
+CPPFLAGS = -c -std=c++11
+DFLAGS = 
+#DFLAGS = -DBACKWARD_HAS_BFD # https://github.com/bombela/backward-cpp
+LIBS   = -lpthread -lz -lhts
+
+# Where the header are (no need to modify this)
 INCLUDE = src
 
 EXEC         = anaquin
@@ -18,13 +29,13 @@ SOURCES_LIB  = $(wildcard src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	g++ $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -DBACKWARD_HAS_BFD -g -lpthread -lz -lhts -L $(HTSLIB) -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) $(CFLAGS) $(DFLAGS) $(LIBS) -L $(HTSLIB) -o $(EXEC)
 
 %.o: %.c
-	gcc -g -c -DBACKWARD_HAS_BFD -I src/htslib -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
+	$(CC) $(CFLAGS) -c $(DFLAGS) -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
 
 %.o: %.cpp
-	g++ -g -DK_HACK -DBACKWARD_HAS_BFD -c -std=c++11 -I src/htslib -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
+	$(CC) $(CFLAGS) $(DFLAGS) $(CPPFLAGS) -I $(HTSLIB) -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
