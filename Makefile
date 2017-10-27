@@ -11,31 +11,34 @@ EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 # HTSLIB library for reading BAM files
 HTSLIB = /Users/tedwong/Sources/QA/htslib
 
-CC     = g++
-CFLAGS = -g -O2
-CPPFLAGS = -c -std=c++11
-DFLAGS = 
-#DFLAGS = -DBACKWARD_HAS_BFD # https://github.com/bombela/backward-cpp
-LIBS   = -lpthread -lz -lhts
+#
+# Backward-cpp (https://github.com/bombela/backward-cpp) is useful for C++ stack tracing. Optional.
+#
 
-# Where the header are (no need to modify this)
-INCLUDE = src
+DBACKWARD = #-DBACKWARD_HAS_BFD
+
+CXX      = g++
+CC       = $(CXX)
+CPPFLAGS = -g -O2 -I src -I src/stats
+CFLAGS   = -g -O2
+CXXFLAGS = -c -std=c++11 
+LIBS     = -lpthread -lz -lhts
+DFLAGS   = $(DBACKWARD)
 
 EXEC         = anaquin
 SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
-OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
-$(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) $(CFLAGS) $(DFLAGS) $(LIBS) -L $(HTSLIB) -o $(EXEC)
+$(EXEC): $(OBJECTS) $(OBJECTS_LIB)
+	$(CXX) $(OBJECTS) $(OBJECTS_LIB) $(CFLAGS) $(DFLAGS) $(LIBS) -L $(HTSLIB) -o $(EXEC)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $(DFLAGS) -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
+	$(CC)  $(DFLAGS) $(CFLAGS) $(CXXFLAGS) -I $(EIGEN) -I ${BOOST} $< -o $@
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(DFLAGS) $(CPPFLAGS) -I $(HTSLIB) -I src/stats -I $(INCLUDE) -I $(EIGEN) -I ${BOOST} $< -o $@
+	$(CXX) $(DFLAGS) $(CPPFLAGS) $(CXXFLAGS) -I $(HTSLIB) -I $(EIGEN) -I ${BOOST} $< -o $@
 
 clean:
-	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
+	rm -f $(EXEC) $(OBJECTS)
