@@ -95,7 +95,7 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
                         "-------Number of reads\n\n"
                         "       Genome:   %3%\n"
                         "       Sequin:   %4%\n"
-                        "       Dilution: %5%\n"
+                        "       Dilution: %5%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
                         "       Slope:       %6%\n"
                         "       Correlation: %7%\n"
