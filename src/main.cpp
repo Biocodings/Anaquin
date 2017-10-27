@@ -20,6 +20,7 @@
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
 #include "VarQuin/v_align.hpp"
+#include "VarQuin/v_kstats.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_partition.hpp"
 #include "VarQuin/v_structure.hpp"
@@ -129,6 +130,7 @@ static std::map<Value, Tool> _tools =
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
     { "VarKmer",        Tool::VarKmer        },
+    { "VarKStats",      Tool::VarKStats      },
     { "VarPartition",   Tool::VarPartition   },
 
     { "MetaCoverage",   Tool::MetaCoverage   },
@@ -341,6 +343,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarKmer();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
+    extern Scripts VarKStats();
     extern Scripts RnaAssembly();
     extern Scripts RnaSubsample();
     extern Scripts RnaExpression();
@@ -361,6 +364,7 @@ static Scripts manual(Tool tool)
         case Tool::VarMutation:    { return VarMutation();   }
         case Tool::VarAlign:       { return VarAlign();      }
         case Tool::VarKmer:        { return VarKmer();       }
+        case Tool::VarKStats:      { return VarKStats();     }
         case Tool::VarStructure:   { return VarStructure();  }
         case Tool::MetaAssembly:   { return MetaAssembly();  }
         case Tool::MetaCoverage:   { return MetaCoverage();  }
@@ -1121,10 +1125,11 @@ void parse(int argc, char ** argv)
         case Tool::VarTrim:
         case Tool::VarKmer:
         case Tool::VarAlign:
-        case Tool::VarPartition:
-        case Tool::VarGermline:
+        case Tool::VarKStats:
         case Tool::VarSomatic:
+        case Tool::VarGermline:
         case Tool::VarConjoint:
+        case Tool::VarPartition:
         case Tool::VarCalibrate:
         case Tool::VarStructure:
         {
@@ -1136,7 +1141,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
-                    
                 case Tool::VarPartition:
                 {
                     extern Scripts StructBED();
@@ -1226,7 +1230,14 @@ void parse(int argc, char ** argv)
             {
                 case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
                 case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
-
+                case Tool::VarKStats:
+                {
+                    VKStats::Options o;
+                    o.allIndex = _p.opts[OPT_R_IND];
+                    analyze_1<VKStats>(OPT_U_SEQS, o);
+                    break;
+                }
+                    
                 case Tool::VarPartition:
                 {
                     VPartition::Options o;

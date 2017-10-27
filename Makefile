@@ -26,7 +26,7 @@ LIBS     = -lpthread -lz -lhts
 DFLAGS   = $(DBACKWARD)
 
 EXEC         = anaquin
-SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
+SOURCES      = $(wildcard src/*.cpp src/kallisto/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)

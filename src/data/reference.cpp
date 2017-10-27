@@ -235,6 +235,11 @@ void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
+        case Tool::VarKStats:
+        {
+            break;
+        }
+
         case Tool::VarKmer:
         {
             build(r.l1);
@@ -244,7 +249,6 @@ void VarRef::validate(Tool x, const UserReference &r)
         case Tool::VarCopy:
         {
             const auto inter = intersect(r.r1->seqs(), r.l1->seqs);
-
             merge(inter.inters);
             
             filter(r.l1, inter.diffs);
