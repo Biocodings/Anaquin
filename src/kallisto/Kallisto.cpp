@@ -150,23 +150,23 @@ KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::st
     assert((__kStats__.nGen + __kStats__.nSeq) > 0);
     
 #ifdef DEBUG
-    std::ofstream w("KMAll_1.txt");
+    std::ofstream w1("KMAll_1.txt");
     
     for (const auto &i : __kStats__.all)
     {
-        w << i.first << "\t" << i.second << std::endl;
+        w1 << i.first << "\t" << i.second << std::endl;
     }
     
-    w.close();
+    w1.close();
     
-    std::ofstream w("KMAll_2.txt");
+    std::ofstream w2("KMAll_2.txt");
     
     for (const auto &i : __kStats__.spans)
     {
-        w << i.first << "\t" << i.second << std::endl;
+        w2 << i.first << "\t" << i.second << std::endl;
     }
     
-    w.close();
+    w2.close();
 #endif
     
     return __kStats__;
