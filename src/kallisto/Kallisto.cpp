@@ -149,9 +149,16 @@ KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::st
     // Have we read anything?
     assert((__kStats__.nGen + __kStats__.nSeq) > 0);
     
-//    std::cout << __kStats__.nGen << std::endl;
-//    std::cout << __kStats__.nSeq << std::endl;
-//    std::cout << (float)__kStats__.nSeq / (nSeq + nGen) << std::endl;
+#ifdef DEBUG
+    std::ofstream w("KMAll.txt");
+    
+    for (const auto &i : __kStats__.all)
+    {
+        w << i.first << "\t" << i.second << std::endl;
+    }
+    
+    w.close();
+#endif
     
     return __kStats__;
 }
