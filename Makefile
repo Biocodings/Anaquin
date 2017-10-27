@@ -19,7 +19,7 @@ DBACKWARD = #-DBACKWARD_HAS_BFD
 
 CXX      = g++
 CC       = $(CXX)
-CPPFLAGS = -g -O2 -I src -I src/stats
+CPPFLAGS = -g -O2 -I src -I src/stats -I src/kallisto
 CFLAGS   = -g -O2
 CXXFLAGS = -c -std=c++11 
 LIBS     = -lpthread -lz -lhts
