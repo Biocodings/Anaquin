@@ -522,7 +522,10 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.logger->open("anaquin.log");
 #endif
     
-    system(("mkdir -p " + path).c_str());
+    if (system(("mkdir -p " + path).c_str()))
+    {
+        throw std::runtime_error("Failed to create output directory");
+    }
     
     o.work  = path;
     
@@ -1136,7 +1139,7 @@ void parse(int argc, char ** argv)
                     
                 case Tool::VarPartition:
                 {
-                    Scripts StructBED();
+                    extern Scripts StructBED();
                     
                     const auto tmp = System::tmpFile();
                     std::ofstream out(tmp);
