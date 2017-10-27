@@ -33,6 +33,8 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaCoverage.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
+
+          'data/RKmersForVarKStats.tsv',
           'data/structural_trimming.bed',
 
           'src/r/plotCNV.R',          

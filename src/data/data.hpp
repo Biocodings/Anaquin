@@ -16,6 +16,7 @@ namespace Anaquin
         virtual std::string name() const = 0;
     };
     
+    typedef std::string Kmer;
     typedef std::string Sequence;
     
     typedef long long KMers;

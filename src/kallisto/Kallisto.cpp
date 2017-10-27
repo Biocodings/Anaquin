@@ -9,11 +9,10 @@
 
 using namespace Anaquin;
 
+extern std::string KMVarKStats();
+
 // Index for all sequin k-mers
 static std::shared_ptr<KmerIndex> __allIndex__;
-
-// Index for spanning variants
-static std::map<std::string, unsigned> __span__;
 
 static KMStats __kStats__;
 
@@ -21,33 +20,31 @@ static KMStats __kStats__;
  * Initlaize k-mers spanning variants, they are useful for estimating allele frequency
  */
 
-static void KMCancerSpan()
+static void LoadKMSpan()
 {
-    std::ifstream r("CancerKMSpan.txt");
-    
-    if (!r.good())
-    {
-        throw std::runtime_error("Invalid CancerKMSpan.txt");
-    }
-    
+    std::istringstream r(KMVarKStats());
     std::string line;
+
     while (std::getline(r, line))
     {
         std::vector<std::string> toks;
-        split(line, "t", toks);
-        assert(!toks.empty());
+        split(line, "\t", toks);
         
-        if (toks[0] == "Name") { continue; }
-        
-        __span__[toks[1]] = 0; // Normal
-        __span__[toks[2]] = 0; // Reverse complement
+        if (toks.size() == 4 && toks[3] == "Span")
+        {
+            __kStats__.vars[noLast(toks[0], "_")].R.insert(toks[1]);
+            __kStats__.vars[noLast(toks[0], "_")].V.insert(toks[2]);
+            
+            __kStats__.spans[toks[1]] = 0; // Normal
+            __kStats__.spans[toks[2]] = 0; // Reverse complement
+        }
     }
     
-    r.close();
-    assert(!__span__.empty());
+    assert(!__kStats__.vars.empty());
+    assert(!__kStats__.spans.empty());
 }
 
-void KMInit(const std::string &aIndex, int k = 31)
+void KMInit(const std::string &aIndex, int k)
 {
     ProgramOptions o;
     o.k = k;
@@ -60,12 +57,15 @@ void KMInit(const std::string &aIndex, int k = 31)
     __allIndex__ = std::shared_ptr<KmerIndex>(new KmerIndex(o));
     __allIndex__->load(o);
     
-    KMCancerSpan();
+    /*
+     * Reference k-mers spanning variants
+     */
+    
+    LoadKMSpan();
 }
 
 static void KMCount(const char *s)
 {
-    Kmer::k = 31;
     KmerIterator iter(s), end;
     
     // Number of k-mers that are sequins
@@ -76,20 +76,21 @@ static void KMCount(const char *s)
     
     for (int i = 0; iter != end; ++i, ++iter)
     {
-        auto k = iter->first.rep().toString();
+        const auto k = iter->first.rep().toString();
         
         /*
          * Does the k-mer span sequin variants?
          */
         
-        if (__span__.count(k))
+        if (__kStats__.spans.count(k))
         {
-            __span__[k]++;
+            __kStats__.spans[k]++;
         }
         
         /*
          * Is this one of the reference k-mers?
          */
+
         std::vector<std::pair<KmerEntry, int> > v;
         __allIndex__->match(k.c_str(), 31, v);
 
@@ -122,26 +123,14 @@ void KMCount(const char *s1, const char *s2)
     KMCount(s2);
 }
 
-void KMDebug()
-{
-#ifdef DEBUG
-//    std::ofstream w("KMAll.txt");
-//
-//    for (const auto &i : __debug__)
-//    {
-//        w << i.first << "\t" << i.second << std::endl;
-//    }
-//
-//    w.close();
-#endif
-}
-
 /*
  * Heavily modified Kallisto k-mer counting (no EM algorithm, bootstrapping etc)
  */
 
 KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::string &p2, unsigned k)
 {
+    Kmer::k = k;
+    
     // Initalize for reference k-mers
     KMInit(aIndex, k);
 
@@ -153,12 +142,11 @@ KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::st
 
     KmerIndex index(opt);
     MinCollector collection(index, opt);
+    
+    // Process k-mers
     ProcessReads(index, opt, collection);
     
-#ifdef DEBUG
-    KMDebug();
-#endif
-
+    // Have we read anything?
     assert((__kStats__.nGen + __kStats__.nSeq) > 0);
     
 //    std::cout << __kStats__.nGen << std::endl;

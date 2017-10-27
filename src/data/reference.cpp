@@ -235,12 +235,8 @@ void VarRef::validate(Tool x, const UserReference &r)
 {
     switch (x)
     {
-        case Tool::VarKStats:
-        {
-            break;
-        }
-
         case Tool::VarKmer:
+        case Tool::VarKStats:
         {
             build(r.l1);
             break;

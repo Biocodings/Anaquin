@@ -89,8 +89,6 @@ int ProcessBatchReads(KmerIndex& index, const ProgramOptions& opt, MinCollector&
   nummapped = MP.nummapped;
   batchCounts = std::move(MP.batchCounts);
 
-  std::cerr << " done" << std::endl;
-
   if (opt.bias) {
     std::cerr << "[quant] learning parameters for sequence specific bias" << std::endl;
   }
@@ -132,7 +130,6 @@ int ProcessReads(KmerIndex& index, const ProgramOptions& opt, MinCollector& tc)
   MP.processReads();
   numreads = MP.numreads;
   nummapped = MP.nummapped;
-  std::cerr << " done" << std::endl;
 
   /*
   for (int i = 0; i < 4096; i++) {
@@ -474,7 +471,7 @@ void ReadProcessor::processBuffer()
 
         if ((__i__ % 10000) == 0)
         {
-            std::cout << __i__ << std::endl;
+            std::cout << "[INFO]: " << __i__ << std::endl;
         }
         
         extern void KMCount(const char *, const char *);

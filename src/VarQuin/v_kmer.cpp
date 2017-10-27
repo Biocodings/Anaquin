@@ -8,7 +8,7 @@ extern Scripts  PlotKAllele();
 
 static bool isKallisto(const FileName &file)
 {
-    return isEnded(file, "abundance.tsv");
+    return isEnd(file, "abundance.tsv");
 }
 
 VKmer::Stats VKmer::analyze(const FileName &file, const Options &o)

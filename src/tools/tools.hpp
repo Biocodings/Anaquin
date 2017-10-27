@@ -33,7 +33,7 @@ namespace Anaquin
         return boost::algorithm::join(x, d);
     }
     
-    inline bool isEnded(const Tok &x, const Tok &y)
+    inline bool isEnd(const Tok &x, const Tok &y)
     {
         return boost::algorithm::ends_with(x, y);
     }

@@ -44,18 +44,19 @@ namespace SS
         return (1.0 * Internal::sum(x)) / Internal::count(x);
     }
 
+    template <typename T> typename T::value_type median(T &x)
+    {
+        const auto n = x.size() / 2;
+        std::nth_element(x.begin(), x.begin()+n, x.end());
+        return x.at(n);
+    }
+
     template <typename T> Real corrPearson(const T &x, const T &y)
     {
         SS_ASSERT(x.size() == y.size(), "Incompatible dimensions");
         return Internal::corrPearson(x, y);
     }
     
-    template <typename T> Real corrSpearman(const T &x, const T &y)
-    {
-        SS_ASSERT(x.size() == y.size(), "Incompatible dimensions");
-        return Internal::corrSpearman(x, y);
-    }
-
     enum TestType
     {
         Less,

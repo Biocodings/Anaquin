@@ -165,6 +165,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
+    { Tool::VarKStats,    { OPT_R_LAD } },
 
     /*
      * MetaQuin Analysis
@@ -812,17 +813,11 @@ void parse(int argc, char ** argv)
             {
                 if (opt == OPT_U_SEQS)
                 {
-                    std::vector<FileName> temp;
-                    Tokens::split(val, ",", temp);
-                    
-                    for (auto i = 0; i < temp.size(); i++)
-                    {
-                        checkFile(_p.opts[opt] = temp[i]);
-                        _p.seqs.push_back(temp[i]);
-                    }
+                    _p.seqs.push_back(val);
                 }
                 
-                checkFile(_p.opts[opt] = val); break;
+                checkFile(_p.opts[opt] = val);
+                break;
             }
 
             case OPT_PATH: { _p.path = val; break; }
@@ -1216,11 +1211,12 @@ void parse(int argc, char ** argv)
                 }
                     
                 case Tool::VarKmer:
+                case Tool::VarKStats:
                 {
-                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
+                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
-                    
+
                 default: { break; }
             }
             
@@ -1234,10 +1230,10 @@ void parse(int argc, char ** argv)
                 {
                     VKStats::Options o;
                     o.allIndex = _p.opts[OPT_R_IND];
-                    analyze_1<VKStats>(OPT_U_SEQS, o);
+                    analyze_n<VKStats>(o);
                     break;
                 }
-                    
+
                 case Tool::VarPartition:
                 {
                     VPartition::Options o;
