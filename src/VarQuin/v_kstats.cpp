@@ -91,7 +91,7 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
     const auto lm = stats.linear(true, true);
 
     const auto format = "-------VarKStats Output Results\n\n"
-                        "       Summary for input: %1%,%2%\n\n"
+                        "       Summary for input: %1% and %2%\n\n"
                         "-------Number of reads\n\n"
                         "       Genome:   %3%\n"
                         "       Sequin:   %4%\n"
