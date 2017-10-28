@@ -263,10 +263,7 @@ static Scripts generateSummary(const FileName &src, const MCoverage::Stats &stat
                         "       Correlation: %8%\n"
                         "       R2:          %9%\n"
                         "       F-statistic: %10%\n"
-                        "       P-value:     %11%\n"
-                        "       SSM:         %12%, DF: %13%\n"
-                        "       SSE:         %14%, DF: %15%\n"
-                        "       SST:         %16%, DF: %17%\n";
+                        "       P-value:     %11%\n";
     
     const auto limit = stats.limitQuant();
     
@@ -281,12 +278,6 @@ static Scripts generateSummary(const FileName &src, const MCoverage::Stats &stat
                                   % ls.R2             // 9
                                   % ls.F              // 10
                                   % ls.p              // 11
-                                  % ls.SSM            // 12
-                                  % ls.SSM_D          // 13
-                                  % ls.SSE            // 14
-                                  % ls.SSE_D          // 15
-                                  % ls.SST            // 16
-                                  % ls.SST_D          // 17
             ).str();
 }
 

@@ -37,27 +37,22 @@ namespace Anaquin
     struct LinearModel
     {
         // Constant coefficient
-        double c;
+        double c = NAN;
         
         // Least-squared slope coefficient
-        double m;
+        double m = NAN;
         
         // Adjusted R2
-        double R2;
+        double R2 = NAN;
         
         // Pearson correlation
-        double r;
+        double r = NAN;
         
         // Adjusted R2
-        double aR2;
+        double aR2 = NAN;
         
-        double F, p;
-        
-        // ANOVA estimates
-        double SST, SSM, SSE;
-        
-        // Degree of freedoms
-        unsigned SST_D, SSM_D, SSE_D;
+        double F = NAN;
+        double p = NAN;
     };
 
     struct Point

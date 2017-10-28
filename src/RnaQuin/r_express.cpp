@@ -324,12 +324,6 @@ static MultiStats multiStats(const std::vector<FileName>     &files,
         r.stats.r.add(lm.r);
         r.stats.sl.add(lm.m);
         r.stats.R2.add(lm.R2);
-        r.stats.SSM.add(lm.SSM);
-        r.stats.SSE.add(lm.SSE);
-        r.stats.SST.add(lm.SST);
-        r.stats.SSM_D.add(lm.SSM_D);
-        r.stats.SSE_D.add(lm.SSE_D);
-        r.stats.SST_D.add(lm.SST_D);
     }
     
     return r;

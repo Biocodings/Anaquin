@@ -72,12 +72,6 @@ LinearModel SequinStats::linear(bool shouldLog, bool ignoreZero) const
         lm.m     = m.coeffs[1].est;
         lm.R2    = m.r2;
         lm.aR2   = m.ar2;
-        lm.SST   = m.total.ss;
-        lm.SSM   = m.model.ss;
-        lm.SSE   = m.error.ss;
-        lm.SST_D = m.total.df;
-        lm.SSM_D = m.model.df;
-        lm.SSE_D = m.error.df;
     }
     catch(...)
     {
@@ -88,12 +82,6 @@ LinearModel SequinStats::linear(bool shouldLog, bool ignoreZero) const
         lm.m     = NAN;
         lm.R2    = NAN;
         lm.aR2   = NAN;
-        lm.SST   = NAN;
-        lm.SSM   = NAN;
-        lm.SSE   = NAN;
-        lm.SST_D = NAN;
-        lm.SSM_D = NAN;
-        lm.SSE_D = NAN;
     }
 
     return lm;

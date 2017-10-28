@@ -1,17 +1,23 @@
 #ifndef KALLISTO_HPP
 
 #include <map>
-#include <set>
+#include <vector>
+#include "data/data.hpp"
 
 namespace Anaquin
 {
+    struct KMPair
+    {
+        Kmer normal, revComp;
+    };
+    
     struct KMVariant
     {
         // Reference k-mers for reference standard
-        std::set<std::string> R;
+        std::vector<KMPair> R;
         
         // Reference k-mers for variant standard
-        std::set<std::string> V;
+        std::vector<KMPair> V;
     };
     
     struct KMStats
@@ -25,6 +31,7 @@ namespace Anaquin
         // Eg: List of reference k-mers spanning variants
         std::map<std::string, KMVariant> vars;
         
+        // Measured counts for reference spanning k-mers
         std::map<std::string, unsigned> spans;
         
 #ifdef DEBUG

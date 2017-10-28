@@ -6,23 +6,22 @@
 #include "ProcessReads.h"
 #include "tools/tools.hpp"
 #include "KmerIterator.hpp"
+#include "tools/errors.hpp"
 
 using namespace Anaquin;
 
-extern std::string KMVarKStats();
+// Defined in resources.cpp
+extern std::string RefKKmers();
 
 // Index for all sequin k-mers
 static std::shared_ptr<KmerIndex> __allIndex__;
 
+// Running statistics for k-mers
 static KMStats __kStats__;
 
-/*
- * Initlaize k-mers spanning variants, they are useful for estimating allele frequency
- */
-
-static void LoadKMSpan()
+static void LoadRefKKmers()
 {
-    std::istringstream r(KMVarKStats());
+    std::istringstream r(RefKKmers());
     std::string line;
     
     while (std::getline(r, line))
@@ -30,24 +29,38 @@ static void LoadKMSpan()
         std::vector<std::string> toks;
         split(line, "\t", toks);
         
-        if (toks.size() == 4 && toks[3] == "Span")
+        if (toks.size() != 4)
         {
-            if (isSubstr(toks[0], "_R"))
-            {
-                __kStats__.vars[noLast(toks[0], "_")].R.insert(toks[1]);
-            }
-            else
-            {
-                __kStats__.vars[noLast(toks[0], "_")].V.insert(toks[2]);
-            }
-            
-            __kStats__.spans[toks[1]] = 0; // Normal
-            __kStats__.spans[toks[2]] = 0; // Reverse complement
+            continue;
+        }
+
+        A_ASSERT(toks[3] == "Span");
+        
+        KMPair p;
+        p.normal  = toks[1]; // Normal
+        p.revComp = toks[2]; // Reverse complement
+        
+        // Eg: CS_011_R
+        const auto sID = noLast(toks[0], "_");
+        
+        if (isSubstr(toks[0], "_R"))
+        {
+            __kStats__.vars[sID].R.push_back(p);
+        }
+        else
+        {
+            __kStats__.vars[sID].V.push_back(p);
+        }
+        
+        if (toks[3] == "Span")
+        {
+            __kStats__.spans[p.normal]  = 0;
+            __kStats__.spans[p.revComp] = 0;
         }
     }
     
-    assert(!__kStats__.vars.empty());
-    assert(!__kStats__.spans.empty());
+    A_ASSERT(!__kStats__.vars.empty());
+    A_ASSERT(!__kStats__.spans.empty());
 }
 
 void KMInit(const std::string &aIndex, int k)
@@ -67,7 +80,7 @@ void KMInit(const std::string &aIndex, int k)
      * Reference k-mers spanning variants
      */
     
-    LoadKMSpan();
+    LoadRefKKmers();
 }
 
 static void KMCount(const char *s)
@@ -135,7 +148,7 @@ void KMCount(const char *s1, const char *s2)
 
 KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::string &p2, unsigned k)
 {
-    Kmer::k = k;
+    ::Kmer::k = k;
     
     // Initalize for reference k-mers
     KMInit(aIndex, k);

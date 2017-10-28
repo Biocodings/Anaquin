@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct VKStats
     {
-        struct Stats : public SequinStats
+        struct Stats
         {
             // Number of reads estimated to be sequins
             unsigned nSeq = 0;
@@ -20,7 +20,7 @@ namespace Anaquin
                 return (float) nSeq / (nSeq + nGen);
             }
             
-            // Allelle frequence ladder
+            // Ladder for allelle frequency
             SequinStats af;
         };
         

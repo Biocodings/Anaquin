@@ -44,7 +44,7 @@ typedef std::string Scripts;
 Scripts Manual() { return ToString(data_manuals_anaquin_txt); }
 
 Scripts StructBED()    { return ToString(data_structural_trimming_bed); }
-Scripts KMVarKStats()  { return ToString(data_RKmersForVarKStats_tsv);  }
+Scripts RefKKmers()  { return ToString(data_RKmersForVarKStats_tsv);  }
 
 Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }

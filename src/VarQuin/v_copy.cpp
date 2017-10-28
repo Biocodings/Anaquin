@@ -185,10 +185,7 @@ static void writeSummary(const FileName &file,
                          "       Correlation: %10%\n"
                          "       R2:          %11%\n"
                          "       F-statistic: %12%\n"
-                         "       P-value:     %13%\n"
-                         "       SSM:         %14%, DF: %15%\n"
-                         "       SSE:         %16%, DF: %17%\n"
-                         "       SST:         %18%, DF: %19%\n";
+                         "       P-value:     %13%\n";
     
     o.generate(file);
     o.writer->open(file);
@@ -205,12 +202,6 @@ static void writeSummary(const FileName &file,
                                             % lm.R2            // 11
                                             % lm.F             // 12
                                             % lm.p             // 13
-                                            % lm.SSM           // 14
-                                            % lm.SSM_D         // 15
-                                            % lm.SSE           // 16
-                                            % lm.SSE_D         // 17
-                                            % lm.SST           // 18
-                                            % lm.SST_D         // 19
                      ).str());
     o.writer->close();
 }
