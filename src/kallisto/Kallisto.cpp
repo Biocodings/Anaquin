@@ -24,7 +24,7 @@ static void LoadKMSpan()
 {
     std::istringstream r(KMVarKStats());
     std::string line;
-
+    
     while (std::getline(r, line))
     {
         std::vector<std::string> toks;
@@ -32,8 +32,14 @@ static void LoadKMSpan()
         
         if (toks.size() == 4 && toks[3] == "Span")
         {
-            __kStats__.vars[noLast(toks[0], "_")].R.insert(toks[1]);
-            __kStats__.vars[noLast(toks[0], "_")].V.insert(toks[2]);
+            if (isSubstr(toks[0], "_R"))
+            {
+                __kStats__.vars[noLast(toks[0], "_")].R.insert(toks[1]);
+            }
+            else
+            {
+                __kStats__.vars[noLast(toks[0], "_")].V.insert(toks[2]);
+            }
             
             __kStats__.spans[toks[1]] = 0; // Normal
             __kStats__.spans[toks[2]] = 0; // Reverse complement
