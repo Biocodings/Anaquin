@@ -1,8 +1,8 @@
-//#include <catch.hpp>
-//#include "tools/gtf_data.hpp"
-//
-//using namespace Anaquin;
-//
+#include <catch.hpp>
+#include "tools/gtf_data.hpp"
+
+using namespace Anaquin;
+
 //TEST_CASE("GTF_Synthetic")
 //{
 //    const auto r = gtfData(Reader("data/RnaQuin/A.R.1.gtf"));
@@ -69,49 +69,46 @@
 //    REQUIRE(!iIntrs.exact(Locus(3014395, 3014540)));
 //}
 //
-//TEST_CASE("GTF_Merged")
-//{
-//    const auto r = gtfData(Reader("tests/data/merged.gtf"));
-//
-//    REQUIRE(r.nGeneSyn()  == 78);
-//    REQUIRE(r.countTransSyn() == 164);
-//    REQUIRE(r.countUExonSyn() == 869);
-//    REQUIRE(r.countUIntrSyn() == 754);
-//
-//    /*
-//     * cat merged.gtf | grep -v chrIS | cut -f3 | grep gene  | wc
-//     * cat merged.gtf | grep -v chrIS | cut -f3 | grep trans | wc
-//     * cat merged.gtf | grep -v chrIS | cut -f3 | grep exon  | wc
-//     */
-//    
-//    REQUIRE(r.nGeneGen()  == 881);
-//    REQUIRE(r.countTransGen() == 2449);
-//    REQUIRE(r.countUIntrGen() == 4214);
-//    REQUIRE(r.countUExonGen() == 6540);
-//    
-//    REQUIRE(r.at(ChrIS).t2ue.size() == 162);
-//    REQUIRE(r.at("chr21").t2ue.size() == 2370);
-//
-//    const auto i = r.gIntervals(ChrIS);
-//
-//    REQUIRE(i.size() == 78);
-//    REQUIRE(i.overlap(Locus(6955490, 6955495)));
-//    REQUIRE(i.contains(Locus(6955490, 6955495)));
-//    REQUIRE(!i.contains(Locus(6955480, 6955485)));
-//    REQUIRE(!i.overlap(Locus(6955480, 6955485)));
-//
-//    REQUIRE(r.ueInters().size() == 2);
-//    REQUIRE(r.ueInters(ChrIS).size() == 869);    // 1192 for non-unique
-//    REQUIRE(r.ueInters("chr21").size() == 6540); // 14011 for non-unique
-//
-//    REQUIRE(r.uiInters().size() == 2);
-//    REQUIRE(r.uiInters(ChrIS).size() == 754);    // 1028 for non-unique
-//    REQUIRE(r.uiInters("chr21").size() == 4214); // 11553 for non-unique
-//
-//    //REQUIRE(r.il.at(ChrIS).at(Locus(6955730, 6960383)) == 1);
-//    //REQUIRE(r.il.at(ChrIS).at(Locus(2227518, 2235700)) == 3);
-//}
-//
+TEST_CASE("GTF_Merged")
+{
+    const auto r = gtfData(Reader("tests/data/merged.gtf"));
+
+    REQUIRE(r.nGeneSyn()  == 78);
+    REQUIRE(r.countTransSyn() == 164);
+    REQUIRE(r.countUExonSyn() == 869);
+    REQUIRE(r.countUIntrSyn() == 754);
+
+    /*
+     * cat merged.gtf | grep -v chrIS | cut -f3 | grep gene  | wc
+     * cat merged.gtf | grep -v chrIS | cut -f3 | grep trans | wc
+     * cat merged.gtf | grep -v chrIS | cut -f3 | grep exon  | wc
+     */
+    
+    REQUIRE(r.nGeneGen()  == 881);
+    REQUIRE(r.countTransGen() == 2449);
+    REQUIRE(r.countUIntrGen() == 4214);
+    REQUIRE(r.countUExonGen() == 6540);
+    
+    REQUIRE(r.at(ChrIS()).t2ue.size() == 162);
+    REQUIRE(r.at("chr21").t2ue.size() == 2370);
+
+    const auto i = r.gIntervals(ChrIS());
+
+    REQUIRE(i.size() == 78);
+    REQUIRE(i.overlap(Locus(6955490, 6955495)));
+    REQUIRE(i.contains(Locus(6955490, 6955495)));
+    REQUIRE(!i.contains(Locus(6955480, 6955485)));
+    REQUIRE(!i.overlap(Locus(6955480, 6955485)));
+
+    REQUIRE(r.ueInters().size() == 2);
+    REQUIRE(r.ueInters(ChrIS()).size() == 869);  // 1192 for non-unique
+    REQUIRE(r.ueInters("chr21").size() == 6540); // 14011 for non-unique
+
+    REQUIRE(r.uiInters().size() == 2);
+    REQUIRE(r.uiInters(ChrIS()).size() == 754);  // 1028 for non-unique
+    REQUIRE(r.uiInters("chr21").size() == 4214); // 11553 for non-unique
+}
+
 //#ifdef GENCODE_TEST
 //
 ///*
