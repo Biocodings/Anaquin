@@ -103,7 +103,9 @@ struct KmerIndex {
   std::vector<int> intersect(int ec, const std::vector<int>& v) const;
 
 
-
+    void BuildTranscripts(const ProgramOptions& opt);
+    void BuildDeBruijnGraph(const ProgramOptions& opt, const std::vector<std::string>& seqs);
+void BuildEquivalenceClasses(const ProgramOptions& opt, const std::vector<std::string>& seqs);
 
   void FixSplitContigs(const ProgramOptions& opt, std::vector<std::vector<TRInfo>>& trinfos);
   bool fwStep(Kmer km, Kmer& end) const;
