@@ -20,6 +20,9 @@ namespace Anaquin
         {
             Base edge = 0;
             
+            // Should we write out trimmed alignments but uncalibrated?
+            bool notCalib = false;
+            
             // Should we trim sequin reads?
             bool shouldTrim = true;
             
@@ -48,8 +51,8 @@ namespace Anaquin
             ForwardHang,
             ReverseLadQuin,
             LadQuinLadQuin,
-            Passed,
-            Sampled
+            TrimmedNotCalibrated,
+            TrimmedCalibrated
         };
 
         struct SampledInfo

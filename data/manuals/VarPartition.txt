@@ -24,12 +24,13 @@
 
 <b>TOOL OPTIONS</b>
      Required:
-        -rbed        Annotation file (BED format) of sequin regions
-        -usequin     Generated forward/reverse alignment file in SAM/BAM format
+        -rbed           Annotation file (BED format) of sequin regions
+        -usequin        Generated forward/reverse alignment file in SAM/BAM format
 
      Optional:
-        -o = output  Directory in which output files are written to
-        -edge = 0    Edge effects width in nucleotide bases
+        -o = output     Directory in which output files are written to
+        -edge = 0       Edge effects width in nucleotide bases
+        --writeUncalib  Write out trimmed but uncalibrated alignments to the reverse genome? 
 
 <b>OUTPUTS</b>
      VarPartition_summary.stats      - provides the summary statistics
@@ -41,3 +42,4 @@
      VarPartition_ambiguous_2.fq     - is the second paired-end for VarPartition_ambig_1.fq
      VarPartition_hanging.fq         - is the sequence file for hanging reads
      VarPartition_sample.bam         - is the sample derived alignment file
+     VarPartition_notCalibrated.bam  - is the trimmed but uncalibrated alignment file (only if --writeUncalib specified)

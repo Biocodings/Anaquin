@@ -76,6 +76,7 @@ typedef std::set<Value> Range;
 #define OPT_R_IND    812
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
+#define OPT_UN_CALIB 815
 #define OPT_EDGE     817
 #define OPT_U_BASE   818
 
@@ -283,6 +284,8 @@ static const struct option long_options[] =
 {
     { "v",       no_argument, 0, OPT_VERSION },
     { "version", no_argument, 0, OPT_VERSION },
+
+    { "writeUncalib", no_argument, 0, OPT_UN_CALIB },
 
     { "usequin", required_argument, 0, OPT_U_SEQS  },
     { "usample", required_argument, 0, OPT_U_SAMPLE },
@@ -520,7 +523,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     // This might be needed for scripting
     __full_command__ = _p.command;
 
-#ifndef DEBUG
+#ifndef WRITE_SAMPLED
     o.writer = std::shared_ptr<FileWriter>(new FileWriter(path));
     o.logger = std::shared_ptr<FileWriter>(new FileWriter(path));
     o.output = std::shared_ptr<TerminalWriter>(new TerminalWriter());
@@ -550,7 +553,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     const auto elapsed = (boost::format("Completed. %1% seconds.") % (double(end - begin) / CLOCKS_PER_SEC)).str();
     o.info(elapsed);
 
-#ifndef DEBUG
+#ifndef WRITE_SAMPLED
     o.logger->close();
 #endif
 }
@@ -795,7 +798,8 @@ void parse(int argc, char ** argv)
             case OPT_R_CNV:
             case OPT_R_LAD:
             case OPT_R_IND:
-            case OPT_R_CON: { _p.opts[opt] = val; break; }
+            case OPT_R_CON:
+            case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
 
             case OPT_MIXTURE:
             {
@@ -1237,7 +1241,10 @@ void parse(int argc, char ** argv)
                 case Tool::VarPartition:
                 {
                     VPartition::Options o;
+                    
+                    o.notCalib = _p.opts.count(OPT_UN_CALIB);
                     o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
+                    
                     analyze_1<VPartition>(OPT_U_SEQS, o);
                     break;
                 }

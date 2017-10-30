@@ -729,13 +729,16 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     stats.gStats.aTEndo = stats.nEndo;
     stats.gStats.aREndo = stats.gStats.bREndo;
     
-#ifdef DEBUG
-    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
+    if (o.notCalib)
     {
-        if (kept.count(x.name))    { f(&x, nullptr, Paired::Passed);  }
-        if (sampled.count(x.name)) { f(&x, nullptr, Paired::Sampled); }
-    }, false);
+        ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
+         {
+             if (kept.count(x.name))    { f(&x, nullptr, Paired::TrimmedNotCalibrated); }
+#ifdef DEBUG
+             if (sampled.count(x.name)) { f(&x, nullptr, Paired::TrimmedCalibrated); }
 #endif
+         }, false);
+    }
 
     return stats;
 }
@@ -762,9 +765,14 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
 
             endo.open(o.work + "/VarPartition_sample.bam");
             
+            if (o.notCalib)
+            {
+                notCalib = std::shared_ptr<BAMWriter>(new BAMWriter());
+                notCalib->open(o.work + "/VarPartition_notCalibrated.bam");
+            }
+
 #ifdef DEBUG
-            pass.open(o.work + "/VarPartition_passed.bam");
-            sample.open(o.work + "/VarPartition_sampled.bam");
+            calib.open(o.work + "/VarPartition_calibrated.bam");
 #endif
         }
         
@@ -777,9 +785,13 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             l2->close();
             endo.close();
             
+            if (notCalib)
+            {
+                notCalib->close();
+            }
+
 #ifdef DEBUG
-            pass.close();
-            sample.close();
+            calib.close();
 #endif
         }
         
@@ -846,16 +858,16 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
         }
 
 #ifdef DEBUG
-        inline void writeSample(const ParserBAM::Data &x)
+        inline void writeCalib(const ParserBAM::Data &x)
         {
-            sample.write(x);
-        }
-        
-        inline void writePass(const ParserBAM::Data &x)
-        {
-            pass.write(x);
+            calib.write(x);
         }
 #endif
+
+        inline void writeTrimmedNotCalibrated(const ParserBAM::Data &x)
+        {
+            notCalib->write(x);
+        }
 
         Stats &stats;
         std::shared_ptr<FileWriter> h1;
@@ -863,9 +875,10 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
         std::shared_ptr<FileWriter> l1, l2;
 
         BAMWriter endo;
-        
+        std::shared_ptr<BAMWriter> notCalib;
+
 #ifdef DEBUG
-        BAMWriter sample, pass;
+        BAMWriter calib;
 #endif
     };
     
@@ -875,21 +888,19 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
     {
         switch (status)
         {
-            case Paired::Sampled:
+            case Paired::TrimmedCalibrated:
             {
 #ifdef DEBUG
                 A_ASSERT(x2 == nullptr);
-                impl.writeSample(*x1);
+                impl.writeCalib(*x1);
 #endif
                 break;
             }
                 
-            case Paired::Passed:
+            case Paired::TrimmedNotCalibrated:
             {
-#ifdef DEBUG
                 A_ASSERT(x2 == nullptr);
-                impl.writePass(*x1);
-#endif
+                impl.writeTrimmedNotCalibrated(*x1);
                 break;
             }
                 
