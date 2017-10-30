@@ -39,6 +39,15 @@ namespace Anaquin
         std::map<std::string, unsigned> all;
 #endif
     };
+    
+    // Query a k-mer from a Kallisto index
+    bool KQuery(const FileName &, const Sequence &);
+    
+    // Build Kallisto index from a FASTA file
+    FileName KBuildIndex(const FileName &, unsigned k);
+
+    // Heavily modified Kallisto k-mer counting
+    KMStats KCount(const FileName &, const FileName &, const FileName &, unsigned);
 }
 
 #endif

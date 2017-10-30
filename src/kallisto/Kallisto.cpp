@@ -142,19 +142,45 @@ void KMCount(const char *s1, const char *s2)
     KMCount(s2);
 }
 
-/*
- * Heavily modified Kallisto k-mer counting (no EM algorithm, bootstrapping etc)
- */
-
-KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::string &p2, unsigned k)
+FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
 {
-    ::Kmer::k = k;
+    ProgramOptions opt;
+
+    opt.k = ::Kmer::k = k;
+    opt.index = "/tmp/tmp.index";
+    opt.transfasta.push_back(file);
     
+    KmerIndex index(opt);
+    index.BuildTranscripts(opt);
+    index.write(opt.index);
+    
+    return opt.index;
+}
+
+bool Anaquin::KQuery(const FileName &file, const Sequence &s)
+{
+    ProgramOptions opt;
+    
+    opt.k = ::Kmer::k = s.size();
+    opt.index = file;
+
+    KmerIndex index(opt);
+    index.load(opt);
+    
+    std::vector<std::pair<KmerEntry, int>> v;
+    index.match(s.c_str(), opt.k, v);
+
+    return !v.empty();
+}
+
+KMStats Anaquin::KCount(const FileName &aIndex, const FileName &p1, const FileName &p2, unsigned k)
+{
     // Initalize for reference k-mers
     KMInit(aIndex, k);
 
     ProgramOptions opt;
     
+    opt.k = ::Kmer::k = k;
     opt.index = aIndex;
     opt.files.push_back(p1);
     opt.files.push_back(p2);
@@ -166,7 +192,7 @@ KMStats Kallisto(const std::string &aIndex, const std::string &p1, const std::st
     ProcessReads(index, opt, collection);
     
     // Have we read anything?
-    assert((__kStats__.nGen + __kStats__.nSeq) > 0);
+    A_ASSERT((__kStats__.nGen + __kStats__.nSeq) > 0);
     
 #ifdef DEBUG
     std::ofstream w1("KMAll_1.txt");

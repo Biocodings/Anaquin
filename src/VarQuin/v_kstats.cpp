@@ -5,9 +5,6 @@
 
 using namespace Anaquin;
 
-// Defined in Kallisto.cpp
-extern KMStats Kallisto(const std::string &, const std::string &, const std::string &, unsigned);
-
 // Defined in resources.cpp
 extern Scripts PlotKAllele();
 
@@ -32,7 +29,7 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     }
 
     // Run k-mer analysis
-    const auto x = Kallisto(allIndex, files[0], files[1], 31);
+    const auto x = KCount(allIndex, files[0], files[1], 31);
     
     /*
      * 1: Dilution analysis
