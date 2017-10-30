@@ -1229,7 +1229,7 @@ void parse(int argc, char ** argv)
                 case Tool::VarKStats:
                 {
                     VKStats::Options o;
-                    o.allIndex = _p.opts[OPT_R_IND];
+                    o.sFA = _p.opts[OPT_R_IND];
                     analyze_n<VKStats>(o);
                     break;
                 }

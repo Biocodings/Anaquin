@@ -19,17 +19,14 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     const auto l1 = r.seqsL1();
 
     Stats stats;
-    auto allIndex = o.allIndex;
     
-    if (isEnd(allIndex, "fa") || isEnd(allIndex, "fasta"))
-    {
-//        std::cout << (boost::format("kallisto index -i /tmp/tmp.index %1%") % allIndex).str() << std::endl;
-//        system((boost::format("kallisto index -i /tmp/tmp.index %1%") % allIndex).str().c_str());
-//        allIndex = "/tmp/tmp.index";
-    }
+    o.logInfo("Generating a k-mer index for: " + o.sFA);
+    
+    // Generate temporary index
+    const auto index = KBuildIndex(o.sFA, 31);
 
     // Run k-mer analysis
-    const auto x = KCount(allIndex, files[0], files[1], 31);
+    const auto x = KCount(index, files[0], files[1], 31);
     
     /*
      * 1: Dilution analysis

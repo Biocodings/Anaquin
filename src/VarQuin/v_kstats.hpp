@@ -26,8 +26,8 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
-            // Reference index for all sequins
-            FileName allIndex;
+            // Reference FASTA file for sequins
+            FileName sFA;
         };
         
         static Stats analyze(const std::vector<FileName> &, const Options &o);
