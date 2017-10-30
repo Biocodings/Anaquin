@@ -7,6 +7,7 @@
 #include "tools/tools.hpp"
 #include "KmerIterator.hpp"
 #include "tools/errors.hpp"
+#include "tools/system.hpp"
 
 using namespace Anaquin;
 
@@ -147,7 +148,7 @@ FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
     ProgramOptions opt;
 
     opt.k = ::Kmer::k = k;
-    opt.index = "/tmp/tmp.index";
+    opt.index = System::tmpFile();
     opt.transfasta.push_back(file);
     
     KmerIndex index(opt);
