@@ -574,8 +574,8 @@ static void writeSummary(const FileName &file,
         o.writer->open(file);
         o.writer->write((boost::format(summary) % VCFRef()                             // 1
                                                 % BedRef()                             // 2
-                                                % seqs                                 // 3
-                                                % (endo.empty() ? "-" : endo)          // 4
+                                                % (endo.empty() ? "-" : endo)          // 3
+                                                % seqs                                 // 4
                                                 % E3()                                 // 5
                                                 % (c_nSNP + c_nDel + c_nIns)           // 6
                                                 % (r.nType1(Variation::SNP) +
