@@ -1,6 +1,7 @@
 #ifndef V_KSTATS_HPP
 #define V_KSTATS_HPP
 
+#include "Kallisto.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -9,25 +10,32 @@ namespace Anaquin
     {
         struct Stats
         {
-            // Number of reads estimated to be sequins
-            unsigned nSeq = 0;
+            // Raw statistics from Kallisto
+            KMStats kStats;
             
-            // Number of reads estimated to be genome (not sequins)
-            unsigned nGen = 0;
-
+            // Counts for each sequin
+            std::map<SequinID, std::vector<Counts>> s2c;
+            
             inline float dilution() const
             {
-                return (float) nSeq / (nSeq + nGen);
+                return (float) kStats.nSeq / (kStats.nSeq + kStats.nGen);
             }
             
+            // Minimum, maximum and medians
+            std::map<SequinID, Counts> mins, maxs, meds;
+
             // Ladder for allelle frequency
             SequinStats af;
         };
         
         struct Options : public AnalyzerOptions
         {
+            Options() : k(31) {}
+            
+            unsigned k;
+            
             // Reference FASTA file for sequins
-            FileName sFA;
+            FileName fa;
         };
         
         static Stats analyze(const std::vector<FileName> &, const Options &o);

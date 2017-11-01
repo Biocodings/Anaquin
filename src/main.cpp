@@ -1215,6 +1215,11 @@ void parse(int argc, char ** argv)
                 }
                     
                 case Tool::VarKmer:
+                {
+                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
+                    break;
+                }
+
                 case Tool::VarKStats:
                 {
                     readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r);
@@ -1233,7 +1238,7 @@ void parse(int argc, char ** argv)
                 case Tool::VarKStats:
                 {
                     VKStats::Options o;
-                    o.sFA = _p.opts[OPT_R_IND];
+                    o.fa = _p.opts[OPT_R_IND];
                     analyze_n<VKStats>(o);
                     break;
                 }

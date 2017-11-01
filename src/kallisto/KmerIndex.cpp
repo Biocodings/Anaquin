@@ -198,9 +198,9 @@ void KmerIndex::BuildDeBruijnGraph(const ProgramOptions& opt, const std::vector<
             // std::cout << rep.toString() << "\t" << rep.hash() << std::endl;
         }
     }
-    std::cerr << "done." << std::endl;
+    //std::cerr << "done." << std::endl;
     
-    std::cerr << "[build] building target de Bruijn graph ... "; std::cerr.flush();
+    //std::cerr << "[build] building target de Bruijn graph ... "; std::cerr.flush();
     // find out how much we can skip ahead for each k-mer.
     for (auto& kv : kmap) {
         if (kv.second.contig == -1) {
@@ -513,8 +513,7 @@ void KmerIndex::BuildEquivalenceClasses(const ProgramOptions& opt, const std::ve
         }
     }
     
-    
-    std::cerr << " done" << std::endl;
+    //std::cerr << " done" << std::endl;
     std::cerr << "[build] target de Bruijn graph has " << dbGraph.contigs.size() << " contigs and contains "  << kmap.size() << " k-mers " << std::endl;
 }
 

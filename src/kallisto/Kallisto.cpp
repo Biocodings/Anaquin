@@ -38,8 +38,8 @@ static void LoadRefKKmers()
         A_ASSERT(toks[3] == "Span");
         
         KMPair p;
-        p.normal  = toks[1]; // Normal
-        p.revComp = toks[2]; // Reverse complement
+        p.norm = toks[1]; // Normal
+        p.rcom = toks[2]; // Reverse complement
         
         // Eg: CS_011_R
         const auto sID = noLast(toks[0], "_");
@@ -55,8 +55,8 @@ static void LoadRefKKmers()
         
         if (toks[3] == "Span")
         {
-            __kStats__.spans[p.normal]  = 0;
-            __kStats__.spans[p.revComp] = 0;
+            __kStats__.spans[p.norm] = 0;
+            __kStats__.spans[p.rcom] = 0;
         }
     }
     
@@ -116,9 +116,9 @@ static void KMCount(const char *s)
 
         if (!v.empty())
         {
-#ifdef DEBUG
-            __kStats__.all[k]++;
-#endif
+            // There's a match, let's update the counting table
+            __kStats__.k2c[k]++;
+            
             isSeq++;
         }
         else
@@ -143,6 +143,66 @@ void KMCount(const char *s1, const char *s2)
     KMCount(s2);
 }
 
+SequinID Anaquin::KKM2Sequin(const Kmer &s, unsigned k)
+{
+    std::vector<std::pair<KmerEntry, int>> v;
+
+    __allIndex__->match(s.c_str(), k, v);
+    A_ASSERT(!v.empty());
+    
+    const Contig &c = __allIndex__->dbGraph.contigs[v[0].first.contig];
+    A_ASSERT(!c.transcripts.empty());
+
+    return __allIndex__->target_names_[c.transcripts[0].trid];
+}
+
+FileName Anaquin::KHumanFASTA(const FileName &file)
+{
+    const auto rfa = System::tmpFile();
+    
+    std::fstream r, w;
+    r.open(file, std::fstream::in);
+    w.open(rfa,  std::fstream::out);
+
+    int i = -1;
+    char buf[30000];
+    
+    // Reading "> ..."?
+    bool isName = false;
+    
+    auto reset = [&]() { i = -1; };
+    auto write = [&]() { w << buf[i];};
+
+    while (((buf[++i] = r.get()) != EOF))
+    {
+        switch (buf[i])
+        {
+            case '\n': { if (isName) { write(); reset(); } isName = false; break; }
+            case '>':
+            {
+                if (i)
+                {
+                    buf[i+1] = NULL;
+                    w << (char *) buf;
+                }
+
+                isName = true;
+                write();
+                reset();
+                
+                break;
+            }
+
+            default: { if (isName) { write(); } break; }
+        }
+    }
+    
+    r.close();
+    w.close();
+    
+    return rfa;
+}
+
 FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
 {
     ProgramOptions opt;
@@ -155,10 +215,22 @@ FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
     index.BuildTranscripts(opt);
     index.write(opt.index);
     
+    if (index.dbGraph.contigs.empty() || !index.kmap.size())
+    {
+        std::runtime_error("Failed to build index for " + file);
+    }
+    
     return opt.index;
 }
 
-bool Anaquin::KQuery(const FileName &file, const Sequence &s)
+bool Anaquin::KQuerySeqs(const Sequence &s, unsigned k)
+{
+    std::vector<std::pair<KmerEntry, int>> v;
+    __allIndex__->match(s.c_str(), k, v);
+    return !v.empty();
+}
+
+bool Anaquin::KQuery___(const FileName &file, const Sequence &s)
 {
     ProgramOptions opt;
     
@@ -174,15 +246,15 @@ bool Anaquin::KQuery(const FileName &file, const Sequence &s)
     return !v.empty();
 }
 
-KMStats Anaquin::KCount(const FileName &aIndex, const FileName &p1, const FileName &p2, unsigned k)
+KMStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2, unsigned k)
 {
     // Initalize for reference k-mers
-    KMInit(aIndex, k);
+    KMInit(i1, k);
 
     ProgramOptions opt;
     
     opt.k = ::Kmer::k = k;
-    opt.index = aIndex;
+    opt.index = i1;
     opt.files.push_back(p1);
     opt.files.push_back(p2);
 
@@ -194,26 +266,6 @@ KMStats Anaquin::KCount(const FileName &aIndex, const FileName &p1, const FileNa
     
     // Have we read anything?
     A_ASSERT((__kStats__.nGen + __kStats__.nSeq) > 0);
-    
-#ifdef DEBUG
-    std::ofstream w1("KMAll_1.txt");
-    
-    for (const auto &i : __kStats__.all)
-    {
-        w1 << i.first << "\t" << i.second << std::endl;
-    }
-    
-    w1.close();
-    
-    std::ofstream w2("KMAll_2.txt");
-    
-    for (const auto &i : __kStats__.spans)
-    {
-        w2 << i.first << "\t" << i.second << std::endl;
-    }
-    
-    w2.close();
-#endif
     
     return __kStats__;
 }

@@ -1,4 +1,5 @@
 #ifndef KALLISTO_HPP
+#define KALLISTO_HPP
 
 #include <map>
 #include <vector>
@@ -8,7 +9,7 @@ namespace Anaquin
 {
     struct KMPair
     {
-        Kmer normal, revComp;
+        Kmer norm, rcom;
     };
     
     struct KMVariant
@@ -22,6 +23,9 @@ namespace Anaquin
     
     struct KMStats
     {
+        // Index for all reference sequin k-mers
+        FileName i1;
+        
         // Number of reads estimated to be sequins
         unsigned nSeq = 0;
         
@@ -29,25 +33,31 @@ namespace Anaquin
         unsigned nGen = 0;
         
         // Eg: List of reference k-mers spanning variants
-        std::map<std::string, KMVariant> vars;
+        std::map<SequinID, KMVariant> vars;
         
         // Measured counts for reference spanning k-mers
-        std::map<std::string, unsigned> spans;
+        std::map<Kmer, unsigned> spans;
         
-#ifdef DEBUG
-        // All k-mers (for debugging)
-        std::map<std::string, unsigned> all;
-#endif
+        // Measured counts for all reference sequin k-mers
+        std::map<Kmer, Counts> k2c;
     };
-    
+
+    // Query a k-mer for all reference sequin k-mers
+    bool KQuerySeqs(const Sequence &, unsigned);
+
     // Query a k-mer from a Kallisto index
-    bool KQuery(const FileName &, const Sequence &);
+    bool KQuery___(const FileName &, const Sequence &);
+
+    FileName KHumanFASTA(const FileName &file);
+    
+    // Translate k-mer to sequin
+    SequinID KKM2Sequin(const Kmer &, unsigned);
     
     // Build Kallisto index from a FASTA file
     FileName KBuildIndex(const FileName &, unsigned k);
 
     // Heavily modified Kallisto k-mer counting
-    KMStats KCount(const FileName &, const FileName &, const FileName &, unsigned);
+    KMStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, unsigned);
 }
 
 #endif

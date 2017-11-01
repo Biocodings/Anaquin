@@ -62,6 +62,25 @@ namespace Anaquin
         });
     }
 
+    template <typename T> T revcomp(const T &x)
+    {
+        T r(x);
+        std::transform(x.rbegin(), x.rend(), r.begin(), [](char c)
+        {
+            switch(c)
+            {
+                case 'A': return 'T';
+                case 'C': return 'G';
+                case 'G': return 'C';
+                case 'T': return 'A';
+                default: return 'N';
+            }
+            return 'N';
+        });
+
+        return r;
+    }
+    
     /*
      * Standardize chromosome name. For example, "1" and "chr1" should mean the same.
      */

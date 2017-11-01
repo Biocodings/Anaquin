@@ -12,11 +12,6 @@
 
 namespace SS
 {
-    /*
-     * Produce sample quantiles corresponding to the given probabilities. The smallest observation corresponds to a
-     * probability of 0 and the largest to a probability of 1.
-     */
-
     template <typename T> typename T::value_type quantile(const T &x, P probs)
     {
         return Internal::quantile(x, probs);
@@ -32,23 +27,31 @@ namespace SS
         return Internal::cov(x, x);
     }
     
-    // Computes the standard deviation
     template <typename T> typename T::value_type getSD(const T &x)
     {
         return sqrt(getVariance(x));
     }
     
-    // Computes the arithmetic mean
     template <typename T> typename T::value_type mean(const T &x)
     {
         return (1.0 * Internal::sum(x)) / Internal::count(x);
     }
 
-    template <typename T> typename T::value_type median(T &x)
+    template <typename T> typename T::value_type med(T &x)
     {
         const auto n = x.size() / 2;
         std::nth_element(x.begin(), x.begin()+n, x.end());
         return x.at(n);
+    }
+
+    template <typename T> typename T::value_type min(const T &x)
+    {
+        return *(std::min_element(x.begin(), x.end()));
+    }
+    
+    template <typename T> typename T::value_type max(const T &x)
+    {
+        return *(std::max_element(x.begin(), x.end()));
     }
 
     template <typename T> Real corrPearson(const T &x, const T &y)
