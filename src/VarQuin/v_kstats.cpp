@@ -67,7 +67,6 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     A_ASSERT(!stats.meds.empty());
     A_ASSERT(!stats.maxs.empty());
 
-    
 //    for (const auto &i : kStats.vars)
 //    {
 //        auto __counts__ = [&](const SequinID &sID, const std::vector<KMPair> &x, std::vector<Counts> &v)
