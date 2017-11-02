@@ -86,6 +86,12 @@ void KMInit(const std::string &aIndex, int k)
 
 static void KMCount(const char *s)
 {
+//    std::vector<std::pair<KmerEntry, int> > v;
+//    __allIndex__->match(s, 31, v);
+//    
+//    if (!v.empty()) { __kStats__.nSeq++; }
+//    else            { __kStats__.nGen++; }
+
     KmerIterator iter(s), end;
     
     // Number of k-mers that are sequins
