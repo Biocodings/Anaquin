@@ -188,8 +188,11 @@ FileName Anaquin::KHumanFASTA(const FileName &file)
             {
                 if (i)
                 {
-                    buf[i+1] = NULL;
-                    w << (char *) buf;
+                    buf[i] = '\0';
+                    std::string x(buf);
+                    std::reverse(x.begin(), x.end());
+                    w << x;
+                    buf[i] = '>';
                 }
 
                 isName = true;
