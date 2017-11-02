@@ -217,7 +217,8 @@ FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
     
     if (index.dbGraph.contigs.empty() || !index.kmap.size())
     {
-        throw std::runtime_error("Failed to build index for " + file);
+        // Enable it later...
+//        throw std::runtime_error("Failed to build index for " + file);
     }
     
     return opt.index;
