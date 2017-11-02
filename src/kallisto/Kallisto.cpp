@@ -15,7 +15,7 @@ using namespace Anaquin;
 extern std::string RefKKmers();
 
 // Index for all sequin k-mers
-static std::shared_ptr<KmerIndex> __allIndex__;
+static std::shared_ptr<KmerIndex> __i1__;
 
 // Running statistics for k-mers
 static KMStats __kStats__;
@@ -64,18 +64,20 @@ static void LoadRefKKmers()
     A_ASSERT(!__kStats__.spans.empty());
 }
 
-void KMInit(const std::string &aIndex, int k)
+void KMInit(const FileName &i1, const FileName &i2, int k)
 {
-    ProgramOptions o;
-    o.k = k;
-    o.index = aIndex;
+    auto index = [&](const FileName &i)
+    {
+        ProgramOptions o;
+        o.k = k;
+        o.index = i;
+        
+        auto x = std::shared_ptr<KmerIndex>(new KmerIndex(o));
+        x->load(o);
+        return x;
+    };
     
-    /*
-     * Initalize for reference on all sequin k-mers (e.g. sequins.fa.index)
-     */
-    
-    __allIndex__ = std::shared_ptr<KmerIndex>(new KmerIndex(o));
-    __allIndex__->load(o);
+    __i1__ = index(i1);
     
     /*
      * Reference k-mers spanning variants
@@ -118,7 +120,7 @@ static void KMCount(const char *s)
          */
 
         std::vector<std::pair<KmerEntry, int> > v;
-        __allIndex__->match(k.c_str(), 31, v);
+        __i1__->match(k.c_str(), 31, v);
 
         if (!v.empty())
         {
@@ -153,13 +155,13 @@ SequinID Anaquin::KKM2Sequin(const Kmer &s, unsigned k)
 {
     std::vector<std::pair<KmerEntry, int>> v;
 
-    __allIndex__->match(s.c_str(), k, v);
+    __i1__->match(s.c_str(), k, v);
     A_ASSERT(!v.empty());
     
-    const Contig &c = __allIndex__->dbGraph.contigs[v[0].first.contig];
+    const Contig &c = __i1__->dbGraph.contigs[v[0].first.contig];
     A_ASSERT(!c.transcripts.empty());
 
-    return __allIndex__->target_names_[c.transcripts[0].trid];
+    return __i1__->target_names_[c.transcripts[0].trid];
 }
 
 FileName Anaquin::KHumanFASTA(const FileName &file)
@@ -236,7 +238,7 @@ FileName Anaquin::KBuildIndex(const FileName &file, unsigned k)
 bool Anaquin::KQuerySeqs(const Sequence &s, unsigned k)
 {
     std::vector<std::pair<KmerEntry, int>> v;
-    __allIndex__->match(s.c_str(), k, v);
+    __i1__->match(s.c_str(), k, v);
     return !v.empty();
 }
 
@@ -258,8 +260,7 @@ bool Anaquin::KQuery___(const FileName &file, const Sequence &s)
 
 KMStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2, unsigned k)
 {
-    // Initalize for reference k-mers
-    KMInit(i1, k);
+    KMInit(i1, i2, k);
 
     ProgramOptions opt;
     
