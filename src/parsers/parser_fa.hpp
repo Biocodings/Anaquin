@@ -13,7 +13,7 @@ namespace Anaquin
         struct Data
         {
             ChrID id;
-            std::string seq;
+            Sequence seq;
         };
 
         typedef std::function<void(const Data &, const ParserProgress &)> Callback;

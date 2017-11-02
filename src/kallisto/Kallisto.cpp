@@ -88,11 +88,12 @@ void KMInit(const FileName &i1, const FileName &i2, int k)
 
 static void KMCount(const char *s)
 {
-//    std::vector<std::pair<KmerEntry, int> > v;
-//    __allIndex__->match(s, 31, v);
-//    
-//    if (!v.empty()) { __kStats__.nSeq++; }
-//    else            { __kStats__.nGen++; }
+    std::vector<std::pair<KmerEntry, int> > v1, v2;
+    __i1__->match(s, 31, v1);
+    __i2__->match(s, 31, v2);
+    if (!v1.empty()) { __kStats__.hackSeq++; }
+    if (!v2.empty()) { __kStats__.hackGen++; }
+    if ( v1.empty()) { __kStats__.hackSeq2++; }
 
     KmerIterator iter(s), end;
     

@@ -158,6 +158,10 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
         stats.af.add(i.first, exp, obs);
     }
 
+    std::cout << stats.kStats.hackGen  << std::endl;
+    std::cout << stats.kStats.hackSeq  << std::endl;
+    std::cout << stats.kStats.hackSeq2 << std::endl;
+
     return stats;
 }
 

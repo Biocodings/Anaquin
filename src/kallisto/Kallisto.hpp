@@ -23,6 +23,11 @@ namespace Anaquin
     
     struct KMStats
     {
+        unsigned hackSeq = 0;
+        unsigned hackGen = 0;
+        unsigned hackSeq2 = 0;
+
+        
         // Index for all reference sequin k-mers
         FileName i1;
         
