@@ -14,8 +14,7 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern std::string RefKKmers();
 
-// Index for all sequin k-mers
-static std::shared_ptr<KmerIndex> __i1__;
+static std::shared_ptr<KmerIndex> __i1__, __i2__;
 
 // Running statistics for k-mers
 static KMStats __kStats__;
@@ -78,6 +77,7 @@ void KMInit(const FileName &i1, const FileName &i2, int k)
     };
     
     __i1__ = index(i1);
+    __i2__ = index(i2);
     
     /*
      * Reference k-mers spanning variants
