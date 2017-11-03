@@ -4,22 +4,51 @@
 
 using namespace Anaquin;
 
-TEST_CASE("Kallisto_1")
-{
-    const auto x = KBuildIndex("tests/data/A.V.28.fa", 31);
-    REQUIRE(!x.empty());
-    
-    REQUIRE( KQuery___(x, "CCTTCCCCGTCTAAAGCCCCAGATCCGAACC"));
-    REQUIRE( KQuery___(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG"));
-    REQUIRE(!KQuery___(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGA"));
-    REQUIRE(!KQuery___(x, "CCTTCCCCGTCTAAAGCCCCAGATCCGAACA"));
-}
+//TEST_CASE("Kallisto_1")
+//{
+//    const auto x = KBuildIndex("tests/data/k-mers.fa", 31);
+//    REQUIRE(!x.empty());
+//
+//    REQUIRE(KQuery___(x, "ACAGAAATAAACGAAACAGTTCTAGTAAAAAACAATTTCATTCATGATCTATAAGGAACAGT"));
+//    REQUIRE(KQuery___(x, "ACAGAAATAAACGAAACAGTTCTAGTAAAAACAATTTCATTCATGATCTATAAGGAACAGT"));
+//}
 
 TEST_CASE("Kallisto_2")
 {
-    const auto f = KHumanFASTA("tests/data/A.V.28.fa");
-    const auto x = KBuildIndex(f, 31);
+    const auto x = KBuildIndex("tests/data/A.V.23.fa", 31);
+    REQUIRE(!x.empty());
     
-    REQUIRE( KQuery___(x, "GGAAGGGGCAGATTTCGGGGTCTAGGCTTGG"));
-    REQUIRE(!KQuery___(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG"));
+    const auto r1 = KQuery(x, "CCTTCCCCGTCTAAAGCCCCAGATCCGAACC");
+    const auto r2 = KQuery(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG");
+    const auto r3 = KQuery(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGA");
+    const auto r4 = KQuery(x, "CCTTCCCCGTCTAAAGCCCCAGATCCGAACA");
+
+    REQUIRE(r1.size() == 1);
+    REQUIRE(r1.count("GI_030_V"));
+
+    REQUIRE(r2.size() == 1);
+    REQUIRE(r2.count("GI_030_V"));
+
+    REQUIRE(r3.empty());
+    REQUIRE(r4.empty());
+}
+
+TEST_CASE("Kallisto_3")
+{
+    std::map<SequinID, Base> m;
+    const auto f = KHumanFA("tests/data/A.V.23.fa", m);
+    const auto x = KBuildIndex(f, 31);
+
+    const auto r1 = KQuery(x, "GTAGATCACCTGAGGTCGGGAGTTCAAGACC");
+    const auto r2 = KQuery(x, "GGAAGGGGCAGATTTCGGGGTCTAGGCTTGG");
+    const auto r3 = KQuery(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG");
+    
+    REQUIRE(r1.size() == 2);
+    REQUIRE(r1.count("GI_044_R"));
+    REQUIRE(r1.count("GI_044_V"));
+
+    REQUIRE(r2.size() == 1);
+    REQUIRE(r2.count("GI_030_V"));
+    
+    REQUIRE(r3.size() == 0);
 }
