@@ -2,7 +2,8 @@
 #define VARQUIN_HPP
 
 #include "data/data.hpp"
-#include "data/variant.hpp"
+#include "tools/tools.hpp"
+#include "data/biology.hpp"
 
 namespace Anaquin
 {
@@ -26,6 +27,16 @@ namespace Anaquin
             case Variation::Duplication: { return "Duplication"; }
             case Variation::Inversion:   { return "Inversion";   }
         }
+    }
+
+    template <typename T> T noRV(const T &x)
+    {
+        return (isSubstr(x, "_R") || isSubstr(x, "_V")) ? noLast(x, "_") : x;
+    }
+    
+    template <typename T> bool isCancer(const T &x)
+    {
+        return x.find("CS_") != std::string::npos;
     }
     
     // Eg: LAD_18

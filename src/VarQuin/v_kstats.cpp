@@ -1,15 +1,15 @@
 #include "Kallisto.hpp"
 #include "ss/stats.hpp"
-#include <boost/format.hpp>
+#include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_kstats.hpp"
 
 using namespace Anaquin;
 
-// Defined in resources.cpp
-extern Scripts PlotKAllele();
-
 typedef VKStats::Stats Stats;
 typedef VKStats::Options Options;
+
+// Defined in resources.cpp
+extern Scripts PlotKAllele();
 
 Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
 {
@@ -19,148 +19,85 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     const auto l1 = r.seqsL1();
 
     Stats stats;
-    o.logInfo("Generating a k-mer index for: " + o.fa);
     
-    /*
-     * 1: Generate a FASTA file for human regions
-     */
-    
-    const auto hg = KHumanFASTA(o.fa);
+    o.logInfo("Generating index for: " + o.fa);
+    const auto hg = KHumanFA(o.fa, stats.s2l);
 
-    /*
-     * 2: Generate temporary index
-     *
-     *     - Sequin sequences
-     *     - Forward sequences
-     *     - Spanning sequences
-     */
-    
-    const auto i1 = KBuildIndex(o.fa, 31);
-    const auto i2 = KBuildIndex(hg, 31);
-
-    stats.kStats = KCount(i1, i2, files[0], files[1], o.k);
-
-    /*
-     * 3: Work out minimum, maximum and median statistics
-     */
-    
+    stats.kStats = KCount(KBuildIndex(o.fa, o.k), KBuildIndex(hg, o.k), files[0], files[1], o.k);
     auto &kStats = stats.kStats;
-    
-    // For all measured reference sequin k-mers...
-    for (const auto &i : kStats.k2c)
-    {
-        // Make sure only either normal or reverse complement is counted but not both
-        A_ASSERT(!kStats.k2c.count(revcomp(i.first)));
-        
-        // Eg: CI_019 has [10,1,5,6...]
-        stats.s2c[KKM2Sequin(i.first, o.k)].push_back(i.second);
-    }
-    
-    for (auto &i : stats.s2c)
-    {
-        stats.mins[i.first] = SS::min(i.second);
-        stats.meds[i.first] = SS::med(i.second);
-        stats.maxs[i.first] = SS::max(i.second);
-    }
-    
-    A_ASSERT(!stats.mins.empty());
-    A_ASSERT(!stats.meds.empty());
-    A_ASSERT(!stats.maxs.empty());
 
-//    for (const auto &i : kStats.vars)
-//    {
-//        auto __counts__ = [&](const SequinID &sID, const std::vector<KMPair> &x, std::vector<Counts> &v)
-//        {
-//            for (const auto &i : x)
-//            {
-//                const auto nc = kStats.k2c.count(i.norm) ? kStats.k2c.at(i.norm) : 0;
-//                const auto rc = kStats.k2c.count(i.rcom) ? kStats.k2c.at(i.rcom) : 0;
-//
-//                // Don't bother if the k-mer is missing
-//                if (nc + rc)
-//                {
-//                    v.push_back(nc + rc);
-//                }
-//            }
-//        };
-//
-//        std::vector<Counts> v;
-//        __counts__(i.first, i.second.R, v);
-//        __counts__(i.first, i.second.V, v);
-//
-//        Counts min, med, max;
-//
-//        if (v.empty())
-//        {
-//            min = med = max = std::numeric_limits<Counts>::quiet_NaN();
-//        }
-//        else
-//        {
-//            min = SS::min(v);
-//            med = SS::med(v);
-//            max = SS::max(v);
-//
-//            A_ASSERT(min >= 0);
-//            A_ASSERT(med >= 0);
-//            A_ASSERT(max >= 0);
-//        }
-//
-//        stats.mins[i.first] = min;
-//        stats.meds[i.first] = med;
-//        stats.maxs[i.first] = max;
-//    }
-    
     /*
-     * 4: Allele frequency ladder
+     * Work out k-mer statistics for each sequin
+     */
+
+    auto __stats__ = [&](const SequinCounts &x, Stats::Abundance &a)
+    {
+        for (const auto &i : x)
+        {
+            // Eg: CS_010
+            const auto seq = noRV(i.first);
+            
+            for (const auto &j : i.second)
+            {
+                a.raws[seq].push_back(j.second);
+            }
+        }
+    };
+    
+    __stats__(kStats.R.shared, stats.R);
+    __stats__(kStats.R.uniqs,  stats.R);
+
+    auto minMedMax = [&](Stats::Abundance &abund)
+    {
+        for (auto &i : abund.raws)
+        {
+            abund.mins[i.first] = SS::min(i.second);
+            abund.meds[i.first] = SS::med(i.second);
+            abund.maxs[i.first] = SS::max(i.second);
+        }
+    };
+    
+    minMedMax(stats.R);
+    
+    A_ASSERT(!stats.R.mins.empty());
+    A_ASSERT(!stats.R.meds.empty());
+    A_ASSERT(!stats.R.maxs.empty());
+
+    /*
+     * 3: Allele frequency ladder
      */
     
-    for (const auto &i : stats.kStats.vars)
+    for (const auto &i : stats.kStats.seqs)
     {
-        auto __count__ = [&](const std::vector<KMPair> &ps)
+        if (isCancer(i))
         {
-            std::vector<unsigned> l;
-            
-            for (const auto &p : ps)
+            const auto R = i + "_R";
+            const auto V = i + "_V";
+
+            const auto rn = kStats.R.uniqs.count(R) ? SS::med_(kStats.R.uniqs.at(R)) : 0;
+            const auto vn = kStats.R.uniqs.count(V) ? SS::med_(kStats.R.uniqs.at(V)) : 0;
+
+            if (rn + vn == 0)
             {
-                A_ASSERT(stats.kStats.spans.count(p.norm));
-                A_ASSERT(stats.kStats.spans.count(p.rcom));
-                
-                const auto nc = stats.kStats.spans.at(p.norm);
-                const auto rc = stats.kStats.spans.at(p.rcom);
-
-                l.push_back(nc + rc);
+                o.logInfo(R + " not found");
+                continue;
             }
-            
-            return SS::med(l);
-        };
-        
-        const auto rn = __count__(i.second.R);
-        const auto vn = __count__(i.second.V);
-        
-        if (rn + vn == 0)
-        {
-            o.logInfo(i.first + " not found");
-            continue;
-        }
-        else if (vn == 0)
-        {
-            o.logInfo(i.first + " abundance is zero");
-            continue;
-        }
-        
-        // Expected allele frequency
-        const auto exp = r.input1(i.first);
-        
-        // Measured allele frequency
-        const auto obs = (float) vn / (rn + vn);
-        
-        // Allele frequency ladder
-        stats.af.add(i.first, exp, obs);
-    }
+            else if (vn == 0)
+            {
+                o.logInfo(V + " abundance is zero");
+                continue;
+            }
 
-    std::cout << stats.kStats.hackGen  << std::endl;
-    std::cout << stats.kStats.hackSeq  << std::endl;
-    std::cout << stats.kStats.hackSeq2 << std::endl;
+            // Expected allele frequency
+            const auto exp = r.input1(i);
+            
+            // Measured allele frequency
+            const auto obs = (float) vn / (rn + vn);
+            
+            // Allele frequency ladder
+            stats.af.add(i, exp, obs);
+        }
+    }
 
     return stats;
 }
@@ -177,7 +114,7 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
 
     const auto format = "-------VarKStats Output Results\n\n"
                         "       Summary for input: %1% and %2%\n\n"
-                        "-------Number of reads\n\n"
+                        "-------Alignment reads\n\n"
                         "       Genome:   %3%\n"
                         "       Sequin:   %4%\n"
                         "       Dilution: %5%\n\n"
@@ -188,16 +125,16 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
                         "       F-statistic: %9%\n"
                         "       P-value:     %10%\n";
 
-    o.writer->write((boost::format(format) % p1                // 1
-                                           % p2                // 2
-                                           % stats.kStats.nGen // 3
-                                           % stats.kStats.nSeq // 4
-                                           % stats.dilution()  // 5
-                                           % lm.m              // 6
-                                           % lm.r              // 7
-                                           % lm.R2             // 8
-                                           % lm.F              // 9
-                                           % lm.p              // 10
+    o.writer->write((boost::format(format) % p1                     // 1
+                                           % p2                     // 2
+                                           % stats.kStats.R.nMatch  // 3
+                                           % stats.kStats.R.nNMatch // 4
+                                           % stats.dilution()       // 5
+                                           % lm.m                   // 6
+                                           % lm.r                   // 7
+                                           % lm.R2                  // 8
+                                           % lm.F                   // 9
+                                           % lm.p                   // 10
                     ).str());
     o.writer->close();
 }
@@ -217,43 +154,70 @@ static void writeAlleleR(const FileName &file, const FileName &src, const Stats 
 
 static void writeKmers(const FileName &file, const Stats &stats, const Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%";
-    
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name"
-                                           % "Sequence"
-                                           % "Counts").str());
-
-    for (const auto &i : stats.kStats.k2c)
-    {
-        o.writer->write((boost::format(format) % KKM2Sequin(i.first, o.k)
-                                               % i.first
-                                               % i.second).str());
-    }
-        
-    o.writer->close();
-}
-
-static void writeQuins(const FileName &file, const Stats &stats, const Options &o)
-{
     const auto format = "%1%\t%2%\t%3%\t%4%";
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                                           % "Minimum"
-                                           % "Median"
-                                           % "Maximum").str());
-    
-    for (const auto &i : stats.mins)
+                                           % "Sequence"
+                                           % "Counts"
+                                           % "Type").str());
+
+    for (const auto &i : stats.kStats.R.shared)
     {
-        #define S(x) (std::isnan(x) ? "-" : std::to_string(x))
+        for (const auto &j : i.second)
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % j.first
+                                                   % j.second
+                                                   % "Shared").str());
+        }
+    }
+
+    for (const auto &i : stats.kStats.R.uniqs)
+    {
+        for (const auto &j : i.second)
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % j.first
+                                                   % j.second
+                                                   % "Unique").str());
+        }
+    }
+
+    o.writer->close();
+}
+
+static void writeQuins(const FileName &file, const Stats &stats, const Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "RMin"
+                                           % "RMedian"
+                                           % "RMaximum"
+                                           % "FCounts"
+                                           % "FAbund"
+                                           % "FMin"
+                                           % "FMedian"
+                                           % "FMaximum").str());
+    
+    for (const auto &seq : stats.kStats.seqs)
+    {
+        #define S(x,y) (x.count(y) ? std::isnan(x.at(y)) ? "-" : std::to_string(x.at(y)) : "-")
         
-        o.writer->write((boost::format(format) % i.first
-                                               % S(stats.mins.at(i.first))
-                                               % S(stats.meds.at(i.first))
-                                               % S(stats.maxs.at(i.first))).str());
+        o.writer->write((boost::format(format) % seq
+                                               % S(stats.R.mins, seq)
+                                               % S(stats.R.meds, seq)
+                                               % S(stats.R.maxs, seq)
+                                               % "????" //S(stats.R.fa.s2r.at(seq))
+                                               % "????" //S(stats.R.fa.s2a.at(seq))
+                                               % "????" //S(stats.R.fa.mins.at(seq))
+                                               % "????" //S(stats.R.fa.meds.at(seq))
+                                               % "????" //S(stats.R.fa.maxs.at(seq)
+       ).str());
     }
     
     o.writer->close();
@@ -283,9 +247,6 @@ void VKStats::report(const std::vector<FileName> &files, const Options &o)
 {
     A_ASSERT(files.size() == 2);    
     const auto stats = analyze(files, o);
-    
-    o.info("Number of genome reads: " + std::to_string(stats.kStats.nGen));
-    o.info("Number of sequin reads: " + std::to_string(stats.kStats.nSeq));
     
     /*
      * Generating VarKStats_summary.stats

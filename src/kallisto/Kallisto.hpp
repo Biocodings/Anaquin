@@ -1,68 +1,72 @@
 #ifndef KALLISTO_HPP
 #define KALLISTO_HPP
 
+#include <set>
 #include <map>
 #include <vector>
 #include "data/data.hpp"
 
 namespace Anaquin
 {
-    struct KMPair
-    {
-        Kmer norm, rcom;
-    };
+    typedef std::set<SequinID> Matches;
+    typedef std::map<SequinID, std::map<Kmer, Counts>> SequinCounts;
     
-    struct KMVariant
+    struct KStats
     {
-        // Reference k-mers for reference standard
-        std::vector<KMPair> R;
+        // Sequin standards (no _R and _V)
+        std::set<SequinID> seqs;
         
-        // Reference k-mers for variant standard
-        std::vector<KMPair> V;
-    };
-    
-    struct KMStats
-    {
-        unsigned hackSeq = 0;
-        unsigned hackGen = 0;
-        unsigned hackSeq2 = 0;
+        struct KAbund
+        {
+            // Measured counts for unique k-mers
+            SequinCounts uniqs;
+            
+            // Measured counts for shared k-mers
+            SequinCounts shared;
 
+            // Counts for sequins
+            std::map<SequinID, Counts> m;
+
+            // Number of reads matching this index (e.g. sequins)
+            Counts nMatch = 0;
+            
+            // Number of reads not matching this index (e.g. genome)
+            Counts nNMatch = 0;
+        };
+        
+        // Abundance for the reverse and forward genome
+        KAbund R, F;
         
         // Index for all reference sequin k-mers
         FileName i1;
-        
-        // Number of reads estimated to be sequins
-        unsigned nSeq = 0;
-        
-        // Number of reads estimated to be genome (not sequins)
-        unsigned nGen = 0;
-        
-        // Eg: List of reference k-mers spanning variants
-        std::map<SequinID, KMVariant> vars;
-        
-        // Measured counts for reference spanning k-mers
-        std::map<Kmer, unsigned> spans;
-        
-        // Measured counts for all reference sequin k-mers
-        std::map<Kmer, Counts> k2c;
     };
 
-    // Query a k-mer for all reference sequin k-mers
-    bool KQuerySeqs(const Sequence &, unsigned);
-
-    // Query a k-mer from a Kallisto index
-    bool KQuery___(const FileName &, const Sequence &);
-
-    FileName KHumanFASTA(const FileName &file);
+    void KInit(const FileName &, const FileName &, unsigned);
     
-    // Translate k-mer to sequin
-    SequinID KKM2Sequin(const Kmer &, unsigned);
+    FileName KHumanFA(const FileName &, std::map<SequinID, Base> &);
+
+    /*
+     * Functions for building
+     */
     
     // Build Kallisto index from a FASTA file
-    FileName KBuildIndex(const FileName &, unsigned k);
-
+    FileName KBuildIndex(const FileName &, unsigned k = 31);
+    
     // Heavily modified Kallisto k-mer counting
-    KMStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, unsigned);
+    KStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, unsigned k = 31);
+
+    /*
+     * Functions for queries
+     */
+    
+    // Query a k-mer from a Kallisto index
+    Matches KQuery(const FileName &, const Sequence &s, unsigned k = 31);
+
+    // Query a k-mer internally
+    SequinID KQuery(const Kmer &, unsigned k = 31);
+    
+    bool KQuery1(const Kmer &, unsigned, SequinID &);
+    bool KQuery2(const Kmer &, unsigned, SequinID &);
 }
 
 #endif

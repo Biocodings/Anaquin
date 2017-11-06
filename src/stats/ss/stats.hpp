@@ -1,6 +1,7 @@
 #ifndef SS_STATS_HPP
 #define SS_STATS_HPP
 
+#include <map>
 #include <vector>
 #include <numeric>
 #include <limits.h>
@@ -42,6 +43,18 @@ namespace SS
         const auto n = x.size() / 2;
         std::nth_element(x.begin(), x.begin()+n, x.end());
         return x.at(n);
+    }
+
+    template <typename T1, typename T2> T2 med_(const std::map<T1, T2> &x)
+    {
+        std::vector<T2> t;
+        
+        for (const auto &i : x)
+        {
+            t.push_back(i.second);
+        }
+        
+        return SS::med(t);
     }
 
     template <typename T> typename T::value_type min(const T &x)

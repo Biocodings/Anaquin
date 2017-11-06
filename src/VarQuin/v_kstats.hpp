@@ -11,19 +11,36 @@ namespace Anaquin
         struct Stats
         {
             // Raw statistics from Kallisto
-            KMStats kStats;
+            KStats kStats;
             
-            // Counts for each sequin
+            struct Abundance
+            {
+                // Number of reads mapping for each sequin
+                std::map<SequinID, Counts> s2r;
+                
+                // Estimated sequin abundance
+                std::map<SequinID, Coverage> s2a;
+                
+                // Raw counts
+                std::map<SequinID, std::vector<Counts>> raws;
+                
+                // Minimum, maximum and medians
+                std::map<SequinID, Counts> mins, maxs, meds;
+            };
+            
+            Abundance R, F;
+            
+            // Length for sequins
+            std::map<SequinID, Base> s2l;
+            
+            // Counts for ssequin
             std::map<SequinID, std::vector<Counts>> s2c;
             
             inline float dilution() const
             {
-                return (float) kStats.nSeq / (kStats.nSeq + kStats.nGen);
+                return (float) kStats.R.nMatch / (kStats.R.nMatch + kStats.R.nNMatch);
             }
             
-            // Minimum, maximum and medians
-            std::map<SequinID, Counts> mins, maxs, meds;
-
             // Ladder for allelle frequency
             SequinStats af;
         };

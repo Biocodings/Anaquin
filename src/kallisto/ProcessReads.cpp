@@ -474,8 +474,8 @@ void ReadProcessor::processBuffer()
             std::cout << "[INFO]: " << __i__ << std::endl;
         }
         
-        extern void KMCount(const char *, const char *);
-        KMCount(s1, s2);
+        extern void KCount(const char *, const char *);
+        KCount(s1, s2);
     }
 }
 

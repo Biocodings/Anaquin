@@ -6,5 +6,5 @@ using namespace Anaquin;
 
 TEST_CASE("VFlip_1")
 {
-    VUnique::unique("tests/data/A.V.28.fa");
+    VUnique::unique("tests/data/A.V.23.fa");
 }
