@@ -13,9 +13,9 @@
 
 namespace SS
 {
-    template <typename T> typename T::value_type quantile(const T &x, P probs)
+    template <typename T> typename T::value_type quant(const T &x, P probs)
     {
-        return Internal::quantile(x, probs);
+        return Internal::quant(x, probs);
     }
     
     template <typename T> typename T::value_type cov(const T &x, const T &y)

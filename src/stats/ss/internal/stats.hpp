@@ -10,7 +10,7 @@ namespace SS
 {
     namespace Internal
     {
-        template <typename T> typename T::value_type quantile(const T &x, P probs)
+        template <typename T> typename T::value_type quant(const T &x, P probs)
         {
             const auto n  = x.size();
             const auto id = (n - 1) * probs;
