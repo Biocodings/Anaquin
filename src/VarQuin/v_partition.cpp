@@ -378,6 +378,7 @@ template <typename O> double checkAfter(Stats &stats, const O &o)
 template <typename T, typename F> Stats &parse(const FileName &file, Stats &stats, T o, F f)
 {
     o.info("Edge: " + std::to_string(o.edge));
+    o.info("Trimming: " + std::to_string(o.trim));
 
     const auto &r = Standard::instance().r_var;
     
