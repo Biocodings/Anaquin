@@ -119,25 +119,35 @@ with open(B2, 'w') as f:
         I  = VCF[seq]
 
         # Breakpoint for the sequin
-        b = bs[seq]
+        b = bs[seq] + 1
 
+        # Regular starting position
+        rs = b-k
+        
         # Unique k-mers for subtitution
         def SUB():
-            return { 'startR':b-k, 'endR':b+k-1, 'startV':b-k, 'endV':b+k-1 }
+            return { 'startR':rs, 'endR':b+k-1, 'startV':rs, 'endV':b+k-1 }
 
         # Unique k-mers for insertion
         def INS():
-            return { 'startR':b-k, 'endR':b+len(I['ref'])-1+k-1, 'startV':b-k, 'endV':b+len(I['alt'])-1+k-1 }
+            # Lenfth of allele
+            l = len(I['ref'])
+        
+            # Regular ending
+            re = b+k-(l-1)-1
+
+            return { 'startR':rs, 'endR':b+k-1-(len(I['alt'])-1), 'startV':rs, 'endV':b+k-1 }
 
         # Unique k-mers for deletion
         def DEL():
-            return { 'startR':b-k, 'endR':b+len(I['ref'])-1+k-1, 'startV':b-k, 'endV':b+len(I['alt'])-1+k-1 }
+            return { 'startR':rs, 'endR':b+len(I['ref'])-1+k-1, 'startV':rs, 'endV':b+len(I['alt'])-1+k-1 }
 
         if I['type'] == 'SUB':
             x = SUB()
         elif I['type'] == 'INS':
             x = INS()
         else:
+            continue # FIX!
             x = DEL()
 
         sR = x['startR']
@@ -148,15 +158,40 @@ with open(B2, 'w') as f:
         f.write(seq + '_R\t' + str(sR) + '\t' + str(eR) + '\t' + seq + '_R\n')
         f.write(seq + '_V\t' + str(sV) + '\t' + str(eV) + '\t' + seq + '_V\n')
     
-        #f.write(seq + '\t' + str(sR)   + '\t' + str(eR) + '\t' + seq + '_R\n')
-        #f.write(seq + '\t' + str(sV)   + '\t' + str(eV) + '\t' + seq + '_V\n')
-        #f.write(seq + '\t' + str(sR)   + '\t' + str(sR+k) + '\t' + seq + '_R1\n')
-        #f.write(seq + '\t' + str(eR-k) + '\t' + str(eR) + '\t' + seq + '_R2\n')
-        #f.write(seq + '\t' + str(sV)   + '\t' + str(sV+k) + '\t' + seq + '_V1\n')
-        #f.write(seq + '\t' + str(eV-k) + '\t' + str(eV) + '\t' + seq + '_V2\n')
+        #f.write(seq + '\t' + str(sR)   + '\t' + str(eR) + '\t' + seq + '_R\n')    # Debug
+        #f.write(seq + '\t' + str(sV)   + '\t' + str(eV) + '\t' + seq + '_V\n')    # Debug
+        #f.write(seq + '\t' + str(sR)   + '\t' + str(sR+k) + '\t' + seq + '_R1\n') # Debug
+        #f.write(seq + '\t' + str(eR-k) + '\t' + str(eR) + '\t' + seq + '_R2\n')   # Debug
+        #f.write(seq + '\t' + str(sV)   + '\t' + str(sV+k) + '\t' + seq + '_V1\n') # Debug
+        #f.write(seq + '\t' + str(eV-k) + '\t' + str(eV) + '\t' + seq + '_V2\n')   # Debug
 
 #
 # Now we have the FASTA sequence file, and we have a BED file. Let's ask bedtools to do it for us.
 #
 
 os.system('bedtools getfasta -fi tests/data/A.V.23.fa -bed kmers.bed -fo kmers.fa')
+
+#
+# Let's check. All k-mers must be unique.
+#
+
+#
+# Split a string into list of overlapping k-mers
+#
+
+def kmers(seq):
+    kmers = []
+    num_kmers = len(seq) - k + 1
+    for i in range(num_kmers):
+        kmer = seq[i:i+k]        
+        kmers.append(kmer)        
+    return kmers
+
+x = {}
+recs = SeqIO.parse('kmers.fa', 'fasta')
+for r in recs:
+    kms = kmers(str(r.seq))
+    for km in kms:
+        if km in x:
+            print(Exception(r.name + ' has duplicate k-mer! (' + km + ')'))
+        x[km] = 'True'
