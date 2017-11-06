@@ -1248,7 +1248,7 @@ void parse(int argc, char ** argv)
                     VPartition::Options o;
                     
                     o.notCalib = _p.opts.count(OPT_UN_CALIB);
-                    o.trim = _p.opts.count(OPT_TRIM) ? stoi(_p.opts[OPT_TRIM]) : 0;
+                    o.trim = _p.opts.count(OPT_TRIM) ? stoi(_p.opts[OPT_TRIM]) : 2;
                     o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
                     
                     analyze_1<VPartition>(OPT_U_SEQS, o);
