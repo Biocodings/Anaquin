@@ -191,7 +191,7 @@ static void writeKmers(const FileName &file, const Stats &stats, const Options &
 
 static void writeQuins(const FileName &file, const Stats &stats, const Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     o.generate(file);
     o.writer->open(file);
