@@ -148,7 +148,7 @@ namespace Anaquin
                 // Summary statistics for normalization factors
                 inline double normSD() const
                 {
-                    return SS::getSD(allNorms);
+                    return SS::SD(allNorms);
                 }
 
                 // Average sequence coverage for endogenous before normalization

@@ -78,7 +78,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::mean(data) % SS::getSD(data)).str();
+                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::mean(data) % SS::SD(data)).str();
             }
             else
             {
@@ -120,7 +120,7 @@ namespace Anaquin
             }
             else if (data.size() > 1)
             {
-                return (boost::format("%1% \u00B1 %2%") % SS::mean(data) % SS::getSD(data)).str();
+                return (boost::format("%1% \u00B1 %2%") % SS::mean(data) % SS::SD(data)).str();
             }
             else
             {

@@ -67,7 +67,7 @@ LinearModel SequinStats::linear(bool shouldLog, bool ignoreZero) const
 
         lm.F     = m.f;
         lm.p     = m.p;
-        lm.r     = SS::corrPearson(d.x, d.y);
+        lm.r     = SS::pearson(d.x, d.y);
         lm.c     = m.coeffs[0].est;
         lm.m     = m.coeffs[1].est;
         lm.R2    = m.r2;

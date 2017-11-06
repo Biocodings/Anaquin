@@ -24,8 +24,8 @@ namespace Anaquin
                 // Raw counts
                 std::map<SequinID, std::vector<Counts>> raws;
                 
-                // Minimum, maximum and medians
-                std::map<SequinID, Counts> mins, maxs, meds;
+                // Minimum, maximum, medians and standard deviation
+                std::map<SequinID, Counts> mins, maxs, meds, sds;
             };
             
             Abundance R, F;

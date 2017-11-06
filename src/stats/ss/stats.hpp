@@ -23,14 +23,14 @@ namespace SS
         return Internal::cov(x, y);
     }
 
-    template <class T> typename T::value_type getVariance(const T &x)
+    template <class T> typename T::value_type var(const T &x)
     {
         return Internal::cov(x, x);
     }
     
-    template <typename T> typename T::value_type getSD(const T &x)
+    template <typename T> typename T::value_type SD(const T &x)
     {
-        return sqrt(getVariance(x));
+        return sqrt(var(x));
     }
     
     template <typename T> typename T::value_type mean(const T &x)
@@ -67,10 +67,9 @@ namespace SS
         return *(std::max_element(x.begin(), x.end()));
     }
 
-    template <typename T> Real corrPearson(const T &x, const T &y)
+    template <typename T> Real pearson(const T &x, const T &y)
     {
-        SS_ASSERT(x.size() == y.size(), "Incompatible dimensions");
-        return Internal::corrPearson(x, y);
+        return cov(x, y) / (SD(x) * SD(y));
     }
     
     enum TestType

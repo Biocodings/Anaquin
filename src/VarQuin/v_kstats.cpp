@@ -51,6 +51,7 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     {
         for (auto &i : abund.raws)
         {
+            abund.sds[i.first]  = SS::SD(i.second);
             abund.mins[i.first] = SS::min(i.second);
             abund.meds[i.first] = SS::med(i.second);
             abund.maxs[i.first] = SS::max(i.second);
@@ -190,19 +191,15 @@ static void writeKmers(const FileName &file, const Stats &stats, const Options &
 
 static void writeQuins(const FileName &file, const Stats &stats, const Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const auto format = "%1%\t%2%\t%3%\t%4%";
     
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Name"
-                                           % "RMin"
-                                           % "RMedian"
-                                           % "RMaximum"
-                                           % "FCounts"
-                                           % "FAbund"
-                                           % "FMin"
-                                           % "FMedian"
-                                           % "FMaximum").str());
+                                           % "Minimum (Reverse)"
+                                           % "Median (Reverse)"
+                                           % "Maximum (Reverse)"
+                                           % "SD (Reverse)").str());
     
     for (const auto &seq : stats.kStats.seqs)
     {
@@ -212,11 +209,7 @@ static void writeQuins(const FileName &file, const Stats &stats, const Options &
                                                % S(stats.R.mins, seq)
                                                % S(stats.R.meds, seq)
                                                % S(stats.R.maxs, seq)
-                                               % "????" //S(stats.R.fa.s2r.at(seq))
-                                               % "????" //S(stats.R.fa.s2a.at(seq))
-                                               % "????" //S(stats.R.fa.mins.at(seq))
-                                               % "????" //S(stats.R.fa.meds.at(seq))
-                                               % "????" //S(stats.R.fa.maxs.at(seq)
+                                               % S(stats.R.sds,  seq)
        ).str());
     }
     

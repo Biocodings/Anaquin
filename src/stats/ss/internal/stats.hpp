@@ -67,12 +67,6 @@ namespace SS
             return sq_sum / (x.size() - 1);
         }
         
-        // Computes the standard deviation
-        template <typename T> typename T::value_type getSD(const T &x)
-        {
-            return sqrt(getVariance(x));
-        }
-
         template <typename T> Real getCovariance(const T &x, const T &y)
         {
             const auto sum_x = std::accumulate(std::begin(x), std::end(x), 0.0);
@@ -89,25 +83,6 @@ namespace SS
             }
             
             return accum / (x.size() - 1);
-        }
-        
-        template <typename T> Real corrPearson(const T &x, const T &y)
-        {
-            return getCovariance(x, y) / (getSD(x) * getSD(y));
-        }
-        
-        template <typename T> Real corrSpearman(const T &x, const T &y)
-        {
-            std::vector<Rank> rx;
-            std::vector<Rank> ry;
-            
-            rx.resize(x.size());
-            ry.resize(y.size());
-            
-            Internal::rank(x, rx, TieMethod::TieAverage);
-            Internal::rank(y, ry, TieMethod::TieAverage);
-  
-            return corrPearson(rx, ry);
         }
     }
 }
