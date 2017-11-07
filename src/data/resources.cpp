@@ -1,8 +1,9 @@
 #include <string>
 #include <algorithm>
 
-#include "resources/RKmersForVarKStats.tsv"
-#include "resources/structural_trimming.bed"
+#include "resources/A.V.23.fa"
+#include "resources/A.V.29.bed"
+#include "resources/A.V.11.tsv"
 
 #include "resources/anaquin.txt"
 #include "resources/VarCopy.txt"
@@ -43,8 +44,9 @@ typedef std::string Scripts;
 
 Scripts Manual() { return ToString(data_manuals_anaquin_txt); }
 
-Scripts StructBED()    { return ToString(data_structural_trimming_bed); }
-Scripts RefKKmers()  { return ToString(data_RKmersForVarKStats_tsv);  }
+Scripts A_V_23() { return ToString(data_A_V_23_fa);  }
+Scripts A_V_11() { return ToString(data_A_V_11_tsv); }
+Scripts A_V_29() { return ToString(data_A_V_29_bed); }
 
 Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }

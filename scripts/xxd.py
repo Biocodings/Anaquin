@@ -35,7 +35,9 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaAssembly.txt',
 
           'data/RKmersForVarKStats.tsv',
-          'data/structural_trimming.bed',
+          'data/A.V.29.bed',
+          'data/A.V.23.fa',
+          'data/A.V.11.tsv',
 
           'src/r/plotCNV.R',          
           'src/r/plotFold.R',

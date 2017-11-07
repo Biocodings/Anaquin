@@ -39,6 +39,7 @@
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_kallisto.hpp"
 
+#include "tools/system.hpp"
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 
@@ -166,7 +167,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
-    { Tool::VarKStats,    { OPT_R_LAD } },
+    { Tool::VarKStats,    { } },
 
     /*
      * MetaQuin Analysis
@@ -376,6 +377,11 @@ static Scripts manual(Tool tool)
     }
 }
 
+static FileName autoFile(Option k, const Scripts &x)
+{
+    return _p.opts.count(k) ? _p.opts[k] : System::script2File(x);
+}
+
 static void readGTF(Option key, UserReference &r)
 {
     if (_p.opts.count(key))
@@ -400,11 +406,15 @@ template <typename F> void readT2(F f, Option key, UserReference &r)
     }
 }
 
-template <typename F> void readL1(F f, Option key, UserReference &r)
+template <typename F> void readL1(F f, Option key, UserReference &r, const Scripts &x = "")
 {
     if (_p.opts.count(key))
     {
         r.l1 = std::shared_ptr<Ladder>(new Ladder(f(Reader(_p.opts[key]))));
+    }
+    else if (!x.empty())
+    {
+        r.l1 = std::shared_ptr<Ladder>(new Ladder(f(Reader(System::script2File(x)))));
     }
 }
 
@@ -1142,11 +1152,11 @@ void parse(int argc, char ** argv)
                 case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
                 case Tool::VarPartition:
                 {
-                    extern Scripts StructBED();
+                    extern Scripts A_V_29();
                     
                     const auto tmp = System::tmpFile();
                     std::ofstream out(tmp);
-                    out << StructBED();
+                    out << A_V_29();
                     out.close();
 
                     readReg1(OPT_R_BED, r);
@@ -1222,7 +1232,8 @@ void parse(int argc, char ** argv)
 
                 case Tool::VarKStats:
                 {
-                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r);
+                    extern Scripts A_V_11();
+                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r, A_V_11());
                     break;
                 }
 
@@ -1237,8 +1248,11 @@ void parse(int argc, char ** argv)
                 case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
                 case Tool::VarKStats:
                 {
+                    // Default sequin index (A.V.23.fa)
+                    extern Scripts A_V_23();
+                    
                     VKStats::Options o;
-                    o.fa = _p.opts[OPT_R_IND];
+                    o.fa = autoFile(OPT_R_IND, A_V_23());
                     analyze_n<VKStats>(o);
                     break;
                 }

@@ -13,9 +13,6 @@ using namespace Anaquin;
 
 typedef std::vector<std::pair<KmerEntry, int>> KmerEntries;
 
-// Defined in resources.cpp
-extern std::string RefKKmers();
-
 // Kallisto indexes
 static std::shared_ptr<KmerIndex> __i1__, __i2__;
 

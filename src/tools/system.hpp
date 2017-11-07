@@ -17,8 +17,9 @@ namespace Anaquin
 
         static void runCmd(const std::string &);
         static void runScript(const std::string &, const std::string &);
-        
+
         static FileName tmpFile();
+        static FileName script2File(const std::string &);
 
         static std::string trim(const std::string &str)
         {

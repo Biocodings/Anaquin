@@ -48,6 +48,15 @@ FileName System::tmpFile()
     return f;
 }
 
+FileName System::script2File(const std::string &x)
+{
+    const auto tmp = System::tmpFile();
+    std::ofstream out(tmp);
+    out << x;
+    out.close();
+    return tmp;
+}
+
 void System::runCmd(const std::string &cmd)
 {
     system(cmd.c_str());
