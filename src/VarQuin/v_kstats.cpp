@@ -46,6 +46,13 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     
     __stats__(kStats.R.shared, stats.R);
     __stats__(kStats.R.uniqs,  stats.R);
+    __stats__(kStats.F.shared, stats.F);
+    __stats__(kStats.F.uniqs,  stats.F);
+
+    if (stats.R.raws.empty() || stats.F.raws.empty())
+    {
+        o.warn("Sequin k-mers not found. Please check your input files.");
+    }
 
     auto minMedMax = [&](Stats::Abundance &abund)
     {
@@ -59,13 +66,15 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     };
     
     minMedMax(stats.R);
-    
-    A_ASSERT(!stats.R.mins.empty());
-    A_ASSERT(!stats.R.meds.empty());
-    A_ASSERT(!stats.R.maxs.empty());
+    minMedMax(stats.F);
 
+    if (stats.R.mins.empty() || stats.R.meds.empty() || stats.R.maxs.empty())
+    {
+        o.warn("Sequin k-mers not found. Please check your input files.");
+    }
+    
     /*
-     * 3: Allele frequency ladder
+     * Allele frequency ladder
      */
     
     for (const auto &i : stats.kStats.seqs)
@@ -191,7 +200,7 @@ static void writeKmers(const FileName &file, const Stats &stats, const Options &
 
 static void writeQuins(const FileName &file, const Stats &stats, const Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.generate(file);
     o.writer->open(file);
@@ -199,7 +208,11 @@ static void writeQuins(const FileName &file, const Stats &stats, const Options &
                                            % "Minimum (Reverse)"
                                            % "Median (Reverse)"
                                            % "Maximum (Reverse)"
-                                           % "SD (Reverse)").str());
+                                           % "SD (Reverse)"
+                                           % "Minimum (Forward)"
+                                           % "Median (Forward)"
+                                           % "Maximum (Forward)"
+                                           % "SD (Forward)").str());
     
     for (const auto &seq : stats.kStats.seqs)
     {
@@ -210,7 +223,10 @@ static void writeQuins(const FileName &file, const Stats &stats, const Options &
                                                % S(stats.R.meds, seq)
                                                % S(stats.R.maxs, seq)
                                                % S(stats.R.sds,  seq)
-       ).str());
+                                               % S(stats.F.mins, seq)
+                                               % S(stats.F.meds, seq)
+                                               % S(stats.F.maxs, seq)
+                                               % S(stats.F.sds,  seq)).str());
     }
     
     o.writer->close();

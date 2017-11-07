@@ -15,16 +15,10 @@ namespace Anaquin
             
             struct Abundance
             {
-                // Number of reads mapping for each sequin
-                std::map<SequinID, Counts> s2r;
-                
-                // Estimated sequin abundance
-                std::map<SequinID, Coverage> s2a;
-                
                 // Raw counts
                 std::map<SequinID, std::vector<Counts>> raws;
                 
-                // Minimum, maximum, medians and standard deviation
+                // Statistics
                 std::map<SequinID, Counts> mins, maxs, meds, sds;
             };
             
@@ -32,9 +26,6 @@ namespace Anaquin
             
             // Length for sequins
             std::map<SequinID, Base> s2l;
-            
-            // Counts for ssequin
-            std::map<SequinID, std::vector<Counts>> s2c;
             
             inline float dilution() const
             {

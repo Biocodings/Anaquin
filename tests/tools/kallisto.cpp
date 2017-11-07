@@ -1,8 +1,27 @@
 #include <catch.hpp>
 #include "Kallisto.hpp"
 #include <iostream>
-
 using namespace Anaquin;
+
+TEST_CASE("Kallisto_Forward")
+{
+    std::map<SequinID, Base> m;
+    std::cout << KHumanFA("tests/data/A.V.23.fa", m) << std::endl;
+    const auto x = KBuildIndex(KHumanFA("tests/data/A.V.23.fa", m), 31);
+    
+    const auto r1 = KQuery(x, "GTAGATCACCTGAGGTCGGGAGTTCAAGACC");
+    const auto r2 = KQuery(x, "GGAAGGGGCAGATTTCGGGGTCTAGGCTTGG");
+    const auto r3 = KQuery(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG");
+    
+    REQUIRE(r1.size() == 2);
+    REQUIRE(r1.count("GI_044_R"));
+    REQUIRE(r1.count("GI_044_V"));
+    
+    REQUIRE(r2.size() == 1);
+    REQUIRE(r2.count("GI_030_V"));
+    
+    REQUIRE(r3.size() == 0);
+}
 
 TEST_CASE("Kallisto_Shared")
 {
@@ -63,24 +82,4 @@ TEST_CASE("Kallisto_2")
 
     REQUIRE(r3.empty());
     REQUIRE(r4.empty());
-}
-
-TEST_CASE("Kallisto_3")
-{
-    std::map<SequinID, Base> m;
-    const auto f = KHumanFA("tests/data/A.V.23.fa", m);
-    const auto x = KBuildIndex(f, 31);
-
-    const auto r1 = KQuery(x, "GTAGATCACCTGAGGTCGGGAGTTCAAGACC");
-    const auto r2 = KQuery(x, "GGAAGGGGCAGATTTCGGGGTCTAGGCTTGG");
-    const auto r3 = KQuery(x, "GGTTCGGATCTGGGGCTTTAGACGGGGAAGG");
-    
-    REQUIRE(r1.size() == 2);
-    REQUIRE(r1.count("GI_044_R"));
-    REQUIRE(r1.count("GI_044_V"));
-
-    REQUIRE(r2.size() == 1);
-    REQUIRE(r2.count("GI_030_V"));
-    
-    REQUIRE(r3.size() == 0);
 }

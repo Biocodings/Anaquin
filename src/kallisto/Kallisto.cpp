@@ -46,7 +46,7 @@ void Anaquin::KInit(const FileName &i1, const FileName &i2, unsigned k)
     A_ASSERT(!__kStats__.seqs.empty());
 }
 
-static void KCount(const char *s)
+static bool KCount(const char *s)
 {
     auto __match__ = [&](std::shared_ptr<KmerIndex> index, KStats::KAbund &k)
     {
@@ -104,46 +104,13 @@ static void KCount(const char *s)
         return nMatch;
     };
 
-    __match__(__i1__, __kStats__.R);
+    return __match__(__i1__, __kStats__.R) || __match__(__i2__, __kStats__.F);
 }
 
 void KCount(const char *s1, const char *s2)
 {
     KCount(s1);
     KCount(s2);
-}
-
-SequinID Anaquin::KQuery(const Kmer &s, unsigned k)
-{
-    SequinID sID;
-    KQuery1(s, k, sID) || KQuery2(s, k, sID);
-    return sID;
-}
-
-bool Anaquin::KQuery1(const Kmer &s, unsigned k, SequinID &sID)
-{
-    std::vector<std::pair<KmerEntry, int>> v;
-    __i1__->match(s.c_str(), k, v);
-    A_ASSERT(!v.empty());
-    
-    const auto &c = __i1__->dbGraph.contigs[v[0].first.contig];
-    A_ASSERT(!c.transcripts.empty());
-
-    sID = __i1__->target_names_[c.transcripts[0].trid];
-    return true;
-}
-
-bool Anaquin::KQuery2(const Kmer &s, unsigned k, SequinID &sID)
-{
-    std::vector<std::pair<KmerEntry, int>> v;
-    __i2__->match(s.c_str(), k, v);
-    A_ASSERT(!v.empty());
-    
-    const auto &c = __i2__->dbGraph.contigs[v[0].first.contig];
-    A_ASSERT(!c.transcripts.empty());
-    
-    sID = __i2__->target_names_[c.transcripts[0].trid];
-    return true;
 }
 
 FileName Anaquin::KHumanFA(const FileName &file, std::map<SequinID, Base> &s2l)

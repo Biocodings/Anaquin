@@ -45,28 +45,14 @@ namespace Anaquin
     
     FileName KHumanFA(const FileName &, std::map<SequinID, Base> &);
 
-    /*
-     * Functions for building
-     */
-    
     // Build Kallisto index from a FASTA file
     FileName KBuildIndex(const FileName &, unsigned k = 31);
     
     // Heavily modified Kallisto k-mer counting
     KStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, unsigned k = 31);
 
-    /*
-     * Functions for queries
-     */
-    
     // Query a k-mer from a Kallisto index
     Matches KQuery(const FileName &, const Sequence &s, unsigned k = 31);
-
-    // Query a k-mer internally
-    SequinID KQuery(const Kmer &, unsigned k = 31);
-    
-    bool KQuery1(const Kmer &, unsigned, SequinID &);
-    bool KQuery2(const Kmer &, unsigned, SequinID &);
 }
 
 #endif
