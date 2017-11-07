@@ -127,26 +127,28 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
     const auto format = "-------VarKStats Output Results\n\n"
                         "       Summary for input: %1% and %2%\n\n"
                         "-------Alignment reads\n\n"
-                        "       Genome:   %3%\n"
-                        "       Sequin:   %4%\n"
-                        "       Dilution: %5%\n\n"
+                        "       Genome:      %3%\n"
+                        "       Sequin:      %4%\n"
+                        "       Dilution:    %5%\n"
+                        "       Error Rate:  %6%\n\n"
                         "-------Linear regression (log2 scale)\n\n"
-                        "       Slope:       %6%\n"
-                        "       Correlation: %7%\n"
-                        "       R2:          %8%\n"
-                        "       F-statistic: %9%\n"
-                        "       P-value:     %10%\n";
+                        "       Slope:       %7%\n"
+                        "       Correlation: %8%\n"
+                        "       R2:          %9%\n"
+                        "       F-statistic: %10%\n"
+                        "       P-value:     %11%\n";
 
     o.writer->write((boost::format(format) % p1                     // 1
                                            % p2                     // 2
                                            % stats.kStats.R.nMatch  // 3
                                            % stats.kStats.R.nNMatch // 4
                                            % stats.dilution()       // 5
-                                           % lm.m                   // 6
-                                           % lm.r                   // 7
-                                           % lm.R2                  // 8
-                                           % lm.F                   // 9
-                                           % lm.p                   // 10
+                                           % stats.error()          // 6
+                                           % lm.m                   // 7
+                                           % lm.r                   // 8
+                                           % lm.R2                  // 9
+                                           % lm.F                   // 10
+                                           % lm.p                   // 11
                     ).str());
     o.writer->close();
 }

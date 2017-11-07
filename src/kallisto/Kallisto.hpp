@@ -32,6 +32,12 @@ namespace Anaquin
             
             // Number of reads not matching this index (e.g. genome)
             Counts nNMatch = 0;
+            
+            // Number of matching k-mers in all reads matching this index
+            Counts nMKMatch = 0;
+            
+            // Number of non-matching k-mers in all reads matching this index
+            Counts nNMKMatch = 0;
         };
         
         // Abundance for the reverse and forward genome

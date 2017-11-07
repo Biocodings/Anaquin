@@ -32,6 +32,11 @@ namespace Anaquin
                 return (float) kStats.R.nMatch / (kStats.R.nMatch + kStats.R.nNMatch);
             }
             
+            inline float error() const
+            {
+                return (float) kStats.R.nNMKMatch / (kStats.R.nNMKMatch + kStats.R.nMKMatch);
+            }
+            
             // Ladder for allelle frequency
             SequinStats af;
         };

@@ -95,9 +95,24 @@ static bool KCount(const char *s)
             }
         }
         
-        if (nMatch > nNMatch) { k.nMatch++;  }
-        else                  { k.nNMatch++; }
+        // Match this index
+        if (nMatch > nNMatch)
+        {
+            k.nMatch++;
+            
+            // How many of the k-mers matching the reference?
+            k.nMKMatch += nMatch;
+            
+            // How many of the k-emrs not matching the reference?
+            k.nNMKMatch += nNMatch;
+        }
         
+        // Doesn't match this index
+        else
+        {
+            k.nNMatch++;
+        }
+
         return nMatch;
     };
 
