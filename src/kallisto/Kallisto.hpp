@@ -49,7 +49,7 @@ namespace Anaquin
     FileName KBuildIndex(const FileName &, unsigned k = 31);
     
     // Heavily modified Kallisto k-mer counting
-    KStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, unsigned k = 31);
+    KStats KCount(const FileName &, const FileName &, const FileName &, const FileName &, Counts threads, unsigned k = 31);
 
     // Query a k-mer from a Kallisto index
     Matches KQuery(const FileName &, const Sequence &s, unsigned k = 31);

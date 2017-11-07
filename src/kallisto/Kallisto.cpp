@@ -242,7 +242,7 @@ Matches Anaquin::KQuery(const FileName &file, const Sequence &s, unsigned k)
     return KQuery(index, v);
 }
 
-KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2, unsigned k)
+KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2, Counts threads, unsigned k)
 {
     KInit(i1, i2, k);
 
@@ -252,7 +252,7 @@ KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p
     opt.index = i1;
     opt.files.push_back(p1);
     opt.files.push_back(p2);
-    opt.threads = 1;
+    opt.threads = threads;
     
     KmerIndex index(opt);
     MinCollector collection(index, opt);

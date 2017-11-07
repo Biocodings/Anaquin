@@ -38,9 +38,12 @@ namespace Anaquin
         
         struct Options : public AnalyzerOptions
         {
-            Options() : k(31) {}
+            Options() : k(31), thr(1) {}
             
             unsigned k;
+            
+            // Number of threads
+            Counts thr;
             
             // Reference FASTA file for sequins
             FileName fa;

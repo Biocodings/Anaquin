@@ -78,6 +78,7 @@ typedef std::set<Value> Range;
 #define OPT_U_SAMPLE 813
 #define OPT_U_SEQS   814
 #define OPT_UN_CALIB 815
+#define OPT_THREAD   816
 #define OPT_EDGE     817
 #define OPT_U_BASE   818
 
@@ -302,8 +303,9 @@ static const struct option long_options[] =
     { "rmix",    required_argument, 0, OPT_R_LAD  }, // Ladder for everything else (RnaQuin and MetaQuin)
     
     { "mix",     required_argument, 0, OPT_MIXTURE },
-    { "method",  required_argument, 0, OPT_METHOD  },
     { "trim",    required_argument, 0, OPT_TRIM    },
+    { "method",  required_argument, 0, OPT_METHOD  },
+    { "threads", required_argument, 0, OPT_THREAD  },
 
     { "edge",    required_argument, 0, OPT_EDGE   },
     { "fuzzy",   required_argument, 0, OPT_FUZZY  },
@@ -809,6 +811,7 @@ void parse(int argc, char ** argv)
             case OPT_R_LAD:
             case OPT_R_IND:
             case OPT_R_CON:
+            case OPT_THREAD:
             case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
 
             case OPT_MIXTURE:
@@ -1252,7 +1255,10 @@ void parse(int argc, char ** argv)
                     extern Scripts A_V_23();
                     
                     VKStats::Options o;
-                    o.fa = autoFile(OPT_R_IND, A_V_23());
+                    
+                    o.fa  = autoFile(OPT_R_IND, A_V_23());
+                    o.thr = _p.opts.count(OPT_THREAD) ? stoi(_p.opts[OPT_THREAD]) : 1;
+                    
                     analyze_n<VKStats>(o);
                     break;
                 }
