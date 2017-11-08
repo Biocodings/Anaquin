@@ -1,3 +1,4 @@
+#include <mutex>
 #include <fstream>
 #include <iostream>
 #include <assert.h>
@@ -13,6 +14,9 @@
 using namespace Anaquin;
 
 typedef std::vector<std::pair<KmerEntry, int>> KmerEntries;
+
+// For writing out to files
+static std::mutex __lock__;
 
 // Files for genome and sequin reads
 std::shared_ptr<std::ofstream> __gens__, __seqs__, __fors__;
@@ -90,8 +94,6 @@ static ReadStatus KCount(const char *s)
                 {
                     if (!isUniq)
                     {
-//                        std::cout << seq << std::endl;
-//                        std::cout << km << std::endl;
                         k.shared[seq][km]++;
                     }
                     else
@@ -147,11 +149,20 @@ void KCount(const char *r1, const char *s1, const char *r2, const char *s2)
 {
     auto __write__ = [&](const char *r, const char *s)
     {
-        switch (KCount(s))
+        const auto x = KCount(s);
+        
+        if (__seqs__)
         {
-            case ReadStatus::ReverseSequin: { if (__seqs__) { *(__seqs__) << r << std::endl; } break; }
-            case ReadStatus::ForwardSequin: { if (__fors__) { *(__fors__) << r << std::endl; } break; }
-            case ReadStatus::Genome:        { if (__gens__) { *(__gens__) << r << std::endl; } break; }
+            __lock__.lock();
+            
+            switch (x)
+            {
+                case ReadStatus::ReverseSequin: { if (__seqs__) { *(__seqs__) << r << std::endl; } break; }
+                case ReadStatus::ForwardSequin: { if (__fors__) { *(__fors__) << r << std::endl; } break; }
+                case ReadStatus::Genome:        { if (__gens__) { *(__gens__) << r << std::endl; } break; }
+            }
+            
+            __lock__.unlock();
         }
     };
     
@@ -309,13 +320,9 @@ KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p
     
     if (!gReads.empty() && !sReads.empty())
     {
-        __gens__ = std::shared_ptr<std::ofstream>(new std::ofstream());
-        __fors__ = std::shared_ptr<std::ofstream>(new std::ofstream());
-        __seqs__ = std::shared_ptr<std::ofstream>(new std::ofstream());
-        
-        __gens__->open(gReads);
-        __fors__->open(fReads);
-        __seqs__->open(sReads);
+        __gens__ = std::shared_ptr<std::ofstream>(new std::ofstream(gReads));
+        __fors__ = std::shared_ptr<std::ofstream>(new std::ofstream(fReads));
+        __seqs__ = std::shared_ptr<std::ofstream>(new std::ofstream(sReads));
     }
     
     // Process k-mers
