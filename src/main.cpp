@@ -80,7 +80,8 @@ typedef std::set<Value> Range;
 #define OPT_UN_CALIB 815
 #define OPT_THREAD   816
 #define OPT_EDGE     817
-#define OPT_U_BASE   818
+#define OPT_READS    818
+#define OPT_U_BASE   819
 
 using namespace Anaquin;
 
@@ -288,6 +289,7 @@ static const struct option long_options[] =
     { "version", no_argument, 0, OPT_VERSION },
 
     { "writeUncalib", no_argument, 0, OPT_UN_CALIB },
+    { "showReads",    no_argument, 0, OPT_READS    },
 
     { "usequin", required_argument, 0, OPT_U_SEQS  },
     { "usample", required_argument, 0, OPT_U_SAMPLE },
@@ -811,6 +813,7 @@ void parse(int argc, char ** argv)
             case OPT_R_LAD:
             case OPT_R_IND:
             case OPT_R_CON:
+            case OPT_READS:
             case OPT_THREAD:
             case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
 
@@ -1258,7 +1261,8 @@ void parse(int argc, char ** argv)
                     
                     o.fa  = autoFile(OPT_R_IND, A_V_23());
                     o.thr = _p.opts.count(OPT_THREAD) ? stoi(_p.opts[OPT_THREAD]) : 1;
-                    
+                    //o.showReads = _p.opts.count(OPT_READS);
+
                     analyze_n<VKStats>(o);
                     break;
                 }
