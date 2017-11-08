@@ -47,6 +47,9 @@ namespace Anaquin
             
             unsigned k;
             
+            // Show sequin and genome reads?
+            bool showReads;
+            
             // Number of threads
             Counts thr;
             
