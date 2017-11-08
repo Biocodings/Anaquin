@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <assert.h>
 #include "KmerIndex.h"
 #include "Kallisto.hpp"
@@ -12,6 +13,9 @@
 using namespace Anaquin;
 
 typedef std::vector<std::pair<KmerEntry, int>> KmerEntries;
+
+// Files for genome and sequin reads
+std::shared_ptr<std::ofstream> __gens__, __seqs__, __fors__;
 
 // Kallisto indexes
 static std::shared_ptr<KmerIndex> __i1__, __i2__;
@@ -43,7 +47,14 @@ void Anaquin::KInit(const FileName &i1, const FileName &i2, unsigned k)
     A_ASSERT(!__kStats__.seqs.empty());
 }
 
-static bool KCount(const char *s)
+enum class ReadStatus
+{
+    ReverseSequin,
+    ForwardSequin,
+    Genome,
+};
+
+static ReadStatus KCount(const char *s)
 {
     auto __match__ = [&](std::shared_ptr<KmerIndex> index, KStats::KAbund &k)
     {
@@ -79,6 +90,8 @@ static bool KCount(const char *s)
                 {
                     if (!isUniq)
                     {
+//                        std::cout << seq << std::endl;
+//                        std::cout << km << std::endl;
                         k.shared[seq][km]++;
                     }
                     else
@@ -116,13 +129,34 @@ static bool KCount(const char *s)
         return nMatch;
     };
 
-    return __match__(__i1__, __kStats__.R) || __match__(__i2__, __kStats__.F);
+    if (__match__(__i1__, __kStats__.R))
+    {
+        return ReadStatus::ReverseSequin;
+    }
+    else if (__match__(__i2__, __kStats__.F))
+    {
+        return ReadStatus::ForwardSequin;
+    }
+    else
+    {
+        return ReadStatus::Genome;
+    }
 }
 
-void KCount(const char *s1, const char *s2)
+void KCount(const char *r1, const char *s1, const char *r2, const char *s2)
 {
-    KCount(s1);
-    KCount(s2);
+    auto __write__ = [&](const char *r, const char *s)
+    {
+        switch (KCount(s))
+        {
+            case ReadStatus::ReverseSequin: { if (__seqs__) { *(__seqs__) << r << std::endl; } break; }
+            case ReadStatus::ForwardSequin: { if (__fors__) { *(__fors__) << r << std::endl; } break; }
+            case ReadStatus::Genome:        { if (__gens__) { *(__gens__) << r << std::endl; } break; }
+        }
+    };
+    
+    __write__(r1, s1);
+    __write__(r2, s2);
 }
 
 FileName Anaquin::KHumanFA(const FileName &file, std::map<SequinID, Base> &s2l)
@@ -257,7 +291,7 @@ Matches Anaquin::KQuery(const FileName &file, const Sequence &s, unsigned k)
     return KQuery(index, v);
 }
 
-KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2, Counts threads, unsigned k)
+KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p1, const FileName &p2,                   const FileName &gReads, const FileName &fReads, const FileName &sReads, Counts threads, unsigned k)
 {
     KInit(i1, i2, k);
 
@@ -268,12 +302,28 @@ KStats Anaquin::KCount(const FileName &i1, const FileName &i2, const FileName &p
     opt.files.push_back(p1);
     opt.files.push_back(p2);
     opt.threads = threads;
+    opt.fusion = !gReads.empty() && !sReads.empty();
     
     KmerIndex index(opt);
     MinCollector collection(index, opt);
     
+    if (!gReads.empty() && !sReads.empty())
+    {
+        __gens__ = std::shared_ptr<std::ofstream>(new std::ofstream());
+        __fors__ = std::shared_ptr<std::ofstream>(new std::ofstream());
+        __seqs__ = std::shared_ptr<std::ofstream>(new std::ofstream());
+        
+        __gens__->open(gReads);
+        __fors__->open(fReads);
+        __seqs__->open(sReads);
+    }
+    
     // Process k-mers
     ProcessReads(index, opt, collection);
     
+    if (__gens__) { __gens__->close(); }
+    if (__fors__) { __fors__->close(); }
+    if (__seqs__) { __seqs__->close(); }
+
     return __kStats__;
 }

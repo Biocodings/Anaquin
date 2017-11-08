@@ -457,15 +457,20 @@ void ReadProcessor::processBuffer()
 {
     const char* s1 = 0;
     const char* s2 = 0;
+    const char* r1 = 0;
+    const char* r2 = 0;
+
     int l1,l2;
 
     for (int i = 0; i < seqs.size(); i++)
     {
         s1 = seqs[i].first;
         l1 = seqs[i].second;
+        r1 = !names.empty() ? names[i].first : nullptr;
         i++;
         s2 = seqs[i].first;
         l2 = seqs[i].second;
+        r2 = !names.empty() ? names[i].first : nullptr;
         numreads++;
         __i__++;
 
@@ -474,8 +479,8 @@ void ReadProcessor::processBuffer()
             std::cout << "[INFO]: " << __i__ << std::endl;
         }
         
-        extern void KCount(const char *, const char *);
-        KCount(s1, s2);
+        extern void KCount(const char *, const char *, const char *, const char *);
+        KCount(r1, s1, r2, s2);
     }
 }
 

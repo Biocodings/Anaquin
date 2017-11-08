@@ -1261,7 +1261,7 @@ void parse(int argc, char ** argv)
                     
                     o.fa  = autoFile(OPT_R_IND, A_V_23());
                     o.thr = _p.opts.count(OPT_THREAD) ? stoi(_p.opts[OPT_THREAD]) : 1;
-                    //o.showReads = _p.opts.count(OPT_READS);
+                    o.showReads = _p.opts.count(OPT_READS);
 
                     analyze_n<VKStats>(o);
                     break;

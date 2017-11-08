@@ -14,7 +14,8 @@ extern Scripts PlotKAllele();
 Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
 {
     o.info("Threads: " + toString(o.thr));
-    
+    o.info("Reads: " + toString(o.showReads));
+
     const auto &r = Standard::instance().r_var;
     
     // Ladder for allele frequency
@@ -25,7 +26,13 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     o.logInfo("Generating index for: " + o.fa);
     const auto hg = KHumanFA(o.fa, stats.s2l);
 
-    stats.kStats = KCount(KBuildIndex(o.fa, o.k), KBuildIndex(hg, o.k), files[0], files[1], o.thr, o.k);
+    stats.kStats = KCount(KBuildIndex(o.fa, o.k),
+                          KBuildIndex(hg, o.k),
+                          files[0], files[1],
+                          o.showReads ? o.work + "/VarKStats_genome.txt" : "",
+                          o.showReads ? o.work + "/VarKStats_forward.txt" : "",
+                          o.showReads ? o.work + "/VarKStats_sequins.txt" : "",
+                          o.thr, o.k);
     auto &kStats = stats.kStats;
 
     /*
