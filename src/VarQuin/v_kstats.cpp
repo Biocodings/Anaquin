@@ -15,7 +15,7 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
 {
     o.info("Threads: " + toString(o.thr));
     o.info("Reads: " + toString(o.showReads));
-    o.info("Index: " + toString(o.fa));
+    o.info("Index: " + o.fa);
 
     const auto &r = Standard::instance().r_var;
     
