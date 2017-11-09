@@ -879,7 +879,12 @@ void parse(int argc, char ** argv)
     {
         throw MissingOptionError("-" + optToStr(*required.begin()));
     }
-
+    else if (opts.empty())
+    {
+        std::cout << fixManual(manual(_p.tool)) << std::endl << std::endl;
+        return;
+    }
+    
     if (__showInfo__)
     {
         std::cout << "-----------------------------------------" << std::endl;
@@ -1254,12 +1259,12 @@ void parse(int argc, char ** argv)
                 case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
                 case Tool::VarKStats:
                 {
-                    // Default sequin index (A.V.23.fa)
-                    extern Scripts A_V_23();
+                    // Default sequin index (A.V.33.fa)
+                    extern Scripts A_V_33();
                     
                     VKStats::Options o;
                     
-                    o.fa  = autoFile(OPT_R_IND, A_V_23());
+                    o.fa  = autoFile(OPT_R_IND, A_V_33());
                     o.thr = _p.opts.count(OPT_THREAD) ? stoi(_p.opts[OPT_THREAD]) : 1;
                     o.showReads = _p.opts.count(OPT_READS);
 

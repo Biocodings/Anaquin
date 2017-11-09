@@ -19,7 +19,6 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/RnaExpression.txt',
           'data/manuals/RnaFoldChange.txt',
           'data/manuals/RnaSubsample.txt',
-          'data/manuals/RnaReport.txt',
 
           'data/manuals/VarCopy.txt',          
           'data/manuals/VarPartition.txt',
@@ -36,7 +35,7 @@ data  = [ 'data/manuals/anaquin.txt',
 
           'data/RKmersForVarKStats.tsv',
           'data/A.V.29.bed',
-          'data/A.V.23.fa',
+          'data/A.V.33.fa',
           'data/A.V.11.tsv',
 
           'src/r/plotCNV.R',          

@@ -1,7 +1,7 @@
 #include <string>
 #include <algorithm>
 
-#include "resources/A.V.23.fa"
+#include "resources/A.V.33.fa"
 #include "resources/A.V.29.bed"
 #include "resources/A.V.11.tsv"
 
@@ -16,7 +16,6 @@
 #include "resources/VarStructure.txt"
 
 #include "resources/RnaAlign.txt"
-#include "resources/RnaReport.txt"
 #include "resources/RnaAssembly.txt"
 #include "resources/RnaSubsample.txt"
 #include "resources/RnaExpression.txt"
@@ -44,7 +43,7 @@ typedef std::string Scripts;
 
 Scripts Manual() { return ToString(data_manuals_anaquin_txt); }
 
-Scripts A_V_23() { return ToString(data_A_V_23_fa);  }
+Scripts A_V_33() { return ToString(data_A_V_33_fa);  }
 Scripts A_V_11() { return ToString(data_A_V_11_tsv); }
 Scripts A_V_29() { return ToString(data_A_V_29_bed); }
 
@@ -57,7 +56,6 @@ Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
 Scripts RnaAlign()      { return ToString(data_manuals_RnaAlign_txt);      }
-Scripts RnaReport()     { return ToString(data_manuals_RnaReport_txt);     }
 Scripts RnaSubsample()  { return ToString(data_manuals_RnaSubsample_txt);  }
 Scripts RnaAssembly()   { return ToString(data_manuals_RnaAssembly_txt);   }
 Scripts RnaExpression() { return ToString(data_manuals_RnaExpression_txt); }
