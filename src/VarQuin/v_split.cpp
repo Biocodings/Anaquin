@@ -66,8 +66,6 @@ Stats VSplit::analyze(const FileName &file, const Options &o)
             {
                 stats.nGerm++;
                 w2.write(x);
-                w2.close();
-                w2.close();
             }
             else if (isC1 && isC2)
             {
