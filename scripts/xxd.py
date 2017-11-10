@@ -26,6 +26,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/VarAlign.txt',
           'data/manuals/VarMutation.txt',
           'data/manuals/VarKmer.txt',
+          'data/manuals/VarSplit.txt',
           'data/manuals/VarKStats.txt',
           'data/manuals/VarStructure.txt',
 

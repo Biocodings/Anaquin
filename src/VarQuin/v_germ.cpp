@@ -193,7 +193,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
-            if (isGerm(*m.var))
+            if (isGerm(m.var->cID))
             {
                 wTP.write(x.hdr, x.line);
                 
@@ -322,7 +322,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
  
     for (const auto &i : r.v1())
     {
-        if (!stats.findTP(i.name) && isGerm(i))
+        if (!stats.findTP(i.name) && isGerm(i.cID))
         {
             VGerm::Match m;
             
@@ -361,7 +361,7 @@ static void writeQuins(const FileName &file,
                                            % "Mutation").str());
     for (const auto &i : r.v1())
     {
-        if (isGerm(i))
+        if (isGerm(i.cID))
         {
             // Can we find this sequin?
             const auto isTP = ss.findTP(i.name);

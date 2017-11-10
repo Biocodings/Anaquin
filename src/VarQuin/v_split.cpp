@@ -1,173 +1,152 @@
 #include <fstream>
-#include <sstream>
-#include <htslib/sam.h>
-#include <htslib/vcf.h>
 #include "VarQuin.hpp"
 #include "VarQuin/v_split.hpp"
+#include "writers/bam_writer.hpp"
 #include "parsers/parser_bam.hpp"
 
 using namespace Anaquin;
 
-struct BAMWriter
+typedef VSplit::Stats Stats;
+
+Stats VSplit::analyze(const FileName &file, const Options &o)
 {
-    inline void close()
-    {
-        sam_close(_file);
-        sam_close(_null);
-    }
-    
-    inline void open(const FileName &file)
-    {
-        _file = sam_open(file.c_str(), "wb");
-        _null = sam_open("/dev/null", "w");
-    }
+    Stats stats;
+//    BAMWriter w1, w2, w3, w4, w5, w6, w7;
+    BAMWriter w2;
 
-    template <typename F> void filterH(const ParserBAM::Data &x, F f)
-    {
-        const auto *h1 = reinterpret_cast<bam_hdr_t *>(x.h());
-        const auto x1  = std::string(h1->text);
-        
-        std::stringstream ss;
-        std::istringstream iss(x1);
-        
-        for (std::string line; std::getline(iss, line); )
-        {
-            if (f(line))
-            {
-                ss << line << "\n";
-            }
-        }
-        
-        std::ofstream w;
-        w.open ("__tmp__.sam");
-        w << ss.str();
-        w.close();
-        
-        samFile *x2 = sam_open("__tmp__.sam", "r");
-        bam_hdr_t * h2 = sam_hdr_read(x2);
-        
-        if (sam_hdr_write(_file, h2) == -1)
-        {
-            throw std::runtime_error("sam_hdr_write failed");
-        }
-        
-        system("rm __tmp__.sam");
-    }
-    
-    inline void fHeader(const ParserBAM::Data &x)
-    {
-        return filterH(x, [&](const std::string &x)
-        {
-            return x.find("chrev") == std::string::npos;
-        });
-    }
+//    w1.open(o.work + "/VarSplit_sample.bam");
+    w2.open(o.work + "/VarSplit_germline.bam");
+//    w3.open(o.work + "/VarSplit_somatic.bam");
+//    w4.open(o.work + "/VarSplit_structural.bam");
+//    w5.open(o.work + "/VarSplit_ladder.bam");
+//    w6.open(o.work + "/VarSplit_ambiguous.bam");
+//    w7.open(o.work + "/VarSplit_unmapped.bam");
 
-    inline void header(const ParserBAM::Data &x)
-    {
-        if (sam_hdr_write(_file, reinterpret_cast<bam_hdr_t *>(x.h())) == -1)
-        {
-            throw std::runtime_error("sam_hdr_write failed");
-        }
-    }
-    
-    inline const char *record(const ParserBAM::Data &x)
-    {
-        const auto *b = reinterpret_cast<bam1_t *>(x.b());
-        const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
-        
-        if (sam_write1(_null, h, b) == -1)
-        {
-            throw std::runtime_error("sam_write1 failed");
-        }
-        
-        return _null->line.s;
-    }
-    
-    inline void write(const ParserBAM::Data &x)
-    {
-        const auto *b = reinterpret_cast<bam1_t *>(x.b());
-        const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
-        
-        if (sam_write1(_file, h, b) == -1)
-        {
-            throw std::runtime_error("sam_write1 failed");
-        }
-    }
-    
-    samFile *_file, *_null;
-};
-
-void VSplit::report(const FileName &file, const Options &o)
-{
-    const auto &r = Standard::instance().r_var;
-
-    o.info("Generating sample-derived alignments");
-    o.info("Generating sequin-derived alignments");
-    o.info("Generating sample-derived alignments within sequin regions");
-    
-    BAMWriter w1, w2, w3;
-    w1.open(o.work + "/VarFlip_sample.bam");
-    w2.open(o.work + "/VarFlip_sample_regions.bam");
-    w3.open(o.work + "/VarFlip_sequins.bam");
-
-    const auto regs = r.regs1();
-    
     ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         if (i.p.i && !(i.p.i % 1000000))
         {
-            o.wait(std::to_string(i.p.i));
+            o.wait(toString(i.p.i));
         }
         
-        static bool header = false;
-
-        if (!header)
+        if (!x.mapped && !x.isMateAligned)
         {
-            w3.header(x);
-            w1.fHeader(x);
-            w2.fHeader(x);
+            stats.nNMap++;
+           // w7.write(x);
         }
-
-        header = true;
-        
-        /*
-         * ******************** Sample derived reads ********************
-         *
-         *   Eg: samtools view -h -L hg38.bed A.bam | grep -v chrev | samtools view -bS > VarFlip_sample.bam
-         */
-        
-        if (x.cID != "*" && !isRevChr(x.cID) && !isRevChr(x.rnext))
+        else if ((x.mapped && !x.isMateAligned) || (!x.mapped &&  x.isMateAligned))
         {
-            if (!strstr(w1.record(x), "chrev"))
+            stats.nAmbig++;
+           // w6.write(x);
+        }
+        else
+        {
+            const auto isG1 = isGerm(x.cID);
+            const auto isG2 = isGerm(x.rnext);
+            const auto isC1 = isCancer(x.cID);
+            const auto isC2 = isCancer(x.rnext);
+            const auto isS1 = isStruct(x.cID);
+            const auto isS2 = isStruct(x.rnext);
+            const auto isL1 = isLadQuin(x.cID);
+            const auto isL2 = isLadQuin(x.rnext);
+            const auto isH1 = !isG1 && !isC1 && !isS1 && !isL1;
+            const auto isH2 = !isG2 && !isC2 && !isS2 && !isL2;
+
+            if ((isG1 != isG2) || (isC1 != isC2) || (isS1 != isS2) || (isL1 != isL2) || (isH1 != isH2))
             {
-                w1.write(x);
-                
-                /*
-                 * ******************** Sample derived regional reads ********************
-                 *
-                 *   Eg: samtools view -b -h -L sequin_regions.hg38.bed sample_normal.bam > sample_normal_regions.bam
-                 */
-                
-                if (regs.count(x.cID) && regs.at(x.cID).contains(x.l))
-                {
-                    w2.write(x);
-                }
+                stats.nAmbig++;
+         //       w6.write(x);
+            }
+            else if (isH1 && isH2)
+            {
+                stats.nSample++;
+        //        w1.write(x);
+            }
+            else if (isG1 && isG2)
+            {
+                stats.nGerm++;
+                w2.write(x);
+                w2.close();
+                w2.close();
+            }
+            else if (isC1 && isC2)
+            {
+                stats.nSom++;
+//                w3.write(x);
+            }
+            else if (isS1 && isS2)
+            {
+                stats.nStru++;
+//                w4.write(x);
+            }
+            else if (isL1 && isL2)
+            {
+                stats.nLad++;
+       //         w5.write(x);
+            }
+            else
+            {
+                throw std::runtime_error(x.name + " is unknown");
             }
         }
-        
-        /*
-         * ******************** Sequin derived reads ********************
-         *
-         *   Eg: samtools view -b -L hg38rev.bed normal.bam > sequins.bam
-         */
-        
-        if (isRevChr(x.cID))
-        {
-            w3.write(x);
-        }        
     }, true);
-
-    w1.close();
+    
+//    w1.close();
     w2.close();
-    w3.close();
+//    w3.close();
+//    w4.close();
+//    w5.close();
+//    w6.close();
+//    w7.close();
+//    
+    return stats;
+}
+
+static void writeSummary(const FileName &file, const FileName &src, const Stats &stats, const VSplit::Options &o)
+{
+    const auto summary = "-------VarSplit Summary Statistics\n\n"
+                         "-------Input file\n\n"
+                         "       Input alignment file: %1%\n\n"
+                         "-------Alignments\n\n"
+                         "       Unmapped:  %2%  (%3$.2f%%)\n"
+                         "       Sample:    %4%  (%5$.2f%%)\n"
+                         "       Germline:  %6%  (%7$.2f%%)\n"
+                         "       Somatic:   %8% (%9$.2f%%)\n"
+                         "       Structual: %10% (%11$.2f%%)\n"
+                         "       Ladders:   %12% (%13$.2f%%)\n"
+                         "       Ambiguous: %14% (%15$.2f%%)\n";
+
+    const auto total = stats.nAmbig + stats.nNMap + stats.nGerm + stats.nSom + stats.nSample + stats.nStru + stats.nLad;
+
+    #define S(x) ((float) x / total)
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % file             // 1
+                                            % stats.nNMap      // 2
+                                            % S(stats.nNMap)   // 3
+                                            % stats.nSample    // 4
+                                            % S(stats.nSample) // 5
+                                            % stats.nGerm      // 6
+                                            % S(stats.nGerm)   // 7
+                                            % stats.nSom       // 8
+                                            % S(stats.nSom)    // 8
+                                            % stats.nStru      // 10
+                                            % S(stats.nStru)   // 11
+                                            % stats.nLad       // 12
+                                            % S(stats.nLad)    // 13
+                                            % stats.nAmbig     // 14
+                                            % S(stats.nAmbig)  // 15
+                     ).str());
+}
+
+void VSplit::report(const FileName &file, const Options &o)
+{
+    const auto stats = analyze(file, o);
+    
+    /*
+     * Generating VarSplit_summary.stats
+     */
+
+    writeSummary("VarSplit_summary.stats", file, stats, o);
 }

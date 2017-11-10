@@ -19,6 +19,7 @@
 #include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_copy.hpp"
 #include "VarQuin/v_kmer.hpp"
+#include "VarQuin/v_split.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_kstats.hpp"
 #include "VarQuin/v_somatic.hpp"
@@ -127,6 +128,7 @@ static std::map<Value, Tool> _tools =
     { "VarStructure",   Tool::VarStructure   },
     { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
+    { "VarSplit",       Tool::VarSplit       },
     { "VarAlign",       Tool::VarAlign       },
     { "VarGermline",    Tool::VarGermline    },
     { "VarSomatic",     Tool::VarSomatic     },
@@ -350,6 +352,7 @@ static Scripts manual(Tool tool)
     extern Scripts VarAlign();
     extern Scripts VarMutation();
     extern Scripts VarKmer();
+    extern Scripts VarSplit();
     extern Scripts VarStructure();
     extern Scripts RnaAlign();
     extern Scripts VarKStats();
@@ -368,6 +371,7 @@ static Scripts manual(Tool tool)
         case Tool::RnaExpress:     { return RnaExpression(); }
         case Tool::RnaFoldChange:  { return RnaFoldChange(); }
         case Tool::RnaSubsample:   { return RnaSubsample();  }
+        case Tool::VarSplit:       { return VarSplit();      }
         case Tool::VarCopy:        { return VarCopy();       }
         case Tool::VarPartition:   { return VarPartition();  }
         case Tool::VarMutation:    { return VarMutation();   }
@@ -1145,6 +1149,7 @@ void parse(int argc, char ** argv)
         case Tool::VarTrim:
         case Tool::VarKmer:
         case Tool::VarAlign:
+        case Tool::VarSplit:
         case Tool::VarKStats:
         case Tool::VarSomatic:
         case Tool::VarGermline:
@@ -1255,8 +1260,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip: { analyze_1<VFlip>(OPT_U_SEQS); break; }
-                case Tool::VarKmer: { analyze_1<VKmer>(OPT_U_SEQS); break; }
+                case Tool::VarSplit: { analyze_1<VSplit>(OPT_U_SEQS); break; }
+                case Tool::VarFlip:  { analyze_1<VFlip>(OPT_U_SEQS);  break; }
+                case Tool::VarKmer:  { analyze_1<VKmer>(OPT_U_SEQS);  break; }
                 case Tool::VarKStats:
                 {
                     // Default sequin index (A.V.33.fa)

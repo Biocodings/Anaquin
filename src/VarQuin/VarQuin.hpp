@@ -36,10 +36,40 @@ namespace Anaquin
     
     template <typename T> bool isCancer(const T &x)
     {
-        return x.find("CS_") != std::string::npos;
+        A_ASSERT(!x.empty());
+        return isSubstr(x, "CS_") || isSubstr(x, "CI_");
     }
-    
-    // Eg: LAD_18
+
+    template <typename T> bool isStruct(const T &x)
+    {
+        A_ASSERT(!x.empty());
+        return isSubstr(x, "DEL_") ||
+               isSubstr(x, "DUP_") ||
+               isSubstr(x, "INS_") ||
+               isSubstr(x, "INV_") ||
+               isSubstr(x, "MEI_");
+    }
+
+    template <typename T> bool isGerm(const T &x)
+    {
+        A_ASSERT(!x.empty());
+        return isSubstr(x, "GS_")    ||
+               isSubstr(x, "GI_")    ||
+               isSubstr(x, "LoGC_")  ||
+               isSubstr(x, "VLGC_")  ||
+               isSubstr(x, "HiGC_")  ||
+               isSubstr(x, "VHGC_")  ||
+               isSubstr(x, "SH_")    ||
+               isSubstr(x, "LH_")    ||
+               isSubstr(x, "SD_")    ||
+               isSubstr(x, "LD_")    ||
+               isSubstr(x, "ST_")    ||
+               isSubstr(x, "LT_")    ||
+               isSubstr(x, "SQ_")    ||
+               isSubstr(x, "MS_")    ||
+               isSubstr(x, "LQ_");
+    }
+
     inline bool isLadQuin(const ChrID &x)
     {
         A_ASSERT(!x.empty());
