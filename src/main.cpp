@@ -879,7 +879,7 @@ void parse(int argc, char ** argv)
     {
         throw MissingOptionError("-" + optToStr(*required.begin()));
     }
-    else if (opts.empty())
+    else if (opts.empty() && _p.tool != Tool::Test)
     {
         std::cout << fixManual(manual(_p.tool)) << std::endl << std::endl;
         return;
