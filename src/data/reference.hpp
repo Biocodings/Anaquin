@@ -63,7 +63,6 @@ namespace Anaquin
         
         VarCopy,
         VarAlign,
-        VarSplit,
         VarGermline,
         VarSomatic,
         VarCalibrate,

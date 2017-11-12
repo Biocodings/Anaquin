@@ -10,7 +10,6 @@
 #include "resources/VarTrim.txt"
 #include "resources/VarKmer.txt"
 #include "resources/VarAlign.txt"
-#include "resources/VarSplit.txt"
 #include "resources/VarKStats.txt"
 #include "resources/VarMutation.txt"
 #include "resources/VarPartition.txt"
@@ -65,7 +64,6 @@ Scripts RnaFoldChange() { return ToString(data_manuals_RnaFoldChange_txt); }
 Scripts VarTrim()       { return ToString(data_manuals_VarTrim_txt);      }
 Scripts VarCopy()       { return ToString(data_manuals_VarCopy_txt);      }
 Scripts VarAlign()      { return ToString(data_manuals_VarAlign_txt);     }
-Scripts VarSplit()      { return ToString(data_manuals_VarSplit_txt);     }
 Scripts VarKmer()       { return ToString(data_manuals_VarKmer_txt);      }
 Scripts VarKStats()     { return ToString(data_manuals_VarKStats_txt);    }
 Scripts VarMutation()   { return ToString(data_manuals_VarMutation_txt);  }
