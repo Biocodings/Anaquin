@@ -147,8 +147,8 @@ static void writeSummary(const FileName &file, const FileName &p1, const FileNam
 
     o.writer->write((boost::format(format) % p1                     // 1
                                            % p2                     // 2
-                                           % stats.kStats.R.nMatch  // 3
-                                           % stats.kStats.R.nNMatch // 4
+                                           % stats.kStats.R.nNMatch // 3
+                                           % stats.kStats.R.nMatch  // 4
                                            % stats.dilution()       // 5
                                            % stats.error()          // 6
                                            % lm.m                   // 7
