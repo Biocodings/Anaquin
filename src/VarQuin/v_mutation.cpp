@@ -8,6 +8,8 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
 {
     if (o.isGerm)
     {
+        o.info("Germline analysis");
+        
         VGerm::Options o_;
         
         o_.work = o.work;
@@ -21,6 +23,8 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
     }
     else
     {
+        o.info("Somatic analysis");
+
         VSomatic::Options o_;
         
         o_.work = o.work;
