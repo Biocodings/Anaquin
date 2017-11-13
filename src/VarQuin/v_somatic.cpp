@@ -124,7 +124,6 @@ static bool isStrelka(const Variant &x)
                x.fi.count("TIR_2_2");
     };
 
-    assert(isSNP() || isInd());
     return isSNP() || isInd();
 }
 
