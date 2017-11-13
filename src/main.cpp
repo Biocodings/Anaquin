@@ -1374,7 +1374,7 @@ void parse(int argc, char ** argv)
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
                     
-                    o.isGerm = _p.opts[OPT_FILTER] == "germline";
+                    o.isGerm = _p.opts[OPT_METHOD] == "germline";
                     o.filter = _p.opts.at(OPT_FILTER) == "pass" ? VCFFilter::Passed : VCFFilter::NotFiltered;
                     
                     analyze_2<VMutation>(OPT_U_SAMPLE, OPT_U_SEQS, o);
