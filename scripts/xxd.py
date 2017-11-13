@@ -33,10 +33,10 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
 
-          'data/RKmersForVarKStats.tsv',
           'data/A.V.29.bed',
-          'data/A.V.33.fa',
-          'data/A.V.11.tsv',
+          'data/A.V.34.tsv',
+          'data/A.V.35.vcf',
+          'data/A.V.36.fa',
 
           'src/r/plotCNV.R',          
           'src/r/plotFold.R',

@@ -18,6 +18,7 @@
         -o = output             Directory in which output files are written to
         -rmix                   Reference mixture for sequin allele frequency in TSV format
         -rind                   Reference sequin index in FASTA format
+        -rvcf                   Reference variant annottion file in VCF format
         -threads = 1            Number of threads
 
 <b>OUTPUTS</b>

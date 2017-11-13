@@ -1163,6 +1163,7 @@ void parse(int argc, char ** argv)
                 case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
                 case Tool::VarPartition:
                 {
+                    // Special trimming file for VarPartition
                     extern Scripts A_V_29();
                     
                     const auto tmp = System::tmpFile();
@@ -1243,8 +1244,10 @@ void parse(int argc, char ** argv)
 
                 case Tool::VarKStats:
                 {
-                    extern Scripts A_V_11();
-                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r, A_V_11());
+                    // Default allele frequency laddy
+                    extern Scripts A_V_34();
+                    
+                    readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_LAD, r, A_V_34());
                     break;
                 }
 
@@ -1259,12 +1262,12 @@ void parse(int argc, char ** argv)
                 case Tool::VarKmer:  { analyze_1<VKmer>(OPT_U_SEQS);  break; }
                 case Tool::VarKStats:
                 {
-                    // Default sequin index (A.V.33.fa)
-                    extern Scripts A_V_33();
+                    // Default sequin index
+                    extern Scripts A_V_36();
                     
                     VKStats::Options o;
                     
-                    o.fa  = autoFile(OPT_R_IND, A_V_33());
+                    o.fa  = autoFile(OPT_R_IND, A_V_36());
                     o.thr = _p.opts.count(OPT_THREAD) ? stoi(_p.opts[OPT_THREAD]) : 1;
                     o.showReads = _p.opts.count(OPT_READS);
 
