@@ -26,18 +26,12 @@ namespace Anaquin
             SequinID rID;
         };
         
-        enum class Method
-        {
-            NotFiltered,
-            Passed,
-        };
-        
         struct Options : public AnalyzerOptions
         {
-            Options() {}
-            Method meth = Method::NotFiltered;
+            Options() : filter(VCFFilter::NotFiltered) {}
+            VCFFilter filter;
         };
-        
+
         struct EStats
         {
             std::map<Variation, Counts> v2c;

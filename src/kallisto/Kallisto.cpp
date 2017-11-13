@@ -9,7 +9,6 @@
 #include "KmerIterator.hpp"
 #include "tools/errors.hpp"
 #include "tools/system.hpp"
-#include "VarQuin/VarQuin.hpp"
 
 using namespace Anaquin;
 

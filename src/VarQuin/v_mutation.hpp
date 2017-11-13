@@ -1,5 +1,5 @@
-#ifndef V_GERM_HPP
-#define V_GERM_HPP
+#ifndef V_MUTATION_HPP
+#define V_MUTATION_HPP
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
@@ -11,7 +11,7 @@ namespace Anaquin
     
     typedef std::map<VarHashKey, Counts> VarHashTable;
 
-    struct VGerm
+    struct VMutation
     {
         struct Match
         {
@@ -34,6 +34,10 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Options() : filter(VCFFilter::NotFiltered) {}
+            
+            // Germline? Somatic?
+            bool isGerm;
+            
             VCFFilter filter;
         };
 
@@ -84,9 +88,6 @@ namespace Anaquin
                 return nullptr;
             }
         };
-
-        static EStats analyzeE(const FileName &, const Options &o);
-        static SStats analyzeS(const FileName &, const Options &o);
 
         static void report(const FileName &, const FileName &, const Options &o = Options());
     };

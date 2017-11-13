@@ -88,7 +88,7 @@ Stats VKStats::analyze(const std::vector<FileName> &files, const Options &o)
     
     for (const auto &i : stats.kStats.seqs)
     {
-        if (isCancer(i))
+        if (isSomatic(i))
         {
             const auto R = i + "_R";
             const auto V = i + "_V";

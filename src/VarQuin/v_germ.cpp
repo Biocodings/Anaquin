@@ -6,11 +6,6 @@ using namespace Anaquin;
 
 typedef SequinVariant::Context Context;
 
-inline bool isGerm(const Variant &x)
-{
-    return Standard::instance().r_var.ctx2(x) != Context::Cancer;
-}
-
 inline std::string ctx2Str(Context x)
 {
     switch (x)
@@ -64,7 +59,7 @@ VGerm::EStats VGerm::analyzeE(const FileName &file, const Options &o)
     {
         ParserVCF::parse(file, [&](const Variant &x)
         {
-            if (o.meth == VGerm::Method::Passed && x.filter != Filter::Pass)
+            if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
             {
                 return;
             }
@@ -124,12 +119,12 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
 
-    auto wTP = VCFWriter(); wTP.open(o.work + "/VarGermline_TP.vcf");
-    auto wFP = VCFWriter(); wFP.open(o.work + "/VarGermline_FP.vcf");
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarMutation_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarMutation_FP.vcf");
     
     ParserVCF::parse(file, [&](const Variant &x)
     {
-        if (o.meth == VGerm::Method::Passed && x.filter != Filter::Pass)
+        if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
         {
             return;
         }
@@ -193,7 +188,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
-            if (isGerm(m.var->cID))
+            if (isGerm(m.var->name))
             {
                 wTP.write(x.hdr, x.line);
                 
@@ -207,13 +202,13 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
                 A_ASSERT(!isnan(exp));
                 
                 // Eg: 2821292107
-                const auto id = toString(key);
+                const auto x = toString(key);
                 
                 // Add for all variants
-                stats.oa.add(id, exp, obs);
+                stats.oa.add(x, exp, obs);
                 
                 // Add for mutation type
-                stats.m2a[m.qry.type()].add(id, exp, obs);
+                stats.m2a[m.qry.type()].add(x, exp, obs);
             }
         }
         else
@@ -322,7 +317,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
  
     for (const auto &i : r.v1())
     {
-        if (!stats.findTP(i.name) && isGerm(i.cID))
+        if (!stats.findTP(i.name) && isGerm(i.name))
         {
             VGerm::Match m;
             
@@ -361,7 +356,7 @@ static void writeQuins(const FileName &file,
                                            % "Mutation").str());
     for (const auto &i : r.v1())
     {
-        if (isGerm(i.cID))
+        if (isGerm(i.name))
         {
             // Can we find this sequin?
             const auto isTP = ss.findTP(i.name);
@@ -474,8 +469,8 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName BedRef();
 
-    const auto summary = "-------VarGermline Summary Statistics\n\n"
-                         "-------VarGermline Output Results\n\n"
+    const auto summary = "-------VarMutation Summary Statistics\n\n"
+                         "-------VarMutation Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
                          "       Reference sequin regions:          %2%\n\n"
                          "       Variants identified in sample:     %3%\n"
@@ -670,35 +665,35 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarGermline_sequins.tsv
+     * Generating VarMutation_sequins.tsv
      */
     
-    writeQuins("VarGermline_sequins.tsv", ss, o);
+    writeQuins("VarMutation_sequins.tsv", ss, o);
 
     /*
-     * Generating VarGermline_summary.stats
+     * Generating VarMutation_summary.stats
      */
     
-    writeSummary("VarGermline_summary.stats", endo, seqs, es, ss, o);
+    writeSummary("VarMutation_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarGermline_detected.tsv
+     * Generating VarMutation_detected.tsv
      */
     
-    writeDetected("VarGermline_detected.tsv", ss, o);
+    writeDetected("VarMutation_detected.tsv", ss, o);
     
     /*
-     * Generating VarGermline_ROC.R
+     * Generating VarMutation_ROC.R
      */
     
-    o.generate("VarGermline_ROC.R");
-    o.writer->open("VarGermline_ROC.R");
-    o.writer->write(createROC("VarGermline_detected.tsv", "data$Depth", "'FP'"));
+    o.generate("VarMutation_ROC.R");
+    o.writer->open("VarMutation_ROC.R");
+    o.writer->write(createROC("VarMutation_detected.tsv", "data$Depth", "'FP'"));
     o.writer->close();
 
     /*
-     * Generating VarGermline_FN.vcf
+     * Generating VarMutation_FN.vcf
      */
 
-    writeFN("VarGermline_FN.vcf", ss.fns, o, true);
+    writeFN("VarMutation_FN.vcf", ss.fns, o, true);
 }

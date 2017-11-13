@@ -22,6 +22,7 @@
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_kstats.hpp"
 #include "VarQuin/v_somatic.hpp"
+#include "VarQuin/v_mutation.hpp"
 #include "VarQuin/v_partition.hpp"
 #include "VarQuin/v_structure.hpp"
 
@@ -81,7 +82,8 @@ typedef std::set<Value> Range;
 #define OPT_THREAD   816
 #define OPT_EDGE     817
 #define OPT_READS    818
-#define OPT_U_BASE   819
+#define OPT_FILTER   819
+#define OPT_U_BASE   820
 
 using namespace Anaquin;
 
@@ -130,6 +132,7 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       Tool::VarAlign       },
     { "VarGermline",    Tool::VarGermline    },
     { "VarSomatic",     Tool::VarSomatic     },
+    { "VarMutation",    Tool::VarMutation    },
     { "VarCalibrate",   Tool::VarCalibrate   },
     { "VarTrim",        Tool::VarTrim        },
     { "VarFlip",        Tool::VarFlip        },
@@ -167,6 +170,7 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarMutation,  { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS, OPT_FILTER } },
     { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
     { Tool::VarKStats,    { } },
@@ -308,6 +312,7 @@ static const struct option long_options[] =
     { "trim",    required_argument, 0, OPT_TRIM    },
     { "method",  required_argument, 0, OPT_METHOD  },
     { "threads", required_argument, 0, OPT_THREAD  },
+    { "filter",  required_argument, 0, OPT_FILTER  },
 
     { "edge",    required_argument, 0, OPT_EDGE   },
     { "fuzzy",   required_argument, 0, OPT_FUZZY  },
@@ -777,6 +782,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case Tool::VarCopy:
+                    case Tool::VarMutation:
                     case Tool::VarCalibrate:
                     case Tool::VarGermline:
                     case Tool::VarSomatic:
@@ -814,6 +820,7 @@ void parse(int argc, char ** argv)
             case OPT_R_IND:
             case OPT_R_CON:
             case OPT_READS:
+            case OPT_FILTER:
             case OPT_THREAD:
             case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
 
@@ -1147,6 +1154,7 @@ void parse(int argc, char ** argv)
         case Tool::VarAlign:
         case Tool::VarKStats:
         case Tool::VarSomatic:
+        case Tool::VarMutation:
         case Tool::VarGermline:
         case Tool::VarConjoint:
         case Tool::VarPartition:
@@ -1215,6 +1223,26 @@ void parse(int argc, char ** argv)
                 {
                     readReg1(OPT_R_BED, r);
                     readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    break;
+                }
+
+                case Tool::VarMutation:
+                {
+                    if (_p.opts.at(OPT_FILTER) == "germline")
+                    {
+                        readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                        readVCFNoSom1(OPT_R_VCF, r);
+                        readVCF2(OPT_R_VCF, r);
+                    }
+                    else
+                    {
+                        readReg1(OPT_R_BED, r);
+                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                        readVCFSom1(OPT_R_VCF, r);
+                        readVCF2(OPT_R_VCF, r);
+                    }
+                    
                     break;
                 }
 
@@ -1324,15 +1352,35 @@ void parse(int argc, char ** argv)
                     {
                         const auto &x = _p.opts.at(OPT_METHOD);
                         
-                        if (x == "pass")     { o.meth = VSomatic::Method::Passed;         }
-                        else if (x == "all") { o.meth = VSomatic::Method::NotFiltered;    }
+                        if (x == "pass")     { o.filter = VCFFilter::Passed;         }
+                        else if (x == "all") { o.filter = VCFFilter::NotFiltered;    }
                         else                 { throw InvalidValueException("-method", x); }
                     }
                     
                     analyze_2<VSomatic>(OPT_U_SAMPLE, OPT_U_SEQS, o);
                     break;
                 }
+
+                case Tool::VarMutation:
+                {
+                    VMutation::Options o;
                     
+                    if (_p.opts[OPT_FILTER] != "pass" && _p.opts[OPT_FILTER] == "all")
+                    {
+                        throw InvalidValueException("-method", _p.opts[OPT_FILTER]);
+                    }
+                    else if (_p.opts[OPT_METHOD] != "germline" && _p.opts[OPT_METHOD] != "somatic")
+                    {
+                        throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
+                    }
+                    
+                    o.isGerm = _p.opts[OPT_FILTER] == "germline";
+                    o.filter = _p.opts.at(OPT_FILTER) == "pass" ? VCFFilter::Passed : VCFFilter::NotFiltered;
+                    
+                    analyze_2<VMutation>(OPT_U_SAMPLE, OPT_U_SEQS, o);
+                    break;
+                }
+
                 case Tool::VarGermline:
                 {
                     VGerm::Options o;
@@ -1341,8 +1389,8 @@ void parse(int argc, char ** argv)
                     {
                         const auto &x = _p.opts.at(OPT_METHOD);
                         
-                        if (x == "pass")     { o.meth = VGerm::Method::Passed;      }
-                        else if (x == "all") { o.meth = VGerm::Method::NotFiltered; }
+                        if (x == "pass")     { o.filter = VCFFilter::Passed;      }
+                        else if (x == "all") { o.filter = VCFFilter::NotFiltered; }
                         else                 { throw InvalidValueException("-method", x); }
                     }
                     

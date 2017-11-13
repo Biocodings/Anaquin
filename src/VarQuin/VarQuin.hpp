@@ -34,7 +34,7 @@ namespace Anaquin
         return (isSubstr(x, "_R") || isSubstr(x, "_V")) ? noLast(x, "_") : x;
     }
     
-    template <typename T> bool isCancer(const T &x)
+    template <typename T> bool isSomatic(const T &x)
     {
         A_ASSERT(!x.empty());
         return isSubstr(x, "CS_") || isSubstr(x, "CI_");
@@ -81,7 +81,13 @@ namespace Anaquin
     {
         A_ASSERT(!x.empty());
         return x.find("rev") != std::string::npos;
-    }    
+    }
+    
+    enum class VCFFilter
+    {
+        NotFiltered,
+        Passed,
+    };
 }
 
 #endif

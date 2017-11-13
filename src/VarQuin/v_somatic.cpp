@@ -1,3 +1,4 @@
+#include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "writers/vcf_writer.hpp"
 #include "parsers/parser_vcf.hpp"
@@ -5,11 +6,6 @@
 using namespace Anaquin;
 
 typedef SequinVariant::Context Context;
-
-inline bool isSomatic(const Variant &x)
-{
-    return Standard::instance().r_var.ctx2(x) == Context::Cancer;
-}
 
 inline std::string ctx2Str(Context x)
 {
@@ -36,9 +32,9 @@ static void writeAllele(const VSomatic::Options &o)
 {
     extern Scripts PlotAllele();
     
-    o.generate("VarSomatic_ladder.R");
-    o.writer->open("VarSomatic_ladder.R");
-    o.writer->write(RWriter::createRLinear("VarSomatic_sequins.tsv",
+    o.generate("VarMutation_ladder.R");
+    o.writer->open("VarMutation_ladder.R");
+    o.writer->write(RWriter::createRLinear("VarMutation_sequins.tsv",
                                            o.work,
                                            "Tumor Sample",
                                            "Expected Allele Frequency (log2)",
@@ -83,7 +79,7 @@ VSomatic::EStats VSomatic::analyzeE(const FileName &file, const Options &o)
     {
         ParserVCF::parse(file, [&](const Variant &x)
         {
-            if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
+            if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
             {
                 return;
             }
@@ -301,8 +297,8 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     o.analyze(file);
     
-    auto wTP = VCFWriter(); wTP.open(o.work + "/VarSomatic_TP.vcf");
-    auto wFP = VCFWriter(); wFP.open(o.work + "/VarSomatic_FP.vcf");
+    auto wTP = VCFWriter(); wTP.open(o.work + "/VarMutation_TP.vcf");
+    auto wFP = VCFWriter(); wFP.open(o.work + "/VarMutation_FP.vcf");
     
     // Caller specific fields
     const auto keys = std::set<std::string>
@@ -312,7 +308,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     ParserVCF::parse(file, [&](const Variant &x)
     {
-        if (o.meth == VSomatic::Method::Passed && x.filter != Filter::Pass)
+        if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
         {
             return;
         }
@@ -376,7 +372,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         
         if (matched)
         {
-            if (isSomatic(*m.var))
+            if (isSomatic(m.var->name))
             {
                 for (const auto &i : keys)
                 {
@@ -538,7 +534,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     
     for (const auto &i : r.v1())
     {
-        if (!stats.findTP(i.name) && isSomatic(i))
+        if (!stats.findTP(i.name) && isSomatic(i.name))
         {
             VSomatic::Match m;
             
@@ -610,7 +606,7 @@ static void writeQuins(const FileName &file,
                                            % head(ss)).str());
     for (const auto &i : r.v1())
     {
-        if (isSomatic(i))
+        if (isSomatic(i.name))
         {
             // Can we find this sequin?
             const auto isTP = ss.findTP(i.name);
@@ -759,8 +755,8 @@ static void writeSummary(const FileName &file,
         str << boost::format("       %1%%2%%3%") % s % std::string(23 - s.size(), ' ') % ss.f2c.at(*i).sn() << std::endl;
     }
     
-    const auto summary = "-------VarSomatic Summary Statistics\n\n"
-                         "-------VarSomatic Output Results\n\n"
+    const auto summary = "-------VarMutation Summary Statistics\n\n"
+                         "-------VarMutation Output Results\n\n"
                          "       Reference variant annotation: %1%\n"
                          "       Reference sequin regions:     %2%\n\n"
                          "       Sample variant file:          %3%\n"
@@ -894,41 +890,41 @@ void VSomatic::report(const FileName &endo, const FileName &seqs, const Options 
     o.info("Generating statistics");
 
     /*
-     * Generating VarSomatic_summary.stats
+     * Generating VarMutation_summary.stats
      */
     
-    writeSummary("VarSomatic_summary.stats", endo, seqs, es, ss, o);
+    writeSummary("VarMutation_summary.stats", endo, seqs, es, ss, o);
     
     /*
-     * Generating VarSomatic_sequins.tsv
+     * Generating VarMutation_sequins.tsv
      */
     
-    writeQuins("VarSomatic_sequins.tsv", ss, o);
+    writeQuins("VarMutation_sequins.tsv", ss, o);
     
     /*
-     * Generating VarSomatic_detected.tsv
+     * Generating VarMutation_detected.tsv
      */
     
-    writeDetected("VarSomatic_detected.tsv", ss, o);
+    writeDetected("VarMutation_detected.tsv", ss, o);
     
     /*
-     * Generating VarSomatic_ROC.R
+     * Generating VarMutation_ROC.R
      */
     
-    o.generate("VarSomatic_ROC.R");
-    o.writer->open("VarSomatic_ROC.R");
-    o.writer->write(createROC("VarSomatic_detected.tsv", "data$ObsFreq_Tumor", "'-'"));
+    o.generate("VarMutation_ROC.R");
+    o.writer->open("VarMutation_ROC.R");
+    o.writer->write(createROC("VarMutation_detected.tsv", "data$ObsFreq_Tumor", "'-'"));
     o.writer->close();
     
     /*
-     * Generating VarSomatic_ladder.R
+     * Generating VarMutation_ladder.R
      */
     
     writeAllele(o);
 
     /*
-     * Generating VarSomatic_FN.vcf
+     * Generating VarMutation_FN.vcf
      */
     
-    writeFN("VarSomatic_FN.vcf", ss.fns, o, true);
+    writeFN("VarMutation_FN.vcf", ss.fns, o, true);
 }

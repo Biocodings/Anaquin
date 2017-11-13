@@ -292,6 +292,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 
         case Tool::VarSomatic:
         case Tool::VarGermline:
+        case Tool::VarMutation:
         case Tool::VarStructure:
         {
             merge(r.v1->vIDs);
@@ -303,12 +304,12 @@ void VarRef::validate(Tool x, const UserReference &r)
     }
 }
 
-const Variant * VarRef::findV1(const ChrID &id, const Locus &l) const
+const Variant * VarRef::findV1(const ChrID &x, const Locus &l) const
 {
-    return _v1->data.findVar(id, l);
+    return _v1->data.findVar(x, l);
 }
 
-const Variant * VarRef::findV2(const ChrID &id, const Locus &l) const
+const Variant * VarRef::findV2(const ChrID &x, const Locus &l) const
 {
-    return _v2->data.findVar(id, l);
+    return _v2->data.findVar(x, l);
 }
