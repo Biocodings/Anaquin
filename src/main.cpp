@@ -222,22 +222,19 @@ FileName GTFRef()
 
 #define S(x) (_p.opts.count(x) ? _p.opts.at(x) : "-")
 
-FileName __VCFRef__, __BedRef__;
+static FileName __VCFRef__, __Bed1Ref__, __Bed2Ref__;
+static bool __VCFRefUser__, __Bed1RefUser__, __Bed2RefUser__;
 
-// User for VCF reference?
-static bool __VCFRefUser__;
+bool Bed1User() { return __Bed1RefUser__; }
+bool Bed2User() { return __Bed2RefUser__; }
+bool VCFUser()  { return __VCFRefUser__;  }
 
-// User for BED reference?
-static bool __BedRefUser__;
-
-bool BedUser() { return __BedRefUser__; }
-bool VCFUser() { return __VCFRefUser__; }
-
-FileName AFRef()  { return S(OPT_R_AF);  }
-FileName LadRef() { return S(OPT_R_LAD); }
-FileName ConRef() { return S(OPT_R_CON); }
-FileName BedRef() { return S(OPT_R_BED); }
-FileName VCFRef() { return __VCFRef__; }
+FileName AFRef()   { return S(OPT_R_AF);  }
+FileName LadRef()  { return S(OPT_R_LAD); }
+FileName ConRef()  { return S(OPT_R_CON); }
+FileName Bed1Ref() { return __Bed1Ref__; }
+FileName Bed2Ref() { return __Bed2Ref__; }
+FileName VCFRef()  { return __VCFRef__;  }
 
 static Scripts fixManual(const Scripts &str)
 {
@@ -515,8 +512,8 @@ static void readVCFNoSom1(Option opt, UserReference &r, const Scripts &x = "")
 
 static void readR1(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    auto rr = (__BedRefUser__ = _p.opts.count(opt)) ? Reader(__BedRef__ = _p.opts[opt]) :
-                                                      Reader(__BedRef__ = System::script2File(x));
+    auto rr = (__Bed1RefUser__ = _p.opts.count(opt)) ? Reader(__Bed1Ref__ = _p.opts[opt]) :
+                                                       Reader(__Bed1Ref__ = System::script2File(x));
     r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(rr, trim)));
 }
 

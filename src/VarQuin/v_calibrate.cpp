@@ -4,7 +4,7 @@
 #include "VarQuin/v_calibrate.hpp"
 #include "writers/sam_writer.hpp"
 
-extern Anaquin::FileName BedRef();
+extern Anaquin::FileName Bed1Ref();
 
 using namespace Anaquin;
 
@@ -464,7 +464,7 @@ static void generateSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()                 // 1
+    o.writer->write((boost::format(summary) % Bed1Ref()                 // 1
                                             % endo                     // 2
                                             % seqs                     // 3
                                             % r.nRegs()                // 4

@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-extern FileName BedRef();
+extern FileName Bed1Ref();
 extern Scripts PlotCNV();
 
 VCopy::Stats VCopy::analyze(const FileName &endo, const FileName &seqs, const Options &o)
@@ -189,7 +189,7 @@ static void writeSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()         // 1
+    o.writer->write((boost::format(summary) % Bed1Ref()         // 1
                                             % endo             // 2
                                             % seqs             // 3
                                             % r.nRegs()        // 4

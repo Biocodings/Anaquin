@@ -1,8 +1,11 @@
+#include "tools/system.hpp"
 #include "VarQuin/v_germ.hpp"
 #include "VarQuin/v_somatic.hpp"
 #include "VarQuin/v_mutation.hpp"
 
 using namespace Anaquin;
+
+extern FileName Bed1Ref();
 
 void VMutation::report(const FileName &endo, const FileName &seqs, const VMutation::Options &o)
 {
@@ -36,4 +39,10 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
         // Somatic mutation caller
         VSomatic::report(endo, seqs, o_);
     }
+    
+    /*
+     * Generating VarMuation_sequins.bed
+     */
+    
+    System::copy(Bed1Ref(), o.work + "/VarMuation_sequins.bed");
 }

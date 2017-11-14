@@ -742,7 +742,7 @@ static void writeSummary(const FileName &file,
     const auto &r = Standard::instance().r_var;
     
     extern FileName VCFRef();
-    extern FileName BedRef();
+    extern FileName Bed1Ref();
     
     std::stringstream str;
     
@@ -820,7 +820,7 @@ static void writeSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % VCFRef()                             // 1
-                                            % BedRef()                             // 2
+                                            % Bed1Ref()                             // 2
                                             % (endo.empty() ? "-" : endo)          // 3
                                             % seqs                                 // 4
                                             % E3()                                 // 5

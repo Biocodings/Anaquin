@@ -48,7 +48,14 @@ FileName System::tmpFile()
     return f;
 }
 
-FileName System::script2File(const std::string &x)
+void System::copy(const FileName &x, const FileName &y)
+{
+    std::ifstream src(x);
+    std::ofstream dst(y);
+    dst << src.rdbuf();
+}
+
+FileName System::script2File(const Scripts &x)
 {
     const auto tmp = System::tmpFile();
     std::ofstream out(tmp);
@@ -57,7 +64,7 @@ FileName System::script2File(const std::string &x)
     return tmp;
 }
 
-void System::runCmd(const std::string &cmd)
+void System::runCmd(const Scripts &cmd)
 {
     system(cmd.c_str());
 }

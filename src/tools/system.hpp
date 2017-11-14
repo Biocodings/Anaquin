@@ -19,8 +19,10 @@ namespace Anaquin
         static void runScript(const std::string &, const std::string &);
 
         static FileName tmpFile();
-        static FileName script2File(const std::string &);
+        static FileName script2File(const Scripts &);
 
+        static void copy(const FileName &, const FileName &);
+        
         static std::string trim(const std::string &str)
         {
             std::stringstream ss;

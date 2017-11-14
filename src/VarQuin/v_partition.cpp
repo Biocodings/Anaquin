@@ -952,7 +952,7 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
 
 static void writeSummary(const FileName &file, const FileName &src, const Stats &stats, const Options &o)
 {
-    extern FileName BedRef();
+    extern FileName Bed1Ref();
 
     const auto summary = "-------VarPartition Summary Statistics\n\n"
                          "-------Input files\n\n"
@@ -1012,7 +1012,7 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()                 // 1
+    o.writer->write((boost::format(summary) % Bed1Ref()                 // 1
                                             % src                      // 2
                                             % stats.gStats.nRegs       // 3
                                             % o.edge                   // 4

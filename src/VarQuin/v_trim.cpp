@@ -3,7 +3,7 @@
 #include "writers/bam_writer.hpp"
 #include "parsers/parser_bambed.hpp"
 
-extern Anaquin::FileName BedRef();
+extern Anaquin::FileName Bed1Ref();
 
 using namespace Anaquin;
 
@@ -122,7 +122,7 @@ static void writeSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % BedRef()     // 1
+    o.writer->write((boost::format(summary) % Bed1Ref()     // 1
                                             % src          // 2
                                             % stats.nRegs  // 3
                                             % meth2Str()   // 4

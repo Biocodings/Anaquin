@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-extern FileName BedRef();
+extern FileName Bed1Ref();
 
 #ifdef DEBUG_VALIGN
 #include <fstream>
@@ -427,7 +427,7 @@ void VAlign::writeSummary(const FileName &file,
     
     if (!gen.empty())
     {
-        o.writer->write((boost::format(summary1) % BedRef()              // 1
+        o.writer->write((boost::format(summary1) % Bed1Ref()              // 1
                                                  % gen                   // 2
                                                  % seq                   // 3
                                                  % endo->nMap            // 4
@@ -455,7 +455,7 @@ void VAlign::writeSummary(const FileName &file,
     }
     else
     {
-        o.writer->write((boost::format(summary2) % BedRef()              // 1
+        o.writer->write((boost::format(summary2) % Bed1Ref()              // 1
                                                  % seq                   // 2
                                                  % seqs->nMap            // 3
                                                  % r.nRegs()             // 4

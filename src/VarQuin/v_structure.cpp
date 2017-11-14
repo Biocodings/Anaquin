@@ -219,7 +219,7 @@ static void writeSummary(const FileName &file,
                          const VStructure::Options &o)
 {
     extern FileName VCFRef();
-    extern FileName BedRef();
+    extern FileName Bed1Ref();
     
     const auto summary = "-------VarStructure Summary Statistics\n\n"
                          "-------VarStructure Output Results\n\n"
@@ -294,7 +294,7 @@ static void writeSummary(const FileName &file,
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % VCFRef()                       // 1
-                                            % BedRef()                       // 2
+                                            % Bed1Ref()                       // 2
                                             % (endo.empty() ? "-" : endo)    // 3
                                             % seqs                           // 4
                                             % T()                            // 5

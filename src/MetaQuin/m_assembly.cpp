@@ -111,7 +111,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
 
 static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
-    extern FileName BedRef();
+    extern FileName Bed1Ref();
     
     const auto summary = "-------MetaAssembly Output\n\n"
                          "       Summary for input: %1%\n\n"
@@ -146,7 +146,7 @@ static Scripts generateSummary(const FileName &src, const MAssembly::Stats &stat
                                    % dn.nSeqs
                                    % dn.nEndo
                                    % (dn.nSeqs + dn.nEndo)
-                                   % BedRef()
+                                   % Bed1Ref()
                                    % Standard::instance().r_meta.seqsL1().size()
                                    % dn.N20
                                    % dn.N50

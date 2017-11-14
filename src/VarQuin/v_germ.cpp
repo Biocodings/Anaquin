@@ -63,6 +63,8 @@ VGerm::EStats VGerm::analyzeE(const FileName &file, const Options &o)
             {
                 return;
             }
+            
+            // Only if the variant inside the sequin regions
             else if (contains(r2, x.cID, x.l))
             {
                 stats.g2c[x.gt]++;
@@ -466,10 +468,10 @@ static void writeSummary(const FileName &file,
 {
     const auto &r = Standard::instance().r_var;
 
-    extern bool BedUser();
+    extern bool Bed1User();
     extern bool VCFUser();
     extern FileName VCFRef();
-    extern FileName BedRef();
+    extern FileName Bed1Ref();
 
     const auto summary = "-------VarMutation Summary Statistics\n\n"
                          "-------VarMutation Output Results\n\n"
@@ -569,8 +571,8 @@ static void writeSummary(const FileName &file,
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")          // 1
-                                                % (BedUser() ? BedRef() : "-")          // 2
+        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")         // 1
+                                                % (Bed1User() ? Bed1Ref() : "-")       // 2
                                                 % (endo.empty() ? "-" : endo)          // 3
                                                 % seqs                                 // 4
                                                 % E3()                                 // 5
