@@ -466,6 +466,8 @@ static void writeSummary(const FileName &file,
 {
     const auto &r = Standard::instance().r_var;
 
+    extern bool BedUser();
+    extern bool VCFUser();
     extern FileName VCFRef();
     extern FileName BedRef();
 
@@ -567,8 +569,8 @@ static void writeSummary(const FileName &file,
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % VCFRef()                             // 1
-                                                % BedRef()                             // 2
+        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")          // 1
+                                                % (BedUser() ? BedRef() : "-")          // 2
                                                 % (endo.empty() ? "-" : endo)          // 3
                                                 % seqs                                 // 4
                                                 % E3()                                 // 5

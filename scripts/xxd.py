@@ -37,6 +37,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/A.V.34.tsv',
           'data/A.V.35.vcf',
           'data/A.V.36.fa',
+          'data/A.V.37.bed',
 
           'src/r/plotCNV.R',          
           'src/r/plotFold.R',

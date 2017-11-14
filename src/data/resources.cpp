@@ -5,6 +5,7 @@
 #include "resources/A.V.34.tsv"
 #include "resources/A.V.35.vcf"
 #include "resources/A.V.36.fa"
+#include "resources/A.V.37.bed"
 
 #include "resources/anaquin.txt"
 #include "resources/VarCopy.txt"
@@ -44,10 +45,11 @@ typedef std::string Scripts;
 
 Scripts Manual() { return ToString(data_manuals_anaquin_txt); }
 
-Scripts A_V_29() { return ToString(data_A_V_29_bed); }
+Scripts A_V_29() { return ToString(data_A_V_29_bed);  }
 Scripts A_V_34() { return ToString(data_A_V_34_tsv);  }
 Scripts A_V_35() { return ToString(data_A_V_35_vcf);  }
 Scripts A_V_36() { return ToString(data_A_V_36_fa);   }
+Scripts A_V_37() { return ToString(data_A_V_37_bed);  }
 
 Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
 Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }

@@ -170,10 +170,10 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarMutation,  { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS, OPT_FILTER } },
+    { Tool::VarMutation,  { OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarConjoint,  { OPT_R_CON } },
-    { Tool::VarKStats,    { } },
+    { Tool::VarKStats,    { OPT_U_SEQS } },
 
     /*
      * MetaQuin Analysis
@@ -182,10 +182,6 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::MetaAssembly, { OPT_R_BED, OPT_R_LAD, OPT_U_SEQS } },
     { Tool::MetaCoverage, { OPT_R_BED, OPT_R_LAD, OPT_U_SEQS } }
 };
-
-/*
- * Variables used in argument parsing
- */
 
 struct Parsing
 {
@@ -224,12 +220,24 @@ FileName GTFRef()
     return !__mockGTFRef__.empty() ? __mockGTFRef__ : _p.opts.at(OPT_R_GTF);
 }
 
-FileName LadRef() { return _p.opts.at(OPT_R_LAD); }
-FileName CNVRef() { return _p.opts.at(OPT_R_CNV); }
-FileName ConRef() { return _p.opts.at(OPT_R_CON); }
-FileName AFRef()  { return _p.opts.at(OPT_R_AF);  }
-FileName BedRef() { return _p.opts.at(OPT_R_BED); }
-FileName VCFRef() { return _p.opts.at(OPT_R_VCF); }
+#define S(x) (_p.opts.count(x) ? _p.opts.at(x) : "-")
+
+FileName __VCFRef__, __BedRef__;
+
+// User for VCF reference?
+static bool __VCFRefUser__;
+
+// User for BED reference?
+static bool __BedRefUser__;
+
+bool BedUser() { return __BedRefUser__; }
+bool VCFUser() { return __VCFRefUser__; }
+
+FileName AFRef()  { return S(OPT_R_AF);  }
+FileName LadRef() { return S(OPT_R_LAD); }
+FileName ConRef() { return S(OPT_R_CON); }
+FileName BedRef() { return S(OPT_R_BED); }
+FileName VCFRef() { return __VCFRef__; }
 
 static Scripts fixManual(const Scripts &str)
 {
@@ -467,70 +475,58 @@ template <typename F> void readL6(F f, Option key, UserReference &r)
     }
 }
 
-static void readVCF2(Option opt, UserReference &r, Base trim = 0)
+typedef SequinVariant::Context Context;
+
+static void readV2(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    typedef SequinVariant::Context Context;
-    
-    if (!_p.opts[opt].empty())
-    {
-        r.v2 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]), std::set<Context> {})));
-    }
+    auto rr = (__VCFRefUser__ = _p.opts.count(opt)) ? Reader(__VCFRef__ = _p.opts[opt]) :
+                                                      Reader(__VCFRef__ = System::script2File(x));
+    r.v2 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(rr, std::set<Context> {})));
 }
 
-static void readVCFSom1(Option opt, UserReference &r, Base trim = 0)
+static void readVCFSom1(Option opt, UserReference &r, const Scripts &x = "")
 {
-    typedef SequinVariant::Context Context;
-    
-    if (!_p.opts[opt].empty())
-    {
-        r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
-            std::set<Context>
-            {
-                Context::Common,
-                Context::VeryLowGC,
-                Context::LowGC,
-                Context::HighGC,
-                Context::VeryHighGC,
-                Context::ShortDinRep,
-                Context::LongDinRep,
-                Context::ShortHompo,
-                Context::LongHompo,
-                Context::ShortQuadRep,
-                Context::LongQuadRep,
-                Context::ShortTrinRep,
-                Context::LongTrinRep,
-            })));
-    }
+    auto rr = _p.opts.count(opt) ? Reader(_p.opts[opt]) : Reader(System::script2File(x));
+    r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(rr,
+                 std::set<Context>
+                 {
+                     Context::Common,
+                     Context::VeryLowGC,
+                     Context::LowGC,
+                     Context::HighGC,
+                     Context::VeryHighGC,
+                     Context::ShortDinRep,
+                     Context::LongDinRep,
+                     Context::ShortHompo,
+                     Context::LongHompo,
+                     Context::ShortQuadRep,
+                     Context::LongQuadRep,
+                     Context::ShortTrinRep,
+                     Context::LongTrinRep,
+                 })));
 }
 
-static void readVCFNoSom1(Option opt, UserReference &r, Base trim = 0)
+static void readVCFNoSom1(Option opt, UserReference &r, const Scripts &x = "")
 {
-    typedef SequinVariant::Context Context;
-
-    if (!_p.opts[opt].empty())
-    {
-        r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(Reader(_p.opts[opt]),
-                    std::set<Context> { Context::Cancer })));
-    }
+    auto rr = _p.opts.count(opt) ? Reader(_p.opts[opt]) : Reader(System::script2File(x));
+    r.v1 = std::shared_ptr<VCFLadder>(new VCFLadder(
+            Standard::addVCF(rr, std::set<Context> { Context::Cancer })));
 }
 
-static void readReg1(Option opt, UserReference &r, Base trim = 0)
+static void readR1(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    if (!_p.opts[opt].empty())
-    {
-        r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(_p.opts[opt]), trim)));
-    }
+    auto rr = (__BedRefUser__ = _p.opts.count(opt)) ? Reader(__BedRef__ = _p.opts[opt]) :
+                                                      Reader(__BedRef__ = System::script2File(x));
+    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(rr, trim)));
 }
 
-static void readReg2(Option opt, UserReference &r, Base trim = 0)
+static void readR2(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    if (!_p.opts[opt].empty())
-    {
-        r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(_p.opts[opt]), trim)));
-    }
+    auto rr = _p.opts.count(opt) ? Reader(_p.opts[opt]) : Reader(System::script2File(x));
+    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(rr, trim)));
 }
 
-static void readReg3(const FileName &file, UserReference &r, Base trim = 0)
+static void readR3(const FileName &file, UserReference &r, Base trim = 0)
 {
     r.r3 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(file), trim)));
 }
@@ -1082,21 +1078,21 @@ void parse(int argc, char ** argv)
             {
                 case Tool::MetaCoverage:
                 {
-                    readReg1(OPT_R_BED, r);
+                    readR1(OPT_R_BED, r);
                     readL1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
                 case Tool::MetaAssembly:
                 {
-                    readReg1(OPT_R_BED, r);
+                    readR1(OPT_R_BED, r);
                     readL1(std::bind(&Standard::addMMix, &s, std::placeholders::_1), OPT_R_LAD, r);
                     break;
                 }
 
                 case Tool::MetaSubsample:
                 {
-                    readReg1(OPT_R_BED, r);
+                    readR1(OPT_R_BED, r);
                     break;
                 }
 
@@ -1168,7 +1164,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case Tool::VarFlip: { readReg1(OPT_R_BED, r); break; }
+                case Tool::VarFlip: { readR1(OPT_R_BED, r); break; }
                 case Tool::VarPartition:
                 {
                     // Special trimming file for VarPartition
@@ -1179,25 +1175,25 @@ void parse(int argc, char ** argv)
                     out << A_V_29();
                     out.close();
 
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readReg3(tmp, r);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR3(tmp, r);
                     
                     break;
                 }
 
                 case Tool::VarAlign:
                 {
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     break;
                 }
                     
                 case Tool::VarStructure:
                 {
                     assert(false);
-//                    readReg1(OPT_R_BED, r);
-//                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+//                    readR1(OPT_R_BED, r);
+//                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
 //                    readVCFNoCancer(OPT_R_VCF, r);
                     break;
                 }
@@ -1214,53 +1210,56 @@ void parse(int argc, char ** argv)
                 case Tool::VarCopy:
                 {
                     readL1(std::bind(&Standard::addCNV, &s, std::placeholders::_1), OPT_R_CNV, r);
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     break;
                 }
                     
                 case Tool::VarCalibrate:
                 {
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     break;
                 }
 
                 case Tool::VarMutation:
                 {
-                    if (_p.opts.at(OPT_FILTER) == "germline")
+                    // Default sequin variants
+                    extern Scripts A_V_35();
+                    
+                    // Default sequin regions in the human genome
+                    extern Scripts A_V_37();
+
+                    if (_p.opts.at(OPT_METHOD) == "germline")
                     {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCFNoSom1(OPT_R_VCF, r);
-                        readVCF2(OPT_R_VCF, r);
+                        readVCFNoSom1(OPT_R_VCF, r, A_V_35());
                     }
                     else
                     {
-                        readReg1(OPT_R_BED, r);
-                        readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                        readVCFSom1(OPT_R_VCF, r);
-                        readVCF2(OPT_R_VCF, r);
+                        readVCFSom1(OPT_R_VCF, r, A_V_35());
                     }
                     
+                    readR1(OPT_R_BED, r, 0, A_V_37());
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0, A_V_37());
+                    readV2(OPT_R_VCF, r, 0, A_V_35()); //fuck
                     break;
                 }
 
                 case Tool::VarSomatic:
                 {
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     readVCFSom1(OPT_R_VCF, r);
-                    readVCF2(OPT_R_VCF, r);
+                    readV2(OPT_R_VCF, r);
                     break;
                 }
                     
                 case Tool::VarGermline:
                 {
-                    readReg1(OPT_R_BED, r);
-                    readReg2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR1(OPT_R_BED, r);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
                     readVCFNoSom1(OPT_R_VCF, r);
-                    readVCF2(OPT_R_VCF, r);
+                    readV2(OPT_R_VCF, r);
                     break;
                 }
                     

@@ -24,11 +24,6 @@ namespace Anaquin
         NotFilted,
     };
     
-    /*
-     * This class represents a VCF variant. Not everything in a VCF file is important, only
-     * the required fields are included.
-     */
-    
     struct Variant
     {
         operator const Locus &() const { return l; }
