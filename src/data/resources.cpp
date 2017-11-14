@@ -26,6 +26,7 @@
 #include "resources/MetaAssembly.txt"
 #include "resources/MetaCoverage.txt"
 #include "resources/MetaSubsample.txt"
+#include "resources/VarMutationReport.Rnw"
 
 #include "resources/plotCNV.R"
 #include "resources/plotFold.R"
@@ -73,6 +74,8 @@ Scripts VarKStats()     { return ToString(data_manuals_VarKStats_txt);    }
 Scripts VarMutation()   { return ToString(data_manuals_VarMutation_txt);  }
 Scripts VarPartition()  { return ToString(data_manuals_VarPartition_txt); }
 Scripts VarStructure()  { return ToString(data_manuals_VarStructure_txt); }
+
+Scripts VarMutationReport() { return ToString(data_VarMutationReport_Rnw); }
 
 Scripts MetaCoverage()  { return ToString(data_manuals_MetaCoverage_txt);   }
 Scripts MetaSubsample() { return ToString(data_manuals_MetaSubsample_txt);  }

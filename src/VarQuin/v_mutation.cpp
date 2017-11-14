@@ -3,6 +3,7 @@
 #include "VarQuin/v_somatic.hpp"
 #include "writers/vcf_writer.hpp"
 #include "VarQuin/v_mutation.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
 
@@ -37,6 +38,27 @@ template <typename T, typename O> void writeSamples(const FileName &file, const 
                                                % toString(i.qual)).str());
     }
     
+    o.writer->close();
+}
+
+template<typename S, typename O> void writeLatex(const FileName &file, const S &stats, const O &o)
+{
+    extern Scripts VarMutationReport();
+    
+    o.generate(file);
+    o.writer->open(file);
+    
+    auto x = VarMutationReport();
+    
+    // Make sure format() is not confused
+    boost::replace_all(x, "%", "%%");
+    
+    x = (boost::format(x)).str();
+
+    // Convert back to latex
+    boost::replace_all(x, "%%", "%");
+    
+    o.writer->write(x);
     o.writer->close();
 }
 
@@ -82,6 +104,12 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
      */
     
     writeSamples("VarMutation_sample.tsv", stats, o);
+    
+    /*
+     * Generating VarMutation_latex.Rnw
+     */
+    
+    writeLatex("VarMutation_latex.Rnw", stats, o);
     
     /*
      * Generating VarMuation_sequins.bed
