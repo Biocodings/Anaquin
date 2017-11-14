@@ -88,6 +88,11 @@ namespace Anaquin
         NotFiltered,
         Passed,
     };
+    
+    // Hask key for mapping a variant
+    typedef long VarHashKey;
+    
+    typedef std::map<VarHashKey, Counts> VarHashTable;
 }
 
 #endif

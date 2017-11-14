@@ -6,11 +6,18 @@
 
 namespace Anaquin
 {
-    // Hask key for mapping a variant
-    typedef long VarHashKey;
-    
-    typedef std::map<VarHashKey, Counts> VarHashTable;
+    struct EStats
+    {
+        std::set<Variant> vs;
+        std::map<Variation, Counts> v2c;
+        std::map<Genotype,  Counts> g2c;
+    };
 
+    struct BaseCallerStats
+    {
+        EStats es; // Statistics for endogenous
+    };
+    
     struct VGerm
     {
         struct Match
@@ -35,12 +42,6 @@ namespace Anaquin
         {
             Options() : filter(VCFFilter::NotFiltered) {}
             VCFFilter filter;
-        };
-
-        struct EStats
-        {
-            std::map<Variation, Counts> v2c;
-            std::map<Genotype,  Counts> g2c;
         };
 
         struct SStats
@@ -84,11 +85,16 @@ namespace Anaquin
                 return nullptr;
             }
         };
+        
+        struct Stats : public BaseCallerStats
+        {
+            SStats ss;
+        };
 
         static EStats analyzeE(const FileName &, const Options &o);
         static SStats analyzeS(const FileName &, const Options &o);
 
-        static void report(const FileName &, const FileName &, const Options &o = Options());
+        static Stats report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

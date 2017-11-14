@@ -93,13 +93,13 @@ namespace Anaquin
         // Quality score
         double qual = NAN;
         
-        // Eg: AD for VCF and REF for VarScan
+        // Eg: AD for VCF and REF
         Counts readR = NAN;
         
-        // Eg: AD for VCF and ALT for VarScan
+        // Eg: AD for VCF and ALT
         Counts readV = NAN;
         
-        // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
+        // Depth coverage (eg: DP for VCF and REF+ALT)
         Counts depth = NAN;
         
         std::map<std::string, int> ifi;

@@ -2,7 +2,7 @@
 #define V_SOMATIC_HPP
 
 #include "stats/analyzer.hpp"
-#include "VarQuin/VarQuin.hpp"
+#include "VarQuin/v_germ.hpp"
 
 namespace Anaquin
 {
@@ -32,12 +32,6 @@ namespace Anaquin
             VCFFilter filter;
         };
 
-        struct EStats
-        {
-            std::map<Variation, Counts> v2c;
-            std::map<Genotype,  Counts> g2c;
-        };
-        
         struct SStats
         {
             std::vector<Match> tps, fns, fps;
@@ -90,11 +84,15 @@ namespace Anaquin
             }
         };
         
+        struct Stats : public BaseCallerStats
+        {
+            SStats ss;
+        };
+
         static EStats analyzeE(const FileName &, const Options &o);
         static SStats analyzeS(const FileName &, const Options &o);
         
-        // Report for both endogenous and sequins
-        static void report(const FileName &, const FileName &, const Options &o = Options());
+        static Stats report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

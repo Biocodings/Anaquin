@@ -41,11 +41,11 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
                                        % refRat).str();
 }
 
-VGerm::EStats VGerm::analyzeE(const FileName &file, const Options &o)
+EStats VGerm::analyzeE(const FileName &file, const Options &o)
 {
     const auto r2 = Standard::instance().r_var.regs2();
     
-    VGerm::EStats stats;
+    EStats stats;
 
     stats.g2c[Genotype::Homozygous];
     stats.g2c[Genotype::Heterzygous];
@@ -57,20 +57,30 @@ VGerm::EStats VGerm::analyzeE(const FileName &file, const Options &o)
     
     if (!file.empty())
     {
+        auto w = VCFWriter();
+        w.open(o.work + "/VarMutation_sample.vcf");
+        
         ParserVCF::parse(file, [&](const Variant &x)
         {
+            DInter *d = nullptr;
+
             if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
             {
                 return;
             }
-            
-            // Only if the variant inside the sequin regions
-            else if (contains(r2, x.cID, x.l))
+            else if ((d = contains(r2, x.cID, x.l)))
             {
-                stats.g2c[x.gt]++;
-                stats.v2c[x.type()]++;
+                w.write(x.hdr, x.line);
+
+                auto t = x;
+                t.name = d->name();
+                stats.g2c[t.gt]++;
+                stats.v2c[t.type()]++;
+                stats.vs.insert(t);
             }
         });
+        
+        w.close();
     }
 
     return stats;
@@ -390,18 +400,18 @@ static void writeQuins(const FileName &file,
             else
             {
                 o.writer->write((boost::format(format) % i.name
-                                 % i.cID
-                                 % i.l.start
-                                 % "FN"
-                                 % "-"
-                                 % "-"
-                                 % "-"
-                                 % r.af(i.name)
-                                 % "-"
-                                 % "-"
-                                 % gt2str(sv.gt)
-                                 % ctx2Str(sv.ctx)
-                                 % var2str(i.type())).str());
+                                                       % i.cID
+                                                       % i.l.start
+                                                       % "FN"
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                                       % r.af(i.name)
+                                                       % "-"
+                                                       % "-"
+                                                       % gt2str(sv.gt)
+                                                       % ctx2Str(sv.ctx)
+                                                       % var2str(i.type())).str());
             }
         }
     }
@@ -462,7 +472,7 @@ static void writeDetected(const FileName &file,
 static void writeSummary(const FileName &file,
                          const FileName &endo,
                          const FileName &seqs,
-                         const VGerm::EStats &es,
+                         const EStats &es,
                          const VGerm::SStats &ss,
                          const VGerm::Options &o)
 {
@@ -657,14 +667,16 @@ template <typename T, typename O> void writeFN(const FileName &file, const T &x,
     wFN.close();
 }
 
-void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
+VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
 {
-    const auto es = analyzeE(endo, o);
-    const auto ss = analyzeS(seqs, o);
+    Stats stats;
+    
+    stats.es = analyzeE(endo, o);
+    stats.ss = analyzeS(seqs, o);
 
-    o.info("TP: " + std::to_string(ss.oc.tp()));
-    o.info("FP: " + std::to_string(ss.oc.fp()));
-    o.info("FN: " + std::to_string(ss.oc.fn()));
+    o.info("TP: " + std::to_string(stats.ss.oc.tp()));
+    o.info("FP: " + std::to_string(stats.ss.oc.fp()));
+    o.info("FN: " + std::to_string(stats.ss.oc.fn()));
 
     o.info("Generating statistics");
 
@@ -672,19 +684,19 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
      * Generating VarMutation_sequins.tsv
      */
     
-    writeQuins("VarMutation_sequins.tsv", ss, o);
+    writeQuins("VarMutation_sequins.tsv", stats.ss, o);
 
     /*
      * Generating VarMutation_summary.stats
      */
     
-    writeSummary("VarMutation_summary.stats", endo, seqs, es, ss, o);
+    writeSummary("VarMutation_summary.stats", endo, seqs, stats.es, stats.ss, o);
     
     /*
      * Generating VarMutation_detected.tsv
      */
     
-    writeDetected("VarMutation_detected.tsv", ss, o);
+    writeDetected("VarMutation_detected.tsv", stats.ss, o);
     
     /*
      * Generating VarMutation_ROC.R
@@ -699,5 +711,7 @@ void VGerm::report(const FileName &endo, const FileName &seqs, const Options &o)
      * Generating VarMutation_FN.vcf
      */
 
-    writeFN("VarMutation_FN.vcf", ss.fns, o, true);
+    writeFN("VarMutation_FN.vcf", stats.ss.fns, o, true);
+    
+    return stats;
 }
