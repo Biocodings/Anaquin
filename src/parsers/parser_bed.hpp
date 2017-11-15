@@ -14,6 +14,7 @@ namespace Anaquin
     {
         struct Data
         {
+            operator const Locus &() const { return l; }
             operator const std::string &() const { return name; }
             
             ChrID cID;
