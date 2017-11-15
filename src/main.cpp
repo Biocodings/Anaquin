@@ -41,6 +41,7 @@
 #include "parsers/parser_kallisto.hpp"
 
 #include "tools/system.hpp"
+#include "tools/bedtools.hpp"
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 
@@ -83,7 +84,8 @@ typedef std::set<Value> Range;
 #define OPT_EDGE     817
 #define OPT_READS    818
 #define OPT_FILTER   819
-#define OPT_U_BASE   820
+#define OPT_U_BED    820
+#define OPT_U_BASE   821
 
 using namespace Anaquin;
 
@@ -300,7 +302,8 @@ static const struct option long_options[] =
     { "writeUncalib", no_argument, 0, OPT_UN_CALIB },
     { "showReads",    no_argument, 0, OPT_READS    },
 
-    { "usequin", required_argument, 0, OPT_U_SEQS  },
+    { "ubed",    required_argument, 0, OPT_U_BED    },
+    { "usequin", required_argument, 0, OPT_U_SEQS   },
     { "usample", required_argument, 0, OPT_U_SAMPLE },
 
     { "rbed",    required_argument, 0, OPT_R_BED  },
@@ -825,6 +828,7 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_U_BED:
             case OPT_R_VCF:
             case OPT_R_BED:
             case OPT_R_GTF:
@@ -1236,9 +1240,14 @@ void parse(int argc, char ** argv)
                         readVCFSom1(OPT_R_VCF, r, A_V_35());
                     }
                     
-                    readR1(OPT_R_BED, r, 0, A_V_37());
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0, A_V_37());
-                    readV2(OPT_R_VCF, r, 0, A_V_35()); //fuck
+                    const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
+                    
+                    // Do we need intersection?
+                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
+                    
+                    readR1(OPT_R_BED, r, 0);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readV2(OPT_R_VCF, r, 0, A_V_35());
                     break;
                 }
 

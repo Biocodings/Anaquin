@@ -1,5 +1,5 @@
-#ifndef MERGED_HPP
-#define MERGED_HPP
+#ifndef MINTERS_HPP
+#define MINTERS_HPP
 
 #include <set>
 #include <map>

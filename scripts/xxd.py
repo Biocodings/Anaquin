@@ -33,6 +33,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
 
+          'data/VarMutationReport.Rnw',
           'data/A.V.29.bed',
           'data/A.V.34.tsv',
           'data/A.V.35.vcf',

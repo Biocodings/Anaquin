@@ -34,11 +34,6 @@ namespace Anaquin
                 return !_key.empty() ? _key : std::to_string(start) + "_" + std::to_string(end);
             }
 
-            /*
-             * Merge a list of objects according to their locs. The type of the object must be
-             * castable to Locus.
-             */
-            
             template <typename T, typename R, template <typename, typename = std::allocator<T>> class Inputs>
                     static std::vector<R> merge(const Inputs<T> &x)
             {
