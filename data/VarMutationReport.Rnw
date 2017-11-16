@@ -17,7 +17,7 @@
 library(xtable)
 library(stargazer)
 
-source("VarMutation_report.R")
+source("VarMutationReport.R")
 @
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
