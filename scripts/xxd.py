@@ -33,6 +33,7 @@ data  = [ 'data/manuals/anaquin.txt',
           'data/manuals/MetaSubsample.txt',
           'data/manuals/MetaAssembly.txt',
 
+          'data/VarMutationReport.R',
           'data/VarMutationReport.Rnw',
           'data/A.V.29.bed',
           'data/A.V.34.tsv',
@@ -71,6 +72,6 @@ for i in range(0,len(r)):
             with open(path, 'r') as f:
                 data = f.read()
                 if ('0x0a, 0x0a\n' in data):
-                    raise Exception('Error: ' + path)
+                    raise Exception('Failed to embed: ' + path)
                     
 os.system('rm src/data/resources.o')
