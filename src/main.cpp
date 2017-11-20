@@ -173,9 +173,9 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarMutation,  { OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarPartition, { OPT_U_SEQS, OPT_R_BED } },
-    { Tool::VarConjoint,  { OPT_R_CON } },
-    { Tool::VarKStats,    { OPT_U_SEQS } },
+    { Tool::VarKStats,    { OPT_U_SEQS  } },
+    { Tool::VarPartition, { OPT_U_SEQS, } },
+    { Tool::VarConjoint,  { OPT_R_CON   } },
 
     /*
      * MetaQuin Analysis
@@ -1170,15 +1170,18 @@ void parse(int argc, char ** argv)
                 {
                     // Special trimming file for VarPartition
                     extern Scripts A_V_29();
-                    
-                    const auto tmp = System::tmpFile();
-                    std::ofstream out(tmp);
-                    out << A_V_29();
-                    out.close();
 
-                    readR1(OPT_R_BED, r);
+                    // Default sequin regions in the human genome
+                    extern Scripts A_V_37();
+
+                    const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
+                    
+                    // Do we need intersection?
+                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
+                    
+                    readR1(OPT_R_BED, r, 0);
                     readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readR3(tmp, r);
+                    readR3(System::script2File(A_V_29()), r);
                     
                     break;
                 }
