@@ -8,7 +8,7 @@ extern Anaquin::FileName Bed1Ref();
 
 using namespace Anaquin;
 
-ParserBAMBED::Stats VCalibrate::sample(const FileName    &file,
+ParserBAMBED::Stats VCalibrate::sample(const FileName &file,
                                     const NormFactors &norms,
                                     const Chr2DInters &sampled,
                                     const Chr2DInters &trimmed,
