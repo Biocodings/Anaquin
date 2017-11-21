@@ -85,7 +85,8 @@ typedef std::set<Value> Range;
 #define OPT_READS    818
 #define OPT_FILTER   819
 #define OPT_U_BED    820
-#define OPT_U_BASE   821
+#define OPT_S_SAMPLE 821
+#define OPT_U_BASE   823
 
 using namespace Anaquin;
 
@@ -301,6 +302,7 @@ static const struct option long_options[] =
 
     { "writeUncalib", no_argument, 0, OPT_UN_CALIB },
     { "showReads",    no_argument, 0, OPT_READS    },
+    { "skipSample",   no_argument, 0, OPT_S_SAMPLE },
 
     { "ubed",    required_argument, 0, OPT_U_BED    },
     { "usequin", required_argument, 0, OPT_U_SEQS   },
@@ -818,6 +820,7 @@ void parse(int argc, char ** argv)
             case OPT_READS:
             case OPT_FILTER:
             case OPT_THREAD:
+            case OPT_S_SAMPLE:
             case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
 
             case OPT_MIXTURE:
@@ -1315,6 +1318,7 @@ void parse(int argc, char ** argv)
                 {
                     VPartition::Options o;
                     
+                    o.skipSamp = _p.opts.count(OPT_S_SAMPLE);
                     o.notCalib = _p.opts.count(OPT_UN_CALIB);
                     o.trim = _p.opts.count(OPT_TRIM) ? stoi(_p.opts[OPT_TRIM]) : 2;
                     o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;

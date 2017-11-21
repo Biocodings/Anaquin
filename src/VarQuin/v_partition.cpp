@@ -750,7 +750,7 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
 
     struct Impl
     {
-        Impl(Stats &stats, const Options &o) : stats(stats)
+        Impl(Stats &stats, const Options &o) : o(o), stats(stats)
         {
             h1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
             a1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
@@ -855,7 +855,10 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
 
         inline void writeEndo(const ParserBAM::Data &x)
         {
-            endo.write(x);
+            if (!o.skipSamp)
+            {
+                endo.write(x);
+            }
         }
 
 #ifdef DEBUG
@@ -871,6 +874,7 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
         }
 
         Stats &stats;
+        const Options &o;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
