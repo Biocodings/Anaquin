@@ -29,7 +29,8 @@
      Optional:
         -o = output     Directory in which output files are written to
         -rbed           Annotation file (BED format) of sequin regions
-        -ubed          Reference custom sequins coordinate annotation file (.BED)
+        -ubed           Reference custom sequins coordinate annotation file (.BED)
+        -skipSample     Whether sample-derived ouput files should be skipped to boost performance
         -edge = 0       Edge effects width in nucleotide bases
         -trim = 2       How many nucletide bases from the sequin boundaries for trimming 
         --writeUncalib  Write out trimmed but uncalibrated alignments to the reverse genome? 
