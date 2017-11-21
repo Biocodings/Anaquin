@@ -1,4 +1,4 @@
-#include "tools/pool.hpp"
+//#include "tools/pool.hpp"
 #include "tools/samtools.hpp"
 #include "parsers/parser_bam2.hpp"
 #include <boost/algorithm/string/predicate.hpp>

@@ -83,11 +83,6 @@ namespace Anaquin
         return x.find("rev") != std::string::npos;
     }
 
-    inline bool isVarQuin(const ChrID &x)
-    {
-        return isLadQuin(x) || isReverse(x);
-    }
-
     enum class VCFFilter
     {
         NotFiltered,
