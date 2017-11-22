@@ -505,7 +505,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     bool t1l, t2l; // Left trimming for paired-end?
     bool t1r, t2r; // Right trimming for paired-end?
 
-    ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &i)
+    ParserBAM::parse(file, [&](ParserBAM::Data &x, const ParserBAM::Info &i)
     {
         A_CHECK(x.isPaired, x.name + " is not pair-ended. Singled-ended not supported.");
 
@@ -583,6 +583,10 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
         {
             return;
         }
+        
+        x.lSeq();
+        x.lQual();
+        x.lName();
 
         if (!seenMates.count(x.name))
         {

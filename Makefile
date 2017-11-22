@@ -1,5 +1,5 @@
 #
-# Please modify only BOOST, EIGEN and HTSLIB. You should be able to leave all other options intact. C++ compiler with C++11 support is mandatory.
+# Please modify only BOOST, EIGEN, BEDTOOLS and HTSLIB. You should be able to leave all other options intact. C++ compiler with C++11 support is mandatory.
 #
 
 # Boost C++ library
@@ -8,11 +8,11 @@ BOOST = /usr/local/include/boost_1_64_0
 # Linear-algebra library
 EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 
-# HTSLIB library for reading BAM files
+# HTSLIB library for manipualting BAM files
 HTSLIB = /Users/tedwong/Sources/QA/htslib
 
 #
-# Backward-cpp (https://github.com/bombela/backward-cpp) is useful for C++ stack tracing. Optional.
+# Backward-cpp (https://github.com/bombela/backward-cpp) is useful for stack tracing. Optional.
 #
 
 DBACKWARD = #-DBACKWARD_HAS_BFD

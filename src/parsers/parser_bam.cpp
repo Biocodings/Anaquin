@@ -5,6 +5,21 @@
 
 using namespace Anaquin;
 
+void ParserBAM::Data::lName()
+{
+    name = bam_get_qname(static_cast<bam1_t *>(_b));
+}
+
+void ParserBAM::Data::lSeq()
+{
+    seq = bam2seq(static_cast<bam1_t *>(_b));
+}
+
+void ParserBAM::Data::lQual()
+{
+    qual = bam2qual(static_cast<bam1_t *>(_b));
+}
+
 bool ParserBAM::Data::nextCigar(Locus &l, bool &spliced)
 {
     A_ASSERT(_h && _b);
@@ -122,7 +137,7 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
         info.length = h->target_len[t->core.tid];
 
         align.mapped = false;
-        align.name   = bam_get_qname(t);
+        //align.name   = bam_get_qname(t);
         
         info.b = t;
         info.h = h;
@@ -176,8 +191,8 @@ void ParserBAM::parse(const FileName &file, Functor x, bool details)
 
         if (details)
         {
-            align.seq    = bam2seq(t);
-            align.qual   = bam2qual(t);
+            //align.seq    = bam2seq(t);
+            //align.qual   = bam2qual(t);
             //align.cigar  = hasCID ? bam2cigar(t) : "*";
             align.tlen   = hasCID ? t->core.isize : 0;
             align.pnext  = hasCID ? t->core.mpos : 0;

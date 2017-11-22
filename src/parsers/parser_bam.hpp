@@ -43,6 +43,19 @@ namespace Anaquin
             
                 bool nextCigar(Locus &l, bool &spliced);
 
+                /*
+                 * Optional fields
+                 */
+            
+                // Eg: B7_591:6:155:12:674
+                void lName();
+
+                // Segment sequence (optional)
+                void lSeq();
+
+                // ASCII of base QUALity (optional)
+                void lQual();
+
                 inline void *b() const { return _b; }
                 inline void *h() const { return _h; }
 
