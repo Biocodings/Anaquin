@@ -568,7 +568,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     
     auto end = high_resolution_clock::now();
     
-    std::cout << duration_cast<seconds>(end - begin).count() << std::endl;
     const auto elapsed = (boost::format("Completed. %1% seconds.") % duration_cast<seconds>(end - begin).count()).str();
     o.info(elapsed);
 
