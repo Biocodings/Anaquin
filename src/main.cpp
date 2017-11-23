@@ -1,4 +1,5 @@
 #include <ctime>
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <unistd.h>
@@ -559,13 +560,16 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info(date());
     o.info("Path: " + path);
 
-    std::clock_t begin = std::clock();
+    using namespace std::chrono;
+    
+    auto begin = high_resolution_clock::now();
 
     f(o);
     
-    std::clock_t end = std::clock();
-
-    const auto elapsed = (boost::format("Completed. %1% seconds.") % (double(end - begin) / CLOCKS_PER_SEC)).str();
+    auto end = high_resolution_clock::now();
+    
+    std::cout << duration_cast<seconds>(end - begin).count() << std::endl;
+    const auto elapsed = (boost::format("Completed. %1% seconds.") % duration_cast<seconds>(end - begin).count()).str();
     o.info(elapsed);
 
 #ifndef WRITE_SAMPLED
