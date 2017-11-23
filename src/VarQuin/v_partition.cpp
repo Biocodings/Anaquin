@@ -1,3 +1,4 @@
+#include <chrono>
 #include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "writers/bam_writer.hpp"
