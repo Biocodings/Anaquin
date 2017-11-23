@@ -1,4 +1,5 @@
 #include <chrono>
+#include <thread>
 #include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "writers/bam_writer.hpp"
@@ -264,7 +265,7 @@ static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1,
             
             auto shouldKeep = [&](const ParserBAM::Data &x)
             {
-                if (!x.mapped ) { return true; }
+                if (!x.mapped) { return true; }
                 else
                 {
                     if (stopped[x.cID])
@@ -304,17 +305,19 @@ static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1,
             {
                 auto addCov = [&](const ParserBAM::Data &x)
                 {
-                    if (after.at(trimSID(x.cID)).overlap(x.l))
+                    auto o = after.at(trimSID(x.cID)).overlap(x.l);
+                    
+                    if (o)
                     {
-                        after.at(trimSID(x.cID)).overlap(x.l)->map(x.l);
+                        o->map(x.l);
                     }
                 };
                 
                 addCov(x1);
                 addCov(x2);
                 
-                ests[x1.cID] += ((Coverage) x1.seq.size() / (0.85 * heads.at(x1.cID)));
-                ests[x2.cID] += ((Coverage) x2.seq.size() / (0.85 * heads.at(x2.cID)));
+                ests[x1.cID] += ((Coverage) x1.seq.size() / (0.80 * heads.at(x1.cID)));
+                ests[x2.cID] += ((Coverage) x2.seq.size() / (0.80 * heads.at(x2.cID)));
 
                 sampled.insert(x1.name);
                 sampled.insert(x2.name);
@@ -336,15 +339,19 @@ static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1,
                 
                 stats.nFlip++;
                 
-                f1->write("@" + x1.name + "/1");
-                f1->write(x1.seq);
-                f1->write("+");
-                f1->write(x1.qual);
+                auto write = [&](std::shared_ptr<FileWriter> f, const ParserBAM::Data &x, const std::string &p)
+                {
+                    f->write("@" + x.name + p);
+                    f->write(x.seq);
+                    f->write("+");
+                    f->write(x.qual);
+                };
                 
-                f2->write("@" + x2.name + "/2");
-                f2->write(x2.seq);
-                f2->write("+");
-                f2->write(x2.qual);
+                std::thread t1(write, f1, x1, "/1");
+                std::thread t2(write, f2, x2, "/2");
+
+                t1.join();
+                t2.join();
             }
         };
         
