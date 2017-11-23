@@ -206,7 +206,7 @@ static void calibrate(Stats &stats,
     A_ASSERT(!stats.cStats.norms.empty());
 }
 
-static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
+static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
 {
     A_ASSERT(!stats.cStats.covs.empty());
     A_ASSERT(!stats.cStats.norms.empty());
@@ -247,8 +247,12 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
 
     A_ASSERT(stats.s1.size() == stats.s2.size());
     
-    std::set<SequinID> stops;
-    
+    // Estimated metrics (e.g. mean)
+    std::map<SequinID, Coverage> ests;
+
+    // Stopped?
+    std::map<SequinID, bool> stopped;
+
     for (auto i = 0; i < stats.s1.size(); i++)
     {
         auto __sample__ = [&](unsigned i)
@@ -260,23 +264,31 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
             
             auto shouldKeep = [&](const ParserBAM::Data &x)
             {
-                if (!x.mapped || stops.count(x.cID)) { return true; }
+                if (!x.mapped ) { return true; }
                 else
                 {
+                    if (stopped[x.cID])
+                    {
+                        return false;
+                    }
+                    
                     auto sID = trimSID(x.cID);
                     
                     // Targeted coverage
                     const auto exp = stats.cStats.covs.at(sID);
-                    
-                    // Latest coverage
-                    const auto obs = after.at(sID).stats().mean;
+
+                    // Estimated coverage
+                    const auto est = ests[sID];
+
+                    // Observed coverage
+                    const auto obs = (o.useEsts && est < exp) ? est : after.at(sID).stats().mean;
                     
                     // Stop if the target coverage reached
                     if (obs >= exp)
                     {
-                        // We don't have to compute coverage again
-                        stops.insert(x.cID);
-                        
+                        // Target coverage reached
+                        stopped[x.cID] = true;
+
                         o.logInfo("Stopped for " + x.cID);
                         return false;
                     }
@@ -301,6 +313,9 @@ static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sa
                 addCov(x1);
                 addCov(x2);
                 
+                ests[x1.cID] += ((Coverage) x1.seq.size() / (0.85 * heads.at(x1.cID)));
+                ests[x2.cID] += ((Coverage) x2.seq.size() / (0.85 * heads.at(x2.cID)));
+
                 sampled.insert(x1.name);
                 sampled.insert(x2.name);
                 
@@ -536,13 +551,13 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
 
         const auto isMap1 = x.mapped;
         const auto isMap2 = !x.rnext.empty() && x.rnext != "*";
-        const auto isVar1 = isVarQuin(x.cID);
-        const auto isVar2 = isVarQuin(x.rnext);
-        const auto isLad1 = isLadQuin(x.cID);
-        //const auto isLad2 = isLadQuin(x.rnext);
-        const auto isRev1 = isReverse(x.cID);
-        //const auto isRev2 = isReverse(x.rnext);
-
+        const auto isVar1 = isMap1 && isVarQuin(x.cID);
+        const auto isVar2 = isMap2 && isVarQuin(x.rnext);
+        const auto isLad1 = isMap1 && isLadQuin(x.cID);
+        //const auto isLad2 = isMap2 && isLadQuin(x.rnext);
+        const auto isRev1 = isMap1 && isReverse(x.cID);
+        //const auto isRev2 = isMap2 && isReverse(x.rnext);
+        
         if      (!isMap1) { stats.nNA++;   }
         else if (isLad1)  { stats.nLad++;  }
         else if (isRev1)  { stats.nRev++;  }
@@ -735,7 +750,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     using namespace std::chrono;
     
     const auto begin = high_resolution_clock::now();
-    stats.gStats.aTSeqs = sample(stats, r1, sampled, o);
+    stats.gStats.aTSeqs = sample(stats, heads, r1, sampled, o);
     const auto end = high_resolution_clock::now();
 
     o.info("Calibration took: " + toString(duration_cast<seconds>(end - begin).count()) + " seconds");

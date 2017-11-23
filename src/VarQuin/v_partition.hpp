@@ -20,6 +20,8 @@ namespace Anaquin
         {
             Base edge = 0;
             
+            bool useEsts = true;
+            
             // Should we write out trimmed alignments but uncalibrated?
             bool notCalib = false;
             
