@@ -1,5 +1,3 @@
-#include <chrono>
-#include <thread>
 #include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "writers/bam_writer.hpp"
@@ -207,7 +205,7 @@ static void calibrate(Stats &stats,
     A_ASSERT(!stats.cStats.norms.empty());
 }
 
-static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
+static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
 {
     A_ASSERT(!stats.cStats.covs.empty());
     A_ASSERT(!stats.cStats.norms.empty());
@@ -248,114 +246,83 @@ static Counts sample(Stats &stats, const Headers &heads,  const Chr2DInters &r1,
 
     A_ASSERT(stats.s1.size() == stats.s2.size());
     
-    // Estimated metrics (e.g. mean)
-    std::map<SequinID, Coverage> ests;
-
-    // Stopped?
-    std::map<SequinID, bool> stopped;
-
     for (auto i = 0; i < stats.s1.size(); i++)
     {
-        auto __sample__ = [&](unsigned i)
+        auto &x1 = stats.s1.at(i);
+        auto &x2 = stats.s2.at(i);
+
+        auto &after = stats.mStats.aInters;
+        
+        auto shouldKeep = [&](const ParserBAM::Data &x)
         {
-            auto &x1 = stats.s1.at(i);
-            auto &x2 = stats.s2.at(i);
-            
-            auto &after = stats.mStats.aInters;
-            
-            auto shouldKeep = [&](const ParserBAM::Data &x)
+            if (!x.mapped) { return true; }
+            else
             {
-                if (!x.mapped) { return true; }
-                else
+                auto sID = trimSID(x.cID);
+                
+                // Targeted coverage
+                const auto exp = stats.cStats.covs.at(sID);
+                
+                // Latest coverage
+                const auto obs = after.at(sID).stats().mean;
+                
+                // Stop if the target coverage reached
+                if (obs >= exp)
                 {
-                    if (stopped[x.cID])
-                    {
-                        return false;
-                    }
-                    
-                    auto sID = trimSID(x.cID);
-                    
-                    // Targeted coverage
-                    const auto exp = stats.cStats.covs.at(sID);
+                    o.logInfo("Stopped for " + x.cID);
+                    return false;
+                }
 
-                    // Estimated coverage
-                    const auto est = ests[sID];
+                return select.at(sID)->select(x.name);
+            }
+        };
 
-                    // Observed coverage
-                    const auto obs = (o.useEsts && est < exp) ? est : after.at(sID).stats().mean;
-                    
-                    // Stop if the target coverage reached
-                    if (obs >= exp)
-                    {
-                        // Target coverage reached
-                        stopped[x.cID] = true;
+        const auto k1 = shouldKeep(x1);
+        const auto k2 = shouldKeep(x2);
 
-                        o.logInfo("Stopped for " + x.cID);
-                        return false;
-                    }
-                    
-                    return select.at(sID)->select(x.name);
+        if (k1 || k2)
+        {
+            auto addCov = [&](const ParserBAM::Data &x)
+            {
+                if (after.at(trimSID(x.cID)).overlap(x.l))
+                {
+                    after.at(trimSID(x.cID)).overlap(x.l)->map(x.l);
                 }
             };
             
-            const auto k1 = shouldKeep(x1);
-            const auto k2 = shouldKeep(x2);
-            
-            if (k1 || k2)
+            addCov(x1);
+            addCov(x2);
+
+            sampled.insert(x1.name);
+            sampled.insert(x2.name);
+
+            auto __reverse__ = [&](ParserBAM::Data &x)
             {
-                auto addCov = [&](const ParserBAM::Data &x)
+                if (x.isForward)
                 {
-                    auto o = after.at(trimSID(x.cID)).overlap(x.l);
-                    
-                    if (o)
-                    {
-                        o->map(x.l);
-                    }
-                };
-                
-                addCov(x1);
-                addCov(x2);
-                
-                ests[x1.cID] += ((Coverage) x1.seq.size() / (0.80 * heads.at(x1.cID)));
-                ests[x2.cID] += ((Coverage) x2.seq.size() / (0.80 * heads.at(x2.cID)));
+                    complement(x.seq);
+                }
+                else
+                {
+                    std::reverse(x.seq.begin(), x.seq.end());
+                }
+            };
 
-                sampled.insert(x1.name);
-                sampled.insert(x2.name);
-                
-                auto __reverse__ = [&](ParserBAM::Data &x)
-                {
-                    if (x.isForward)
-                    {
-                        complement(x.seq);
-                    }
-                    else
-                    {
-                        std::reverse(x.seq.begin(), x.seq.end());
-                    }
-                };
-                
-                __reverse__(x1);
-                __reverse__(x2);
-                
-                stats.nFlip++;
-                
-                auto write = [&](std::shared_ptr<FileWriter> f, const ParserBAM::Data &x, const std::string &p)
-                {
-                    f->write("@" + x.name + p);
-                    f->write(x.seq);
-                    f->write("+");
-                    f->write(x.qual);
-                };
-                
-                std::thread t1(write, f1, x1, "/1");
-                std::thread t2(write, f2, x2, "/2");
+            __reverse__(x1);
+            __reverse__(x2);
+            
+            stats.nFlip++;
 
-                t1.join();
-                t2.join();
-            }
-        };
-        
-        __sample__(i);
+            f1->write("@" + x1.name + "/1");
+            f1->write(x1.seq);
+            f1->write("+");
+            f1->write(x1.qual);
+            
+            f2->write("@" + x2.name + "/2");
+            f2->write(x2.seq);
+            f2->write("+");
+            f2->write(x2.qual);
+        }
     }
 
     f1->close();
@@ -564,7 +531,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
         //const auto isLad2 = isMap2 && isLadQuin(x.rnext);
         const auto isRev1 = isMap1 && isReverse(x.cID);
         //const auto isRev2 = isMap2 && isReverse(x.rnext);
-        
+
         if      (!isMap1) { stats.nNA++;   }
         else if (isLad1)  { stats.nLad++;  }
         else if (isRev1)  { stats.nRev++;  }
@@ -753,14 +720,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     std::set<ReadName> sampled;
 
     o.info("Performing calibration");
-    
-    using namespace std::chrono;
-    
-    const auto begin = high_resolution_clock::now();
-    stats.gStats.aTSeqs = sample(stats, heads, r1, sampled, o);
-    const auto end = high_resolution_clock::now();
-
-    o.info("Calibration took: " + toString(duration_cast<seconds>(end - begin).count()) + " seconds");
+    stats.gStats.aTSeqs = sample(stats, r1, sampled, o);
     
     /*
      * Checking calibration after sampling
