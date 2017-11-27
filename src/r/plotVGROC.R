@@ -11,11 +11,13 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')
 
-# Only the sequin region (remove it for all variants)
+# Group insertions and deletions
+data$Mutation <- revalue(data$Mutation, c(Insertion = 'Indel', Deletion = 'Indel'))
+
+# Only the sequin region
 data <- data[data$Name != '-',]
 
-# Construct unique identifiers for the variants
+# Construct unique identifiers
 data$Unique <- paste(paste(data$Name, data$Pos, sep='_'), data$Type, sep='_')
 
-data$FreqGrp <- revalue(as.factor(data$ExpFreq), c('0.500000'='Homozygous', '1.000000'='Heterozygous', '-'='FP'))
-plotROC(data$Unique, %5%, data$FreqGrp, data$Label, title='ROC (ranked by VCF Depth)', legTitle='Allele Frequency', refGroup=%6%)
+plotROC(data$Unique, data$%5%, data$Mutation, data$Label, title='ROC (ranked by %5%)', legTitle=%6%, refGroup=%7%)

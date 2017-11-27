@@ -38,6 +38,7 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
                                        % __output__
                                        % file
                                        % score
+                                       % "'Genotype'"
                                        % refRat).str();
 }
 
@@ -704,7 +705,7 @@ VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Opt
     
     o.generate("VarMutation_ROC.R");
     o.writer->open("VarMutation_ROC.R");
-    o.writer->write(createROC("VarMutation_detected.tsv", "data$Depth", "'FP'"));
+    o.writer->write(createROC("VarMutation_detected.tsv", "Qual", "'NULL'"));
     o.writer->close();
 
     /*
