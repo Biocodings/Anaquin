@@ -6,12 +6,27 @@
 
 using namespace Anaquin;
 
-typedef VPartition::Stats   Stats;
-typedef VPartition::Paired  Paired;
-typedef VPartition::Method  Method;
-typedef VPartition::Options Options;
-
+typedef VPartition::Stats     Stats;
+typedef VPartition::Paired    Paired;
+typedef VPartition::Method    Method;
+typedef VPartition::Options   Options;
 typedef std::map<ChrID, Base> Headers;
+
+static ParserBAM::Data flip(const ParserBAM::Data &x)
+{
+    auto r = x;
+    
+    if (r.isForward)
+    {
+        complement(r.seq);
+    }
+    else
+    {
+        std::reverse(r.seq.begin(), r.seq.end());
+    }
+    
+    return r;
+};
 
 static bool shouldTrim(const ParserBAM::Data &x,
                        const Headers &heads,
@@ -686,6 +701,11 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
 
                 stats.pairs[status]++;
                 f(first, second, status);
+                
+                if (o.notCalib && status == Paired::ReverseReverse)
+                {
+                    f(first, second, Paired::TrimmedNotCalibrated);
+                }
             }
             
             seenMates.erase(x.name);
@@ -743,7 +763,6 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     {
         ParserBAM::parse(file, [&](const ParserBAM::Data &x, const ParserBAM::Info &)
          {
-             if (kept.count(x.name))    { f(&x, nullptr, Paired::TrimmedNotCalibrated); }
 #ifdef DEBUG
              if (sampled.count(x.name)) { f(&x, nullptr, Paired::TrimmedCalibrated); }
 #endif
@@ -777,8 +796,10 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             
             if (o.notCalib)
             {
-                notCalib = std::shared_ptr<BAMWriter>(new BAMWriter());
-                notCalib->open(o.work + "/VarPartition_notCalibrated.bam");
+                n1 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+                n2 = std::shared_ptr<FileWriter>(new FileWriter(o.work));
+                n1->open("VarPartition_notCalibrated_1.fq");
+                n2->open("VarPartition_notCalibrated_2.fq");
             }
 
 #ifdef DEBUG
@@ -795,10 +816,8 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             l2->close();
             endo.close();
             
-            if (notCalib)
-            {
-                notCalib->close();
-            }
+            if (n1) { n1->close(); }
+            if (n2) { n2->close(); }
 
 #ifdef DEBUG
             calib.close();
@@ -874,18 +893,23 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
         }
 #endif
 
-        inline void writeTrimmedNotCalibrated(const ParserBAM::Data &x)
+        inline void writeTrimmedNotCalibrated1(const ParserBAM::Data &x)
         {
-            notCalib->write(x);
+            writeFASTQ(n1, flip(x), true);
+        }
+
+        inline void writeTrimmedNotCalibrated2(const ParserBAM::Data &x)
+        {
+            writeFASTQ(n2, flip(x), false);
         }
 
         Stats &stats;
         std::shared_ptr<FileWriter> h1;
         std::shared_ptr<FileWriter> a1, a2;
         std::shared_ptr<FileWriter> l1, l2;
+        std::shared_ptr<FileWriter> n1, n2;
 
         BAMWriter endo;
-        std::shared_ptr<BAMWriter> notCalib;
 
 #ifdef DEBUG
         BAMWriter calib;
@@ -909,8 +933,8 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
                 
             case Paired::TrimmedNotCalibrated:
             {
-                A_ASSERT(x2 == nullptr);
-                impl.writeTrimmedNotCalibrated(*x1);
+                impl.writeTrimmedNotCalibrated1(*x1);
+                impl.writeTrimmedNotCalibrated2(*x1);
                 break;
             }
                 
