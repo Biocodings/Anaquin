@@ -40,7 +40,14 @@ FileName BedTools::intersect(const FileName &x, const FileName &y, Base edge)
     {
         for (const auto &l : Locus::inter<ParserBed::Data, Locus>(m1[c], m2[c]))
         {
-            out << c << "\t" << l.start-1 << "\t" << l.end << "\n";
+            for (const auto &i : m1[c])
+            {
+                if (i.l.overlap(l))
+                {
+                    out << c << "\t" << l.start-1 << "\t" << l.end << "\t" << i.name << "\n";
+                    break;
+                }
+            }
         }
     }
     
