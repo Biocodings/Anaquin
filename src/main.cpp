@@ -1183,7 +1183,7 @@ void parse(int argc, char ** argv)
                     _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
                     
                     readR1(OPT_R_BED, r, 0);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550);
                     readR3(System::script2File(A_V_29()), r);
                     
                     break;
@@ -1252,7 +1252,7 @@ void parse(int argc, char ** argv)
                     _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
                     
                     readR1(OPT_R_BED, r, 0);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550);
                     readV2(OPT_R_VCF, r, 0, A_V_35());
                     break;
                 }

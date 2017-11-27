@@ -36,7 +36,7 @@
         -rvcf          Reference annotation file for all variants represented with sequins (.VCF)
         -rbed          Reference sequins coordinate annotation file (.BED)
         -ubed          Reference custom sequins coordinate annotation file (.BED)
-        -edge = 0      Edge effects width in nucleotide bases
+        -edge = 550    Edge effects width in nucleotide bases
         -usample       User generated sample-derived variants (.VCF)
         -filter = all  Should only the filtered variants ("PASS" in VCF) be considered? Possible values are "pass" and "all".
 
