@@ -124,6 +124,12 @@ namespace Anaquin
             
             struct Calibration
             {
+                // Number of regions that endogenous coverage is higher
+                Counts eOver = 0;
+                
+                // Number of regions that sequin coverage is higher
+                Counts sOver = 0;
+                
                 // Number of alignments for sequins (excluding LadQuin) before calibration
                 Counts bSeqs = 0;
                 

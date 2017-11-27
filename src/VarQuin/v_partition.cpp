@@ -141,6 +141,9 @@ static void calibrate(Stats &stats,
         const auto endoC = stats2cov(o.meth, es);
         const auto seqsC = stats2cov(o.meth, ss);
         
+        if (endoC >= seqsC) { stats.cStats.eOver++; }
+        else                { stats.cStats.sOver++; }
+        
         Proportion norm;
         
         switch (o.meth)
@@ -1014,16 +1017,18 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
                          "-------Before calibration (within sampling regions)\n\n"
                          "       Sample coverage (average): %25$.2f\n"
                          "       Sequin coverage (average): %26$.2f\n\n"
+                         "       Number of regions sample coverage is higher: %27$.2f\n"
+                         "       Number of regions sequin coverage is higher: %28$.2f\n\n"
                          "-------After calibration (within sampling regions)\n\n"
-                         "       Sample coverage (average): %27$.2f\n"
-                         "       Sequin coverage (average): %28$.2f\n\n"
-                         "       Scaling Factor: %29% \u00B1 %30%\n\n"
+                         "       Sample coverage (average): %29$.2f\n"
+                         "       Sequin coverage (average): %30$.2f\n\n"
+                         "       Scaling Factor: %31% \u00B1 %32%\n\n"
                          "-------Alignments within reference regions (before calibration but after trimming)\n\n"
-                         "       Sample: %31%\n"
-                         "       Sequin: %32%\n\n"
-                         "-------Alignments within reference regions (after calibration)\n\n"
                          "       Sample: %33%\n"
-                         "       Sequin: %34%\n";
+                         "       Sequin: %34%\n\n"
+                         "-------Alignments within reference regions (after calibration)\n\n"
+                         "       Sample: %35%\n"
+                         "       Sequin: %36%\n";
 
     #define C(x) stats.pairs.at(x)
     
@@ -1071,14 +1076,16 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
                                             % ph                       // 24
                                             % stats.cStats.meanBEndo() // 25
                                             % stats.cStats.meanBSeqs() // 26
-                                            % stats.cStats.meanBEndo() // 27
-                                            % stats.afterSeqs          // 28
-                                            % stats.cStats.normMean()  // 29
-                                            % stats.cStats.normSD()    // 30
-                                            % stats.gStats.bREndo      // 31
-                                            % stats.gStats.bTSeqs      // 32
-                                            % stats.gStats.aREndo      // 33
-                                            % stats.gStats.aTSeqs      // 34
+                                            % stats.cStats.eOver       // 27
+                                            % stats.cStats.sOver       // 28
+                                            % stats.cStats.meanBEndo() // 29
+                                            % stats.afterSeqs          // 30
+                                            % stats.cStats.normMean()  // 31
+                                            % stats.cStats.normSD()    // 32
+                                            % stats.gStats.bREndo      // 33
+                                            % stats.gStats.bTSeqs      // 34
+                                            % stats.gStats.aREndo      // 35
+                                            % stats.gStats.aTSeqs      // 36
                      ).str());
 }
 
