@@ -642,6 +642,11 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
                 const auto anyMap  =  first->mapped ||  second->mapped;
                 const auto anyNMap = !first->mapped || !second->mapped;
                 
+                if (first->isFirstPair == second->isFirstPair)
+                {
+                    throw std::runtime_error(x.name + " is invalid. No paied-end mate detected for this read.");
+                }
+                
                 A_ASSERT(stats.mStats.bInters.count(trimSID(x.cID)));
                 A_ASSERT(stats.mStats.bInters.count(trimSID(x.cID)));
                 
