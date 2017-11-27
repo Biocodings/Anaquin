@@ -1263,12 +1263,20 @@ void parse(int argc, char ** argv)
                     
                     const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
                     
-                    // Do we need intersection?
-                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED], 0.0) : rb;
+                    const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
+
+                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
                     
-                    readR1(OPT_R_BED, r, 0);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550);
+                    // Intersection without edge
+                    const auto f1 = BedTools::intersect(rb, ub, 0.0);
+                    
+                    // Intersection with edge
+                    const auto f2 = BedTools::intersect(rb, ub, edge);
+
+                    readR1(f1, r);
+                    readR2(f2, r);
                     readV2(OPT_R_VCF, r, 0, A_V_35());
+
                     break;
                 }
 

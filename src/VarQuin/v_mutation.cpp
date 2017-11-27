@@ -41,6 +41,12 @@ template <typename T, typename O> void writeSamples(const FileName &file, const 
     o.writer->close();
 }
 
+static void writeRegions(const FileName &file, const VMutation::Options &o)
+{
+    extern FileName Bed2Ref();
+    System::copy(Bed2Ref(), o.work + "/" + file);
+}
+
 void VMutation::report(const FileName &endo, const FileName &seqs, const VMutation::Options &o)
 {
     o.info("Edge: " + toString(o.edge));
@@ -85,10 +91,10 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
      */
     
     writeSamples("VarMutation_sample.tsv", stats, o);
-    
+
     /*
      * Generating VarMuation_sequins.bed
      */
     
-    System::copy(Bed1Ref(), o.work + "/VarMuation_sequins.bed");
+    writeRegions("VarMuation_sequins.bed", o);
 }
