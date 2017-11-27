@@ -35,6 +35,8 @@ namespace Anaquin
         {
             Options() : filter(VCFFilter::NotFiltered) {}
             
+            Base edge;
+            
             // Germline? Somatic?
             bool isGerm;
             

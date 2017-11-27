@@ -1320,7 +1320,7 @@ void parse(int argc, char ** argv)
                     
                     o.notCalib = _p.opts.count(OPT_UN_CALIB);
                     o.trim = _p.opts.count(OPT_TRIM) ? stoi(_p.opts[OPT_TRIM]) : 2;
-                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0;
+                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
                     
                     analyze_1<VPartition>(OPT_U_SEQS, o);
                     break;
@@ -1385,6 +1385,7 @@ void parse(int argc, char ** argv)
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
                     
+                    o.edge   = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
                     o.isGerm = _p.opts[OPT_METHOD] == "germline";
                     o.filter = _p.opts.at(OPT_FILTER) == "pass" ? VCFFilter::Passed : VCFFilter::NotFiltered;
                     
