@@ -33,6 +33,40 @@ namespace Anaquin
             {
                 return !_key.empty() ? _key : std::to_string(start) + "_" + std::to_string(end);
             }
+        
+            template <typename T, typename R, template <typename, typename = std::allocator<T>> class Inputs>
+                    static std::vector<R> inter(const Inputs<T> &x1, const Inputs<T> &x2)
+            {
+                auto s1 = x1;
+
+                std::sort(s1.begin(), s1.end(), [&](const Locus &l1, const Locus &l2)
+                {
+                    return (l1.start < l2.start) || (l1.start == l2.start && l1.end < l2.end);
+                });
+
+                std::vector<R> inters;
+
+                for (auto &i : s1)
+                {
+                    auto overlap = false;
+                    
+                    for (const auto &j : x2)
+                    {
+                        if (static_cast<Locus>(i).overlap(static_cast<Locus>(j)))
+                        {
+                            overlap = true;
+                            static_cast<Locus>(i).inter(static_cast<Locus>(j));
+                        }
+                    }
+                    
+                    if (overlap)
+                    {
+                        inters.push_back(i);
+                    }
+                }
+
+                return inters;
+            }
 
             template <typename T, typename R, template <typename, typename = std::allocator<T>> class Inputs>
                     static std::vector<R> merge(const Inputs<T> &x)
@@ -87,6 +121,12 @@ namespace Anaquin
                 start = std::min(start, l.start);
             }
 
+            void inter(const Locus &l)
+            {
+                end   = std::min(end, l.end);
+                start = std::max(start, l.start);
+            }
+                                                
             inline void add(const std::string &key) { _key = key; }
 
             inline Base length() const { return (end - start + 1); }

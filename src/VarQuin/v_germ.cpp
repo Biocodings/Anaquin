@@ -479,7 +479,6 @@ static void writeSummary(const FileName &file,
 {
     const auto &r = Standard::instance().r_var;
 
-    extern bool Bed1User();
     extern bool VCFUser();
     extern FileName VCFRef();
     extern FileName Bed1Ref();
@@ -582,12 +581,12 @@ static void writeSummary(const FileName &file,
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")         // 1
-                                                % (Bed1User() ? Bed1Ref() : "-")       // 2
-                                                % (endo.empty() ? "-" : endo)          // 3
-                                                % seqs                                 // 4
-                                                % E3()                                 // 5
-                                                % (c_nSNP + c_nDel + c_nIns)           // 6
+        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")           // 1
+                                                % (!Bed1Ref().empty() ? Bed1Ref() : "-") // 2
+                                                % (endo.empty() ? "-" : endo)            // 3
+                                                % seqs                                   // 4
+                                                % E3()                                   // 5
+                                                % (c_nSNP + c_nDel + c_nIns)             // 6
                                                 % (r.nType1(Variation::SNP) +
                                                    r.nType1(Variation::Insertion) +
                                                    r.nType1(Variation::Deletion))      // 7

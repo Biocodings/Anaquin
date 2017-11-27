@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct BedTools
     {
-        static FileName intersect(const FileName &, const FileName &);
+        static FileName intersect(const FileName &, const FileName &, Base edge);
     };
 }
 

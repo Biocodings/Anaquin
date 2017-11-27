@@ -226,10 +226,8 @@ FileName GTFRef()
 #define S(x) (_p.opts.count(x) ? _p.opts.at(x) : "-")
 
 static FileName __VCFRef__, __Bed1Ref__, __Bed2Ref__;
-static bool __VCFRefUser__, __Bed1RefUser__, __Bed2RefUser__;
+static bool __VCFRefUser__;
 
-bool Bed1User() { return __Bed1RefUser__; }
-bool Bed2User() { return __Bed2RefUser__; }
 bool VCFUser()  { return __VCFRefUser__;  }
 
 FileName AFRef()   { return S(OPT_R_AF);  }
@@ -514,10 +512,20 @@ static void readVCFNoSom1(Option opt, UserReference &r, const Scripts &x = "")
             Standard::addVCF(rr, std::set<Context> { Context::Cancer })));
 }
 
+static void readR1(const FileName &file, UserReference &r)
+{
+    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed1Ref__ = file), 0.0)));
+}
+
+static void readR2(const FileName &file, UserReference &r)
+{
+    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed2Ref__ = file), 0.0)));
+}
+
 static void readR1(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    auto rr = (__Bed1RefUser__ = _p.opts.count(opt)) ? Reader(__Bed1Ref__ = _p.opts[opt]) :
-                                                       Reader(__Bed1Ref__ = System::script2File(x));
+    auto rr = (_p.opts.count(opt)) ? Reader(__Bed1Ref__ = _p.opts[opt]) :
+                                     Reader(__Bed1Ref__ = System::script2File(x));
     r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(rr, trim)));
 }
 
@@ -1178,12 +1186,19 @@ void parse(int argc, char ** argv)
                     extern Scripts A_V_37();
 
                     const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
+
+                    const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
+
+                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
+
+                    // Intersection without edge
+                    const auto f1 = BedTools::intersect(rb, ub, 0.0);
                     
-                    // Do we need intersection?
-                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
-                    
-                    readR1(OPT_R_BED, r, 0);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550);
+                    // Intersection with edge
+                    const auto f2 = BedTools::intersect(rb, ub, edge);
+
+                    readR1(f1, r);
+                    readR2(f2, r);
                     readR3(System::script2File(A_V_29()), r);
                     
                     break;
@@ -1249,7 +1264,7 @@ void parse(int argc, char ** argv)
                     const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
                     
                     // Do we need intersection?
-                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED]) : rb;
+                    _p.opts[OPT_R_BED] = _p.opts.count(OPT_U_BED) ? BedTools::intersect(rb, _p.opts[OPT_U_BED], 0.0) : rb;
                     
                     readR1(OPT_R_BED, r, 0);
                     readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550);

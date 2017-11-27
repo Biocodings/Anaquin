@@ -1085,7 +1085,6 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
 static void writeSequins(const FileName &file, const Stats &stats, const Options &o)
 {
     o.generate(file);
-    
     const auto format = boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8$.2f\t%9$.2f\t%10$.2f\t%11$.2f");
     
     o.generate(file);
@@ -1125,6 +1124,12 @@ static void writeSequins(const FileName &file, const Stats &stats, const Options
     o.writer->close();
 }
 
+static void writeRegions(const FileName &file, const Stats &, const Options &o)
+{
+    extern FileName Bed2Ref();
+    System::copy(Bed2Ref(), o.work + "/" + file);
+}
+
 void VPartition::report(const FileName &file, const Options &o)
 {
     // For efficiency, this tool writes some of the output files directly in the analyze() function.
@@ -1141,5 +1146,11 @@ void VPartition::report(const FileName &file, const Options &o)
      */
     
     writeSequins("VarPartition_sequins.tsv", stats, o);
+    
+    /*
+     * Generating VarPartition_sequins.bed
+     */
+    
+    writeRegions("VarPartition_regions.bed", stats, o);
 }
 

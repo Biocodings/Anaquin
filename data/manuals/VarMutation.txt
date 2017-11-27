@@ -43,6 +43,7 @@
 <b>OUTPUTS</b>
     VarMutation_summary.stats - gives the summary statistics
     VarMutation_sequins.csv   - gives detailed statistics for each sequin
+    VarMutation_sequins.bed   - is the annotation file (after edge clipping) for sequin regions 
     VarMutation_detected.csv  - gives detailed statistics for detected variants
     VarMutation_ROC.R         – R script that plots a ROC curve and report AUC statistics
     VarMutation_ladder.R      - R script that plots linear model relating observed allele frequency (dependent variable)

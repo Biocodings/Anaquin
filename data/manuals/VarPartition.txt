@@ -44,5 +44,6 @@
      VarPartition_ambiguous_2.fq     - is the second paired-end for VarPartition_ambig_1.fq
      VarPartition_hanging.fq         - is the sequence file for hanging reads
      VarPartition_sample.bam         - is the sample derived alignment file
+     VarPartition_sequins.bed        - is the annotation file (after edge clipping) for sequin regions
      VarPartition_notCalibrated_1.fq - is the first paired-end sequence file for uncalibrated flipped reads
      VarPartition_notCalibrated_2.fq - is the second paired-end for VarPartition_notCalibrated_1.fq
