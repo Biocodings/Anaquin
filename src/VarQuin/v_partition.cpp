@@ -220,7 +220,7 @@ static void calibrate(Stats &stats,
     A_ASSERT(!stats.cStats.norms.empty());
 }
 
-static Counts sample(Stats &stats, const Chr2DInters &r1, std::set<ReadName> &sampled, const Options &o)
+static Counts sample(Stats &stats, std::set<ReadName> &sampled, const Options &o)
 {
     A_ASSERT(!stats.cStats.covs.empty());
     A_ASSERT(!stats.cStats.norms.empty());
@@ -745,7 +745,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     std::set<ReadName> sampled;
 
     o.info("Performing calibration");
-    stats.gStats.aTSeqs = sample(stats, r1, sampled, o);
+    stats.gStats.aTSeqs = sample(stats, sampled, o);
     
     /*
      * Checking calibration after sampling
