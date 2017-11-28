@@ -32,7 +32,7 @@
         -ubed           Reference custom sequins coordinate annotation file (.BED)
         -edge = 550     Edge effects width in nucleotide bases
         -trim = 2       How many nucletide bases from the sequin boundaries for trimming 
-        --writeUncalib  Write out trimmed but uncalibrated alignments to the reverse genome? 
+        --writeUncalib  Write out trimmed but uncalibrated reads to the reverse genome? 
 
 <b>OUTPUTS</b>
      VarPartition_summary.stats      - provides the summary statistics
