@@ -27,7 +27,7 @@ inline std::string ctx2Str(Context x)
     }
 }
 
-static Scripts createROC(const FileName &file, const std::string &score, const std::string &refRat)
+static Scripts createROC(const FileName &f1, const FileName &f2)
 {
     extern Scripts PlotVGROC();
     extern Path __output__;
@@ -36,10 +36,11 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
     return (boost::format(PlotVGROC()) % date()
                                        % __full_command__
                                        % __output__
-                                       % file
-                                       % score
-                                       % "'Genotype'"
-                                       % refRat).str();
+                                       % f1
+                                       % f2
+                                       % "Qual"
+                                       % "'Mutation'"
+                                       % "'NULL'").str();
 }
 
 EStats VGerm::analyzeE(const FileName &file, const Options &o)
@@ -704,7 +705,7 @@ VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Opt
     
     o.generate("VarMutation_ROC.R");
     o.writer->open("VarMutation_ROC.R");
-    o.writer->write(createROC("VarMutation_detected.tsv", "Qual", "'NULL'"));
+    o.writer->write(createROC("VarMutation_detected.tsv", "VarMutation_sequins.tsv"));
     o.writer->close();
 
     /*
