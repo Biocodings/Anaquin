@@ -45,13 +45,23 @@ FileName BedTools::intersect(const FileName &x, const FileName &y, Base edge)
     {
         for (const auto &l : Locus::inter<ParserBed::Data, Locus>(m1[c], m2[c]))
         {
-            for (const auto &i : m1[c])
+            const auto i = std::find_if(m1[c].begin(), m1[c].end(), [&](const ParserBed::Data &x)
             {
-                if (i.l.overlap(l))
+                return x.l == l;
+            });
+
+            if (i != m1[c].end())
+            {
+                out << c << "\t" << l.start-1 << "\t" << l.end << "\t" << i->name << "\n";
+            }
+            else
+            {
+                const auto i = std::find_if(m1[c].begin(), m1[c].end(), [&](const ParserBed::Data &x)
                 {
-                    out << c << "\t" << l.start-1 << "\t" << l.end << "\t" << i.name << "\n";
-                    break;
-                }
+                    return x.l.overlap(l);
+                });
+
+                out << c << "\t" << l.start-1 << "\t" << l.end << "\t" << i->name << "\n";
             }
         }
     }
