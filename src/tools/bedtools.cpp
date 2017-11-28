@@ -9,6 +9,11 @@ using namespace Anaquin;
 
 FileName BedTools::intersect(const FileName &x, const FileName &y, Base edge)
 {
+    if (x == y)
+    {
+        return x;
+    }
+    
     std::set<ChrID> cs;
     std::map<ChrID, std::vector<ParserBed::Data>> m1;
     std::map<ChrID, std::vector<ParserBed::Data>> m2;
