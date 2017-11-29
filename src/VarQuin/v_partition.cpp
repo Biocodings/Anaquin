@@ -937,7 +937,7 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
             case Paired::TrimmedNotCalibrated:
             {
                 impl.writeTrimmedNotCalibrated1(*x1);
-                impl.writeTrimmedNotCalibrated2(*x1);
+                impl.writeTrimmedNotCalibrated2(*x2);
                 break;
             }
                 
