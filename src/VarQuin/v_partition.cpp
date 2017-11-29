@@ -1050,7 +1050,7 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % Bed1Ref()                 // 1
+    o.writer->write((boost::format(summary) % Bed1Ref()                // 1
                                             % src                      // 2
                                             % stats.gStats.nRegs       // 3
                                             % o.edge                   // 4
