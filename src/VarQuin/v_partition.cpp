@@ -705,7 +705,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
                 stats.pairs[status]++;
                 f(first, second, status);
                 
-                if (o.notCalib && status == Paired::ReverseReverse)
+                if (o.notCalib)
                 {
                     f(first, second, Paired::TrimmedNotCalibrated);
                 }
