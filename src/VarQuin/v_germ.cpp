@@ -1,9 +1,12 @@
 #include "VarQuin/v_germ.hpp"
 #include "writers/vcf_writer.hpp"
 #include "parsers/parser_vcf.hpp"
+#include "writers/json_writer.hpp"
 
 using namespace Anaquin;
 
+typedef VGerm::SStats SStats;
+typedef VGerm::Options Options;
 typedef SequinVariant::Context Context;
 
 inline std::string ctx2Str(Context x)
@@ -230,6 +233,11 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
             // Ignore anything that is somatic
             if (!r.findV2(x.cID, x.l))
             {
+                if (x.l.start == 160204778)
+                {
+                    std::cout << x.l.start << std::endl;
+                }
+                
                 wFP.write(x.hdr, x.line);
                 
                 // FP because the variant is not found in the reference
@@ -471,12 +479,11 @@ static void writeDetected(const FileName &file,
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file,
-                         const FileName &endo,
-                         const FileName &seqs,
-                         const EStats &es,
-                         const VGerm::SStats &ss,
-                         const VGerm::Options &o)
+static std::map<std::string, std::string> jsonD(const FileName &endo,
+                                                const FileName &seqs,
+                                                const EStats &es,
+                                                const SStats &ss,
+                                                const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -484,6 +491,97 @@ static void writeSummary(const FileName &file,
     extern FileName VCFRef();
     extern FileName Bed1Ref();
 
+    std::map<std::string, std::string> x;
+    
+    #define D(x) (isnan(x) ? "-" : std::to_string(x))
+    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
+    #define CSN(x) D(ss.c2c.at(x).sn())
+    
+    const auto &snp = ss.v2c.at(Variation::SNP);
+    const auto &del = ss.v2c.at(Variation::Deletion);
+    const auto &ins = ss.v2c.at(Variation::Insertion);
+    const auto &hom = ss.g2c.at(Genotype::Homozygous);
+    const auto &het = ss.g2c.at(Genotype::Heterzygous);
+    
+    auto ind = del;
+    ind += ins;
+
+    const auto c_nSNP = snp.nq();
+    const auto c_nDel = del.nq();
+    const auto c_nIns = ins.nq();
+
+    x["vRef"]      = (VCFUser() ? VCFRef() : "-");
+    x["bRef"]      = (!Bed1Ref().empty() ? Bed1Ref() : "-");
+    x["inputE"]    = (endo.empty() ? "-" : endo);
+    x["inputS"]    = seqs;
+    x["nEndo"]     = E3(); // Number of sample variants
+    x["nSeqs"]     = D(c_nSNP + c_nDel + c_nIns);
+    x["allN"]      = D(r.nType1(Variation::SNP)       +
+                       r.nType1(Variation::Insertion) +
+                       r.nType1(Variation::Deletion));
+    x["allTP"]     = D(ss.oc.tp());
+    x["allFP"]     = D(ss.oc.fp());
+    x["allFN"]     = D(ss.oc.fn());
+    x["allSN"]     = D(ss.oc.sn());
+    x["allPC"]     = D(ss.oc.pc());
+    x["allF1"]     = D(ss.oc.F1());
+    x["allFDR"]    = D(1-ss.oc.pc());
+    x["snpN"]      = D(r.nType1(Variation::SNP));
+    x["snpTP"]     = D(snp.tp());
+    x["snpFP"]     = D(snp.fp());
+    x["snpFN"]     = D(snp.fn());
+    x["snpSN"]     = D(snp.sn());
+    x["snpPC"]     = D(snp.pc());
+    x["snpF1"]     = D(snp.F1());
+    x["snpFDR"]    = D(1-snp.pc());
+    x["indN"]      = D(r.nType1(Variation::Insertion) + r.nType1(Variation::Deletion));
+    x["indTP"]     = D(ind.tp());
+    x["indFP"]     = D(ind.fp());
+    x["indFN"]     = D(ind.fn());
+    x["indSN"]     = D(ind.sn());
+    x["indPC"]     = D(ind.pc());
+    x["indF1"]     = D(ind.F1());
+    x["indFDR"]    = D(1-ind.pc());
+    x["homN"]      = D(r.nGeno1(Genotype::Homozygous));
+    x["homTP"]     = D(hom.tp());
+    x["homFP"]     = D(hom.fp());
+    x["homFN"]     = D(hom.fn());
+    x["homSN"]     = D(hom.sn());
+    x["homPC"]     = D(hom.pc());
+    x["homF1"]     = D(hom.F1());
+    x["homFDR"]    = D(1-hom.pc());
+    x["hetN"]      = D(r.nGeno1(Genotype::Heterzygous));
+    x["hetTP"]     = D(het.tp());
+    x["hetFP"]     = D(het.fp());
+    x["hetFN"]     = D(het.fn());
+    x["hetSN"]     = D(het.sn());
+    x["hetPC"]     = D(het.pc());
+    x["hetF1"]     = D(het.F1());
+    x["hetFDR"]    = D(1-het.pc());
+    x["common"]    = CSN(Context::Common);
+    x["lowGC"]     = CSN(Context::LowGC);
+    x["highGC"]    = CSN(Context::HighGC);
+    x["longHom"]   = CSN(Context::LongHompo);
+    x["vLowGC"]    = CSN(Context::VeryLowGC);
+    x["vHighGC"]   = CSN(Context::VeryHighGC);
+    x["shortDR"]   = CSN(Context::ShortDinRep);
+    x["longDR"]    = CSN(Context::LongDinRep);
+    x["shortHom"]  = CSN(Context::ShortHompo);
+    x["longQRep"]  = CSN(Context::LongQuadRep);
+    x["longTRep"]  = CSN(Context::LongTrinRep);
+    x["shortQRep"] = CSN(Context::ShortQuadRep);
+    x["shortTRep"] = CSN(Context::ShortTrinRep);
+    
+    return x;
+}
+
+static void writeSummary(const FileName &file,
+                         const FileName &endo,
+                         const FileName &seqs,
+                         const EStats &es,
+                         const VGerm::SStats &ss,
+                         const VGerm::Options &o)
+{
     const auto summary = "-------VarMutation Summary Statistics\n\n"
                          "-------VarMutation Output Results\n\n"
                          "       Reference variant annotation:      %1%\n"
@@ -555,95 +653,69 @@ static void writeSummary(const FileName &file,
                          "       Short Quad Nucleotide Repeat %58%\n"
                          "       Short Trinucleotide Repeat   %59%\n";
 
-        #define D(x) (isnan(x) ? "-" : std::to_string(x))
-        
-        const auto &snp = ss.v2c.at(Variation::SNP);
-        const auto &del = ss.v2c.at(Variation::Deletion);
-        const auto &ins = ss.v2c.at(Variation::Insertion);
-        const auto &hom = ss.g2c.at(Genotype::Homozygous);
-        const auto &het = ss.g2c.at(Genotype::Heterzygous);
-
-        const auto c_nSNP = snp.nq();
-        const auto c_nDel = del.nq();
-        const auto c_nIns = ins.nq();
-        
-        auto ind = del;
-        ind += ins;
-
-        #define CSN(x) D(ss.c2c.at(x).sn())
-
-        #define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
-        #define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
-        #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
-        #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
-        #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
-
-        #define C(x) (D(ss.c2c.at(x).nq()))
+        auto x = jsonD(endo, seqs, es, ss, o);
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % (VCFUser() ? VCFRef() : "-")           // 1
-                                                % (!Bed1Ref().empty() ? Bed1Ref() : "-") // 2
-                                                % (endo.empty() ? "-" : endo)            // 3
-                                                % seqs                                   // 4
-                                                % E3()                                   // 5
-                                                % (c_nSNP + c_nDel + c_nIns)             // 6
-                                                % (r.nType1(Variation::SNP) +
-                                                   r.nType1(Variation::Insertion) +
-                                                   r.nType1(Variation::Deletion))      // 7
-                                                % D(ss.oc.tp())                        // 8
-                                                % D(ss.oc.fp())                        // 9
-                                                % D(ss.oc.fn())                        // 10
-                                                % D(ss.oc.sn())                        // 11
-                                                % D(ss.oc.pc())                        // 12
-                                                % D(ss.oc.F1())                        // 13
-                                                % D(1-ss.oc.pc())                      // 14
-                                                % r.nType1(Variation::SNP)             // 15
-                                                % D(snp.tp())                          // 16
-                                                % D(snp.fp())                          // 17
-                                                % D(snp.fn())                          // 18
-                                                % D(snp.sn())                          // 19
-                                                % D(snp.pc())                          // 20
-                                                % D(snp.F1())                          // 21
-                                                % D(1 - snp.pc())                      // 22
-                                                % (r.nType1(Variation::Insertion) +
-                                                   r.nType1(Variation::Deletion))      // 23
-                                                % D(ind.tp())                          // 24
-                                                % D(ind.fp())                          // 25
-                                                % D(ind.fn())                          // 26
-                                                % D(ind.sn())                          // 27
-                                                % D(ind.pc())                          // 28
-                                                % D(ind.F1())                          // 29
-                                                % D(1 - ind.pc())                      // 30
-                                                % D(r.nGeno1(Genotype::Homozygous))    // 31
-                                                % D(hom.tp())                          // 32
-                                                % D(hom.fp())                          // 33
-                                                % D(hom.fn())                          // 34
-                                                % D(hom.sn())                          // 35
-                                                % D(hom.pc())                          // 36
-                                                % D(hom.F1())                          // 37
-                                                % D(1 - hom.pc())                      // 38
-                                                % D(r.nGeno1(Genotype::Heterzygous))   // 39
-                                                % D(het.tp())                          // 40
-                                                % D(het.fp())                          // 41
-                                                % D(het.fn())                          // 42
-                                                % D(het.sn())                          // 43
-                                                % D(het.pc())                          // 44
-                                                % D(het.F1())                          // 45
-                                                % D(1 - het.pc())                      // 46
-                                                % CSN(Context::Common)                 // 47
-                                                % CSN(Context::LowGC)                  // 48
-                                                % CSN(Context::HighGC)                 // 49
-                                                % CSN(Context::LongHompo)              // 50
-                                                % CSN(Context::VeryLowGC)              // 51
-                                                % CSN(Context::VeryHighGC)             // 52
-                                                % CSN(Context::ShortDinRep)            // 53
-                                                % CSN(Context::LongDinRep)             // 54
-                                                % CSN(Context::ShortHompo)             // 55
-                                                % CSN(Context::LongQuadRep)            // 56
-                                                % CSN(Context::LongTrinRep)            // 57
-                                                % CSN(Context::ShortQuadRep)           // 58
-                                                % CSN(Context::ShortTrinRep)           // 59
+        o.writer->write((boost::format(summary) % x["vRef"]      // 1
+                                                % x["bRef"]      // 2
+                                                % x["inputE"]    // 3
+                                                % x["inputS"]    // 4
+                                                % x["nEndo"]     // 5
+                                                % x["nSeqs"]     // 6
+                                                % x["allN"]      // 7
+                                                % x["allTP"]     // 8
+                                                % x["allFP"]     // 9
+                                                % x["allFN"]     // 10
+                                                % x["allSN"]     // 11
+                                                % x["allPC"]     // 12
+                                                % x["allF1"]     // 13
+                                                % x["allFDR"]    // 14
+                                                % x["snpN"]      // 15
+                                                % x["snpTP"]     // 16
+                                                % x["snpFP"]     // 17
+                                                % x["snpFN"]     // 18
+                                                % x["snpSN"]     // 19
+                                                % x["snpPC"]     // 20
+                                                % x["snpF1"]     // 21
+                                                % x["snpFDR"]    // 22
+                                                % x["indN"]      // 23
+                                                % x["indTP"]     // 24
+                                                % x["indFP"]     // 25
+                                                % x["indFN"]     // 26
+                                                % x["indSN"]     // 27
+                                                % x["indPC"]     // 28
+                                                % x["indF1"]     // 29
+                                                % x["indFDR"]    // 30
+                                                % x["homN"]      // 31
+                                                % x["homTP"]     // 32
+                                                % x["homFP"]     // 33
+                                                % x["homFN"]     // 34
+                                                % x["homSN"]     // 35
+                                                % x["homPC"]     // 36
+                                                % x["homF1"]     // 37
+                                                % x["homFDR"]    // 38
+                                                % x["hetN"]      // 39
+                                                % x["hetTP"]     // 40
+                                                % x["hetFP"]     // 41
+                                                % x["hetFN"]     // 42
+                                                % x["hetSN"]     // 43
+                                                % x["hetPC"]     // 44
+                                                % x["hetF1"]     // 45
+                                                % x["hetFDR"]    // 46
+                                                % x["common"]    // 47
+                                                % x["lowGC"]     // 48
+                                                % x["highGC"]    // 49
+                                                % x["longHom"]   // 50
+                                                % x["vLowGC"]    // 51
+                                                % x["vHighGC"]   // 52
+                                                % x["shortDR"]   // 53
+                                                % x["longDR"]    // 54
+                                                % x["shortHom"]  // 55
+                                                % x["longQRep"]  // 56
+                                                % x["longTRep"]  // 57
+                                                % x["shortQRep"] // 58
+                                                % x["shortTRep"] // 59
                          ).str());
     o.writer->close();
 }
@@ -714,5 +786,15 @@ VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Opt
 
     writeFN("VarMutation_FN.vcf", stats.ss.fns, o, true);
     
+    /*
+     * Generating VarMutation_stats.json
+     */
+    
+    o.generate("VarMutation_stats.json");
+    JSONWriter w(o.work);
+    w.open("VarMutation_stats.json");
+    w.write(jsonD(endo, seqs, stats.es, stats.ss, o));
+    w.close();
+
     return stats;
 }

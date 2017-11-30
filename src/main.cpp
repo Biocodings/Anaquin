@@ -133,8 +133,6 @@ static std::map<Value, Tool> _tools =
     { "VarConjoint",    Tool::VarConjoint    },
     { "VarCopy",        Tool::VarCopy        },
     { "VarAlign",       Tool::VarAlign       },
-    { "VarGermline",    Tool::VarGermline    },
-    { "VarSomatic",     Tool::VarSomatic     },
     { "VarMutation",    Tool::VarMutation    },
     { "VarCalibrate",   Tool::VarCalibrate   },
     { "VarTrim",        Tool::VarTrim        },
@@ -169,10 +167,8 @@ static std::map<Tool, std::set<Option>> _options =
     { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarCalibrate, { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
-    { Tool::VarGermline,  { OPT_R_BED, OPT_R_VCF, OPT_U_SEQS } },
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
     { Tool::VarStructure, { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarSomatic,   { OPT_R_VCF, OPT_R_BED, OPT_U_SEQS } },
     { Tool::VarMutation,  { OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarKStats,    { OPT_U_SEQS  } },
     { Tool::VarPartition, { OPT_U_SEQS, } },
@@ -512,14 +508,14 @@ static void readVCFNoSom1(Option opt, UserReference &r, const Scripts &x = "")
             Standard::addVCF(rr, std::set<Context> { Context::Cancer })));
 }
 
-static void readR1(const FileName &file, UserReference &r)
+static void readR1(const FileName &file, UserReference &r, Base edge = 0)
 {
-    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed1Ref__ = file), 0.0)));
+    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed1Ref__ = file), edge)));
 }
 
-static void readR2(const FileName &file, UserReference &r)
+static void readR2(const FileName &file, UserReference &r, Base edge = 0)
 {
-    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed2Ref__ = file), 0.0)));
+    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed2Ref__ = file), edge)));
 }
 
 static void readR1(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
@@ -791,8 +787,6 @@ void parse(int argc, char ** argv)
                     case Tool::VarCopy:
                     case Tool::VarMutation:
                     case Tool::VarCalibrate:
-                    case Tool::VarGermline:
-                    case Tool::VarSomatic:
                     case Tool::RnaExpress:
                     case Tool::VarStructure:
                     case Tool::RnaFoldChange: { _p.opts[opt] = val; break; }
@@ -1161,9 +1155,7 @@ void parse(int argc, char ** argv)
         case Tool::VarKmer:
         case Tool::VarAlign:
         case Tool::VarKStats:
-        case Tool::VarSomatic:
         case Tool::VarMutation:
-        case Tool::VarGermline:
         case Tool::VarConjoint:
         case Tool::VarPartition:
         case Tool::VarCalibrate:
@@ -1267,37 +1259,29 @@ void parse(int argc, char ** argv)
 
                     const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
                     
-                    // Intersection without edge
-                    const auto f1 = BedTools::intersect(rb, ub, 0.0);
-                    
-                    // Intersection with edge
-                    const auto f2 = BedTools::intersect(rb, ub, edge);
+                    if (rb == ub)
+                    {
+                        readR1(rb, r);
+                        readR2(rb, r, edge);                        
+                        __Bed2Ref__ = BedTools::intersect(rb, ub, edge); // TODO: Fix this
+                    }
+                    else
+                    {
+                        // Intersection without edge
+                        const auto f1 = BedTools::intersect(rb, ub, 0);
+                        
+                        // Intersection with edge
+                        const auto f2 = BedTools::intersect(rb, ub, edge);
 
-                    readR1(f1, r);
-                    readR2(f2, r);
+                        readR1(f1, r);
+                        readR2(f2, r);
+                    }
+
                     readV2(OPT_R_VCF, r, 0, A_V_35());
 
                     break;
                 }
 
-                case Tool::VarSomatic:
-                {
-                    readR1(OPT_R_BED, r);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readVCFSom1(OPT_R_VCF, r);
-                    readV2(OPT_R_VCF, r);
-                    break;
-                }
-                    
-                case Tool::VarGermline:
-                {
-                    readR1(OPT_R_BED, r);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
-                    readVCFNoSom1(OPT_R_VCF, r);
-                    readV2(OPT_R_VCF, r);
-                    break;
-                }
-                    
                 case Tool::VarKmer:
                 {
                     readL1(std::bind(&Standard::addAF, &s, std::placeholders::_1), OPT_R_AF, r);
@@ -1378,23 +1362,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarSomatic:
-                {
-                    VSomatic::Options o;
-                    
-                    if (_p.opts.count(OPT_METHOD))
-                    {
-                        const auto &x = _p.opts.at(OPT_METHOD);
-                        
-                        if (x == "pass")     { o.filter = VCFFilter::Passed;         }
-                        else if (x == "all") { o.filter = VCFFilter::NotFiltered;    }
-                        else                 { throw InvalidValueException("-method", x); }
-                    }
-                    
-                    analyze_2<VSomatic>(OPT_U_SAMPLE, OPT_U_SEQS, o);
-                    break;
-                }
-
                 case Tool::VarMutation:
                 {
                     VMutation::Options o;
@@ -1416,23 +1383,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case Tool::VarGermline:
-                {
-                    VGerm::Options o;
-                    
-                    if (_p.opts.count(OPT_METHOD))
-                    {
-                        const auto &x = _p.opts.at(OPT_METHOD);
-                        
-                        if (x == "pass")     { o.filter = VCFFilter::Passed;      }
-                        else if (x == "all") { o.filter = VCFFilter::NotFiltered; }
-                        else                 { throw InvalidValueException("-method", x); }
-                    }
-                    
-                    analyze_2<VGerm>(OPT_U_SAMPLE, OPT_U_SEQS, o);
-                    break;
-                }
-                
                 case Tool::VarStructure:
                 {
                     VStructure::Options o;

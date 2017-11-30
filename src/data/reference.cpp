@@ -290,8 +290,6 @@ void VarRef::validate(Tool x, const UserReference &r)
             break;
         }
 
-        case Tool::VarSomatic:
-        case Tool::VarGermline:
         case Tool::VarMutation:
         case Tool::VarStructure:
         {
