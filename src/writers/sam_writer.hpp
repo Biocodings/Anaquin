@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    class SAMWriter : public Writer
+    class SAMWriter : public Writer<ParserBAM::Data>
     {
         public:
 
@@ -21,12 +21,7 @@ namespace Anaquin
                 _fp = sam_open("/dev/null", "w");
             }
 
-            inline void write(const std::string &, bool) override
-            {
-                throw std::runtime_error("Not implemented");
-            }
-
-            inline void write(const ParserBAM::Data &x)
+            inline void write(const ParserBAM::Data &x) override
             {
                 const auto *b = reinterpret_cast<bam1_t *>(x.b());
                 const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
@@ -45,11 +40,6 @@ namespace Anaquin
                 std::cout << std::string(_fp->line.s);
 #endif
                 _header = true;
-            }
-
-            inline void create(const std::string &) override
-            {
-                throw std::runtime_error("Not supported in SAMWriter");
             }
 
         private:

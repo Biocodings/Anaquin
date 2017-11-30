@@ -1,8 +1,8 @@
 #include "tools/random.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "writers/bam_writer.hpp"
+#include "writers/json_writer.hpp"
 #include "VarQuin/v_partition.hpp"
-#include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
@@ -986,6 +986,48 @@ Stats VPartition::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
+static std::map<std::string, std::string> statsD(const FileName &src, const Stats &stats, const Options &o)
+{
+    extern FileName Bed1Ref();
+    std::map<std::string, std::string> x;
+    #define S(x) toString(x)
+    
+    x["ref"]      = Bed1Ref();             // Reference BED annoation
+    x["src"]      = src;                   // Input alignment file
+    x["regs"]     = S(stats.gStats.nRegs); // Number of sequin regions
+    x["edge"]     = S(o.edge);             // Edge width
+    x["nNA"]      = S(stats.nNA);          // Number of unmapped
+    x["pNA"]      = S(stats.pNA());        // Proportion of unmapped
+    x["nEndo"]    = S(stats.nEndo);        // Number of endogenous
+    x["pEndo"]    = S(stats.pEndo());      // Proportion of endogenous
+    x["nRev"]     = S(stats.nRev);         // Number of reversed
+    x["pRev"]     = S(stats.pRev());       // Proportion of reversed
+    x["nLad"]     = S(stats.nLad);         // Number of ladders
+    x["pLad"]     = S(stats.pLad());       // Proportion of ladders
+    x["lTrim"]    = S(stats.trim.left);    // Alignments trimmed to the left
+    x["rTrim"]    = S(stats.trim.right);   // Alignments trimmed to the right
+    x["bTrim"]    = S(stats.trim.before);  // Number of alignments before trimming
+    x["aTrim"]    = S(stats.trim.after);   // Number of alignments after trimming
+    x["nFF"]      = S(stats.nFlip);        // Number of flipped pairs
+    x["pFF"]      = S(stats.pFlip());      // Proportion of flipped pairs
+    x["nLL"]      = S(stats.nLL());        // Number of ladder pairs
+    x["pLL"]      = S(stats.pLL());        // Proportion of ladder pairs
+    x["nAmb"]     = S(stats.nAmb());       // Number of ambigious pairs
+    x["pAmb"]     = S(stats.pAmb());       // Proportion of ambigious pairs
+    x["nHang"]    = S(stats.nHang());      // Number of hanging reads
+    x["pHang"]    = S(stats.pHang());      // Proportion of hanging reads
+    x["bEndo"]    = S(stats.cStats.meanBEndo());
+    x["bSeqs"]    = S(stats.cStats.meanBSeqs());
+    x["aEndo"]    = S(stats.cStats.meanBEndo());
+    x["aSeqs"]    = S(stats.afterSeqs);
+    x["eHigh"]    = S(stats.cStats.eOver);
+    x["sHigh"]    = S(stats.cStats.sOver);
+    x["normMean"] = S(stats.cStats.normMean());
+    x["normSD"]   = S(stats.cStats.normSD());
+    
+    return x;
+}
+
 static void writeSummary(const FileName &file, const FileName &src, const Stats &stats, const Options &o)
 {
     extern FileName Bed1Ref();
@@ -1030,62 +1072,46 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
                          "       Sample: %35%\n"
                          "       Sequin: %36%\n";
 
-    #define C(x) stats.pairs.at(x)
+    auto x = statsD(src, stats, o);
     
-    const auto cf = stats.nFlip;
-    const auto ca = C(Paired::ForwardVarQuin) + C(Paired::ForwardNotMapped) + C(Paired::NotMappedNotMapped) + C(Paired::ReverseLadQuin);
-    const auto ch = C(Paired::ReverseHang) + C(Paired::ForwardHang);
-    const auto cl = C(Paired::LadQuinLadQuin);
-
-    const auto tot1 = cf + ca + ch + cl;
-    const auto pf   = 100.0 * cf / tot1;
-    const auto pa   = 100.0 * ca / tot1;
-    const auto ph   = 100.0 * ch / tot1;
-    const auto pl   = 100.0 * cl / tot1;
-
-    const auto pNA   = 100.0 * stats.nNA   / (stats.nNA + stats.nEndo + stats.nLad + stats.nRev);
-    const auto pEndo = 100.0 * stats.nEndo / (stats.nNA + stats.nEndo + stats.nLad + stats.nRev);
-    const auto pLad  = 100.0 * stats.nLad  / (stats.nNA + stats.nEndo + stats.nLad + stats.nRev);
-    const auto pRev  = 100.0 * stats.nRev  / (stats.nNA + stats.nEndo + stats.nLad + stats.nRev);
-
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % Bed1Ref()                // 1
-                                            % src                      // 2
-                                            % stats.gStats.nRegs       // 3
-                                            % o.edge                   // 4
-                                            % stats.nNA                // 5
-                                            % pNA                      // 6
-                                            % stats.nEndo              // 7
-                                            % pEndo                    // 8
-                                            % stats.nRev               // 9
-                                            % pRev                     // 10
-                                            % stats.nLad               // 11
-                                            % pLad                     // 12
-                                            % stats.trim.left          // 13
-                                            % stats.trim.right         // 14
-                                            % stats.trim.before        // 15
-                                            % stats.trim.after         // 16
-                                            % cf                       // 17
-                                            % pf                       // 18
-                                            % cl                       // 19
-                                            % pl                       // 20
-                                            % ca                       // 21
-                                            % pa                       // 22
-                                            % ch                       // 23
-                                            % ph                       // 24
-                                            % stats.cStats.meanBEndo() // 25
-                                            % stats.cStats.meanBSeqs() // 26
-                                            % stats.cStats.eOver       // 27
-                                            % stats.cStats.sOver       // 28
-                                            % stats.cStats.meanBEndo() // 29
-                                            % stats.afterSeqs          // 30
-                                            % stats.cStats.normMean()  // 31
-                                            % stats.cStats.normSD()    // 32
-                                            % stats.gStats.bREndo      // 33
-                                            % stats.gStats.bTSeqs      // 34
-                                            % stats.gStats.aREndo      // 35
-                                            % stats.gStats.aTSeqs      // 36
+    o.writer->write((boost::format(summary) % x["ref"]      // 1
+                                            % x["src"]      // 2
+                                            % x["regs"]     // 3
+                                            % x["edge"]     // 4
+                                            % x["nNA"]      // 5
+                                            % x["pNA"]      // 6
+                                            % x["nEndo"]    // 7
+                                            % x["pEndo"]    // 8
+                                            % x["nRev"]     // 9
+                                            % x["pRev"]     // 10
+                                            % x["nLad"]     // 11
+                                            % x["pLad"]     // 12
+                                            % x["lTrim"]    // 13
+                                            % x["rTrim"]    // 14
+                                            % x["bTrim"]    // 15
+                                            % x["aTrim"]    // 16
+                                            % x["nFF"]      // 17
+                                            % x["pFF"]      // 18
+                                            % x["nLL"]      // 19
+                                            % x["pLL"]      // 20
+                                            % x["nAmb"]     // 21
+                                            % x["pAmb"]     // 22
+                                            % x["nHang"]    // 23
+                                            % x["pHang"]    // 24
+                                            % x["bEndo"]    // 25
+                                            % x["bSeqs"]    // 26
+                                            % x["eHigh"]    // 27
+                                            % x["sHigh"]    // 28
+                                            % x["aEndo"]    // 29
+                                            % x["aSeqs"]    // 30
+                                            % x["normMean"] // 31
+                                            % x["normSD"]   // 32
+                                            % stats.gStats.bREndo // 33
+                                            % stats.gStats.bTSeqs // 34
+                                            % stats.gStats.aREndo // 35
+                                            % stats.gStats.aTSeqs // 36
                      ).str());
 }
 
@@ -1137,6 +1163,14 @@ static void writeRegions(const FileName &file, const Stats &, const Options &o)
     System::copy(Bed2Ref(), o.work + "/" + file);
 }
 
+static void writeJSON(const FileName &file, const FileName &src, const Stats &stats, const Options &o)
+{
+    JSONWriter w(o.work);
+    w.open(file);
+    w.write(statsD(src, stats, o));
+    w.close();
+}
+
 void VPartition::report(const FileName &file, const Options &o)
 {
     // For efficiency, this tool writes some of the output files directly in the analyze() function.
@@ -1159,5 +1193,11 @@ void VPartition::report(const FileName &file, const Options &o)
      */
     
     writeRegions("VarPartition_regions.bed", stats, o);
+
+    /*
+     * Generating VarPartition_stats.json
+     */
+    
+    writeJSON("VarPartition_stats.json", file, stats, o);
 }
 

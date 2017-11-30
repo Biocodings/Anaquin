@@ -112,6 +112,74 @@ namespace Anaquin
             Counts nEndo = 0;
             Counts nFlip = 0;
 
+            inline Proportion pNA() const
+            {
+                return 100.0 * nNA / (nNA + nEndo + nLad + nRev);
+            }
+
+            inline Proportion pEndo() const
+            {
+                return 100.0 * nEndo / (nNA + nEndo + nLad + nRev);
+            }
+
+            inline Proportion pLad() const
+            {
+                return 100.0 * nLad / (nNA + nEndo + nLad + nRev);
+            }
+
+            inline Proportion pRev() const
+            {
+                return 100.0 * nRev / (nNA + nEndo + nLad + nRev);
+            }
+
+            // Counts for ladder to ladder pairs
+            inline Counts nLL() const
+            {
+                return pairs.at(Paired::LadQuinLadQuin);
+            }
+            
+            // Proportion of ladder to ladder pairs
+            inline Proportion pLL() const
+            {
+                return 100.0 * nLL() / (nFlip + nAmb() + nHang() + nLL());
+            }
+
+            inline Counts nAmb() const
+            {
+                #define C(x) pairs.at(x)
+                return C(Paired::ForwardVarQuin) + C(Paired::ForwardNotMapped) + C(Paired::NotMappedNotMapped) + C(Paired::ReverseLadQuin);
+            }
+            
+            inline Counts nHang() const
+            {
+                #define C(x) pairs.at(x)
+                return C(Paired::ReverseHang) + C(Paired::ForwardHang);
+            }
+            
+            // Proportion of flipped reads
+            inline Proportion pFlip() const
+            {
+                return 100.0 * nFlip / (nFlip + nAmb() + nHang() + nLL());
+            }
+            
+            // Proportion of ambigious reads
+            inline Proportion pAmb() const
+            {
+                return 100.0 * nAmb() / (nFlip + nAmb() + nHang() + nLL());
+            }
+
+            // Proportion of hanging reads
+            inline Proportion pHang() const
+            {
+                return 100.0 * nHang() / (nFlip + nAmb() + nHang() + nLL());
+            }
+
+//            // Proportion of ladder reads
+//            inline Proportion pLad() const
+//            {
+//                return 100.0 * nLad() / (nFlip + nAmb() + nHang() + nLad);
+//            }
+
             // Trimming statistics
             Trim trim;
             

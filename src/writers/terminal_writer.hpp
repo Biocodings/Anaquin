@@ -6,7 +6,7 @@
 
 namespace Anaquin
 {
-    class TerminalWriter : public Writer
+    class TerminalWriter : public Writer<>
     {
         public:
 
@@ -14,12 +14,10 @@ namespace Anaquin
 
             inline void open(const FileName &) override {}
 
-            inline void write(const std::string &str, bool) override
+            inline void write(const std::string &str) override
             {
                 std::cout << str << std::endl;
             }
-
-            inline void create(const std::string &) override {}
     };
 }
 

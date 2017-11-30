@@ -6,7 +6,7 @@
 
 namespace Anaquin
 {
-    class VCFWriter : public Writer
+    class VCFWriter : public Writer<>
     {
         public:
 
@@ -14,15 +14,10 @@ namespace Anaquin
 
             void open(const FileName &) override;
 
-            void write(const std::string &, bool) override {}
+            void write(const std::string &) override {}
 
             void write(void *hdr, void *line);
         
-            inline void create(const std::string &) override
-            {
-                throw std::runtime_error("Not supported in SAMWriter");
-            }
-
         private:
 
             bool _head;

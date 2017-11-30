@@ -91,9 +91,9 @@ namespace Anaquin
         // Working directory
         Path work;
 
-        std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer<>> writer = std::shared_ptr<Writer<>>(new MockWriter());
+        std::shared_ptr<Writer<>> logger = std::shared_ptr<Writer<>>(new MockWriter());
+        std::shared_ptr<Writer<>> output = std::shared_ptr<Writer<>>(new MockWriter());
 
         inline void warn(const std::string &s) const
         {
