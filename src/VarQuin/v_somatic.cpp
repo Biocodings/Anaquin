@@ -2,6 +2,7 @@
 #include "VarQuin/v_somatic.hpp"
 #include "writers/vcf_writer.hpp"
 #include "parsers/parser_vcf.hpp"
+#include "writers/json_writer.hpp"
 
 using namespace Anaquin;
 
@@ -744,6 +745,78 @@ static void writeDetected(const FileName &file,
     o.writer->close();
 }
 
+static std::map<std::string, std::string> jsonD(const FileName &endo,
+                                                const FileName &seqs,
+                                                const EStats &es,
+                                                const VSomatic::SStats &ss,
+                                                const VSomatic::Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+    
+    extern bool VCFUser();
+    extern FileName VCFRef();
+    extern FileName Bed1Ref();
+
+    #define D(x) (isnan(x) ? "-" : std::to_string(x))
+    
+    const auto &snp = ss.v2c.at(Variation::SNP);
+    const auto &del = ss.v2c.at(Variation::Deletion);
+    const auto &ins = ss.v2c.at(Variation::Insertion);
+    
+    const auto c_nSNP = snp.nq();
+    const auto c_nDel = del.nq();
+    const auto c_nIns = ins.nq();
+    
+    auto ind = del;
+    ind += ins;
+    
+    #define CSN(x) D(ss.c2c.at(x).sn())
+    
+    #define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
+    #define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
+    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
+    #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
+    #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
+    
+    std::map<std::string, std::string> x;
+    
+    x["vRef"]   = (VCFUser() ? VCFRef() : "-");
+    x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
+    x["inputE"] = (endo.empty() ? "-" : endo);
+    x["inputS"] = seqs;
+    x["nEndo"]  = E3(); // Number of sample variants
+    x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
+    x["allN"]   = D(r.nType1(Variation::SNP) +
+                    r.nType1(Variation::Insertion) +
+                    r.nType1(Variation::Deletion));
+    x["allTP"]  = D(ss.oc.tp());
+    x["allFP"]  = D(ss.oc.fp());
+    x["allFN"]  = D(ss.oc.fn());
+    x["allSN"]  = D(ss.oc.sn());
+    x["allPC"]  = D(ss.oc.pc());
+    x["allF1"]  = D(ss.oc.F1());
+    x["allFDR"] = D(1-ss.oc.pc());
+    x["snpN"]   = D(r.nType1(Variation::SNP));
+    x["snpTP"]  = D(snp.tp());
+    x["snpFP"]  = D(snp.fp());
+    x["snpFN"]  = D(snp.fn());
+    x["snpSN"]  = D(snp.sn());
+    x["snpPC"]  = D(snp.pc());
+    x["snpF1"]  = D(snp.F1());
+    x["snpFDR"] = D(1-snp.pc());
+    x["indN"]   = D(r.nType1(Variation::Insertion) + r.nType1(Variation::Deletion));
+    x["indTP"]  = D(ind.tp());
+    x["indFP"]  = D(ind.fp());
+    x["indFN"]  = D(ind.fn());
+    x["indSN"]  = D(ind.sn());
+    x["indPC"]  = D(ind.pc());
+    x["indF1"]  = D(ind.F1());
+    x["indFDR"] = D(1-ind.pc());
+    x["cancer"] = CSN(Context::Cancer);
+
+    return x;
+}
+
 static void writeSummary(const FileName &file,
                          const FileName &endo,
                          const FileName &seqs,
@@ -808,63 +881,41 @@ static void writeSummary(const FileName &file,
                          "-------Diagnostic performance by allele frequency\n\n"
                          "       Allele Frequency       Sensitivity:\n" + str.str();
 
-    #define D(x) (isnan(x) ? "-" : std::to_string(x))
-    
-    const auto &snp = ss.v2c.at(Variation::SNP);
-    const auto &del = ss.v2c.at(Variation::Deletion);
-    const auto &ins = ss.v2c.at(Variation::Insertion);
-    
-    const auto c_nSNP = snp.nq();
-    const auto c_nDel = del.nq();
-    const auto c_nIns = ins.nq();
-    
-    auto ind = del;
-    ind += ins;
-
-    #define CSN(x) D(ss.c2c.at(x).sn())
-    
-    #define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
-    #define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
-    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
-    #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
-    #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
+    auto x = jsonD(endo, seqs, es, ss, o);
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % VCFRef()                             // 1
-                                            % Bed1Ref()                             // 2
-                                            % (endo.empty() ? "-" : endo)          // 3
-                                            % seqs                                 // 4
-                                            % E3()                                 // 5
-                                            % (c_nSNP + c_nDel + c_nIns)           // 6
-                                            % (r.nType1(Variation::SNP) +
-                                               r.nType1(Variation::Insertion) +
-                                               r.nType1(Variation::Deletion))      // 7
-                                            % D(ss.oc.tp())                        // 8
-                                            % D(ss.oc.fp())                        // 9
-                                            % D(ss.oc.fn())                        // 10
-                                            % D(ss.oc.sn())                        // 11
-                                            % D(ss.oc.pc())                        // 12
-                                            % D(ss.oc.F1())                        // 13
-                                            % D(1-ss.oc.pc())                      // 14
-                                            % r.nType1(Variation::SNP)             // 15
-                                            % D(snp.tp())                          // 16
-                                            % D(snp.fp())                          // 17
-                                            % D(snp.fn())                          // 18
-                                            % D(snp.sn())                          // 19
-                                            % D(snp.pc())                          // 20
-                                            % D(snp.F1())                          // 21
-                                            % D(1 - snp.pc())                      // 22
-                                            % (r.nType1(Variation::Insertion) +
-                                               r.nType1(Variation::Deletion))      // 23
-                                            % D(ind.tp())                          // 24
-                                            % D(ind.fp())                          // 25
-                                            % D(ind.fn())                          // 26
-                                            % D(ind.sn())                          // 27
-                                            % D(ind.pc())                          // 28
-                                            % D(ind.F1())                          // 29
-                                            % D(1 - ind.pc())                      // 30
-                                            % CSN(Context::Cancer)                 // 47
+    o.writer->write((boost::format(summary) % x["vRef"]   // 1
+                                            % x["bRef"]   // 2
+                                            % x["inputE"] // 3
+                                            % x["inputS"] // 4
+                                            % x["nEndo"]  // 5
+                                            % x["nSeqs"]  // 6
+                                            % x["allN"]   // 7
+                                            % x["allTP"]  // 8
+                                            % x["allFP"]  // 9
+                                            % x["allFN"]  // 10
+                                            % x["allSN"]  // 11
+                                            % x["allPC"]  // 12
+                                            % x["allF1"]  // 13
+                                            % x["allFDR"] // 14
+                                            % x["snpN"]   // 15
+                                            % x["snpTP"]  // 16
+                                            % x["snpFP"]  // 17
+                                            % x["snpFN"]  // 18
+                                            % x["snpSN"]  // 19
+                                            % x["snpPC"]  // 20
+                                            % x["snpF1"]  // 21
+                                            % x["snpFDR"] // 22
+                                            % x["indN"]   // 23
+                                            % x["indTP"]  // 24
+                                            % x["indFP"]  // 25
+                                            % x["indFN"]  // 26
+                                            % x["indSN"]  // 27
+                                            % x["indPC"]  // 28
+                                            % x["indF1"]  // 29
+                                            % x["indFDR"] // 30
+                                            % x["cancer"] // 31
                      ).str());
     o.writer->close();
 }
@@ -941,5 +992,15 @@ VSomatic::Stats VSomatic::report(const FileName &endo, const FileName &seqs, con
     
     writeFN("VarMutation_FN.vcf", stats.ss.fns, o, true);
     
+    /*
+     * Generating VarMutation_stats.json
+     */
+    
+    o.generate("VarMutation_stats.json");
+    JSONWriter w(o.work);
+    w.open("VarMutation_stats.json");
+    w.write(jsonD(endo, seqs, stats.es, stats.ss, o));
+    w.close();
+
     return stats;
 }
