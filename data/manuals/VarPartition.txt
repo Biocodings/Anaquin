@@ -47,4 +47,4 @@
      VarPartition_sequins.bed        - is the annotation file (after edge clipping) for sequin regions
      VarPartition_notCalibrated_1.fq - is the first paired-end sequence file for uncalibrated flipped reads
      VarPartition_notCalibrated_2.fq - is the second paired-end for VarPartition_notCalibrated_1.fq
-     VarPartition_stats.json         - is the JSON format for the statistics
+     VarPartition_stats.json         - is the JSON file for the statistics

@@ -1,6 +1,7 @@
 #include "tools/tools.hpp"
 #include "VarQuin/v_align.hpp"
 #include "parsers/parser_bam.hpp"
+#include "writers/json_writer.hpp"
 
 using namespace Anaquin;
 
@@ -350,14 +351,53 @@ VAlign::Stats VAlign::analyze(const FileName &endo, const FileName &seqs, const 
     return stats;
 }
 
+static std::map<std::string, std::string> jsonD(const FileName &endo,
+                                                const FileName &seqs,
+                                                const VAlign::Stats &stats,
+                                                const VAlign::Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+
+    std::map<std::string, std::string> x;
+
+    #define S0(x) (isnan(x) ? "-" : toString(x,0))
+    #define S2(x) (isnan(x) ? "-" : toString(x,2))
+    
+    x["ref"]      = Bed1Ref();
+    x["endo"]     = endo;
+    x["seqs"]     = seqs;
+    x["nEndo"]    = S0(stats.endo ? stats.endo->nMap : NAN);
+    x["pEndo"]    = S2(stats.endo ? stats.pEndo() : NAN);
+    x["nSeqs"]    = S0(stats.seqs->nMap);
+    x["pSeqs"]    = S2(stats.pSeqs());
+    x["dilution"] = S2(100 * stats.pSeqs());
+    x["nRegs"]    = S0(r.nRegs());
+    x["lRegs"]    = S0(r.lRegs());
+    x["aTP"]      = S0(stats.seqs->align.tp());
+    x["aFP"]      = S0(stats.seqs->align.fp());
+    x["aPC"]      = S2(stats.seqs->align.pc());
+    x["bTP"]      = S0(stats.seqs->base.tp());
+    x["bFP"]      = S0(stats.seqs->base.fp());
+    x["bFN"]      = S2(stats.seqs->base.fn());
+    x["bPC"]      = S2(stats.seqs->base.pc());
+    x["bSN"]      = S2(stats.seqs->base.sn());
+    x["bPC"]      = S2(stats.seqs->base.pc());
+    x["bTot"]     = S0(stats.seqs->base.tp() + stats.seqs->base.fp() + stats.seqs->base.fn());
+    x["eTP"]      = S0(stats.endo ? stats.endo->base.tp() : NAN);
+    x["eFN"]      = S0(stats.endo ? stats.endo->base.fn() : NAN);
+    x["eSN"]      = S2(stats.endo ? stats.endo->base.sn() : NAN);
+    x["eTot"]     = S0(stats.endo ? stats.endo->base.tp() + stats.endo->base.fn() : NAN);
+    x["edge"]     = S0(o.edge);
+    
+    return x;
+}
+
 void VAlign::writeSummary(const FileName &file,
                           const FileName &gen,
                           const FileName &seq,
                           const VAlign::Stats &stats,
                           const VAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_var;
-
     const auto sumg2c = sum(stats.endo->covered);
     const auto sumg2l = sum(stats.endo->length);
     const auto sums2c = sum(stats.seqs->covered);
@@ -366,14 +406,11 @@ void VAlign::writeSummary(const FileName &file,
     A_ASSERT(sums2l >= sums2c);
     A_ASSERT(sumg2l >= sumg2c);
     
-    const auto &endo = stats.endo;
-    const auto &seqs = stats.seqs;
-
     const auto summary1 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
                           "       Sample alignment file: %2%\n"
                           "       Sequin alignment file: %3%\n\n"
-                          "       Trimmed: %24% bases per region\n\n"
+                          "       Edge: %24% bases per region\n\n"
                           "-------Alignments\n\n"
                           "       Sample: %4% (%5%%%)\n"
                           "       Sequin: %6% (%7%%%)\n"
@@ -403,7 +440,7 @@ void VAlign::writeSummary(const FileName &file,
     const auto summary2 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
                           "       Sequin alignment file: %2%\n\n"
-                          "       Trimmed: %15% bases per region\n\n"
+                          "       Edge: %15% bases per region\n\n"
                           "-------Alignments\n\n"
                           "       Synthetic: %3% \n\n"
                           "-------Reference regions\n\n"
@@ -422,54 +459,56 @@ void VAlign::writeSummary(const FileName &file,
                           "       Sensitivity: %13$.4f\n"
                           "       Precision:   %14$.4f\n";
     
+    auto x = jsonD(gen, seq, stats, o);
+    
     o.generate(file);
     o.writer->open(file);
     
     if (!gen.empty())
     {
-        o.writer->write((boost::format(summary1) % Bed1Ref()              // 1
-                                                 % gen                   // 2
-                                                 % seq                   // 3
-                                                 % endo->nMap            // 4
-                                                 % stats.pEndo()         // 5
-                                                 % seqs->nMap            // 6
-                                                 % stats.pSeqs()         // 7
-                                                 % (100 * stats.pSeqs()) // 8
-                                                 % r.nRegs()             // 9
-                                                 % r.lRegs()             // 10
-                                                 % seqs->align.tp()      // 11
-                                                 % seqs->align.fp()      // 12
-                                                 % seqs->align.pc()      // 13
-                                                 % seqs->base.tp()       // 14
-                                                 % seqs->base.fn()       // 15
-                                                 % seqs->base.fp()       // 16
-                                                 % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 17
-                                                 % seqs->base.sn()       // 18
-                                                 % seqs->base.pc()       // 19
-                                                 % endo->base.tp()       // 20
-                                                 % endo->base.fn()       // 21
-                                                 % (endo->base.tp() + endo->base.fn()) // 22
-                                                 % endo->base.sn()       // 23
-                                                 % (2 * o.edge)          // 24
+        o.writer->write((boost::format(summary1) % x["ref"]      // 1
+                                                 % x["endo"]     // 2
+                                                 % x["seqs"]     // 3
+                                                 % x["nEndo"]    // 4
+                                                 % x["pEndo"]    // 5
+                                                 % x["nSeqs"]    // 6
+                                                 % x["pSeqs"]    // 7
+                                                 % x["dilution"] // 8
+                                                 % x["nRegs"]    // 9
+                                                 % x["lRegs"]    // 10
+                                                 % x["aTP"]      // 11
+                                                 % x["aFP"]      // 12
+                                                 % x["aPC"]      // 13
+                                                 % x["bTP"]      // 14
+                                                 % x["bFN"]      // 15
+                                                 % x["bFP"]      // 16
+                                                 % x["bTot"]     // 17
+                                                 % x["bSN"]      // 18
+                                                 % x["bPC"]      // 19
+                                                 % x["eTP"]      // 20
+                                                 % x["eFN"]      // 21
+                                                 % x["eTot"]     // 22
+                                                 % x["eSN"]      // 23
+                                                 % x["edge"]     // 24
                          ).str());
     }
     else
     {
-        o.writer->write((boost::format(summary2) % Bed1Ref()              // 1
-                                                 % seq                   // 2
-                                                 % seqs->nMap            // 3
-                                                 % r.nRegs()             // 4
-                                                 % r.lRegs()             // 5
-                                                 % seqs->align.tp()      // 6
-                                                 % seqs->align.fp()      // 7
-                                                 % seqs->align.pc()      // 8
-                                                 % seqs->base.tp()       // 9
-                                                 % seqs->base.fn()       // 10
-                                                 % seqs->base.fp()       // 11
-                                                 % (seqs->base.tp() + seqs->base.fp() + seqs->base.fn()) // 12
-                                                 % seqs->base.sn()       // 13
-                                                 % seqs->base.pc()       // 14
-                                                 % (2 * o.edge)          // 15
+        o.writer->write((boost::format(summary2) % x["ref"]   // 1
+                                                 % x["seqs"]  // 2
+                                                 % x["nSeqs"] // 3
+                                                 % x["nRegs"] // 4
+                                                 % x["lRegs"] // 5
+                                                 % x["aTP"]   // 6
+                                                 % x["aFP"]   // 7
+                                                 % x["aPC"]   // 8
+                                                 % x["bTP"]   // 9
+                                                 % x["bFN"]   // 10
+                                                 % x["bFP"]   // 11
+                                                 % x["bTot"]  // 12
+                                                 % x["bSN"]   // 13
+                                                 % x["bPC"]   // 14
+                                                 % x["edge"]  // 15
                          ).str());
     }
 
@@ -608,4 +647,14 @@ void VAlign::report(const FileName &endo, const FileName &seqs, const Options &o
      */
     
     writeBQuins("VarAlign_rbase.stats", stats, o);
+    
+    /*
+     * Generating VarAlign_stats.json
+     */
+    
+    o.generate("VarAlign_stats.json");
+    JSONWriter w(o.work);
+    w.open("VarAlign_stats.json");
+    w.write(jsonD(endo, seqs, stats, o));
+    w.close();
 }

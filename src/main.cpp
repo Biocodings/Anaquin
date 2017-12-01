@@ -51,6 +51,8 @@
 #include <catch.hpp>
 #endif
 
+#define DEFAULT_EDGE 550
+
 typedef int Option;
 
 typedef std::string Value;
@@ -164,7 +166,7 @@ static std::map<Tool, std::set<Option>> _options =
 
     { Tool::VarFlip,      { OPT_U_SEQS, OPT_R_BED } },
     { Tool::VarTrim,      { OPT_R_BED, OPT_U_SEQS } },
-    { Tool::VarAlign,     { OPT_R_BED, OPT_U_SEQS } },
+    { Tool::VarAlign,     { OPT_U_SEQS } },
     { Tool::VarCopy,      { OPT_R_CNV, OPT_R_BED, OPT_U_SAMPLE, OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarCalibrate, { OPT_R_BED, OPT_U_SAMPLE,  OPT_U_SEQS, OPT_METHOD } },
     { Tool::VarKmer,      { OPT_U_SEQS, OPT_R_AF } },
@@ -1178,10 +1180,9 @@ void parse(int argc, char ** argv)
                     extern Scripts A_V_37();
 
                     const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
-
                     const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
 
-                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
+                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
 
                     // Intersection without edge
                     const auto f1 = BedTools::intersect(rb, ub, 0.0);
@@ -1189,8 +1190,23 @@ void parse(int argc, char ** argv)
                     // Intersection with edge
                     const auto f2 = BedTools::intersect(rb, ub, edge);
 
-                    readR1(f1, r);
-                    readR2(f2, r);
+                    if (rb == ub)
+                    {
+                        readR1(rb, r);
+                        readR2(rb, r, edge);
+                    }
+                    else
+                    {
+                        // Intersection without edge
+                        const auto f1 = BedTools::intersect(rb, ub, 0);
+                        
+                        // Intersection with edge
+                        const auto f2 = BedTools::intersect(rb, ub, edge);
+                        
+                        readR1(f1, r);
+                        readR2(f2, r);
+                    }
+                    
                     readR3(System::script2File(A_V_29()), r);
                     
                     break;
@@ -1198,8 +1214,37 @@ void parse(int argc, char ** argv)
 
                 case Tool::VarAlign:
                 {
-                    readR1(OPT_R_BED, r);
-                    readR2(OPT_R_BED, r, _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 0);
+                    // Default sequin regions in the human genome
+                    extern Scripts A_V_37();
+
+                    const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
+                    const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
+                    
+                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
+                    
+                    // Intersection without edge
+                    const auto f1 = BedTools::intersect(rb, ub, 0.0);
+                    
+                    // Intersection with edge
+                    const auto f2 = BedTools::intersect(rb, ub, edge);
+
+                    if (rb == ub)
+                    {
+                        readR1(rb, r);
+                        readR2(rb, r, edge);
+                    }
+                    else
+                    {
+                        // Intersection without edge
+                        const auto f1 = BedTools::intersect(rb, ub, 0);
+                        
+                        // Intersection with edge
+                        const auto f2 = BedTools::intersect(rb, ub, edge);
+                        
+                        readR1(f1, r);
+                        readR2(f2, r);
+                    }
+                    
                     break;
                 }
                     
@@ -1257,7 +1302,7 @@ void parse(int argc, char ** argv)
                     
                     const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
 
-                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
+                    const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
                     
                     if (rb == ub)
                     {
@@ -1327,7 +1372,7 @@ void parse(int argc, char ** argv)
                     
                     o.notCalib = _p.opts.count(OPT_UN_CALIB);
                     o.trim = _p.opts.count(OPT_TRIM) ? stoi(_p.opts[OPT_TRIM]) : 2;
-                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
+                    o.edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
                     
                     analyze_1<VPartition>(OPT_U_SEQS, o);
                     break;
@@ -1375,7 +1420,7 @@ void parse(int argc, char ** argv)
                         throw InvalidValueException("-method", _p.opts[OPT_METHOD]);
                     }
                     
-                    o.edge   = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : 550;
+                    o.edge   = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
                     o.isGerm = _p.opts[OPT_METHOD] == "germline";
                     o.filter = _p.opts.at(OPT_FILTER) == "pass" ? VCFFilter::Passed : VCFFilter::NotFiltered;
                     

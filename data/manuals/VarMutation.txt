@@ -50,4 +50,5 @@
                                 to expected allele frequency (independent variable) defined by reference variant file
     VarMutation_tp.vcf        – VCF file for true positivies
     VarMutation_fp.vcf        – VCF file for false positives
-    VarMutation_fn.vcf        – VCF file for false negatives  
+    VarMutation_fn.vcf        – VCF file for false negatives
+    VarMutation_stats.json    - is the JSON file for the statistics
