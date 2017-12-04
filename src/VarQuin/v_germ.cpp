@@ -488,6 +488,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto &r = Standard::instance().r_var;
 
     extern bool VCFFromUser();
+    extern bool RBEDFromUser();
+    extern bool UBEDFromUser();
+    
     extern FileName VCFRef();
     extern FileName Bed1Ref();
 
@@ -510,14 +513,15 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto c_nDel = del.nq();
     const auto c_nIns = ins.nq();
 
-    x["type"]      = "germline";
-    x["vRef"]      = (VCFFromUser() ? VCFRef() : "-");
-    x["bRef"]      = (!Bed1Ref().empty() ? Bed1Ref() : "-");
-    x["bRef"]      = (!Bed1Ref().empty() ? Bed1Ref() : "-");
-    x["inputE"]    = (endo.empty() ? "-" : endo);
-    x["inputS"]    = seqs;
-    x["nEndo"]     = E3(); // Number of sample variants
-    x["nSeqs"]     = D(c_nSNP + c_nDel + c_nIns);
+    x["mode"]      = "germline";
+    x["vRef"]      = (VCFFromUser() ? VCFRef()  : "-");
+    x["bRef"]      = (RBEDFromUser() ? Bed1Ref() : "-");
+    x["uSam"]      = (endo.empty() ? "-" : endo);
+    x["uSeq"]      = seqs;
+    x["uBed"]      = (UBEDFromUser() ? Bed1Ref() : "-");
+    x["nSam"]      = E3(); // Number of sample variants
+    x["nSeq"]      = D(c_nSNP + c_nDel + c_nIns);
+    x["exclude"]   = o.filter == VCFFilter::Passed ? "True" : "False";    
     x["allN"]      = D(r.nType1(Variation::SNP)       +
                        r.nType1(Variation::Insertion) +
                        r.nType1(Variation::Deletion));

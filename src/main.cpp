@@ -224,10 +224,15 @@ FileName GTFRef()
 #define S(x) (_p.opts.count(x) ? _p.opts.at(x) : "-")
 
 static FileName __VCFRef__, __Bed1Ref__, __Bed2Ref__;
-static bool __VCFRefUser__;
 
 // User supplied reference VCF?
-bool VCFFromUser()  { return __VCFRefUser__;  }
+bool VCFFromUser() { return _p.opts.count(OPT_R_VCF); }
+
+// User supplied reference BED?
+bool RBEDFromUser() { return _p.opts.count(OPT_R_BED); }
+
+// User supplied custom BED?
+bool UBEDFromUser() { return _p.opts.count(OPT_U_BED); }
 
 FileName AFRef()   { return S(OPT_R_AF);  }
 FileName LadRef()  { return S(OPT_R_LAD); }
@@ -477,8 +482,8 @@ typedef SequinVariant::Context Context;
 
 static void readV2(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
 {
-    auto rr = (__VCFRefUser__ = _p.opts.count(opt)) ? Reader(__VCFRef__ = _p.opts[opt]) :
-                                                      Reader(__VCFRef__ = System::script2File(x));
+    auto rr = (_p.opts.count(opt)) ? Reader(__VCFRef__ = _p.opts[opt]) :
+                                     Reader(__VCFRef__ = System::script2File(x));
     r.v2 = std::shared_ptr<VCFLadder>(new VCFLadder(Standard::addVCF(rr, std::set<Context> {})));
 }
 
