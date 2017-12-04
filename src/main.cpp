@@ -226,7 +226,8 @@ FileName GTFRef()
 static FileName __VCFRef__, __Bed1Ref__, __Bed2Ref__;
 static bool __VCFRefUser__;
 
-bool VCFUser()  { return __VCFRefUser__;  }
+// User supplied reference VCF?
+bool VCFFromUser()  { return __VCFRefUser__;  }
 
 FileName AFRef()   { return S(OPT_R_AF);  }
 FileName LadRef()  { return S(OPT_R_LAD); }

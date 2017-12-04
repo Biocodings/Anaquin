@@ -992,7 +992,7 @@ static std::map<std::string, std::string> statsD(const FileName &src, const Stat
     std::map<std::string, std::string> x;
     #define S(x) toString(x)
     
-    x["ref"]      = Bed1Ref();             // Reference BED annoation
+    x["bRef"]     = Bed1Ref();             // Reference BED annoation
     x["src"]      = src;                   // Input alignment file
     x["regs"]     = S(stats.gStats.nRegs); // Number of sequin regions
     x["edge"]     = S(o.edge);             // Edge width

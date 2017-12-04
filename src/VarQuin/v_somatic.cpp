@@ -753,7 +753,7 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
 {
     const auto &r = Standard::instance().r_var;
     
-    extern bool VCFUser();
+    extern bool VCFFromUser();
     extern FileName VCFRef();
     extern FileName Bed1Ref();
 
@@ -780,7 +780,8 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     
     std::map<std::string, std::string> x;
     
-    x["vRef"]   = (VCFUser() ? VCFRef() : "-");
+    x["type"]   = "somatic";
+    x["vRef"]   = (VCFFromUser() ? VCFRef() : "-");
     x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
     x["inputE"] = (endo.empty() ? "-" : endo);
     x["inputS"] = seqs;
