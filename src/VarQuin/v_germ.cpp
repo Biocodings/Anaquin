@@ -517,6 +517,43 @@ static void writeDetected(const FileName &file,
     o.writer->close();
 }
 
+static void writeSamples(const FileName &file, const EStats &stats, const Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+    const auto r2 = Standard::instance().r_var.regs2();
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
+
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Chrom"
+                                           % "Position"
+                                           % "ReadR"
+                                           % "ReadV"
+                                           % "Depth"
+                                           % "Qual"
+                                           % "Genotype"
+                                           % "Context"
+                                           % "Mutation").str());
+    
+    for (const auto &i : stats.vs)
+    {
+        const auto &sv = r.findVar(i.name);
+        o.writer->write((boost::format(format) % i.name
+                                               % i.cID
+                                               % i.l.start
+                                               % i.readR
+                                               % i.readV
+                                               % i.depth
+                                               % toString(i.qual)
+                                               % gt2str(sv->gt)
+                                               % ctx2Str(sv->ctx)
+                                               % var2str(i.type())).str());
+    }
+    
+    o.writer->close();
+}
+
 static std::map<std::string, std::string> jsonD(const FileName &endo,
                                                 const FileName &seqs,
                                                 const EStats &es,
@@ -836,7 +873,13 @@ VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Opt
      */
     
     writeDetected("VarMutation_detected.tsv", stats.ss, o);
+
+    /*
+     * Generating VarMutation_sample.tsv
+     */
     
+    writeSamples("VarMutation_sample.tsv", stats.es, o);
+
     /*
      * Generating VarMutation_ROC.R
      */

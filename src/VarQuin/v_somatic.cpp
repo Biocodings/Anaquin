@@ -6,6 +6,9 @@
 
 using namespace Anaquin;
 
+typedef VSomatic::EStats EStats;
+typedef VSomatic::SStats SStats;
+typedef VSomatic::Options Options;
 typedef SequinVariant::Context Context;
 
 inline std::string ctx2Str(Context x)
@@ -62,6 +65,15 @@ static Scripts createROC(const FileName &file, const std::string &score, const s
                                        % refRat).str();
 }
 
+/*
+ * Caller specific fields commonly used
+ */
+
+static const auto __keys__ = std::set<std::string>
+{
+    "SomaticEVS", "QSS", "QSI",
+};
+
 EStats VSomatic::analyzeE(const FileName &file, const Options &o)
 {
     const auto r2 = Standard::instance().r_var.regs2();
@@ -98,6 +110,14 @@ EStats VSomatic::analyzeE(const FileName &file, const Options &o)
                 stats.g2c[t.gt]++;
                 stats.v2c[t.type()]++;
                 stats.vs.insert(t);
+                
+                for (const auto &i : __keys__)
+                {
+                    if (x.fi.count(i))  { stats.si[i][t.key()] = x.fi.at(i);  }
+                    if (x.ff.count(i))  { stats.sf[i][t.key()] = x.ff.at(i);  }
+                    if (x.ifi.count(i)) { stats.si[i][t.key()] = x.ifi.at(i); }
+                    if (x.iff.count(i)) { stats.sf[i][t.key()] = x.iff.at(i); }
+                }
             }
         });
         
@@ -312,12 +332,6 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
     auto wTP = VCFWriter(); wTP.open(o.work + "/VarMutation_TP.vcf");
     auto wFP = VCFWriter(); wFP.open(o.work + "/VarMutation_FP.vcf");
     
-    // Caller specific fields
-    const auto keys = std::set<std::string>
-    {
-        "SomaticEVS", "QSS", "QSI",
-    };;
-    
     ParserVCF::parse(file, [&](const Variant &x)
     {
         if (o.filter == VCFFilter::Passed && x.filter != Filter::Pass)
@@ -386,7 +400,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
         {
             if (isSomatic(m.var->name))
             {
-                for (const auto &i : keys)
+                for (const auto &i : __keys__)
                 {
                     if (x.fi.count(i))  { stats.si[i][m.var->key()] = x.fi.at(i);  }
                     if (x.ff.count(i))  { stats.sf[i][m.var->key()] = x.ff.at(i);  }
@@ -421,7 +435,7 @@ VSomatic::SStats VSomatic::analyzeS(const FileName &file, const Options &o)
             // Ignore anything for germline
             if (!r.findV2(x.cID, x.l))
             {
-                for (const auto &i : keys)
+                for (const auto &i : __keys__)
                 {
                     if (x.fi.count(i))  { stats.si[i][x.key()] = x.fi.at(i);  }
                     if (x.ff.count(i))  { stats.sf[i][x.key()] = x.ff.at(i);  }
@@ -588,6 +602,59 @@ template <typename T> std::string extra(const T &x, long key)
     }
 
     return ss.str();
+}
+
+static void writeSamples(const FileName &file, const EStats &stats, const VSomatic::Options &o)
+{
+    const auto &r = Standard::instance().r_var;
+    const auto format = "%1%\t%2%\t%3%\t%4t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11$.2f\t%12$.2f\t%13%\t%14%\t%15%%16%";
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Name"
+                                           % "Chrom"
+                                           % "Position"
+                                           % "ReadR_Normal"
+                                           % "ReadV_Normal"
+                                           % "ReadR_Tumor"
+                                           % "ReadV_Tumor"
+                                           % "Depth_Normal"
+                                           % "Depth_Tumor"
+                                           % "ExpFreq"
+                                           % "ObsFreq_Normal"
+                                           % "ObsFreq_Tumor"
+                                           % "Qual"
+                                           % "Context"
+                                           % "Mutation"
+                                           % head(stats)).str());
+    for (const auto &i : stats.vs)
+    {
+        if (isSomatic(i.name))
+        {
+            const auto &sv = r.findVar(i.name);
+            
+            #define FORMAT_I_(x) (i.fi.count(x) ? toString(i.fi.at(x)) : "-")
+
+            o.writer->write((boost::format(format) % i.name
+                                                   % i.cID
+                                                   % i.l.start
+                                                   % normalDPR(i)
+                                                   % normalDPV(i)
+                                                   % tumorDPR(i)
+                                                   % tumorDPV(i)
+                                                   % FORMAT_I_("DP_1")
+                                                   % FORMAT_I_("DP_2")
+                                                   % r.af(i.name)
+                                                   % normalAF(i)
+                                                   % tumorAF(i)
+                                                   % toString(i.qual)
+                                                   % ctx2Str(sv->ctx)
+                                                   % var2str(i.type())
+                                                   % extra(stats, i.key())).str());
+        }
+    }
+    
+    o.writer->close();
 }
 
 static void writeQuins(const FileName &file,
@@ -966,7 +1033,13 @@ VSomatic::Stats VSomatic::report(const FileName &endo, const FileName &seqs, con
      */
     
     writeSummary("VarMutation_summary.stats", endo, seqs, stats.es, stats.ss, o);
+
+    /*
+     * Generating VarMutation_sample.tsv
+     */
     
+    writeSamples("VarMutation_sample.tsv", stats.es, o);
+
     /*
      * Generating VarMutation_sequins.tsv
      */

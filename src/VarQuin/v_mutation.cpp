@@ -10,37 +10,6 @@ using namespace Anaquin;
 // Defined main.cpp
 extern FileName Bed1Ref();
 
-template <typename T, typename O> void writeSamples(const FileName &file, const T &stats, const O &o)
-{
-    const auto r2 = Standard::instance().r_var.regs2();
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
-    
-    o.generate(file);
-    o.writer->open(file);
-    o.writer->write((boost::format(format) % "Name"
-                                           % "Chrom"
-                                           % "Position"
-                                           % "ReadR"
-                                           % "ReadV"
-                                           % "Depth"
-                                           % "Qual").str());
-    
-    for (const auto &i : stats.es.vs)
-    {
-        A_ASSERT(!i.name.empty());
-        
-        o.writer->write((boost::format(format) % i.name
-                                               % i.cID
-                                               % i.l.start
-                                               % i.readR
-                                               % i.readV
-                                               % i.depth
-                                               % toString(i.qual)).str());
-    }
-    
-    o.writer->close();
-}
-
 static void writeRegions(const FileName &file, const VMutation::Options &o)
 {
     extern FileName Bed2Ref();
@@ -51,8 +20,6 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
 {
     o.info("Edge: " + toString(o.edge));
 
-    BaseCallerStats stats;
-    
     if (o.isGerm)
     {
         o.info("Germline analysis");
@@ -65,7 +32,7 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
         o_.writer = o.writer;
         o_.output = o.output;
 
-        stats = VGerm::report(endo, seqs, o_);
+        VGerm::report(endo, seqs, o_);
     }
     else
     {
@@ -79,18 +46,8 @@ void VMutation::report(const FileName &endo, const FileName &seqs, const VMutati
         o_.writer = o.writer;
         o_.output = o.output;
 
-        stats = VSomatic::report(endo, seqs, o_);
+        VSomatic::report(endo, seqs, o_);
     }
-
-    /*
-     * Generating VarMutation_sample.vcf (done in VGerm or VSomatic)
-     */
-    
-    /*
-     * Generating VarMutation_sample.tsv
-     */
-    
-    writeSamples("VarMutation_sample.tsv", stats, o);
 
     /*
      * Generating VarMuation_sequins.bed
