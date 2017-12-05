@@ -31,6 +31,19 @@ namespace Anaquin
             Cancer,
         } ctx;
         
+        enum class Repeat
+        {
+            NotRepeat,
+            SimpleRepeat,
+        } rep;
+
+        enum class GCContents
+        {
+            GCNormal,
+            GCRich,
+            GCPoor
+        } gc;
+        
         Genotype gt;
         
         // Copy number
@@ -377,7 +390,6 @@ namespace Anaquin
 
             VarRef();
 
-            Counts nCNV1(int) const;
             Counts nGeno1(Genotype)  const;
             Counts nType1(Variation) const;
             Counts nCtx1(SequinVariant::Context) const;

@@ -101,14 +101,6 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Counts VarRef::nCNV1(int c) const
-{
-    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
-    {
-        return x.copy == c ? 1 : 0;
-    });
-}
-
 Counts VarRef::nGeno1(Genotype g) const
 {
     return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
