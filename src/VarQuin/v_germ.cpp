@@ -48,6 +48,7 @@ static Scripts createROC(const FileName &f1, const FileName &f2)
 
 EStats VGerm::analyzeE(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
     const auto r2 = Standard::instance().r_var.regs2();
     
     EStats stats;
@@ -82,9 +83,25 @@ EStats VGerm::analyzeE(const FileName &file, const Options &o)
                 stats.g2c[t.gt]++;
                 stats.v2c[t.type()]++;
                 stats.vs.insert(t);
+                
+                /*
+                 * Can we extract information for this variant from sequin regions?
+                 */
+
+                const auto sv = r.findVar(d->name());
+                A_ASSERT(sv);
+                
+                if (sv->isGCLow() || sv->isGCHigh())
+                {
+                    stats.gc++;
+                }
+                else if (sv->isRepeat())
+                {
+                    stats.rep++;
+                }
             }
         });
-        
+
         w.close();
     }
 
@@ -609,6 +626,18 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["shortQRep"] = CSN(Context::ShortQuadRep);
     x["shortTRep"] = CSN(Context::ShortTrinRep);
     
+    /*
+     * Endogenous variants
+     */
+    
+    x["samGC"]  = D(es.gc);  // Number of GC Rich/Poor
+    x["samRep"] = D(es.rep); // Number of simple repeats
+    x["samN"]   = D(es.vs.size());
+    x["samSNP"] = D(es.v2c.at(Variation::SNP));
+    x["samInd"] = D(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion));
+    x["samHom"] = D(es.g2c.at(Genotype::Homozygous));
+    x["samHet"] = D(es.g2c.at(Genotype::Heterzygous));
+
     return x;
 }
 

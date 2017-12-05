@@ -156,43 +156,27 @@ std::set<Variant> VarRef::v1() const
     return _v1->data.vars();
 }
 
+const SequinVariant * VarRef::findVar(const SequinID &x) const
+{
+    for (const auto &i : _v1->data.vars())
+    {
+        if (i.name == x)
+        {
+            return &(findSeqVar1(i.key()));
+        }
+    }
+
+    return nullptr;
+}
+
 const SequinVariant & VarRef::findSeqVar1(long key) const
 {
     return _v1->sVars.at(key);
 }
 
-Counts VarRef::nCNV2(int c) const
-{
-    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
-    {
-        return x.copy == c ? 1 : 0;
-    });
-}
-
-Counts VarRef::nGeno2(Genotype g) const
-{
-    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
-    {
-        return x.gt == g ? 1 : 0;
-    });
-}
-
-Counts VarRef::nType2(Variation x) const
-{
-    return _v2->data.count_(x);
-}
-
 SequinVariant::Context VarRef::ctx2(const Variant &x) const
 {
     return _v2->sVars.at(x.key()).ctx;
-}
-
-Counts VarRef::nCtx2(SequinVariant::Context c) const
-{
-    return countMap(_v2->sVars, [&](VarKey, const SequinVariant &x)
-    {
-        return x.ctx == c ? 1 : 0;
-    });
 }
 
 std::set<Variant> VarRef::v2() const

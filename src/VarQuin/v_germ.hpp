@@ -11,6 +11,12 @@ namespace Anaquin
         std::set<Variant> vs;
         std::map<Variation, Counts> v2c;
         std::map<Genotype,  Counts> g2c;
+        
+        // Number of endogenous with low/high GC within sequin regions
+        Counts gc = 0;
+        
+        // Number of endogenous with simple repeats within sequin regions
+        Counts rep = 0;
     };
 
     struct BaseCallerStats

@@ -416,11 +416,6 @@ namespace Anaquin
             Counts nType1(Variation) const;
             Counts nCtx1(SequinVariant::Context) const;
 
-            Counts nCNV2(int) const;
-            Counts nGeno2(Genotype)  const;
-            Counts nType2(Variation) const;
-            Counts nCtx2(SequinVariant::Context) const;
-        
             SequinVariant::Context ctx1(const Variant &) const;
             SequinVariant::Context ctx2(const Variant &) const;
         
@@ -429,6 +424,8 @@ namespace Anaquin
 
             const SequinVariant &findSeqVar1(long) const;
             const SequinVariant &findSeqVar2(long) const;
+        
+            const SequinVariant *findVar(const SequinID &) const;
         
             const Variant *findV1(const ChrID &, const Locus &) const;
             const Variant *findV2(const ChrID &, const Locus &) const;
