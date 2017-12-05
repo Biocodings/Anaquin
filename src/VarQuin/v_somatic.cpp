@@ -817,9 +817,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["indPC"]  = D(ind.pc());
     x["indF1"]  = D(ind.F1());
     x["indFDR"] = D(1-ind.pc());
-    x["allM"]   = all.m;
-    x["allR2"]  = all.R2;
-    x["allSn"]  = ss.oa.limit.abund;
+    x["allM"]   = D(all.m);
+    x["allR2"]  = D(all.R2);
+    x["allSn"]  = D(ss.oa.limit.abund);
     x["cancer"] = CSN(Context::Cancer);
 
     return x;
