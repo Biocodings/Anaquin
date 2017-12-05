@@ -101,6 +101,30 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
+Counts VarRef::nRep() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isRepeat() ? 1 : 0;
+    });
+}
+
+Counts VarRef::nGCLow() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isGCLow() ? 1 : 0;
+    });
+}
+
+Counts VarRef::nGCHigh() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isGCHigh() ? 1 : 0;
+    });
+}
+
 Counts VarRef::nGeno1(Genotype g) const
 {
     return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)

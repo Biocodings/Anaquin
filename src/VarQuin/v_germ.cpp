@@ -272,7 +272,19 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
             // Performance by genotype
             stats.g2c[sv.gt].tp()++;
             
-            // Performance by context
+            // Performance by GC
+            if (sv.isGCLow() || sv.isGCHigh())
+            {
+                stats.gc2c.tp()++;
+            }
+            
+            // Performance by repeats
+            if (sv.isRepeat())
+            {
+                stats.r2c.tp()++;
+            }
+            
+            // Performance by GC context
             stats.c2c[sv.ctx].tp()++;
             
             // Performance by variation
@@ -329,6 +341,20 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         stats.g2c[i].nq() = stats.g2c[i].tp() + stats.g2c[i].fp();
         stats.g2c[i].fn() = stats.g2c[i].nr() - stats.g2c[i].tp();
     }
+    
+    /*
+     * Performance by repeats
+     */
+    
+    stats.r2c.nr() = r.nRep();
+    stats.r2c.fn() = stats.r2c.nr() - stats.r2c.tp();
+
+    /*
+     * Performance by GC contents
+     */
+    
+    stats.gc2c.nr() = r.nGCHigh() + r.nGCLow();
+    stats.gc2c.fn() = stats.gc2c.nr() - stats.gc2c.tp();
 
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
  
@@ -545,6 +571,14 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["indPC"]     = D(ind.pc());
     x["indF1"]     = D(ind.F1());
     x["indFDR"]    = D(1-ind.pc());
+    x["GCN"]       = D(ss.gc2c.nr());
+    x["GCTP"]      = D(ss.gc2c.tp());
+    x["GCFN"]      = D(ss.gc2c.fn());
+    x["GCSN"]      = D(ss.gc2c.sn());
+    x["RepN"]      = D(ss.r2c.nr());
+    x["RepTP"]     = D(ss.r2c.tp());
+    x["RepFN"]     = D(ss.r2c.fn());
+    x["RepSN"]     = D(ss.r2c.sn());
     x["homN"]      = D(r.nGeno1(Genotype::Homozygous));
     x["homTP"]     = D(hom.tp());
     x["homFP"]     = D(hom.fp());

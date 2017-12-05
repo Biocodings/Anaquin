@@ -57,6 +57,12 @@ namespace Anaquin
             // Performance by genotype
             std::map<Genotype, Confusion> g2c;
             
+            // Performance for GC contents
+            Confusion gc2c;
+            
+            // Performance for simple repeats
+            Confusion r2c;
+            
             // Overall performance
             Confusion oc;
 

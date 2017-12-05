@@ -31,11 +31,29 @@ namespace Anaquin
             Cancer,
         } ctx;
         
-        enum class Repeat
+        inline bool isRepeat() const
         {
-            NotRepeat,
-            SimpleRepeat,
-        } rep;
+            switch (ctx)
+            {
+                case Context::LongDinRep:
+                case Context::LongQuadRep:
+                case Context::LongTrinRep:
+                case Context::ShortDinRep:
+                case Context::ShortQuadRep:
+                case Context::ShortTrinRep: { return true;  }
+                default:                    { return false; }
+            }
+        }
+
+        inline bool isGCHigh() const
+        {
+            return ctx == Context::HighGC || ctx == Context::VeryHighGC;
+        }
+
+        inline bool isGCLow() const
+        {
+            return ctx == Context::LowGC || ctx == Context::VeryLowGC;
+        }
 
         enum class GCContents
         {
@@ -390,6 +408,10 @@ namespace Anaquin
 
             VarRef();
 
+            Counts nRep()    const;
+            Counts nGCLow()  const;
+            Counts nGCHigh() const;
+        
             Counts nGeno1(Genotype)  const;
             Counts nType1(Variation) const;
             Counts nCtx1(SequinVariant::Context) const;
