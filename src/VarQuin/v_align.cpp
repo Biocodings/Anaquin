@@ -366,6 +366,7 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["ref"]      = Bed1Ref();
     x["endo"]     = endo;
     x["seqs"]     = seqs;
+    x["nNA"]      = stats.seqs->nNA;
     x["nEndo"]    = S0(stats.endo ? stats.endo->nMap : NAN);
     x["pEndo"]    = S2(stats.endo ? stats.pEndo() : NAN);
     x["nSeqs"]    = S0(stats.seqs->nMap);

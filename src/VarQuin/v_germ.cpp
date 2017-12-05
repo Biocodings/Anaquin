@@ -514,8 +514,8 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto c_nIns = ins.nq();
 
     x["mode"]      = "germline";
-    x["vRef"]      = (VCFFromUser() ? VCFRef()  : "-");
-    x["bRef"]      = (RBEDFromUser() ? Bed1Ref() : "-");
+    x["rVCF"]      = (VCFFromUser() ? VCFRef()  : "-");
+    x["rBED"]      = (RBEDFromUser() ? Bed1Ref() : "-");
     x["uSam"]      = (endo.empty() ? "-" : endo);
     x["uSeq"]      = seqs;
     x["uBed"]      = (UBEDFromUser() ? Bed1Ref() : "-");
