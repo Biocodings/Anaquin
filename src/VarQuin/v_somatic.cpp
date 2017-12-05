@@ -780,12 +780,16 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     
     std::map<std::string, std::string> x;
     
+    const auto all = ss.oa.linear();
+    
     x["type"]   = "somatic";
+    x["nRegs"]  = D(r.nRegs());
+    x["lRegs"]  = D(r.lRegs());
     x["vRef"]   = (VCFFromUser() ? VCFRef() : "-");
     x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
     x["inputE"] = (endo.empty() ? "-" : endo);
     x["inputS"] = seqs;
-    x["nSam"]  = E3(); // Number of sample variants
+    x["nSam"]   = E3(); // Number of sample variants
     x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
     x["allN"]   = D(r.nType1(Variation::SNP) +
                     r.nType1(Variation::Insertion) +
@@ -813,6 +817,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["indPC"]  = D(ind.pc());
     x["indF1"]  = D(ind.F1());
     x["indFDR"] = D(1-ind.pc());
+    x["allM"]   = all.m;
+    x["allR2"]  = all.R2;
+    x["allSn"]  = ss.oa.limit.abund;
     x["cancer"] = CSN(Context::Cancer);
 
     return x;
