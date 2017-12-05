@@ -25,8 +25,8 @@ namespace Anaquin
                 return s;
             }
 
-            // Add sequin regions in BED format
-            static BedData readBED(const Reader &, Base trim = 0);
+            // Add sequin regions in BED format (allow filtering out specified sequins)
+            static BedData readBED(const Reader &, Base trim = 0, const std::set<SequinID> * = nullptr);
 
             // Add sequin regions in GTF format
             static std::shared_ptr<GTFData> readGTF(const Reader &);

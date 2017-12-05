@@ -12,6 +12,17 @@ typedef VPartition::Method    Method;
 typedef VPartition::Options   Options;
 typedef std::map<ChrID, Base> Headers;
 
+inline std::string meth2Str(Method meth)
+{
+    switch (meth)
+    {
+        case Method::Mean:   { return "Mean";       }
+        case Method::Median: { return "Median";     }
+        case Method::Reads:  { return "Reads";      }
+        case Method::Prop:   { return "Proportion"; }
+    }
+};
+
 static ParserBAM::Data flip(const ParserBAM::Data &x)
 {
     auto r = x;
@@ -998,8 +1009,8 @@ static std::map<std::string, std::string> statsD(const FileName &src, const Stat
     x["edge"]     = S(o.edge);             // Edge width
     x["nNA"]      = S(stats.nNA);          // Number of unmapped
     x["pNA"]      = S(stats.pNA());        // Proportion of unmapped
-    x["nEndo"]    = S(stats.nEndo);        // Number of endogenous
-    x["pEndo"]    = S(stats.pEndo());      // Proportion of endogenous
+    x["nSam"]     = S(stats.nEndo);        // Number of endogenous
+    x["pSam"]     = S(stats.pEndo());      // Proportion of endogenous
     x["nRev"]     = S(stats.nRev);         // Number of reversed
     x["pRev"]     = S(stats.pRev());       // Proportion of reversed
     x["nLad"]     = S(stats.nLad);         // Number of ladders
@@ -1016,9 +1027,10 @@ static std::map<std::string, std::string> statsD(const FileName &src, const Stat
     x["pAmb"]     = S(stats.pAmb());       // Proportion of ambigious pairs
     x["nHang"]    = S(stats.nHang());      // Number of hanging reads
     x["pHang"]    = S(stats.pHang());      // Proportion of hanging reads
-    x["bEndo"]    = S(stats.cStats.meanBEndo());
+    x["meth"]     = meth2Str(o.meth);
+    x["bSam"]     = S(stats.cStats.meanBEndo());
     x["bSeqs"]    = S(stats.cStats.meanBSeqs());
-    x["aEndo"]    = S(stats.cStats.meanBEndo());
+    x["aSam"]     = S(stats.cStats.meanBEndo());
     x["aSeqs"]    = S(stats.afterSeqs);
     x["eHigh"]    = S(stats.cStats.eOver);
     x["sHigh"]    = S(stats.cStats.sOver);
@@ -1082,8 +1094,8 @@ static void writeSummary(const FileName &file, const FileName &src, const Stats 
                                             % x["edge"]     // 4
                                             % x["nNA"]      // 5
                                             % x["pNA"]      // 6
-                                            % x["nEndo"]    // 7
-                                            % x["pEndo"]    // 8
+                                            % x["nSam"]     // 7
+                                            % x["pSam"]     // 8
                                             % x["nRev"]     // 9
                                             % x["pRev"]     // 10
                                             % x["nLad"]     // 11

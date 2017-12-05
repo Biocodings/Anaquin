@@ -364,13 +364,12 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     #define S2(x) (isnan(x) ? "-" : toString(x,2))
     
     x["ref"]      = Bed1Ref();
-    x["endo"]     = endo;
-    x["seqs"]     = seqs;
-    x["nNA"]      = stats.seqs->nNA;
-    x["nEndo"]    = S0(stats.endo ? stats.endo->nMap : NAN);
-    x["pEndo"]    = S2(stats.endo ? stats.pEndo() : NAN);
-    x["nSeqs"]    = S0(stats.seqs->nMap);
-    x["pSeqs"]    = S2(stats.pSeqs());
+    x["uSam"]     = endo;
+    x["uSeq"]     = seqs;
+    x["nSam"]     = S0(stats.endo ? stats.endo->nMap : NAN);
+    x["pSam"]     = S2(stats.endo ? stats.pEndo() : NAN);
+    x["nSeq"]     = S0(stats.seqs->nMap);
+    x["pSeq"]     = S2(stats.pSeqs());
     x["dilution"] = S2(100 * stats.pSeqs());
     x["nRegs"]    = S0(r.nRegs());
     x["lRegs"]    = S0(r.lRegs());
@@ -411,7 +410,7 @@ void VAlign::writeSummary(const FileName &file,
                           "       Reference annotation file: %1%\n"
                           "       Sample alignment file: %2%\n"
                           "       Sequin alignment file: %3%\n\n"
-                          "       Edge: %24% bases per region\n\n"
+                          "       Edge: %24% bases\n\n"
                           "-------Alignments\n\n"
                           "       Sample: %4% (%5%%%)\n"
                           "       Sequin: %6% (%7%%%)\n"
@@ -441,7 +440,7 @@ void VAlign::writeSummary(const FileName &file,
     const auto summary2 = "-------VarAlign Summary Statistics\n\n"
                           "       Reference annotation file: %1%\n"
                           "       Sequin alignment file: %2%\n\n"
-                          "       Edge: %15% bases per region\n\n"
+                          "       Edge: %15% bases\n\n"
                           "-------Alignments\n\n"
                           "       Synthetic: %3% \n\n"
                           "-------Reference regions\n\n"
@@ -470,8 +469,8 @@ void VAlign::writeSummary(const FileName &file,
         o.writer->write((boost::format(summary1) % x["ref"]      // 1
                                                  % x["endo"]     // 2
                                                  % x["seqs"]     // 3
-                                                 % x["nEndo"]    // 4
-                                                 % x["pEndo"]    // 5
+                                                 % x["nSam"]    // 4
+                                                 % x["pSam"]    // 5
                                                  % x["nSeqs"]    // 6
                                                  % x["pSeqs"]    // 7
                                                  % x["dilution"] // 8

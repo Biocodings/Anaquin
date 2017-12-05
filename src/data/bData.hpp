@@ -144,7 +144,7 @@ namespace Anaquin
         Base trim = 0;
     };
     
-    template <typename F> BedData readRegions(const Reader &r, F f, RegionOptions o = RegionOptions())
+    template <typename F> BedData readRegions(const Reader &r, F f, RegionOptions o = RegionOptions(), const std::set<SequinID> *ex = nullptr)
     {
         BedData c2d;
         
@@ -153,6 +153,10 @@ namespace Anaquin
             if (x.l.length() < 2 * o.trim)
             {
                 throw std::runtime_error(x.name + " is too narrow. You have requested for edge " + std::to_string(o.trim) + ".");
+            }
+            else if (ex && !ex->count(x.name))
+            {
+                return;
             }
             
             x.l.end   -= o.trim;

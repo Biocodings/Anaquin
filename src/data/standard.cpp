@@ -46,11 +46,11 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-BedData Standard::readBED(const Reader &r, Base trim)
+BedData Standard::readBED(const Reader &r, Base trim, const std::set<SequinID> *ex)
 {
     RegionOptions o;
     o.trim = trim;
-    return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o);
+    return readRegions(Reader(r), [&](const ParserBed::Data &, const ParserProgress &) {}, o, ex);
 }
 
 std::shared_ptr<GTFData> Standard::readGTF(const Reader &r)

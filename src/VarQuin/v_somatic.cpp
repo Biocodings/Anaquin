@@ -785,7 +785,7 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
     x["inputE"] = (endo.empty() ? "-" : endo);
     x["inputS"] = seqs;
-    x["nEndo"]  = E3(); // Number of sample variants
+    x["nSam"]  = E3(); // Number of sample variants
     x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
     x["allN"]   = D(r.nType1(Variation::SNP) +
                     r.nType1(Variation::Insertion) +
@@ -890,7 +890,7 @@ static void writeSummary(const FileName &file,
                                             % x["bRef"]   // 2
                                             % x["inputE"] // 3
                                             % x["inputS"] // 4
-                                            % x["nEndo"]  // 5
+                                            % x["nSam"]   // 5
                                             % x["nSeqs"]  // 6
                                             % x["allN"]   // 7
                                             % x["allTP"]  // 8

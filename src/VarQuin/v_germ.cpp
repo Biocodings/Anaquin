@@ -233,11 +233,6 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
             // Ignore anything that is somatic
             if (!r.findV2(x.cID, x.l))
             {
-                if (x.l.start == 160204778)
-                {
-                    std::cout << x.l.start << std::endl;
-                }
-                
                 wFP.write(x.hdr, x.line);
                 
                 // FP because the variant is not found in the reference
@@ -514,6 +509,8 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto c_nIns = ins.nq();
 
     x["mode"]      = "germline";
+    x["nRegs"]     = D(r.nRegs());
+    x["lRegs"]     = D(r.lRegs());
     x["rVCF"]      = (VCFFromUser() ? VCFRef()  : "-");
     x["rBED"]      = (RBEDFromUser() ? Bed1Ref() : "-");
     x["uSam"]      = (endo.empty() ? "-" : endo);
@@ -667,7 +664,7 @@ static void writeSummary(const FileName &file,
                                                 % x["bRef"]      // 2
                                                 % x["inputE"]    // 3
                                                 % x["inputS"]    // 4
-                                                % x["nEndo"]     // 5
+                                                % x["nSam"]      // 5
                                                 % x["nSeqs"]     // 6
                                                 % x["allN"]      // 7
                                                 % x["allTP"]     // 8

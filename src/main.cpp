@@ -516,14 +516,14 @@ static void readVCFNoSom1(Option opt, UserReference &r, const Scripts &x = "")
             Standard::addVCF(rr, std::set<Context> { Context::Cancer })));
 }
 
-static void readR1(const FileName &file, UserReference &r, Base edge = 0)
+static void readR1(const FileName &file, UserReference &r, Base edge = 0, const std::set<SequinID> *ex = nullptr)
 {
-    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed1Ref__ = file), edge)));
+    r.r1 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed1Ref__ = file), edge, ex)));
 }
 
-static void readR2(const FileName &file, UserReference &r, Base edge = 0)
+static void readR2(const FileName &file, UserReference &r, Base edge = 0, const std::set<SequinID> *x = nullptr)
 {
-    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed2Ref__ = file), edge)));
+    r.r2 = std::shared_ptr<BedData>(new BedData(Standard::readBED(Reader(__Bed2Ref__ = file), edge, x)));
 }
 
 static void readR1(Option opt, UserReference &r, Base trim = 0, const Scripts &x = "")
@@ -1304,16 +1304,18 @@ void parse(int argc, char ** argv)
                         readVCFSom1(OPT_R_VCF, r, A_V_35());
                     }
                     
-                    const auto rb = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
-                    
-                    const auto ub = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
-
+                    const auto rb   = _p.opts.count(OPT_R_BED) ? _p.opts[OPT_R_BED] : System::script2File(A_V_37());
+                    const auto ub   = _p.opts.count(OPT_U_BED) ? _p.opts[OPT_U_BED] : rb;
                     const auto edge = _p.opts.count(OPT_EDGE) ? stoi(_p.opts[OPT_EDGE]) : DEFAULT_EDGE;
+                    
+                    /*
+                     * Exclude anything in BED that is not relevant in VCF
+                     */
                     
                     if (rb == ub)
                     {
-                        readR1(rb, r);
-                        readR2(rb, r, edge);                        
+                        readR1(rb, r,    0, &r.v1->vIDs);
+                        readR2(rb, r, edge, &r.v1->vIDs);
                         __Bed2Ref__ = BedTools::intersect(rb, ub, edge); // TODO: Fix this
                     }
                     else
@@ -1324,12 +1326,11 @@ void parse(int argc, char ** argv)
                         // Intersection with edge
                         const auto f2 = BedTools::intersect(rb, ub, edge);
 
-                        readR1(f1, r);
-                        readR2(f2, r);
+                        readR1(f1, r, 0, &r.v1->vIDs);
+                        readR2(f2, r, 0, &r.v1->vIDs);
                     }
 
                     readV2(OPT_R_VCF, r, 0, A_V_35());
-
                     break;
                 }
 
