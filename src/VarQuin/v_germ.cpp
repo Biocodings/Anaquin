@@ -32,18 +32,18 @@ inline std::string ctx2Str(Context x)
 
 static Scripts createROC(const FileName &f1, const FileName &f2)
 {
-    extern Scripts PlotVGROC();
+    extern Scripts PlotROCMutation();
     extern Path __output__;
     extern std::string __full_command__;
     
-    return (boost::format(PlotVGROC()) % date()
-                                       % __full_command__
-                                       % __output__
-                                       % f1
-                                       % f2
-                                       % "Qual"
-                                       % "'Mutation'"
-                                       % "'NULL'").str();
+    return (boost::format(PlotROCMutation()) % date()
+                                             % __full_command__
+                                             % __output__
+                                             % f1
+                                             % f2
+                                             % "Qual"
+                                             % "'Mutation'"
+                                             % "'NULL'").str();
 }
 
 EStats VGerm::analyzeE(const FileName &file, const Options &o)

@@ -26,12 +26,10 @@
 #include "resources/MetaAssembly.txt"
 #include "resources/MetaCoverage.txt"
 #include "resources/MetaSubsample.txt"
-#include "resources/VarMutationReport.Rnw"
 
 #include "resources/plotCNV.R"
 #include "resources/plotFold.R"
 #include "resources/plotTROC.R"
-#include "resources/plotVGROC.R"
 #include "resources/plotVCROC.R"
 #include "resources/plotTLODR.R"
 #include "resources/plotAllele.R"
@@ -39,6 +37,7 @@
 #include "resources/plotKAllele.R"
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
+#include "resources/plotROCMutation.R"
 
 typedef std::string Scripts;
 
@@ -75,8 +74,6 @@ Scripts VarMutation()   { return ToString(data_manuals_VarMutation_txt);  }
 Scripts VarPartition()  { return ToString(data_manuals_VarPartition_txt); }
 Scripts VarStructure()  { return ToString(data_manuals_VarStructure_txt); }
 
-Scripts VarMutationReport() { return ToString(data_VarMutationReport_Rnw); }
-
 Scripts MetaCoverage()  { return ToString(data_manuals_MetaCoverage_txt);   }
 Scripts MetaSubsample() { return ToString(data_manuals_MetaSubsample_txt);  }
 Scripts MetaAssembly()  { return ToString(data_manuals_MetaAssembly_txt);   }
@@ -84,6 +81,6 @@ Scripts MetaAssembly()  { return ToString(data_manuals_MetaAssembly_txt);   }
 Scripts PlotTROC()  { return ToString(src_r_plotTROC_R);  }
 Scripts PlotTLODR() { return ToString(src_r_plotTLODR_R); }
 
-Scripts PlotVGROC() { return ToString(src_r_plotVGROC_R); }
+Scripts PlotROCMutation() { return ToString(src_r_plotROCMutation_R); }
 Scripts PlotVCROC() { return ToString(src_r_plotVCROC_R); }
 
