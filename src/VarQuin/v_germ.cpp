@@ -472,7 +472,7 @@ static void writeDetected(const FileName &file,
                           const VGerm::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
     
     o.generate(file);
     o.writer->open(file);
@@ -486,6 +486,7 @@ static void writeDetected(const FileName &file,
                                            % "ExpFreq"
                                            % "ObsFreq"
                                            % "Qual"
+                                           % "Genotype"
                                            % "Context"
                                            % "Mutation").str());
 
@@ -494,7 +495,8 @@ static void writeDetected(const FileName &file,
         for (const auto &i : x)
         {
             auto sID = (i.var && i.alt && i.ref ? i.var->name : "-");
-            const auto ctx = sID != "-" ?  ctx2Str(r.findSeqVar1(i.var->key()).ctx) : "-";
+            const auto cx = sID != "-" ?  ctx2Str(r.findSeqVar1(i.var->key()).ctx) : "-";
+            const auto gt = sID != "-" ?  gt2str(r.findSeqVar1(i.var->key()).gt) : "-";
 
             o.writer->write((boost::format(format) % (i.rID.empty() ? "-" : i.rID)
                                                    % i.qry.cID
@@ -506,7 +508,8 @@ static void writeDetected(const FileName &file,
                                                    % (sID != "-" ? std::to_string(r.af(sID)) : "-")
                                                    % i.qry.allF
                                                    % toString(i.qry.qual)
-                                                   % ctx
+                                                   % gt
+                                                   % cx
                                                    % var2str(i.qry.type())).str());
         }
     };
