@@ -829,9 +829,20 @@ void parse(int argc, char ** argv)
             case OPT_R_IND:
             case OPT_R_CON:
             case OPT_READS:
-            case OPT_FILTER:
             case OPT_THREAD:
             case OPT_UN_CALIB: { _p.opts[opt] = val; break; }
+
+            case OPT_FILTER:
+            {
+                _p.opts[opt] = val;
+                
+                if (val != "pass" && val != "all")
+                {
+                    throw InvalidValueException("-filter", val);
+                }
+
+                break;
+            }
 
             case OPT_MIXTURE:
             {
