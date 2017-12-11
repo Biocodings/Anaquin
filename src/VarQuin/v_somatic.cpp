@@ -862,16 +862,16 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["uBed"]   = (UBEDFromUser() ? Bed1Ref() : "-");
     x["nSam"]   = E3(); // Number of sample variants
     x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
-    x["allN"]   = D(r.nType1(Variation::SNP) +
+    x["N"]      = D(r.nType1(Variation::SNP) +
                     r.nType1(Variation::Insertion) +
                     r.nType1(Variation::Deletion));
-    x["allTP"]  = D(ss.oc.tp());
-    x["allFP"]  = D(ss.oc.fp());
-    x["allFN"]  = D(ss.oc.fn());
-    x["allSN"]  = D(ss.oc.sn());
-    x["allPC"]  = D(ss.oc.pc());
-    x["allF1"]  = D(ss.oc.F1());
-    x["allFDR"] = D(1-ss.oc.pc());
+    x["TP"]     = D(ss.oc.tp());
+    x["FP"]     = D(ss.oc.fp());
+    x["FN"]     = D(ss.oc.fn());
+    x["SN"]     = D(ss.oc.sn());
+    x["PC"]     = D(ss.oc.pc());
+    x["F1"]     = D(ss.oc.F1());
+    x["FDR"]    = D(1-ss.oc.pc());
     x["snpN"]   = D(r.nType1(Variation::SNP));
     x["snpTP"]  = D(snp.tp());
     x["snpFP"]  = D(snp.fp());
@@ -888,9 +888,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["indPC"]  = D(ind.pc());
     x["indF1"]  = D(ind.F1());
     x["indFDR"] = D(1-ind.pc());
-    x["allM"]   = D(all.m);
-    x["allR2"]  = D(all.R2);
-    x["allSn"]  = D(ss.oa.limit.abund);
+    x["M"]      = D(all.m);
+    x["R2"]     = D(all.R2);
+    x["Sn"]     = D(ss.oa.limit.abund);
     x["cancer"] = CSN(Context::Cancer);
 
     return x;
@@ -970,14 +970,14 @@ static void writeSummary(const FileName &file,
                                             % x["inputS"] // 4
                                             % x["nSam"]   // 5
                                             % x["nSeqs"]  // 6
-                                            % x["allN"]   // 7
-                                            % x["allTP"]  // 8
-                                            % x["allFP"]  // 9
-                                            % x["allFN"]  // 10
-                                            % x["allSN"]  // 11
-                                            % x["allPC"]  // 12
-                                            % x["allF1"]  // 13
-                                            % x["allFDR"] // 14
+                                            % x["N"]      // 7
+                                            % x["TP"]     // 8
+                                            % x["FP"]     // 9
+                                            % x["FN"]     // 10
+                                            % x["SN"]     // 11
+                                            % x["PC"]     // 12
+                                            % x["F1"]     // 13
+                                            % x["FDR"]    // 14
                                             % x["snpN"]   // 15
                                             % x["snpTP"]  // 16
                                             % x["snpFP"]  // 17
