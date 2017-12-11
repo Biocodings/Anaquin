@@ -821,6 +821,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto &r = Standard::instance().r_var;
     
     extern bool VCFFromUser();
+    extern bool RBEDFromUser();
+    extern bool UBEDFromUser();
+    
     extern FileName VCFRef();
     extern FileName Bed1Ref();
 
@@ -854,8 +857,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["lRegs"]  = D(r.lRegs());
     x["vRef"]   = (VCFFromUser() ? VCFRef() : "-");
     x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
-    x["inputE"] = (endo.empty() ? "-" : endo);
-    x["inputS"] = seqs;
+    x["uSam"]   = (endo.empty() ? "-" : endo);
+    x["uSeq"]   = seqs;
+    x["uBed"]   = (UBEDFromUser() ? Bed1Ref() : "-");
     x["nSam"]   = E3(); // Number of sample variants
     x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
     x["allN"]   = D(r.nType1(Variation::SNP) +
