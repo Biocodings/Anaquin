@@ -853,8 +853,8 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto all = ss.oa.linear();
     
     x["type"]   = "somatic";
-    x["nRegs"]  = D(r.nRegs());
-    x["lRegs"]  = D(r.lRegs());
+    x["NR"]     = D(r.nRegs());
+    x["LR"]     = D(r.lRegs());
     x["vRef"]   = (VCFFromUser() ? VCFRef() : "-");
     x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
     x["uSam"]   = (endo.empty() ? "-" : endo);
