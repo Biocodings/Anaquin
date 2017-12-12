@@ -35,19 +35,16 @@ inline std::string ctx2Str(Context x)
 static void writeAllele(const VSomatic::Options &o)
 {
     extern Scripts PlotAllele();
-    
+    extern Path __output__;
+    extern std::string __full_command__;
+
     o.generate("VarMutation_ladder.R");
     o.writer->open("VarMutation_ladder.R");
-    o.writer->write(RWriter::createRLinear("VarMutation_sequins.tsv",
-                                           o.work,
-                                           "Tumor Sample",
-                                           "Expected Allele Frequency (log2)",
-                                           "Measured Allele Frequency (log2)",
-                                           "log2(data$ExpFreq)",
-                                           "log2(data$ObsFreq)",
-                                           "input",
-                                           false,
-                                           PlotAllele()));
+    o.writer->write((boost::format(PlotAllele()) % date()
+                                                 % __full_command__
+                                                 % __output__
+                                                 % "VarMutation_sequins.tsv"
+                                                 % "VarMutation_detected.tsv").str());
     o.writer->close();
 }
 
