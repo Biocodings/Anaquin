@@ -238,7 +238,6 @@ VCFLadder Standard::addVCF(const Reader &r, const std::set<SequinVariant::Contex
         auto longVar = [&]()
         {
             SequinVariant s;
-            
             s.gt = Genotype::Heterzygous;
             
             v.vIDs.insert(x.name);

@@ -9,6 +9,37 @@ typedef VGerm::SStats SStats;
 typedef VGerm::Options Options;
 typedef SequinVariant::Context Context;
 
+static auto __ctx__ = std::set<Context>
+{
+    Context::LowGC,
+    Context::HighGC,
+    Context::Common,
+    Context::LongHompo,
+    Context::VeryLowGC,
+    Context::VeryHighGC,
+    Context::ShortDinRep,
+    Context::LongDinRep,
+    Context::ShortHompo,
+    Context::LongQuadRep,
+    Context::LongTrinRep,
+    Context::ShortQuadRep,
+    Context::ShortTrinRep,
+    Context::Cancer,
+};
+
+static auto __gts__ = std::set<Genotype>
+{
+    Genotype::Homozygous,
+    Genotype::Heterzygous
+};
+
+static auto __muts__ = std::set<Variation>
+{
+    Variation::SNP,
+    Variation::Deletion,
+    Variation::Insertion,
+};
+
 inline std::string ctx2Str(Context x)
 {
     switch (x)
@@ -53,14 +84,10 @@ EStats VGerm::analyzeE(const FileName &file, const Options &o)
     
     EStats stats;
 
-    stats.g2c[Genotype::Homozygous];
-    stats.g2c[Genotype::Heterzygous];
-    stats.v2c[Variation::SNP];
-    stats.v2c[Variation::Deletion];
-    stats.v2c[Variation::Inversion];
-    stats.v2c[Variation::Insertion];
-    stats.v2c[Variation::Duplication];
-    
+    for (auto &i : __gts__)  { stats.g2c[i]; }
+    for (auto &i : __ctx__)  { stats.c2c[i]; }
+    for (auto &i : __muts__) { stats.v2c[i]; }
+
     if (!file.empty())
     {
         auto w = VCFWriter();
@@ -78,27 +105,30 @@ EStats VGerm::analyzeE(const FileName &file, const Options &o)
             {
                 w.write(x.hdr, x.line);
 
-                auto t = x;
-                t.name = d->name();
-                stats.g2c[t.gt]++;
-                stats.v2c[t.type()]++;
-                stats.vs.insert(t);
-                
-                /*
-                 * Can we extract information for this variant from sequin regions?
-                 */
+                // Somatic?
+                if (!r.findV2(x.cID, x.l))
+                {
+                    stats.sSom++;
+                    return;
+                }
 
                 const auto sv = r.findVar(d->name());
                 A_ASSERT(sv);
+
+                auto t = x;
+                t.name = d->name();
                 
-                if (sv->isGCLow() || sv->isGCHigh())
-                {
-                    stats.gc++;
-                }
-                else if (sv->isRepeat())
-                {
-                    stats.rep++;
-                }
+                stats.g2c[t.gt]++;
+                stats.v2c[t.type()]++;
+                stats.c2c[sv->ctx]++;
+                stats.vs.insert(t);
+                
+                if      (sv->isLowGC())       { stats.lGC++;  }
+                else if (sv->isHighGC())      { stats.hGC++;  }
+                else if (sv->isVLowGC())      { stats.vlGC++; }
+                else if (sv->isVHighGC())     { stats.vhGC++; }
+                else if (sv->isShortRepeat()) { stats.sRep++; }
+                else if (sv->isLongRepeat())  { stats.lRep++; }
             }
         });
 
@@ -117,39 +147,9 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     
     typedef SequinVariant::Context Context;
     
-    auto gts = std::set<Genotype>
-    {
-        Genotype::Homozygous,
-        Genotype::Heterzygous
-    };
-
-    auto muts = std::set<Variation>
-    {
-        Variation::SNP,
-        Variation::Deletion,
-        Variation::Insertion,
-    };
-    
-    auto ctx = std::set<Context>
-    {
-        Context::LowGC,
-        Context::HighGC,
-        Context::Common,
-        Context::LongHompo,
-        Context::VeryLowGC,
-        Context::VeryHighGC,
-        Context::ShortDinRep,
-        Context::LongDinRep,
-        Context::ShortHompo,
-        Context::LongQuadRep,
-        Context::LongTrinRep,
-        Context::ShortQuadRep,
-        Context::ShortTrinRep,
-    };
-
-    for (auto &i : gts)  { stats.g2c[i]; }
-    for (auto &i : ctx)  { stats.c2c[i]; }
-    for (auto &i : muts) { stats.v2c[i]; }
+    for (auto &i : __gts__)  { stats.g2c[i]; }
+    for (auto &i : __ctx__)  { stats.c2c[i]; }
+    for (auto &i : __muts__) { stats.v2c[i]; }
     
     o.analyze(file);
 
@@ -247,13 +247,16 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
         }
         else
         {
-            // Ignore anything that is somatic
+            // Somatic?
             if (!r.findV2(x.cID, x.l))
             {
                 wFP.write(x.hdr, x.line);
                 
                 // FP because the variant is not found in the reference
                 stats.fps.push_back(m);
+                
+                // Anything somatic is a false position
+                stats.c2c.at(Context::Cancer).fp()++;
             }
         }
     });
@@ -289,18 +292,13 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
             // Performance by genotype
             stats.g2c[sv.gt].tp()++;
             
-            // Performance by GC
-            if (sv.isGCLow() || sv.isGCHigh())
-            {
-                stats.gc2c.tp()++;
-            }
-            
-            // Performance by repeats
-            if (sv.isRepeat())
-            {
-                stats.r2c.tp()++;
-            }
-            
+            if      (sv.isLowGC())       { stats.lGC2c.tp()++;  }
+            else if (sv.isHighGC())      { stats.hGC2c.tp()++;  }
+            else if (sv.isVLowGC())      { stats.vlGC2c.tp()++; }
+            else if (sv.isVHighGC())     { stats.vhGC2c.tp()++; }
+            else if (sv.isShortRepeat()) { stats.sr2c.tp()++;   }
+            else if (sv.isLongRepeat())  { stats.lr2c.tp()++;   }
+
             // Performance by GC context
             stats.c2c[sv.ctx].tp()++;
             
@@ -327,7 +325,7 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
     forTP();
     forFP();
 
-    for (auto &mut : muts)
+    for (auto &mut : __muts__)
     {
         stats.v2c[mut].nr() = r.nType1(mut);
         stats.v2c[mut].nq() = stats.v2c[mut].tp() + stats.v2c[mut].fp();
@@ -341,37 +339,51 @@ VGerm::SStats VGerm::analyzeS(const FileName &file, const Options &o)
      * Performance by context
      */
     
-    for (auto &i : ctx)
+    for (auto &i : __ctx__)
     {
-        stats.c2c[i].nr() = r.nCtx1(i);
-        stats.c2c[i].nq() = stats.c2c[i].tp() + stats.c2c[i].fp();
-        stats.c2c[i].fn() = stats.c2c[i].nr() - stats.c2c[i].tp();
+        if (i == Context::Cancer)
+        {
+            stats.c2c[i].nq() = stats.c2c[i].fp();
+            stats.c2c[i].nr() = stats.c2c[i].tp() = stats.c2c[i].fn() = 0;
+        }
+        else
+        {
+            stats.c2c[i].nr() = r.nCtx1(i);
+            stats.c2c[i].nq() = stats.c2c[i].tp() + stats.c2c[i].fp();
+            stats.c2c[i].fn() = stats.c2c[i].nr() - stats.c2c[i].tp();
+        }
     }
     
     /*
      * Performance by genotype
      */
     
-    for (auto &i : gts)
+    for (auto &i : __gts__)
     {
         stats.g2c[i].nr() = r.nGeno1(i);
         stats.g2c[i].nq() = stats.g2c[i].tp() + stats.g2c[i].fp();
         stats.g2c[i].fn() = stats.g2c[i].nr() - stats.g2c[i].tp();
     }
     
+    #define PERFORM(x, y) { x.nr() = y; x.fn() = x.nr() - x.tp(); }
+    
     /*
      * Performance by repeats
      */
     
-    stats.r2c.nr() = r.nRep();
-    stats.r2c.fn() = stats.r2c.nr() - stats.r2c.tp();
+    stats.sr2c.nr() = r.nSRep();
+    stats.sr2c.fn() = stats.sr2c.nr() - stats.sr2c.tp();
+    stats.lr2c.nr() = r.nLRep();
+    stats.lr2c.fn() = stats.lr2c.nr() - stats.lr2c.tp();
 
     /*
      * Performance by GC contents
      */
     
-    stats.gc2c.nr() = r.nGCHigh() + r.nGCLow();
-    stats.gc2c.fn() = stats.gc2c.nr() - stats.gc2c.tp();
+    PERFORM(stats.lGC2c,  r.nLowGC())
+    PERFORM(stats.hGC2c,  r.nHighGC())
+    PERFORM(stats.vlGC2c, r.nVLowGC())
+    PERFORM(stats.vhGC2c, r.nVHighGC())
 
     A_ASSERT(stats.oc.nr() >= stats.oc.fn());
  
@@ -575,9 +587,9 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     std::map<std::string, std::string> x;
     
     #define D(x) (isnan(x) ? "-" : std::to_string(x))
-    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
-    #define CSN(x) D(ss.c2c.at(x).sn())
+    #define SN(x) D(ss.c2c.at(x).sn())
     
+    const auto &com = ss.c2c.at(Context::Common);
     const auto &snp = ss.v2c.at(Variation::SNP);
     const auto &del = ss.v2c.at(Variation::Deletion);
     const auto &ins = ss.v2c.at(Variation::Insertion);
@@ -591,92 +603,182 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     const auto c_nDel = del.nq();
     const auto c_nIns = ins.nq();
 
-    x["mode"]      = "germline";
-    x["NR"]        = D(r.nRegs());
-    x["LR"]        = D(r.lRegs());
-    x["rVCF"]      = (VCFFromUser() ? VCFRef()  : "-");
-    x["rBED"]      = (RBEDFromUser() ? Bed1Ref() : "-");
-    x["uSam"]      = (endo.empty() ? "-" : endo);
-    x["uSeq"]      = seqs;
-    x["uBed"]      = (UBEDFromUser() ? Bed1Ref() : "-");
-    x["nSam"]      = E3(); // Number of sample variants
-    x["nSeq"]      = D(c_nSNP + c_nDel + c_nIns);
-    x["exclude"]   = o.filter == VCFFilter::Passed ? "True" : "False";    
-    x["N"]         = D(r.nType1(Variation::SNP)       +
-                       r.nType1(Variation::Insertion) +
-                       r.nType1(Variation::Deletion));
-    x["TP"]        = D(ss.oc.tp());
-    x["FP"]        = D(ss.oc.fp());
-    x["FN"]        = D(ss.oc.fn());
-    x["SN"]        = D(ss.oc.sn());
-    x["PC"]        = D(ss.oc.pc());
-    x["F1"]        = D(ss.oc.F1());
-    x["FDR"]       = D(1-ss.oc.pc());
-    x["snpN"]      = D(r.nType1(Variation::SNP));
-    x["snpTP"]     = D(snp.tp());
-    x["snpFP"]     = D(snp.fp());
-    x["snpFN"]     = D(snp.fn());
-    x["snpSN"]     = D(snp.sn());
-    x["snpPC"]     = D(snp.pc());
-    x["snpF1"]     = D(snp.F1());
-    x["snpFDR"]    = D(1-snp.pc());
-    x["indN"]      = D(r.nType1(Variation::Insertion) + r.nType1(Variation::Deletion));
-    x["indTP"]     = D(ind.tp());
-    x["indFP"]     = D(ind.fp());
-    x["indFN"]     = D(ind.fn());
-    x["indSN"]     = D(ind.sn());
-    x["indPC"]     = D(ind.pc());
-    x["indF1"]     = D(ind.F1());
-    x["indFDR"]    = D(1-ind.pc());
-    x["GCN"]       = D(ss.gc2c.nr());
-    x["GCTP"]      = D(ss.gc2c.tp());
-    x["GCFN"]      = D(ss.gc2c.fn());
-    x["GCSN"]      = D(ss.gc2c.sn());
-    x["RepN"]      = D(ss.r2c.nr());
-    x["RepTP"]     = D(ss.r2c.tp());
-    x["RepFN"]     = D(ss.r2c.fn());
-    x["RepSN"]     = D(ss.r2c.sn());
-    x["homN"]      = D(r.nGeno1(Genotype::Homozygous));
-    x["homTP"]     = D(hom.tp());
-    x["homFP"]     = D(hom.fp());
-    x["homFN"]     = D(hom.fn());
-    x["homSN"]     = D(hom.sn());
-    x["homPC"]     = D(hom.pc());
-    x["homF1"]     = D(hom.F1());
-    x["homFDR"]    = D(1-hom.pc());
-    x["hetN"]      = D(r.nGeno1(Genotype::Heterzygous));
-    x["hetTP"]     = D(het.tp());
-    x["hetFP"]     = D(het.fp());
-    x["hetFN"]     = D(het.fn());
-    x["hetSN"]     = D(het.sn());
-    x["hetPC"]     = D(het.pc());
-    x["hetF1"]     = D(het.F1());
-    x["hetFDR"]    = D(1-het.pc());
-    x["common"]    = CSN(Context::Common);
-    x["lowGC"]     = CSN(Context::LowGC);
-    x["highGC"]    = CSN(Context::HighGC);
-    x["longHom"]   = CSN(Context::LongHompo);
-    x["vLowGC"]    = CSN(Context::VeryLowGC);
-    x["vHighGC"]   = CSN(Context::VeryHighGC);
-    x["shortDR"]   = CSN(Context::ShortDinRep);
-    x["longDR"]    = CSN(Context::LongDinRep);
-    x["shortHom"]  = CSN(Context::ShortHompo);
-    x["longQRep"]  = CSN(Context::LongQuadRep);
-    x["longTRep"]  = CSN(Context::LongTrinRep);
-    x["shortQRep"] = CSN(Context::ShortQuadRep);
-    x["shortTRep"] = CSN(Context::ShortTrinRep);
+    x["nr"] = D(r.nRegs());
+    x["lr"] = D(r.r2()->len());
+
+    x["rVCF"] = (VCFFromUser() ? VCFRef()  : "-");
+    x["rBED"] = (RBEDFromUser() ? Bed1Ref() : "-");
+    x["uSam"] = (endo.empty() ? "-" : endo);
+    x["uSeq"] = seqs;
+    x["uBed"] = (UBEDFromUser() ? Bed1Ref() : "-");
+    x["nSam"] = (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)));
+    x["nSeq"]       = D(c_nSNP + c_nDel + c_nIns);
+    x["exclude"] = o.filter == VCFFilter::Passed ? "True" : "False";
+    x["N"]       = D(r.nType1(Variation::SNP)       +
+                     r.nType1(Variation::Insertion) +
+                     r.nType1(Variation::Deletion));
+    x["TP"]  = D(ss.oc.tp());
+    x["FP"]  = D(ss.oc.fp());
+    x["FN"]  = D(ss.oc.fn());
+    x["SN"]  = D(ss.oc.sn());
+    x["PC"]  = D(ss.oc.pc());
+    x["F1"]  = D(ss.oc.F1());
+    x["FDR"] = D(1-ss.oc.pc());
     
+    /*
+     * Metrics for GC contents
+     */
+    
+    x["lGCN"]    = D(ss.lGC2c.nr());
+    x["lGCTP"]   = D(ss.lGC2c.tp());
+    x["lGCFP"]   = D(ss.lGC2c.fp());
+    x["lGCFN"]   = D(ss.lGC2c.fn());
+    x["lGCSN"]   = D(ss.lGC2c.sn());
+    x["vLGCN"]   = D(ss.vlGC2c.nr());
+    x["vLGCTP"]  = D(ss.vlGC2c.tp());
+    x["vLGCFP"]  = D(ss.vlGC2c.fp());
+    x["vLGCFN"]  = D(ss.vlGC2c.fn());
+    x["vLGCSN"]  = D(ss.vlGC2c.sn());
+    x["hGCN"]    = D(ss.hGC2c.nr());
+    x["hGCTP"]   = D(ss.hGC2c.tp());
+    x["hGCFP"]   = D(ss.hGC2c.fp());
+    x["hGCFN"]   = D(ss.hGC2c.fn());
+    x["hGCSN"]   = D(ss.hGC2c.sn());
+    x["vHGCN"]   = D(ss.vhGC2c.nr());
+    x["vHGCTP"]  = D(ss.vhGC2c.tp());
+    x["vHGCFP"]  = D(ss.vhGC2c.fp());
+    x["vHGCFN"]  = D(ss.vhGC2c.fn());
+    x["vHGCSN"]  = D(ss.vhGC2c.sn());
+    x["lGCLR"]   = D(r.len(Context::LowGC));
+    x["hGCLR"]   = D(r.len(Context::HighGC));
+    x["vLGCLR"]  = D(r.len(Context::VeryLowGC));
+    x["vHGCLR"]  = D(r.len(Context::VeryHighGC));
+    
+    /*
+     * Metrics for short repeats
+     */
+    
+    x["SRepN"]  = D(ss.sr2c.nr());
+    x["SRepTP"] = D(ss.sr2c.tp());
+    x["SRepFN"] = D(ss.sr2c.fn());
+    x["SRepSN"] = D(ss.sr2c.sn());
+    
+    /*
+     * Metrics for long repeats
+     */
+    
+    x["LRepN"]  = D(ss.lr2c.nr());
+    x["LRepTP"] = D(ss.lr2c.tp());
+    x["LRepFN"] = D(ss.lr2c.fn());
+    x["LRepSN"] = D(ss.lr2c.sn());
+    
+    /*
+     * Metrics for SNP variants
+     */
+
+    x["snpTP"]  = D(snp.tp());
+    x["snpFP"]  = D(snp.fp());
+    x["snpFN"]  = D(snp.fn());
+    x["snpSN"]  = D(snp.sn());
+    x["snpPC"]  = D(snp.pc());
+    x["snpF1"]  = D(snp.F1());
+    x["snpFDR"] = D(1-snp.pc());
+    x["snpLR"]  = D(r.len(Variation::SNP));
+    
+    /*
+     * Metrics for indel variants
+     */
+
+    x["indTP"]  = D(ind.tp());
+    x["indFP"]  = D(ind.fp());
+    x["indFN"]  = D(ind.fn());
+    x["indSN"]  = D(ind.sn());
+    x["indPC"]  = D(ind.pc());
+    x["indF1"]  = D(ind.F1());
+    x["indFDR"] = D(1-ind.pc());
+    x["indLR"]  = D(r.len(Variation::Insertion) + r.len(Variation::Deletion));
+
+    /*
+     * Metrics for homozygous variants
+     */
+
+    x["homTP"]  = D(hom.tp());
+    x["homFP"]  = D(hom.fp());
+    x["homFN"]  = D(hom.fn());
+    x["homSN"]  = D(hom.sn());
+    x["homPC"]  = D(hom.pc());
+    x["homF1"]  = D(hom.F1());
+    x["homFDR"] = D(1-hom.pc());
+    x["homLR"]  = D(r.len(Genotype::Homozygous));
+
+    /*
+     * Metrics for heterzygous variants
+     */
+
+    x["hetTP"]  = D(het.tp());
+    x["hetFP"]  = D(het.fp());
+    x["hetFN"]  = D(het.fn());
+    x["hetSN"]  = D(het.sn());
+    x["hetPC"]  = D(het.pc());
+    x["hetF1"]  = D(het.F1());
+    x["hetFDR"] = D(1-het.pc());
+    x["hetLR"]  = D(r.len(Genotype::Heterzygous));
+
+    /*
+     * Metrics for common variants
+     */
+
+    x["comTP"]  = D(com.tp());
+    x["comFP"]  = D(com.fp());
+    x["comFN"]  = D(com.fn());
+    x["comSN"]  = D(com.sn());
+    x["comPC"]  = D(com.pc());
+    x["comF1"]  = D(com.F1());
+    x["comFDR"] = D(1-com.pc());
+    x["comLR"]  = D(r.len(Context::Common));
+
+    /*
+     * Somatic metrics
+     */
+    
+    x["samSom"] = D(es.sSom);
+    x["somFP"]  = D(ss.c2c.at(Context::Common).fp());
+
+    /*
+     * Other metrics
+     */
+    
+    x["longHomSN"]   = SN(Context::LongHompo);
+    x["shortDRSN"]   = SN(Context::ShortDinRep);
+    x["longDRSN"]    = SN(Context::LongDinRep);
+    x["shortHomSN"]  = SN(Context::ShortHompo);
+    x["longQRepSN"]  = SN(Context::LongQuadRep);
+    x["longTRepSN"]  = SN(Context::LongTrinRep);
+    x["shortQRepSN"] = SN(Context::ShortQuadRep);
+    x["shortTRepSN"] = SN(Context::ShortTrinRep);
+    x["sDRLR"]       = D(r.len(Context::ShortDinRep));
+    x["lDRLR"]       = D(r.len(Context::LongDinRep));
+    x["lQRepLR"]     = D(r.len(Context::LongQuadRep));
+    x["lTRepLR"]     = D(r.len(Context::LongTrinRep));
+    x["sQRepLR"]     = D(r.len(Context::ShortQuadRep));
+    x["sTRepLR"]     = D(r.len(Context::ShortTrinRep));
+    x["sHomLR"]      = D(r.len(Context::ShortHompo));
+    x["lHomLR"]      = D(r.len(Context::LongHompo));
+
     /*
      * Endogenous variants
      */
     
-    x["samGC"]  = D(es.gc);  // Number of GC Rich/Poor
-    x["samRep"] = D(es.rep); // Number of simple repeats
-    x["samN"]   = D(es.vs.size());
-    x["samSNP"] = D(es.v2c.at(Variation::SNP));
-    x["samInd"] = D(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion));
-    x["samHom"] = D(es.g2c.at(Genotype::Homozygous));
-    x["samHet"] = D(es.g2c.at(Genotype::Heterzygous));
+    x["samLGC"]  = D(es.lGC);
+    x["samHGC"]  = D(es.hGC);
+    x["samSRep"] = D(es.sRep);
+    x["samLRep"] = D(es.lRep);
+    x["samN"]    = D(es.vs.size());
+    x["samSNP"]  = D(es.v2c.at(Variation::SNP));
+    x["samInd"]  = D(es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion));
+    x["samHom"]  = D(es.g2c.at(Genotype::Homozygous));
+    x["samHet"]  = D(es.g2c.at(Genotype::Heterzygous));
+    x["samCom"]  = D(es.c2c.at(Context::Common));
 
     return x;
 }
@@ -763,65 +865,65 @@ static void writeSummary(const FileName &file,
 
         o.generate(file);
         o.writer->open(file);
-        o.writer->write((boost::format(summary) % x["vRef"]      // 1
-                                                % x["bRef"]      // 2
-                                                % x["inputE"]    // 3
-                                                % x["inputS"]    // 4
-                                                % x["nSam"]      // 5
-                                                % x["nSeqs"]     // 6
-                                                % x["N"]         // 7
-                                                % x["TP"]        // 8
-                                                % x["FP"]        // 9
-                                                % x["FN"]        // 10
-                                                % x["SN"]        // 11
-                                                % x["PC"]        // 12
-                                                % x["F1"]        // 13
-                                                % x["FDR"]       // 14
-                                                % x["snpN"]      // 15
-                                                % x["snpTP"]     // 16
-                                                % x["snpFP"]     // 17
-                                                % x["snpFN"]     // 18
-                                                % x["snpSN"]     // 19
-                                                % x["snpPC"]     // 20
-                                                % x["snpF1"]     // 21
-                                                % x["snpFDR"]    // 22
-                                                % x["indN"]      // 23
-                                                % x["indTP"]     // 24
-                                                % x["indFP"]     // 25
-                                                % x["indFN"]     // 26
-                                                % x["indSN"]     // 27
-                                                % x["indPC"]     // 28
-                                                % x["indF1"]     // 29
-                                                % x["indFDR"]    // 30
-                                                % x["homN"]      // 31
-                                                % x["homTP"]     // 32
-                                                % x["homFP"]     // 33
-                                                % x["homFN"]     // 34
-                                                % x["homSN"]     // 35
-                                                % x["homPC"]     // 36
-                                                % x["homF1"]     // 37
-                                                % x["homFDR"]    // 38
-                                                % x["hetN"]      // 39
-                                                % x["hetTP"]     // 40
-                                                % x["hetFP"]     // 41
-                                                % x["hetFN"]     // 42
-                                                % x["hetSN"]     // 43
-                                                % x["hetPC"]     // 44
-                                                % x["hetF1"]     // 45
-                                                % x["hetFDR"]    // 46
-                                                % x["common"]    // 47
-                                                % x["lowGC"]     // 48
-                                                % x["highGC"]    // 49
-                                                % x["longHom"]   // 50
-                                                % x["vLowGC"]    // 51
-                                                % x["vHighGC"]   // 52
-                                                % x["shortDR"]   // 53
-                                                % x["longDR"]    // 54
-                                                % x["shortHom"]  // 55
-                                                % x["longQRep"]  // 56
-                                                % x["longTRep"]  // 57
-                                                % x["shortQRep"] // 58
-                                                % x["shortTRep"] // 59
+        o.writer->write((boost::format(summary) % x["rVCF"]        // 1
+                                                % x["rBED"]        // 2
+                                                % x["uSam"]        // 3
+                                                % x["uSeq"]        // 4
+                                                % x["nSam"]        // 5
+                                                % x["nSeqs"]       // 6
+                                                % x["N"]           // 7
+                                                % x["TP"]          // 8
+                                                % x["FP"]          // 9
+                                                % x["FN"]          // 10
+                                                % x["SN"]          // 11
+                                                % x["PC"]          // 12
+                                                % x["F1"]          // 13
+                                                % x["FDR"]         // 14
+                                                % (stoi(x["snpTP"]) + stoi(x["snpFN"])) // 15
+                                                % x["snpTP"]       // 16
+                                                % x["snpFP"]       // 17
+                                                % x["snpFN"]       // 18
+                                                % x["snpSN"]       // 19
+                                                % x["snpPC"]       // 20
+                                                % x["snpF1"]       // 21
+                                                % x["snpFDR"]      // 22
+                                                % (stoi(x["indTP"]) + stoi(x["indFN"])) // 23
+                                                % x["indTP"]       // 24
+                                                % x["indFP"]       // 25
+                                                % x["indFN"]       // 26
+                                                % x["indSN"]       // 27
+                                                % x["indPC"]       // 28
+                                                % x["indF1"]       // 29
+                                                % x["indFDR"]      // 30
+                                                % x["homN"]        // 31
+                                                % x["homTP"]       // 32
+                                                % x["homFP"]       // 33
+                                                % x["homFN"]       // 34
+                                                % x["homSN"]       // 35
+                                                % x["homPC"]       // 36
+                                                % x["homF1"]       // 37
+                                                % x["homFDR"]      // 38
+                                                % x["hetN"]        // 39
+                                                % x["hetTP"]       // 40
+                                                % x["hetFP"]       // 41
+                                                % x["hetFN"]       // 42
+                                                % x["hetSN"]       // 43
+                                                % x["hetPC"]       // 44
+                                                % x["hetF1"]       // 45
+                                                % x["hetFDR"]      // 46
+                                                % x["comSN"]       // 47
+                                                % x["lGCSN"]       // 48
+                                                % x["hGCSN"]       // 49
+                                                % x["longHomSN"]   // 50
+                                                % x["vlGCSN"]      // 51
+                                                % x["vhGCSN"]      // 52
+                                                % x["shortDRSN"]   // 53
+                                                % x["longDRSN"]    // 54
+                                                % x["shortHomSN"]  // 55
+                                                % x["longQRepSN"]  // 56
+                                                % x["longTRepSN"]  // 57
+                                                % x["shortQRepSN"] // 58
+                                                % x["shortTRepSN"] // 59
                          ).str());
     o.writer->close();
 }

@@ -1,7 +1,6 @@
 #ifndef REFERENCE_HPP
 #define REFERENCE_HPP
 
-#include "data/hist.hpp"
 #include "data/bData.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
@@ -31,13 +30,10 @@ namespace Anaquin
             Cancer,
         } ctx;
         
-        inline bool isRepeat() const
+        inline bool isShortRepeat() const
         {
             switch (ctx)
             {
-                case Context::LongDinRep:
-                case Context::LongQuadRep:
-                case Context::LongTrinRep:
                 case Context::ShortDinRep:
                 case Context::ShortQuadRep:
                 case Context::ShortTrinRep: { return true;  }
@@ -45,15 +41,21 @@ namespace Anaquin
             }
         }
 
-        inline bool isGCHigh() const
+        inline bool isLongRepeat() const
         {
-            return ctx == Context::HighGC || ctx == Context::VeryHighGC;
+            switch (ctx)
+            {
+                case Context::LongDinRep:
+                case Context::LongQuadRep:
+                case Context::LongTrinRep: { return true;  }
+                default:                   { return false; }
+            }
         }
 
-        inline bool isGCLow() const
-        {
-            return ctx == Context::LowGC || ctx == Context::VeryLowGC;
-        }
+        inline bool isLowGC()   const { return ctx == Context::LowGC;      }
+        inline bool isHighGC()  const { return ctx == Context::HighGC;     }
+        inline bool isVLowGC()  const { return ctx == Context::VeryLowGC;  }
+        inline bool isVHighGC() const { return ctx == Context::VeryHighGC; }
 
         enum class GCContents
         {
@@ -144,7 +146,6 @@ namespace Anaquin
             inline SequinIDs seqs()   const { return _seqs; }
             inline SequinIDs seqsL1() const { return _l1->seqs; }
             inline SequinIDs seqsL2() const { return _l2->seqs; }
-            inline SequinIDs seqsL3() const { return _l3->seqs; }
 
             inline Name t1(const Name &x) const { return _t1->translate(x); }
             inline Name t2(const Name &x) const { return _t2->translate(x); }
@@ -181,14 +182,10 @@ namespace Anaquin
 
             inline Chr2DInters regs1()  const { return _r1->inters();  }
             inline Chr2DInters regs2()  const { return _r2->inters();  }
-            inline Chr2MInters mRegs1() const { return _r1->minters(); }
-            inline Chr2MInters mRegs2() const { return _r2->minters(); }
-        
+
             inline std::shared_ptr<VCFLadder> vcf1() const { return _v1; }
-            inline std::shared_ptr<VCFLadder> vcf2() const { return _v2; }
         
             inline Counts nRegs() const { return _r1->count();  }
-            inline Counts lRegs() const { return _r1->length(); }
         
             inline MergedIntervals<> mInters(const ChrID &cID) const { return _r1->minters(cID); }
             inline Chr2MInters mInters() const { return _r1->minters(); }
@@ -408,22 +405,31 @@ namespace Anaquin
 
             VarRef();
 
-            Counts nRep()    const;
-            Counts nGCLow()  const;
-            Counts nGCHigh() const;
-        
+            // Length of all sequins regions matching the genotype
+            Base len(Genotype) const;
+
+            // Length of all sequin regions matching the variation
+            Base len(Variation) const;
+
+            // Length of all sequins regions matching the context
+            Base len(SequinVariant::Context) const;
+
+            Counts nSRep()    const;
+            Counts nLRep()    const;
+            Counts nLowGC()   const;
+            Counts nHighGC()  const;
+            Counts nVLowGC()  const;
+            Counts nVHighGC() const;
+
             Counts nGeno1(Genotype)  const;
             Counts nType1(Variation) const;
             Counts nCtx1(SequinVariant::Context) const;
 
             SequinVariant::Context ctx1(const Variant &) const;
-            SequinVariant::Context ctx2(const Variant &) const;
         
             std::set<Variant> v1() const;
-            std::set<Variant> v2() const;
 
             const SequinVariant &findSeqVar1(long) const;
-            const SequinVariant &findSeqVar2(long) const;
         
             const SequinVariant *findVar(const SequinID &) const;
         
@@ -437,12 +443,11 @@ namespace Anaquin
         private:
 
             struct VarRefImpl;
-
             std::shared_ptr<VarRefImpl> _impl;
     };
     
     /*
-     * -------------------- Transcriptome Referenceb --------------------
+     * -------------------- Transcriptome Reference --------------------
      */
     
     struct GeneData;
@@ -463,7 +468,6 @@ namespace Anaquin
         private:
 
             struct RnaRefImpl;
-
             std::shared_ptr<RnaRefImpl> _impl;        
     };
 }

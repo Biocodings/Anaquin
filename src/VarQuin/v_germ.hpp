@@ -9,14 +9,23 @@ namespace Anaquin
     struct EStats
     {
         std::set<Variant> vs;
+        
+        // Counts by context
+        std::map<SequinVariant::Context, Counts> c2c;
+        
+        // Counts by variation
         std::map<Variation, Counts> v2c;
-        std::map<Genotype,  Counts> g2c;
         
-        // Number of endogenous with low/high GC within sequin regions
-        Counts gc = 0;
-        
-        // Number of endogenous with simple repeats within sequin regions
-        Counts rep = 0;
+        // Counts by genotype
+        std::map<Genotype, Counts> g2c;
+
+        Counts lGC  = 0;
+        Counts hGC  = 0;
+        Counts vlGC = 0;
+        Counts vhGC = 0;
+        Counts sRep = 0;
+        Counts sSom = 0;
+        Counts lRep = 0;
     };
 
     struct BaseCallerStats
@@ -63,11 +72,14 @@ namespace Anaquin
             // Performance by genotype
             std::map<Genotype, Confusion> g2c;
             
-            // Performance for GC contents
-            Confusion gc2c;
-            
+            // Performance for low/high GC contents
+            Confusion lGC2c, hGC2c;
+
+            // Performance for very low/high GC contents
+            Confusion vlGC2c, vhGC2c;
+
             // Performance for simple repeats
-            Confusion r2c;
+            Confusion sr2c, lr2c;
             
             // Overall performance
             Confusion oc;

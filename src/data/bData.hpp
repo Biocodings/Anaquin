@@ -19,13 +19,9 @@ namespace Anaquin
     
     struct BedData : public std::map<ChrID, BedChrData>
     {
-        /*
-         * Return sequin names (4th column)
-         */
-        
-        inline std::set<SequinID> seqs() const
+        inline std::set<Name> names() const
         {
-            std::set<SequinID> x;
+            std::set<Name> x;
             
             for (const auto &i : *this)
             {
@@ -38,24 +34,27 @@ namespace Anaquin
             return x;
         }
 
-        inline Counts countBase(const ChrID &cID) const
+        inline Base len(const ChrID &x, const Name &y = "") const
         {
             Base b = 0;
             
-            for (const auto &i : at(cID).r2d)
+            for (const auto &i : at(x).r2d)
             {
-                b += i.second.l.length();
+                if (y.empty() || i.second.name == y)
+                {
+                    b += i.second.l.length();
+                }
             }
-
+            
             A_ASSERT(b);
             return b;
         }
 
-        inline Counts length() const
+        inline Base len() const
         {
-            return countMap(*this, [&](const ChrID &cID, const BedChrData &x)
+            return countMap(*this, [&](const ChrID &cID, const BedChrData &)
             {
-                return countBase(cID);
+                return len(cID);
             });
         }
         
@@ -67,11 +66,11 @@ namespace Anaquin
             });
         }
         
-        inline DIntervals<> inters(const ChrID &cID) const
+        inline DIntervals<> inters(const ChrID &x) const
         {
             DIntervals<> r;
             
-            for (const auto &i : at(cID).r2d)
+            for (const auto &i : at(x).r2d)
             {
                 r.add(DInter(i.first, i.second.l));
             }

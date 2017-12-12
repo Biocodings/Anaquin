@@ -840,11 +840,10 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     auto ind = del;
     ind += ins;
     
-    #define CSN(x) D(ss.c2c.at(x).sn())
+    #define SN(x) D(ss.c2c.at(x).sn())
     
     #define E1() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP)))
     #define E2() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion)))
-    #define E3() (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)))
     #define E4() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Homozygous)))
     #define E5() (endo.empty() ? "-" : std::to_string(es.g2c.at(Genotype::Heterzygous)))
     
@@ -852,46 +851,62 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     
     const auto all = ss.oa.linear();
     
-    x["type"]   = "somatic";
-    x["NR"]     = D(r.nRegs());
-    x["LR"]     = D(r.lRegs());
-    x["vRef"]   = (VCFFromUser() ? VCFRef() : "-");
-    x["bRef"]   = (!Bed1Ref().empty() ? Bed1Ref() : "-");
-    x["uSam"]   = (endo.empty() ? "-" : endo);
-    x["uSeq"]   = seqs;
-    x["uBed"]   = (UBEDFromUser() ? Bed1Ref() : "-");
-    x["nSam"]   = E3(); // Number of sample variants
-    x["nSeqs"]  = D(c_nSNP + c_nDel + c_nIns);
-    x["N"]      = D(r.nType1(Variation::SNP) +
-                    r.nType1(Variation::Insertion) +
-                    r.nType1(Variation::Deletion));
-    x["TP"]     = D(ss.oc.tp());
-    x["FP"]     = D(ss.oc.fp());
-    x["FN"]     = D(ss.oc.fn());
-    x["SN"]     = D(ss.oc.sn());
-    x["PC"]     = D(ss.oc.pc());
-    x["F1"]     = D(ss.oc.F1());
-    x["FDR"]    = D(1-ss.oc.pc());
-    x["snpN"]   = D(r.nType1(Variation::SNP));
-    x["snpTP"]  = D(snp.tp());
-    x["snpFP"]  = D(snp.fp());
-    x["snpFN"]  = D(snp.fn());
-    x["snpSN"]  = D(snp.sn());
-    x["snpPC"]  = D(snp.pc());
-    x["snpF1"]  = D(snp.F1());
-    x["snpFDR"] = D(1-snp.pc());
-    x["indN"]   = D(r.nType1(Variation::Insertion) + r.nType1(Variation::Deletion));
-    x["indTP"]  = D(ind.tp());
-    x["indFP"]  = D(ind.fp());
-    x["indFN"]  = D(ind.fn());
-    x["indSN"]  = D(ind.sn());
-    x["indPC"]  = D(ind.pc());
-    x["indF1"]  = D(ind.F1());
-    x["indFDR"] = D(1-ind.pc());
-    x["M"]      = D(all.m);
-    x["R2"]     = D(all.R2);
-    x["Sn"]     = D(ss.oa.limit.abund);
-    x["cancer"] = CSN(Context::Cancer);
+    x["nr"]          = D(r.nRegs());
+    x["lr"]          = D(r.r2()->len());
+    x["rVCF"]        = (VCFFromUser() ? VCFRef() : "-");
+    x["rBED"]        = (!Bed1Ref().empty() ? Bed1Ref() : "-");
+    x["uSam"]        = (endo.empty() ? "-" : endo);
+    x["uSeq"]        = seqs;
+    x["uBed"]        = (UBEDFromUser() ? Bed1Ref() : "-");
+    x["nSam"]        = (endo.empty() ? "-" : std::to_string(es.v2c.at(Variation::SNP) + es.v2c.at(Variation::Insertion) + es.v2c.at(Variation::Deletion)));
+    x["nSeqs"]       = D(c_nSNP + c_nDel + c_nIns);
+    x["snpLR"]       = D(r.len(Variation::SNP));
+    x["indLR"]       = D(r.len(Variation::Insertion)) + D(r.len(Variation::Deletion));
+    x["homLR"]       = D(r.len(Genotype::Homozygous));
+    x["hetLR"]       = D(r.len(Genotype::Heterzygous));
+    x["commonLR"]    = D(r.len(Context::Common));
+    x["lowGCLR"]     = D(r.len(Context::LowGC));
+    x["highGCLR"]    = D(r.len(Context::HighGC));
+    x["longHomLR"]   = D(r.len(Context::LongHompo));
+    x["vLowGCLR"]    = D(r.len(Context::VeryLowGC));
+    x["vHighGCLR"]   = D(r.len(Context::VeryHighGC));
+    x["shortDRLR"]   = D(r.len(Context::ShortDinRep));
+    x["longDRLR"]    = D(r.len(Context::LongDinRep));
+    x["shortHomLR"]  = D(r.len(Context::ShortHompo));
+    x["longQRepLR"]  = D(r.len(Context::LongQuadRep));
+    x["longTRepLR"]  = D(r.len(Context::LongTrinRep));
+    x["shortQRepLR"] = D(r.len(Context::ShortQuadRep));
+    x["shortTRepLR"] = D(r.len(Context::ShortTrinRep));
+    x["N"]           = D(r.nType1(Variation::SNP) +
+                         r.nType1(Variation::Insertion) +
+                         r.nType1(Variation::Deletion));
+    x["TP"]          = D(ss.oc.tp());
+    x["FP"]          = D(ss.oc.fp());
+    x["FN"]          = D(ss.oc.fn());
+    x["SN"]          = D(ss.oc.sn());
+    x["PC"]          = D(ss.oc.pc());
+    x["F1"]          = D(ss.oc.F1());
+    x["FDR"]         = D(1-ss.oc.pc());
+    x["snpN"]        = D(r.nType1(Variation::SNP));
+    x["snpTP"]       = D(snp.tp());
+    x["snpFP"]       = D(snp.fp());
+    x["snpFN"]       = D(snp.fn());
+    x["snpSN"]       = D(snp.sn());
+    x["snpPC"]       = D(snp.pc());
+    x["snpF1"]       = D(snp.F1());
+    x["snpFDR"]      = D(1-snp.pc());
+    x["indN"]        = D(r.nType1(Variation::Insertion) + r.nType1(Variation::Deletion));
+    x["indTP"]       = D(ind.tp());
+    x["indFP"]       = D(ind.fp());
+    x["indFN"]       = D(ind.fn());
+    x["indSN"]       = D(ind.sn());
+    x["indPC"]       = D(ind.pc());
+    x["indF1"]       = D(ind.F1());
+    x["indFDR"]      = D(1-ind.pc());
+    x["M"]           = D(all.m);
+    x["R2"]          = D(all.R2);
+    x["Sn"]          = D(ss.oa.limit.abund);
+    x["cancer"]      = SN(Context::Cancer);
 
     return x;
 }
@@ -964,10 +979,10 @@ static void writeSummary(const FileName &file,
     
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % x["vRef"]   // 1
-                                            % x["bRef"]   // 2
-                                            % x["inputE"] // 3
-                                            % x["inputS"] // 4
+    o.writer->write((boost::format(summary) % x["rVCF"]   // 1
+                                            % x["rBED"]   // 2
+                                            % x["uSam"]   // 3
+                                            % x["uSeq"]   // 4
                                             % x["nSam"]   // 5
                                             % x["nSeqs"]  // 6
                                             % x["N"]      // 7

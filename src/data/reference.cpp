@@ -101,28 +101,111 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Counts VarRef::nRep() const
+Counts VarRef::nSRep() const
 {
     return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
-        return x.isRepeat() ? 1 : 0;
+        return x.isShortRepeat() ? 1 : 0;
     });
 }
 
-Counts VarRef::nGCLow() const
+Counts VarRef::nLRep() const
 {
     return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
-        return x.isGCLow() ? 1 : 0;
+        return x.isLongRepeat() ? 1 : 0;
     });
 }
 
-Counts VarRef::nGCHigh() const
+Counts VarRef::nLowGC() const
 {
     return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
     {
-        return x.isGCHigh() ? 1 : 0;
+        return x.isLowGC() ? 1 : 0;
     });
+}
+
+Counts VarRef::nHighGC() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isHighGC() ? 1 : 0;
+    });
+}
+
+Counts VarRef::nVLowGC() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isVLowGC() ? 1 : 0;
+    });
+}
+
+Counts VarRef::nVHighGC() const
+{
+    return countMap(_v1->sVars, [&](VarKey, const SequinVariant &x)
+    {
+        return x.isVHighGC() ? 1 : 0;
+    });
+}
+
+Base VarRef::len(Genotype x) const
+{
+    Base n = 0;
+
+    for (const auto &i : _v1->sVars)
+    {
+        if (i.second.gt == x)
+        {
+            for (const auto &j : _v1->data.vars())
+            {
+                if (j.key() == i.first)
+                {
+                    n += _r2->len(j.cID, j.name);
+                    break;
+                }
+            }
+        }
+    }
+
+    return n;
+}
+
+Base VarRef::len(Variation x) const
+{
+    Base n = 0;
+
+    for (const auto &i : _v1->data.vars())
+    {
+        if (i.type() == x)
+        {
+            n += _r2->len(i.cID, i.name);
+        }
+    }
+    
+    return n;
+}
+
+Base VarRef::len(SequinVariant::Context x) const
+{
+    Base n = 0;
+
+    for (const auto &i : _v1->sVars)
+    {
+        if (i.second.ctx == x)
+        {
+            for (const auto &j : _v1->data.vars())
+            {
+                if (j.key() == i.first)
+                {
+                    n += _r2->len(j.cID, j.name);
+                    break;
+                }
+            }
+        }
+    }
+
+    return n;
 }
 
 Counts VarRef::nGeno1(Genotype g) const
@@ -172,21 +255,6 @@ const SequinVariant * VarRef::findVar(const SequinID &x) const
 const SequinVariant & VarRef::findSeqVar1(long key) const
 {
     return _v1->sVars.at(key);
-}
-
-SequinVariant::Context VarRef::ctx2(const Variant &x) const
-{
-    return _v2->sVars.at(x.key()).ctx;
-}
-
-std::set<Variant> VarRef::v2() const
-{
-    return _v2->data.vars();
-}
-
-const SequinVariant & VarRef::findSeqVar2(long key) const
-{
-    return _v2->sVars.at(key);
 }
 
 /*
@@ -244,7 +312,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 
         case Tool::VarCopy:
         {
-            const auto inter = intersect(r.r1->seqs(), r.l1->seqs);
+            const auto inter = intersect(r.r1->names(), r.l1->seqs);
             merge(inter.inters);
             
             filter(r.l1, inter.diffs);
@@ -257,7 +325,7 @@ void VarRef::validate(Tool x, const UserReference &r)
 
         case Tool::VarFlip:
         {
-            merge(r.r1->seqs());
+            merge(r.r1->names());
             build(r.r1);
             break;
         }
@@ -265,21 +333,21 @@ void VarRef::validate(Tool x, const UserReference &r)
         case Tool::VarTrim:
         case Tool::VarAlign:
         {
-            merge(r.r1->seqs());
+            merge(r.r1->names());
             build(r.r1, r.r2);
             break;
         }
 
         case Tool::VarCalibrate:
         {
-            merge(r.r1->seqs());
+            merge(r.r1->names());
             build(r.r1, r.r2);
             break;
         }
             
         case Tool::VarPartition:
         {
-            merge(r.r1->seqs());
+            merge(r.r1->names());
             build(r.r1, r.r2, r.r3);
             break;
         }

@@ -421,7 +421,7 @@ template <typename T, typename F> Stats &parse(const FileName &file, Stats &stat
     const auto r3 = r.r3()->inters();
 
     // Sequin names
-    stats.mStats.seqs = r.r1()->seqs();
+    stats.mStats.seqs = r.r1()->names();
     
     // Required for pooling paired-end reads
     std::map<ReadName, ParserBAM::Data> seenMates;

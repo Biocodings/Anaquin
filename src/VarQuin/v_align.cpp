@@ -371,8 +371,8 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
     x["nSeq"]     = S0(stats.seqs->nMap);
     x["pSeq"]     = S2(stats.pSeqs());
     x["dilution"] = S2(100 * stats.pSeqs());
-    x["NR"]       = S0(r.nRegs());
-    x["LR"]       = S0(r.lRegs());
+    x["nr"]       = S0(r.nRegs());
+    x["lr"]       = S0(r.r2()->len());
     x["aTP"]      = S0(stats.seqs->align.tp());
     x["aFP"]      = S0(stats.seqs->align.fp());
     x["aPC"]      = S2(stats.seqs->align.pc());
@@ -474,8 +474,8 @@ void VAlign::writeSummary(const FileName &file,
                                                  % x["nSeqs"]    // 6
                                                  % x["pSeqs"]    // 7
                                                  % x["dilution"] // 8
-                                                 % x["NR"]       // 9
-                                                 % x["LR"]       // 10
+                                                 % x["nr"]       // 9
+                                                 % x["lr"]       // 10
                                                  % x["aTP"]      // 11
                                                  % x["aFP"]      // 12
                                                  % x["aPC"]      // 13
