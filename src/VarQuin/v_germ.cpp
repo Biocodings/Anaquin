@@ -61,6 +61,20 @@ inline std::string ctx2Str(Context x)
     }
 }
 
+static Scripts createWhisker()
+{
+    extern Scripts PlotWhisker();
+    extern Path __output__;
+    extern std::string __full_command__;
+    
+    return (boost::format(PlotWhisker()) % date()
+                                         % __full_command__
+                                         % __output__
+                                         % "VarMutation_detected.tsv"
+                                         % "VarMutation_sequins.tsv"
+                                         % "VarMutation_sample.tsv").str();
+}
+
 static Scripts createROC(const FileName &f1, const FileName &f2)
 {
     extern Scripts PlotROCMutation();
@@ -992,6 +1006,15 @@ VGerm::Stats VGerm::report(const FileName &endo, const FileName &seqs, const Opt
     o.generate("VarMutation_ROC.R");
     o.writer->open("VarMutation_ROC.R");
     o.writer->write(createROC("VarMutation_detected.tsv", "VarMutation_sequins.tsv"));
+    o.writer->close();
+
+    /*
+     * Generating VarMutation_whisker.R
+     */
+    
+    o.generate("VarMutation_whisker.R");
+    o.writer->open("VarMutation_whisker.R");
+    o.writer->write(createWhisker());
     o.writer->close();
 
     /*

@@ -35,6 +35,7 @@
 #include "resources/plotAllele.R"
 #include "resources/plotLinear.R"
 #include "resources/plotKAllele.R"
+#include "resources/plotWhisker.R"
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
 #include "resources/plotROCMutation.R"
@@ -56,6 +57,7 @@ Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }
 Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
 Scripts PlotConjoint() { return ToString(src_r_plotConjoint_R); }
 Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
+Scripts PlotWhisker()  { return ToString(src_r_plotWhisker_R);  }
 Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
 Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
 
