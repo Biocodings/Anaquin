@@ -38,6 +38,7 @@
 #include "resources/plotWhisker.R"
 #include "resources/plotConjoint.R"
 #include "resources/plotLogistic.R"
+#include "resources/PlotStrelkaROC.R"
 #include "resources/plotROCMutation.R"
 
 typedef std::string Scripts;
@@ -52,14 +53,15 @@ Scripts A_V_35() { return ToString(data_A_V_35_vcf);  }
 Scripts A_V_36() { return ToString(data_A_V_36_fa);   }
 Scripts A_V_37() { return ToString(data_A_V_37_bed);  }
 
-Scripts PlotFold()     { return ToString(src_r_plotFold_R);     }
-Scripts PlotCNV()      { return ToString(src_r_plotCNV_R);      }
-Scripts PlotLinear()   { return ToString(src_r_plotLinear_R);   }
-Scripts PlotConjoint() { return ToString(src_r_plotConjoint_R); }
-Scripts PlotAllele()   { return ToString(src_r_plotAllele_R);   }
-Scripts PlotWhisker()  { return ToString(src_r_plotWhisker_R);  }
-Scripts PlotKAllele()  { return ToString(src_r_plotKAllele_R);  }
-Scripts PlotLogistic() { return ToString(src_r_plotLogistic_R); }
+Scripts PlotFold()       { return ToString(src_r_plotFold_R);       }
+Scripts PlotCNV()        { return ToString(src_r_plotCNV_R);        }
+Scripts PlotLinear()     { return ToString(src_r_plotLinear_R);     }
+Scripts PlotConjoint()   { return ToString(src_r_plotConjoint_R);   }
+Scripts PlotAllele()     { return ToString(src_r_plotAllele_R);     }
+Scripts PlotWhisker()    { return ToString(src_r_plotWhisker_R);    }
+Scripts PlotKAllele()    { return ToString(src_r_plotKAllele_R);    }
+Scripts PlotLogistic()   { return ToString(src_r_plotLogistic_R);   }
+Scripts PlotStrelkaROC() { return ToString(src_r_PlotStrelkaROC_R); }
 
 Scripts RnaAlign()      { return ToString(data_manuals_RnaAlign_txt);      }
 Scripts RnaSubsample()  { return ToString(data_manuals_RnaSubsample_txt);  }

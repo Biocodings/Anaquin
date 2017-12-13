@@ -48,18 +48,36 @@ static void writeAllele(const VSomatic::Options &o)
     o.writer->close();
 }
 
-static Scripts createROC(const FileName &file, const std::string &score, const std::string &refRat)
+static void writeStrelkaROC(const FileName &file, const Options &o)
 {
-    extern Scripts PlotVCROC();
     extern Path __output__;
+    extern Scripts PlotStrelkaROC();
     extern std::string __full_command__;
     
-    return (boost::format(PlotVCROC()) % date()
-                                       % __full_command__
-                                       % __output__
-                                       % file
-                                       % score
-                                       % refRat).str();
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(PlotStrelkaROC()) % date()
+                                                     % __full_command__
+                                                     % __output__
+                                                     % "VarMutation_detected.tsv").str());
+    o.writer->close();
+}
+
+static void writeDepthROC(const FileName &file, const Options &o)
+{
+    extern Path __output__;
+    extern Scripts PlotVCROC();
+    extern std::string __full_command__;
+    
+    o.generate(file);
+    o.writer->open(file);
+    o.writer->write((boost::format(PlotVCROC()) % date()
+                                                % __full_command__
+                                                % __output__
+                                                % "VarMutation_detected.tsv"
+                                                % "data$ObsFreq_Tumor"
+                                                % "'-'").str());
+    o.writer->close();
 }
 
 /*
@@ -1069,14 +1087,22 @@ VSomatic::Stats VSomatic::report(const FileName &endo, const FileName &seqs, con
     writeDetected("VarMutation_detected.tsv", stats.ss, o);
     
     /*
-     * Generating VarMutation_ROC.R
+     * Generating VarMutation_ROC_Depth.R
      */
     
-    o.generate("VarMutation_ROC.R");
-    o.writer->open("VarMutation_ROC.R");
-    o.writer->write(createROC("VarMutation_detected.tsv", "data$ObsFreq_Tumor", "'-'"));
-    o.writer->close();
-    
+    writeDepthROC("VarMutation_ROC_Depth.R", o);
+
+    /*
+     * Generating VarMutation_ROC_Strelka.R
+     */
+
+    if ((!stats.ss.tps.empty() && isStrelka(stats.ss.tps.front().qry)) ||
+        (!stats.ss.fps.empty() && isStrelka(stats.ss.tps.front().qry)) ||
+        (!stats.ss.fns.empty() && isStrelka(stats.ss.tps.front().qry)))
+    {
+        writeStrelkaROC("VarMutation_ROC_Strelka.R", o);
+    }
+
     /*
      * Generating VarMutation_ladder.R
      */
