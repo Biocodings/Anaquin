@@ -14,7 +14,7 @@ namespace Anaquin
 
     struct BedChrData
     {
-        std::map<SequinID, Data> r2d;
+        std::map<Name, Data> r2d;
     };
     
     struct BedData : public std::map<ChrID, BedChrData>
@@ -52,9 +52,9 @@ namespace Anaquin
 
         inline Base len() const
         {
-            return countMap(*this, [&](const ChrID &cID, const BedChrData &)
+            return countMap(*this, [&](const ChrID &x, const BedChrData &)
             {
-                return len(cID);
+                return len(x);
             });
         }
         

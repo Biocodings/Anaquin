@@ -756,7 +756,7 @@ static std::map<std::string, std::string> jsonD(const FileName &endo,
      */
     
     x["samSom"] = D(es.sSom);
-    x["somFP"]  = D(ss.c2c.at(Context::Common).fp());
+    x["somFP"]  = D(ss.c2c.at(Context::Cancer).fp());
 
     /*
      * Other metrics
