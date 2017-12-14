@@ -46,7 +46,6 @@ namespace Anaquin
                 }
             }
             
-            A_ASSERT(b);
             return b;
         }
 
