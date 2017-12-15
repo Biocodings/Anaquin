@@ -23,11 +23,3 @@ Version: 2.2.0
             RnaExpression - Quantitative analysis of sequin expression
             RnaFoldChange - Assess fold-changes in gene expression between multiple samples
             RnaSubsample  - Calibrate the sequence coverage of sequins across multiple replicates
-
-            VarAlign      - Assess the alignment of sample- and sequin derived reads to sequin regions
-            VarPartition  - Perform flipping, trimming, splitting and calibration on sequin- and sample-derived alignments
-            VarKmer       - Quantitative k-mer analysis for sequin allele frequnecy
-            VarMutation   - Compare the identification of germline variants from sequin- and sample-derived alignments
-
-            MetaAbund     - Quantitative analysis of sequin abundance
-            MetaAssembly  - Compares assembled contigs to sequin annotations in the in silico community
