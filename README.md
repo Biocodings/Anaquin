@@ -25,7 +25,7 @@ You will need to download and compile `htslib` for the shared object file. You c
 * [libhts.so](https://s3.amazonaws.com/sequins/software/libhts.so)
 * [libhts.so.2](https://s3.amazonaws.com/sequins/software/libhts.so.2)
 
-Add them to your `LD_LIBRARY_PATH`. For example, 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<Path>'.
+Add them to your `LD_LIBRARY_PATH`. For example, `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<Path>`.
 
 ## License
 
